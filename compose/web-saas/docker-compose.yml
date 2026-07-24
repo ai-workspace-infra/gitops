@@ -11,64 +11,6 @@
 #   /etc/xcontrol/web-saas/Caddyfile        反向代理站点定义
 
 services:
-  postgres:
-    image: ${POSTGRES_IMAGE:?set in .env.<env>}
-    container_name: web-saas-postgres
-    restart: unless-stopped
-    env_file:
-      - /etc/xcontrol/web-saas/secrets.env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - /etc/xcontrol/web-saas/config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
-    healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=$${POSTGRES_PASSWORD} psql -qAt -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-postgres} -h 127.0.0.1 -c 'SELECT 1' | grep -qx 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-    networks:
-      - web_saas_network
-
-  stunnel-server:
-    image: ${STUNNEL_SERVER_IMAGE:?set in .env.<env>}
-    container_name: web-saas-stunnel-server
-    user: root
-    restart: unless-stopped
-    ports:
-      - "${STUNNEL_ACCEPT_PORT:-15432}:15432"
-    volumes:
-      - /etc/xcontrol/web-saas/config/stunnel-server.conf:/etc/stunnel/stunnel.conf:ro
-      - /etc/xcontrol/web-saas/certs/server-cert.pem:/etc/stunnel/certs/server-cert.pem:ro
-      - /etc/xcontrol/web-saas/certs/server-key.pem:/etc/stunnel/certs/server-key.pem:ro
-    networks:
-      - web_saas_network
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-  stunnel-client:
-    image: ${STUNNEL_CLIENT_IMAGE:?set in .env.<env>}
-    container_name: web-saas-stunnel-client
-    restart: unless-stopped
-    environment:
-      STUNNEL_SERVICE: "postgres"
-      STUNNEL_ACCEPT: "5432"
-      STUNNEL_CONNECT: "stunnel-server:15432"
-      STUNNEL_CRONTAB: ""
-    volumes:
-      - /etc/xcontrol/web-saas/config/stunnel-client.conf:/etc/stunnel/stunnel.conf:ro
-      - /etc/xcontrol/web-saas/certs/ca-cert.pem:/etc/stunnel/certs/ca-cert.pem:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pidof stunnel >/dev/null || exit 1"]
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 5s
-    networks:
-      - web_saas_network
-    depends_on:
-      - stunnel-server
-
   accounts:
     image: ${ACCOUNTS_IMAGE:?set in .env.<env>}
     container_name: web-saas-accounts
@@ -81,9 +23,6 @@ services:
       - /etc/xcontrol/web-saas/config/account.yaml:/etc/xcontrol/account.template.yaml:ro
     networks:
       - web_saas_network
-    depends_on:
-      stunnel-client:
-        condition: service_healthy
 
   billing:
     image: ${BILLING_IMAGE:?set in .env.<env>}
@@ -95,9 +34,6 @@ services:
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
     networks:
       - web_saas_network
-    depends_on:
-      stunnel-client:
-        condition: service_healthy
 
   # console 镜像自带静态资源, 但 console 服务需要它们在一个共享卷里才能被
   # Caddy 直接提供。这个一次性容器负责把资源刷进卷, 每次部署都重跑一遍,
@@ -159,7 +95,6 @@ networks:
     driver: bridge
 
 volumes:
-  postgres_data:
   console_static:
   caddy_data:
   caddy_config:
