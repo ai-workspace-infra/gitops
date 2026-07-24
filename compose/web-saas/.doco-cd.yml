@@ -1,0 +1,18 @@
+name: web-saas
+version: doco.v1
+working_dir: compose/web-saas
+compose_files:
+  - docker-compose.yml
+
+# 镜像版本轴。CD 把新的 tag 写进 .env.<env> 后提交推送, Doco-CD 拉到新
+# commit 就部署新版本 —— git ref 就是版本记录, 不需要额外的部署元数据。
+env_files:
+  - .env.uat
+
+# 机密不在这里。Doco-CD 每次部署都是全新 clone, 仓库里放不了也不该放
+# 口令; compose 里各服务通过绝对路径 env_file 读取主机上由 Ansible+Vault
+# 渲染的 /etc/xcontrol/web-saas/secrets.env。
+
+force_image_pull: true
+remove_orphans: true
+timeout: 300
