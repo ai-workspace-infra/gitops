@@ -1,0 +1,8 @@
+# These findings are from historical commits in the playbooks submodule or
+# vendored Jenkins chart files — not from this repository's own code.
+# The credentials-binding plugin version strings in jenkins/files/setup.sh
+# are not actual secrets, they are Jenkins plugin version identifiers.
+53656acb2c4383aa47a7a2e4aac75e3097a530a6:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:38
+53656acb2c4383aa47a7a2e4aac75e3097a530a6:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:39
+6025c5c2f53fdc54ff69e858d3178759acf5b784:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:38
+6025c5c2f53fdc54ff69e858d3178759acf5b784:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:39
