@@ -6,3 +6,5 @@
 53656acb2c4383aa47a7a2e4aac75e3097a530a6:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:39
 6025c5c2f53fdc54ff69e858d3178759acf5b784:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:38
 6025c5c2f53fdc54ff69e858d3178759acf5b784:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:39
+79e3c64a80c1bcdc9f2fcab665ff14c7c5216f27:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:38
+79e3c64a80c1bcdc9f2fcab665ff14c7c5216f27:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:39
