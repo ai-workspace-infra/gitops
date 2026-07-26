@@ -120,6 +120,9 @@ services:
     env_file:
       - /etc/xcontrol/web-saas/secrets.env
     environment:
+      EXPORTER_BASE_URL: "http://127.0.0.1:8080"
+      EXPORTER_SOURCES_JSON: >-
+        [{"source_id":"xhttp-local","base_url":"http://127.0.0.1:8080"}]
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
       DB_HOST: "stunnel-client"
       DB_PORT: "15432"
