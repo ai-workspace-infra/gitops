@@ -11,8 +11,11 @@
 #   /etc/xcontrol/web-saas/Caddyfile        反向代理站点定义
 
 services:
-  # PostgreSQL for web-saas. It stays on localhost for same-node maintenance,
-  # while stunnel-server exposes the cross-node TLS entrypoint.
+  # PostgreSQL for web-saas.
+  # PostgreSQL stays internal on 5432 only.
+  # stunnel-server publishes the TLS entrypoint on 15433.
+  # stunnel-client exposes the app-side local proxy on 15432 inside the
+  # compose network, without any host port publication.
   postgres:
     image: ${POSTGRESQL_IMAGE:?set in .env.<env>}
     container_name: web-saas-postgresql
@@ -77,7 +80,7 @@ services:
     restart: unless-stopped
     environment:
       STUNNEL_SERVICE: "postgres-tls-server"
-      STUNNEL_ACCEPT: "5432"
+      STUNNEL_ACCEPT: "15432"
       STUNNEL_CONNECT: "stunnel-server:15433"
       STUNNEL_CRONTAB: ""
     volumes:
@@ -120,9 +123,6 @@ services:
     env_file:
       - /etc/xcontrol/web-saas/secrets.env
     environment:
-      EXPORTER_BASE_URL: "http://127.0.0.1:8080"
-      EXPORTER_SOURCES_JSON: >-
-        [{"source_id":"xhttp-local","base_url":"http://127.0.0.1:8080"}]
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
       DB_HOST: "stunnel-client"
       DB_PORT: "15432"
