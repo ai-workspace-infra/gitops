@@ -28,3 +28,30 @@ jobs:
 
       - name: Run gitleaks detect
         run: gitleaks detect -v --redact --exit-code 1
+
+  verify-images:
+    name: Verify declared images exist
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Load GHCR credentials
+        uses: hashicorp/vault-action@v4
+        with:
+          url: https://vault.svc.plus
+          method: jwt
+          role: github-actions-playbooks-uat
+          jwtGithubAudience: vault
+          secrets: |
+            kv/data/CICD GHCR_USERNAME | GHCR_USERNAME ;
+            kv/data/CICD GHCR_TOKEN | GHCR_TOKEN
+
+      # 镜像地址是 .env 里手写的, 没有任何东西保证它与构建方实际推送的路径
+      # 一致。写错时 compose 依然合法、CI 依然全绿(CI 不拉镜像), 只有
+      # Doco-CD 在主机上每 60s 失败一次, 而它自己的容器一直 healthy ——
+      # docker ps 上看不出任何异常。这一步把那个错误提前到 PR 阶段。
+      - name: Verify every declared image resolves
+        run: scripts/verify-images.sh
