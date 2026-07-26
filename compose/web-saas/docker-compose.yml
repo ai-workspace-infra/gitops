@@ -105,12 +105,13 @@ services:
     env_file:
       - /etc/xcontrol/web-saas/secrets.env
     environment:
-      PORT: "18081"
-      # The image entrypoint must probe the shared tunnel, not localhost.
+      PORT: "8080"
+      CONFIG_PATH: "/tmp/account.yaml"
+      CONFIG_TEMPLATE: "/app/config/account.yaml"
       DB_HOST: "stunnel-client"
       DB_PORT: "15432"
     volumes:
-      - /etc/xcontrol/web-saas/config/account.yaml:/etc/xcontrol/account.template.yaml:ro
+      - /etc/xcontrol/web-saas/config/account.yaml:/app/config/account.yaml:ro
     networks:
       - web_saas_network
     depends_on:
