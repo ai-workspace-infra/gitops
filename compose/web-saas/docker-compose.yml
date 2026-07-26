@@ -14,7 +14,10 @@ services:
   # ── PostgreSQL ──────────────────────────────────────────────────────────────
   # web-saas 域专属 PostgreSQL 实例，承载 accounts、billing 等业务数据库。
   # 监听 localhost，通过 stunnel-server 提供 TLS 加密外部访问。
-  postgresql:
+  # 服务名必须是 postgres(不是 postgresql): 主机上由 Ansible 渲染的
+  # /etc/xcontrol/web-saas/config/stunnel-server.conf 里写死了
+  # `connect = postgres:5432`, compose 服务名就是容器内的 DNS 名。
+  postgres:
     image: ${POSTGRESQL_IMAGE:?set in .env.<env>}
     container_name: web-saas-postgresql
     restart: unless-stopped
@@ -54,8 +57,12 @@ services:
     container_name: web-saas-stunnel-server
     user: root
     restart: unless-stopped
+    # 15432 而非 5433: 端口由 Ansible 渲染进 stunnel-server.conf
+    # (accept = 0.0.0.0:15432), compose 只负责把它暴露出去 —— 两处写不
+    # 一致时容器会正常启动、健康检查也过(stunnel 进程确实在跑), 只是
+    # 没有人能连上它。
     ports:
-      - "5433:5433"
+      - "15432:15432"
     volumes:
       - /etc/xcontrol/web-saas/config/stunnel-server.conf:/etc/stunnel/stunnel.conf:ro
       - /etc/xcontrol/web-saas/certs/server-cert.pem:/etc/stunnel/certs/server-cert.pem:ro
@@ -70,7 +77,7 @@ services:
       - web_saas_network
       - postgres_net
     depends_on:
-      postgresql:
+      postgres:
         condition: service_healthy
 
   # ── stunnel-client ──────────────────────────────────────────────────────────
@@ -81,9 +88,13 @@ services:
     container_name: web-saas-stunnel-client
     restart: unless-stopped
     environment:
-      STUNNEL_SERVICE: "postgres-client"
-      STUNNEL_ACCEPT: "15432"
-      STUNNEL_CONNECT: "web-saas-stunnel-server:5433"
+      # 三个值都必须与 Ansible 渲染的 stunnel-client.conf 一致 ——
+      # accept=0.0.0.0:5432 / connect=stunnel-server:15432 /
+      # [postgres-tls-server]。secrets.env 里的 DATABASE_URL 指向
+      # stunnel-client:5432, 改这里的 accept 会让所有 DB 连接失效。
+      STUNNEL_SERVICE: "postgres-tls-server"
+      STUNNEL_ACCEPT: "5432"
+      STUNNEL_CONNECT: "stunnel-server:15432"
       STUNNEL_CRONTAB: ""
     volumes:
       - /etc/xcontrol/web-saas/config/stunnel-client.conf:/etc/stunnel/stunnel.conf:ro
@@ -207,7 +218,7 @@ networks:
   # 必须看 doco-cd 自己的日志。
   web_saas_network:
     name: docker_shared_network
-    driver: bridge
+    external: true
   postgres_net:
     name: docker_web_saas_postgres_network
     driver: bridge
