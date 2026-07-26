@@ -1,0 +1,129 @@
+# agent-proxy 域的 Docker Compose 声明，由 Doco-CD 从本仓库拉取部署。
+#
+# 所有 bind mount 都写绝对路径。Doco-CD 每次部署都把本仓库全新 clone 到一个
+# 临时目录再运行 docker compose，相对路径会解析到那个 clone 里——证书和
+# 配置并不在仓库里（也不该在），相对路径会挂载出空目录而不是报错。
+#
+# 主机侧这些路径由 Ansible 从 Vault 渲染，与本文件的镜像版本轴解耦：
+#   /etc/xcontrol/agent-proxy/secrets.env      口令与 token
+#   /etc/xcontrol/agent-proxy/config/          stunnel 配置
+#   /etc/xcontrol/agent-proxy/certs/           stunnel TLS 证书
+#   /etc/xcontrol/agent-proxy/Caddyfile        反向代理站点定义
+
+services:
+  # ── PostgreSQL ──────────────────────────────────────────────────────────────
+  # agent-proxy 域专属 PostgreSQL 实例，供 agent-svc-plus 等服务使用。
+  # 监听 localhost，通过 stunnel-server 提供 TLS 加密外部访问。
+  postgresql:
+    image: ${POSTGRESQL_IMAGE:?set in .env.<env>}
+    container_name: agent-proxy-postgresql
+    restart: unless-stopped
+    env_file:
+      - /etc/xcontrol/agent-proxy/secrets.env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    expose:
+      - "5432"
+    ports:
+      - "127.0.0.1:15435:5432"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - /etc/xcontrol/agent-proxy/config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -h 127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - postgres_net
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # ── stunnel-server ──────────────────────────────────────────────────────────
+  # 为跨主机访问本域 PostgreSQL 提供 TLS 隧道入口。
+  # 监听公网端口 5436，接收来自其他主机 stunnel-client 的加密连接。
+  stunnel-server:
+    image: ${STUNNEL_SERVER_IMAGE:?set in .env.<env>}
+    container_name: agent-proxy-stunnel-server
+    user: root
+    restart: unless-stopped
+    ports:
+      - "5436:5436"
+    volumes:
+      - /etc/xcontrol/agent-proxy/config/stunnel-server.conf:/etc/stunnel/stunnel.conf:ro
+      - /etc/xcontrol/agent-proxy/certs/server-cert.pem:/etc/stunnel/certs/server-cert.pem:ro
+      - /etc/xcontrol/agent-proxy/certs/server-key.pem:/etc/stunnel/certs/server-key.pem:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pidof stunnel > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - agent_proxy_network
+      - postgres_net
+    depends_on:
+      postgresql:
+        condition: service_healthy
+
+  # ── stunnel-client ──────────────────────────────────────────────────────────
+  # 本域内服务通过此 stunnel-client 访问共享 PostgreSQL 实例（位于另一主机）。
+  # 监听 127.0.0.1:15432，提供给 agent-svc-plus 等服务作为 DB host。
+  stunnel-client:
+    image: ${STUNNEL_CLIENT_IMAGE:?set in .env.<env>}
+    container_name: agent-proxy-stunnel-client
+    restart: unless-stopped
+    environment:
+      STUNNEL_SERVICE: "postgres-client"
+      STUNNEL_ACCEPT: "15432"
+      STUNNEL_CONNECT: "${POSTGRESQL_TUNNEL_HOST:?set in .env.<env>}:5433"
+      STUNNEL_CRONTAB: ""
+    ports:
+      - "127.0.0.1:15432:15432"
+    volumes:
+      - /etc/xcontrol/agent-proxy/config/stunnel-client.conf:/etc/stunnel/stunnel.conf:ro
+      - /etc/xcontrol/agent-proxy/certs/ca-cert.pem:/etc/stunnel/certs/ca-cert.pem:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pidof stunnel > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - agent_proxy_network
+
+  # ── Caddy ────────────────────────────────────────────────────────────────────
+  # 边缘反向代理，负责接收公网 TLS 请求并转发到 Xray。
+  caddy:
+    image: ${CADDY_IMAGE:?set in .env.<env>}
+    container_name: agent-proxy-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/xcontrol/agent-proxy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - agent_proxy_network
+
+networks:
+  agent_proxy_network:
+    name: docker_shared_network
+    driver: bridge
+  postgres_net:
+    name: docker_agent_proxy_postgres_network
+    driver: bridge
+
+volumes:
+  postgresql_data:
+  caddy_data:
+  caddy_config:
