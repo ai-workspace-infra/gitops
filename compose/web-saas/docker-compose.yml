@@ -11,12 +11,8 @@
 #   /etc/xcontrol/web-saas/Caddyfile        反向代理站点定义
 
 services:
-  # ── PostgreSQL ──────────────────────────────────────────────────────────────
-  # web-saas 域专属 PostgreSQL 实例，承载 accounts、billing 等业务数据库。
-  # 监听 localhost，通过 stunnel-server 提供 TLS 加密外部访问。
-  # 服务名必须是 postgres(不是 postgresql): 主机上由 Ansible 渲染的
-  # /etc/xcontrol/web-saas/config/stunnel-server.conf 里写死了
-  # `connect = postgres:5432`, compose 服务名就是容器内的 DNS 名。
+  # PostgreSQL for web-saas. It stays on localhost for same-node maintenance,
+  # while stunnel-server exposes the cross-node TLS entrypoint.
   postgres:
     image: ${POSTGRESQL_IMAGE:?set in .env.<env>}
     container_name: web-saas-postgresql
@@ -28,7 +24,7 @@ services:
     expose:
       - "5432"
     ports:
-      - "127.0.0.1:15432:5432"
+      - "127.0.0.1:${POSTGRES_LOCAL_PORT:-5432}:5432"
     volumes:
       - postgresql_data:/var/lib/postgresql/data
       - /etc/xcontrol/web-saas/config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
@@ -43,26 +39,20 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 2G
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
 
-  # ── stunnel-server ──────────────────────────────────────────────────────────
-  # 为跨主机访问本域 PostgreSQL 提供 TLS 隧道入口（即 postgresql-saas.onwalk.net）。
-  # 监听公网端口 5433，接收来自其他主机 stunnel-client 的加密连接。
+  # TLS entrypoint for cross-node access.
   stunnel-server:
     image: ${STUNNEL_SERVER_IMAGE:?set in .env.<env>}
     container_name: web-saas-stunnel-server
     user: root
     restart: unless-stopped
-    # 15432 而非 5433: 端口由 Ansible 渲染进 stunnel-server.conf
-    # (accept = 0.0.0.0:15432), compose 只负责把它暴露出去 —— 两处写不
-    # 一致时容器会正常启动、健康检查也过(stunnel 进程确实在跑), 只是
-    # 没有人能连上它。
     ports:
-      - "15432:15432"
+      - "${STUNNEL_SERVER_PORT:-15433}:15433"
     volumes:
       - /etc/xcontrol/web-saas/config/stunnel-server.conf:/etc/stunnel/stunnel.conf:ro
       - /etc/xcontrol/web-saas/certs/server-cert.pem:/etc/stunnel/certs/server-cert.pem:ro
@@ -80,21 +70,15 @@ services:
       postgres:
         condition: service_healthy
 
-  # ── stunnel-client ──────────────────────────────────────────────────────────
-  # accounts/billing 服务通过此 stunnel-client 连接 PostgreSQL。
-  # 监听 127.0.0.1:15432 对容器内可见，服务通过 container_name 解析。
+  # Local TLS client used by accounts / billing.
   stunnel-client:
     image: ${STUNNEL_CLIENT_IMAGE:?set in .env.<env>}
     container_name: web-saas-stunnel-client
     restart: unless-stopped
     environment:
-      # 三个值都必须与 Ansible 渲染的 stunnel-client.conf 一致 ——
-      # accept=0.0.0.0:5432 / connect=stunnel-server:15432 /
-      # [postgres-tls-server]。secrets.env 里的 DATABASE_URL 指向
-      # stunnel-client:5432, 改这里的 accept 会让所有 DB 连接失效。
       STUNNEL_SERVICE: "postgres-tls-server"
       STUNNEL_ACCEPT: "5432"
-      STUNNEL_CONNECT: "stunnel-server:15432"
+      STUNNEL_CONNECT: "stunnel-server:15433"
       STUNNEL_CRONTAB: ""
     volumes:
       - /etc/xcontrol/web-saas/config/stunnel-client.conf:/etc/stunnel/stunnel.conf:ro
@@ -119,6 +103,8 @@ services:
       - /etc/xcontrol/web-saas/secrets.env
     environment:
       PORT: "18081"
+      DB_HOST: "stunnel-client"
+      DB_PORT: "15432"
     volumes:
       - /etc/xcontrol/web-saas/config/account.yaml:/etc/xcontrol/account.template.yaml:ro
     networks:
@@ -135,6 +121,10 @@ services:
       - /etc/xcontrol/web-saas/secrets.env
     environment:
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
+      DB_HOST: "stunnel-client"
+      DB_PORT: "15432"
+      EXPORTER_BASE_URL: "http://127.0.0.1:8080"
+      EXPORTER_SOURCES_JSON: '[{"source_id":"xhttp-local","base_url":"http://127.0.0.1:8080"}]'
     networks:
       - web_saas_network
     depends_on:
@@ -169,10 +159,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
-      # console 镜像不再自带 RUNTIME_ENV —— 它曾经在 Dockerfile 里被写死成
-      # prod, 于是任何来源的镜像启动即以生产身份运行、连生产认证服务。
-      # 环境是部署时的事实, 由这里注入; 不传时应用会落到它自己的安全默认值
-      # (dev), 而不是 prod。
       RUNTIME_ENV: ${DEPLOY_ENV:?set in .env.<env>}
     volumes:
       - console_static:/app/dashboard/.next/static:ro
@@ -201,21 +187,6 @@ services:
       - console
 
 networks:
-  # external: true —— 这个网络的生命周期由 Ansible(web_saas_host_config
-  # 角色)管理, 在 compose 第一次 up 之前就已经存在, 且要跨多个域共享。
-  #
-  # 不加 external 时, Doco-CD 每次轮询部署都报:
-  #   network docker_shared_network was found but has incorrect label
-  #   com.docker.compose.network set to "" (expected: "web_saas_network")
-  # 因为 compose 期望自己创建的网络带着标准标签
-  # (com.docker.compose.network=web_saas_network), 而 Ansible 用裸
-  # `docker network create` 建的网络没有任何 compose 标签。compose 拒绝
-  # "接管"一个它不认识是自己创建的网络 —— 这不是权限问题, 是 compose
-  # 故意的安全检查, 防止悄悄劫持别的项目在用的网络。
-  #
-  # 结果是 Doco-CD 陷入每 60s 重试一次的失败循环: doco-cd 容器本身
-  # healthy, 但 web-saas 的四个服务从未启动 —— 从 docker ps 完全看不出来,
-  # 必须看 doco-cd 自己的日志。
   web_saas_network:
     name: docker_shared_network
     external: true
