@@ -158,6 +158,11 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
+      # console 镜像不再自带 RUNTIME_ENV —— 它曾经在 Dockerfile 里被写死成
+      # prod, 于是任何来源的镜像启动即以生产身份运行、连生产认证服务。
+      # 环境是部署时的事实, 由这里注入; 不传时应用会落到它自己的安全默认值
+      # (dev), 而不是 prod。
+      RUNTIME_ENV: ${DEPLOY_ENV:?set in .env.<env>}
     volumes:
       - console_static:/app/dashboard/.next/static:ro
     networks:
@@ -185,12 +190,28 @@ services:
       - console
 
 networks:
+  # external: true —— 这个网络的生命周期由 Ansible(web_saas_host_config
+  # 角色)管理, 在 compose 第一次 up 之前就已经存在, 且要跨多个域共享。
+  #
+  # 不加 external 时, Doco-CD 每次轮询部署都报:
+  #   network docker_shared_network was found but has incorrect label
+  #   com.docker.compose.network set to "" (expected: "web_saas_network")
+  # 因为 compose 期望自己创建的网络带着标准标签
+  # (com.docker.compose.network=web_saas_network), 而 Ansible 用裸
+  # `docker network create` 建的网络没有任何 compose 标签。compose 拒绝
+  # "接管"一个它不认识是自己创建的网络 —— 这不是权限问题, 是 compose
+  # 故意的安全检查, 防止悄悄劫持别的项目在用的网络。
+  #
+  # 结果是 Doco-CD 陷入每 60s 重试一次的失败循环: doco-cd 容器本身
+  # healthy, 但 web-saas 的四个服务从未启动 —— 从 docker ps 完全看不出来,
+  # 必须看 doco-cd 自己的日志。
   web_saas_network:
     name: docker_shared_network
     driver: bridge
   postgres_net:
     name: docker_web_saas_postgres_network
     driver: bridge
+    external: true
 
 volumes:
   postgresql_data:
