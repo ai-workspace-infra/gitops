@@ -181,8 +181,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    # 只有 caddy 读这个文件, 里面是 ACME DNS-01 用的 CLOUDFLARE_DNS_API_TOKEN。
+    # 刻意不并进 secrets.env —— 那个文件被 postgres / accounts / billing /
+    # console 四个服务同时引用, 而这个 token 能改整个 zone 的解析记录。
+    # 由 playbooks 的 web_saas_host_config 渲染成 0600。
+    env_file:
+      - /etc/xcontrol/web-saas/caddy.env
     volumes:
       - /etc/xcontrol/web-saas/Caddyfile:/etc/caddy/Caddyfile:ro
+      # caddy_data 存证书与 ACME 账户密钥。主机重建会连卷一起丢, 于是每次
+      # 重建都要重新签发, 撞 Let's Encrypt "同一组域名 5 次/周" 的限流 ——
+      # 平台侧会把它备份进 Vault 并在 bootstrap 时恢复, 让重建不再重签。
       - caddy_data:/data
       - caddy_config:/config
     networks:
