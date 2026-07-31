@@ -193,8 +193,17 @@ services:
       - /etc/xcontrol/web-saas/caddy.env
     volumes:
       - /etc/xcontrol/web-saas/Caddyfile:/etc/caddy/Caddyfile:ro
-      # caddy_data 存证书与 ACME 账户密钥。主机重建会连卷一起丢, 于是每次
-      # 重建都要重新签发, 撞 Let's Encrypt "同一组域名 5 次/周" 的限流 ——
+      # 平台侧从 Vault 恢复下来的泛域名证书。Caddyfile 在这些文件存在时会用
+      # `tls <fullchain> <key>` 直接指过去, 完全不走 ACME —— 这是"证书在有效期
+      # 内无限复用"真正生效的一环。容器内路径必须与主机侧一致, 因为 Caddyfile
+      # 里写的是绝对路径, 由 playbooks 渲染时按主机路径生成。
+      #
+      # 目录整体挂载而不是逐文件: current 是个软链, 指向 versions/<指纹>/,
+      # 证书轮换时整体原子替换。逐文件挂载会把 bind mount 钉死在旧 inode 上,
+      # 主机换了证书容器里还是旧的。
+      - /etc/xcontrol/tls:/etc/xcontrol/tls:ro
+      # caddy_data 存 ACME 账户密钥与自行签发的证书。主机重建会连卷一起丢,
+      # 走 ACME 时每次重建都要重新签发, 撞 Let's Encrypt "同一组域名 5 次/周" 的限流 ——
       # 平台侧会把它备份进 Vault 并在 bootstrap 时恢复, 让重建不再重签。
       - caddy_data:/data
       - caddy_config:/config
