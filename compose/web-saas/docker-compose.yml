@@ -166,6 +166,10 @@ services:
       NODE_ENV: production
       PORT: "3000"
       RUNTIME_ENV: ${DEPLOY_ENV:?set in .env.<env>}
+      ACCOUNT_SERVICE_URL: ${ACCOUNT_SERVICE_URL:-}
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: ${NEXT_PUBLIC_ACCOUNT_SERVICE_URL:-}
+      SERVER_SERVICE_URL: ${SERVER_SERVICE_URL:-}
+      NEXT_PUBLIC_SERVER_SERVICE_URL: ${NEXT_PUBLIC_SERVER_SERVICE_URL:-}
     volumes:
       - console_static:/app/dashboard/.next/static:ro
     networks:
