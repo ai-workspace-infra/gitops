@@ -127,10 +127,10 @@ services:
     environment:
       DB_HOST: "stunnel-client"
       DB_PORT: "15432"
-      # Exporter sources are environment-specific and rendered into
-      # /etc/xcontrol/web-saas/secrets.env by Ansible/Vault. Do not default to
-      # 127.0.0.1 here: in the UAT topology Billing and Xray exporters run on
-      # separate hosts, and the process must consume all configured sources.
+      # Usage snapshots arrive through Vector's authenticated ingest endpoint.
+      # Keep direct exporter pull disabled unless an operator explicitly sets
+      # BILLING_INGEST_MODE=pull during a rollback.
+      BILLING_INGEST_MODE: ${BILLING_INGEST_MODE:-push}
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
     networks:
       - web_saas_network
