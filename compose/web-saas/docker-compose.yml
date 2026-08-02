@@ -127,9 +127,10 @@ services:
     environment:
       DB_HOST: "stunnel-client"
       DB_PORT: "15432"
-      EXPORTER_BASE_URL: "http://127.0.0.1:8080"
-      EXPORTER_SOURCES_JSON: >-
-        [{"source_id":"xhttp-local","base_url":"http://127.0.0.1:8080"}]
+      # Exporter sources are environment-specific and rendered into
+      # /etc/xcontrol/web-saas/secrets.env by Ansible/Vault. Do not default to
+      # 127.0.0.1 here: in the UAT topology Billing and Xray exporters run on
+      # separate hosts, and the process must consume all configured sources.
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
     networks:
       - web_saas_network

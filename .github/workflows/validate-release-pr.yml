@@ -43,7 +43,7 @@ jobs:
         with:
           url: https://vault.svc.plus
           method: jwt
-          role: github-actions-gitops-uat
+          role: github-actions-gitops-${{ github.event_name == 'pull_request' && 'sit' || 'uat' }}
           jwtGithubAudience: vault
           secrets: |
             kv/data/CICD GHCR_USERNAME | GHCR_USERNAME ;
