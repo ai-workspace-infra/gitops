@@ -112,6 +112,7 @@ services:
       DB_PORT: "15432"
       OTEL_SERVICE_NAME: "web-saas-accounts"
       OTEL_SERVICE_INSTANCE_ID: "web-saas-accounts"
+      OTEL_ENVIRONMENT: "${DEPLOY_ENV:?set in .env.<env>}"
       OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>},deployment.environment.name=${DEPLOY_ENV:?set in .env.<env>},environment=${DEPLOY_ENV:?set in .env.<env>},instance=web-saas-accounts"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://otel-collector:4317"
@@ -141,6 +142,7 @@ services:
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
       OTEL_SERVICE_NAME: "web-saas-billing"
       OTEL_SERVICE_INSTANCE_ID: "web-saas-billing"
+      OTEL_ENVIRONMENT: "${DEPLOY_ENV:?set in .env.<env>}"
       OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>},deployment.environment.name=${DEPLOY_ENV:?set in .env.<env>},environment=${DEPLOY_ENV:?set in .env.<env>},instance=web-saas-billing"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://otel-collector:4317"
@@ -183,6 +185,7 @@ services:
       RUNTIME_ENV: ${DEPLOY_ENV:?set in .env.<env>}
       OTEL_SERVICE_NAME: "web-saas-console"
       OTEL_SERVICE_INSTANCE_ID: "web-saas-console"
+      OTEL_ENVIRONMENT: "${DEPLOY_ENV:?set in .env.<env>}"
       OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>},deployment.environment.name=${DEPLOY_ENV:?set in .env.<env>},environment=${DEPLOY_ENV:?set in .env.<env>},instance=web-saas-console"
       OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
       OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://otel-collector:4317"
