@@ -111,8 +111,10 @@ services:
       DB_HOST: "stunnel-client"
       DB_PORT: "15432"
       OTEL_SERVICE_NAME: "web-saas-accounts"
-      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>}"
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "https://observability.svc.plus/ingest/otlp/v1/traces"
+      OTEL_SERVICE_INSTANCE_ID: "web-saas-accounts"
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>},deployment.environment.name=${DEPLOY_ENV:?set in .env.<env>},environment=${DEPLOY_ENV:?set in .env.<env>},instance=web-saas-accounts"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://otel-collector:4317"
       OTEL_TRACES_SAMPLER: "parentbased_traceidratio"
       OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-0.05}"
     volumes:
@@ -138,8 +140,10 @@ services:
       BILLING_INGEST_MODE: ${BILLING_INGEST_MODE:-push}
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
       OTEL_SERVICE_NAME: "web-saas-billing"
-      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>}"
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "https://observability.svc.plus/ingest/otlp/v1/traces"
+      OTEL_SERVICE_INSTANCE_ID: "web-saas-billing"
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>},deployment.environment.name=${DEPLOY_ENV:?set in .env.<env>},environment=${DEPLOY_ENV:?set in .env.<env>},instance=web-saas-billing"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://otel-collector:4317"
       OTEL_TRACES_SAMPLER: "parentbased_traceidratio"
       OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-0.05}"
     networks:
@@ -178,8 +182,10 @@ services:
       PORT: "3000"
       RUNTIME_ENV: ${DEPLOY_ENV:?set in .env.<env>}
       OTEL_SERVICE_NAME: "web-saas-console"
-      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>}"
-      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "https://observability.svc.plus/ingest/otlp/v1/traces"
+      OTEL_SERVICE_INSTANCE_ID: "web-saas-console"
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>},deployment.environment.name=${DEPLOY_ENV:?set in .env.<env>},environment=${DEPLOY_ENV:?set in .env.<env>},instance=web-saas-console"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "http://otel-collector:4317"
       OTEL_TRACES_SAMPLER: "parentbased_traceidratio"
       OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-0.05}"
       ACCOUNT_SERVICE_URL: ${ACCOUNT_SERVICE_URL:-}
