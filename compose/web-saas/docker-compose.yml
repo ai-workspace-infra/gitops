@@ -110,6 +110,11 @@ services:
       CONFIG_TEMPLATE: "/app/config/account.yaml"
       DB_HOST: "stunnel-client"
       DB_PORT: "15432"
+      OTEL_SERVICE_NAME: "web-saas-accounts"
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>}"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "https://observability.svc.plus/ingest/otlp/v1/traces"
+      OTEL_TRACES_SAMPLER: "parentbased_traceidratio"
+      OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-0.05}"
     volumes:
       - /etc/xcontrol/web-saas/config/account.yaml:/app/config/account.yaml:ro
     networks:
@@ -132,6 +137,11 @@ services:
       # BILLING_INGEST_MODE=pull during a rollback.
       BILLING_INGEST_MODE: ${BILLING_INGEST_MODE:-push}
       BILLING_SERVICE_LISTEN_ADDR: "0.0.0.0:8081"
+      OTEL_SERVICE_NAME: "web-saas-billing"
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>}"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "https://observability.svc.plus/ingest/otlp/v1/traces"
+      OTEL_TRACES_SAMPLER: "parentbased_traceidratio"
+      OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-0.05}"
     networks:
       - web_saas_network
     depends_on:
@@ -167,6 +177,11 @@ services:
       NODE_ENV: production
       PORT: "3000"
       RUNTIME_ENV: ${DEPLOY_ENV:?set in .env.<env>}
+      OTEL_SERVICE_NAME: "web-saas-console"
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=${DEPLOY_ENV:?set in .env.<env>}"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: "https://observability.svc.plus/ingest/otlp/v1/traces"
+      OTEL_TRACES_SAMPLER: "parentbased_traceidratio"
+      OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-0.05}"
       ACCOUNT_SERVICE_URL: ${ACCOUNT_SERVICE_URL:-}
       NEXT_PUBLIC_ACCOUNT_SERVICE_URL: ${NEXT_PUBLIC_ACCOUNT_SERVICE_URL:-}
       SERVER_SERVICE_URL: ${SERVER_SERVICE_URL:-}
@@ -214,6 +229,20 @@ services:
       - accounts
       - billing
       - console
+      - otel-collector
+
+  # Caddy's native tracing module exports OTLP/gRPC only. This in-network
+  # collector batches it and forwards OTLP/HTTP to the public VictoriaTraces
+  # ingress without opening a new host port.
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.141.0
+    container_name: web-saas-otel-collector
+    restart: unless-stopped
+    command: ["--config=/etc/otelcol-contrib/config.yaml"]
+    volumes:
+      - /etc/xcontrol/web-saas/config/otel-collector.yaml:/etc/otelcol-contrib/config.yaml:ro
+    networks:
+      - web_saas_network
 
 networks:
   web_saas_network:
