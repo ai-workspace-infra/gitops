@@ -110,6 +110,9 @@ services:
       CONFIG_TEMPLATE: "/app/config/account.yaml"
       DB_HOST: "stunnel-client"
       DB_PORT: "15432"
+      # Must match the tenant domain forwarded by the environment Caddyfile.
+      # Kept in the environment manifest rather than compiled into Accounts.
+      XWORKMATE_SHARED_TENANT_DOMAINS: "${XWORKMATE_SHARED_TENANT_DOMAINS:?set in .env.<env>}"
       OTEL_SERVICE_NAME: "web-saas-accounts"
       OTEL_SERVICE_INSTANCE_ID: "web-saas-accounts"
       OTEL_ENVIRONMENT: "${DEPLOY_ENV:?set in .env.<env>}"
