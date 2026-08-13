@@ -8,6 +8,7 @@ directories.
 | `environments` | Cluster-level overlays and entrypoints, under `clusters/<env>/`. |
 | `services` | Per-service declarations shared across environments. |
 | `resources` | IaC topology declarations, keyed `<project>/<env>/<provider>/`. Consumed by Terraform renderers and CMDB/inventory generators. |
+| `content/website` | Git-backed source for Portal website copy and editorial content. |
 | `skills` | Repository-scoped conventions consumed by agents. |
 | `docs` | Repository conventions and operational documentation. |
 

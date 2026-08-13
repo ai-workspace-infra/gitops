@@ -1,0 +1,81 @@
+name: One-Image-One-Story
+version: 1.0
+description: >
+  Generate a long-term, repeatable "One Image, One Story" post.
+  Focus on observation, daily life, and restrained personal perception.
+  Avoid emotional amplification, promotion, or narrative escalation.
+
+input:
+  - title_place              # 地点名，例如：九寨沟 / 淀山湖渔村
+  - camera                   # 器材，例如：GFX 50S II
+  - location                 # 拍摄地点（可与 title_place 相同）
+  - time                     # 时间描述，例如：夏末 / 2023年2月
+  - image                    # 单张图片（核心内容）
+  - context_notes (optional) # 可选：当时的简单背景或备注
+
+output:
+  format: markdown
+  target_words: 300-380
+  reading_time: 20-30s
+
+rules:
+  - Title must follow fixed format: "一图一文 · {{title_place}}"
+  - Metadata (camera / location / time) must be listed before正文
+  - Exactly three paragraphs in正文
+  - No emojis, no hashtags
+  - No promotional or commercial language
+  - No travel-guide or scenic-spot description
+  - No emotional escalation or philosophical elevation
+  - Tone must be calm, observational, and personal-record oriented
+
+structure:
+  paragraph_1:
+    role: Visual & Environment
+    purpose: Describe the current scene as it appears in the image
+    constraints:
+      - Focus on light, color, space, atmosphere
+      - Only present tense
+      - No emotional judgment or metaphor inflation
+      - Must be image-verifiable
+
+  paragraph_2:
+    role: Human Presence & Life Trace
+    purpose: Introduce subtle human activity or daily-life signals
+    constraints:
+      - Can include people, objects, routines, traces
+      - Emphasize ordinary, repetitive, slow actions
+      - Avoid event narration or story climax
+      - No tourist or functional explanations
+
+  paragraph_3:
+    role: Personal Closure
+    purpose: Gently close with restrained personal perception
+    constraints:
+      - Stay grounded in the moment
+      - No abstraction, no universal truth
+      - May be removed without breaking the post
+      - End quietly, without summary slogans
+
+template: |
+  # 一图一文 · {{title_place}}
+
+  **器材**：{{camera}}  
+  **地点**：{{location}}  
+  **时间**：{{time}}
+
+  {{paragraph_1}}
+
+  {{paragraph_2}}
+
+  {{paragraph_3}}
+
+quality_checks:
+  - Can the post stand without the third paragraph? (Yes)
+  - Does each paragraph have a distinct responsibility? (Yes)
+  - Can the image be understood without reading emotion words? (Yes)
+  - Would this still work as a long-term daily/weekly column? (Yes)
+
+notes: >
+  This skill prioritizes consistency over expressiveness.
+  The goal is not to impress, but to remain readable, stable,
+  and repeatable over long time spans.

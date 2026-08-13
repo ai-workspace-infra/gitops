@@ -13,6 +13,8 @@ live in their own repositories and pin the ref they consume.
 
 - Kubernetes resources and Flux Kustomizations.
 - Non-sensitive multi-environment values.
+- Website copy and editorial source under `content/website/`, consumed by the
+  Portal build as a Git-backed CMS snapshot.
 - **IaC topology declarations**: the desired set of hosts, their sizes, groups, and service
   domains per environment. These are inputs consumed by Terraform renderers and by CMDB /
   inventory generators.
@@ -45,6 +47,8 @@ scope.
 - `environments/`: cluster-level overlays and entrypoints (`clusters/<env>/`)
 - `services/`: per-service declarations shared across environments
 - `resources/`: IaC topology declarations, keyed `<project>/<env>/<provider>/`
+- `content/website/`: Git-backed Portal website content, including localized
+  homepage and product copy.
 - `skills/`: repository-scoped conventions consumed by agents
 - `docs/`: repository conventions and operational documentation
 
