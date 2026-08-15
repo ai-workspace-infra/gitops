@@ -236,6 +236,17 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    # Doco-CD recreates only services whose Compose configuration diverges.
+    # Keep an explicit runtime health check here so ingress configuration changes
+    # are part of Caddy's declared state; a merely "running" container is not
+    # enough evidence that the public listener was reconciled after a host
+    # replacement or stale Docker container recovery.
+    healthcheck:
+      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     # 只有 caddy 读这个文件, 里面是 ACME DNS-01 用的 CLOUDFLARE_DNS_API_TOKEN。
     # 刻意不并进 secrets.env —— 那个文件被 postgres / accounts / billing /
     # console 四个服务同时引用, 而这个 token 能改整个 zone 的解析记录。
