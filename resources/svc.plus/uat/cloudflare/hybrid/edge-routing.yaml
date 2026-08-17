@@ -4,6 +4,7 @@ metadata:
   name: web-saas
   project: svc.plus
   environment: uat
+  mode: hybrid
 spec:
   runtime:
     mode: hybrid
@@ -119,7 +120,6 @@ spec:
           - /_edge/workspace/*
     edge_gateway:
       defaults:
-        # These request-level failover values are active only in hybrid mode.
         primary_upstream: https://accounts-vps-uat.onwalk.net
         fallback_upstream: https://accounts-service-uc.a.run.app
         jwt_issuer: https://accounts-cloudflare-uat.onwalk.net

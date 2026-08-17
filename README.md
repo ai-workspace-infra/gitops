@@ -42,12 +42,17 @@ scope.
 
 ### Serverless edge routing config backend
 
-Non-sensitive Cloudflare/Cloud Run/VPS routing for the web-saas domain is declared in
-`resources/<project>/<env>/cloudflare/edge-routing.yaml`. The serverless orchestrator checks
-out the selected GitOps ref and passes this file to the portal and edge-gateway deployers;
-those repositories do not own environment hostnames or Worker names. Keep tokens, passwords,
-JWT secrets, and database connection strings in Vault. The declaration may describe public
-origins and the primary/fallback routing policy.
+Non-sensitive Cloudflare/Cloud Run/VPS routing for the web-saas domain is declared as three
+mode-specific `EdgeRoutingConfig` documents under
+`resources/<project>/<env>/cloudflare/<mode>/edge-routing.yaml`, where `<mode>` is exactly
+`selfhost`, `serverless`, or `hybrid`. The orchestrator selects the document that matches its
+responsibility; it must not reinterpret one mode's declaration as another mode. These files
+are complete pre-configurations, not runtime secrets or deployment scripts.
+
+The serverless and hybrid orchestrators check out the selected GitOps ref and pass the matching
+file to the portal and edge-gateway deployers; those repositories do not own environment
+hostnames or Worker names. Keep tokens, passwords, JWT secrets, and database connection strings
+in Vault. The declarations may describe public origins and the primary/fallback routing policy.
 
 ## Layout
 
