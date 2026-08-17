@@ -3,10 +3,14 @@
 The UAT mode-specific sources of truth are:
 
 ```text
-resources/svc.plus/uat/cloudflare/selfhost/edge-routing.yaml
-resources/svc.plus/uat/cloudflare/serverless/edge-routing.yaml
-resources/svc.plus/uat/cloudflare/hybrid/edge-routing.yaml
+resources/svc.plus/uat/selfhost/edge-routing.yaml
+resources/svc.plus/uat/serverless/edge-routing.yaml
+resources/svc.plus/uat/hybrid/edge-routing.yaml
 ```
+
+The mode directories intentionally are not nested under `cloudflare/`. These declarations cover
+the complete runtime topology—DNS, VPS Full Stack, Cloud Run, Supabase Cloud DB, and Cloudflare
+boundaries—so the path must not be interpreted as a Cloudflare-only preparation requirement.
 
 The declaration exposes exactly three runtime modes:
 
