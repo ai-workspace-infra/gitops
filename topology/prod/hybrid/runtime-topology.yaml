@@ -131,5 +131,6 @@ spec:
           worker_name: edge-gateway-admin-prod
           route: /api/admin/*
         - id: core
+          display_name: Edge Gateway Router Core
           worker_name: edge-gateway-core-prod
           route: /api/*

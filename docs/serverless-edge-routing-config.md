@@ -89,7 +89,7 @@ into a monolithic Worker.
 | SSR workspace | `frontend-ssr-workspace-uat` | `/ai-workspace*`, `/editor*`, etc. | Independent lightweight Worker |
 | API auth | `edge-gateway-auth-uat` | `accounts-cloudflare-uat.onwalk.net/api/auth/*`, `/api/v1/auth/*` | Independent lightweight Worker |
 | API admin | `edge-gateway-admin-uat` | `accounts-cloudflare-uat.onwalk.net/api/admin/*` | Independent lightweight Worker |
-| API core | `edge-gateway-core-uat` | `accounts-cloudflare-uat.onwalk.net/api/*` fallback | Independent lightweight Worker |
+| Edge Gateway Router Core | `edge-gateway-core-uat` | `accounts-cloudflare-uat.onwalk.net` Custom Domain owner; `/api/*` fallback | Accounts entry owner and independent lightweight Worker |
 | Static assets | `ai-workspace-portal-uat` | `PAGES_ORIGIN` for `/_next/*`, `/static/*`, `/assets/*` | Pages deployment |
 
 The canonical names and complete route suffixes are declared in `spec.serverless.frontend_router`,
@@ -136,6 +136,8 @@ Consumers must read this GitOps declaration rather than repository-local environ
   static prefixes, and the five SSR Service Bindings;
 - `spec.serverless.ssr` defines exactly five independently deployable SSR boundaries;
 - `spec.serverless.edge_gateway` defines `auth`, `admin`, and `core`; `core` owns `/api/*`.
+  Its stable `id: core` has the display name **Edge Gateway Router Core** because it also owns the
+  Accounts Worker Custom Domain.
 
 All declaration changes require a GitOps PR to `main` before the platform orchestrator consumes
 them. Keep the three mode documents structurally aligned when changing shared domains, service

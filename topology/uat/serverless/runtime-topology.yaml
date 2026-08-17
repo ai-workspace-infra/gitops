@@ -146,6 +146,7 @@ spec:
           routes:
             - /api/admin/*
         - id: core
+          display_name: Edge Gateway Router Core
           worker_name: edge-gateway-core-uat
           routes:
             - /api/*
