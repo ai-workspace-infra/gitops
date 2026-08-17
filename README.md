@@ -44,10 +44,12 @@ scope.
 
 Non-sensitive Cloudflare/Cloud Run/VPS routing for the web-saas domain is declared as three
 mode-specific `EdgeRoutingConfig` documents under
-`resources/<project>/<env>/cloudflare/<mode>/edge-routing.yaml`, where `<mode>` is exactly
+`resources/<project>/<env>/<mode>/edge-routing.yaml`, where `<mode>` is exactly
 `selfhost`, `serverless`, or `hybrid`. The orchestrator selects the document that matches its
 responsibility; it must not reinterpret one mode's declaration as another mode. These files
 are complete pre-configurations, not runtime secrets or deployment scripts.
+The mode directory is deliberately not nested under a provider directory: the declaration
+covers the complete runtime topology, not only Cloudflare resources.
 
 The serverless and hybrid orchestrators check out the selected GitOps ref and pass the matching
 file to the portal and edge-gateway deployers; those repositories do not own environment
