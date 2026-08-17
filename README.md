@@ -81,6 +81,11 @@ plans are supplied by the consuming pipeline (e.g. `TARGET_DOMAIN_BASE`, `INSTAN
 A per-file fallback default is worse than none: divergent fallbacks render output that is
 valid, plausible, and wrong in only some files.
 
+The rule above applies to the topology declarations under `resources/.../<provider>/`.
+The serverless `EdgeRoutingConfig` described below is an explicit environment-scoped
+configuration backend: its selected environment domains and routing targets are intentional
+desired state, not renderer fallback defaults.
+
 ## Consuming this repository
 
 Pin a ref. A consumer that tracks a moving branch inherits every change here at the moment it
