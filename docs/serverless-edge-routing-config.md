@@ -57,6 +57,27 @@ DNS is the top-level switch for `selfhost` and `serverless`. `hybrid` adds reque
 edge-gateway: selfhost is tried first for 2500 ms, then Cloud Run is retried on timeout, connection
 failure, or a 5xx response. The edge-gateway failover is not a silent DNS mutation.
 
+## Cloudflare boundary split
+
+The Portal is deliberately built as five independent OpenNext SSR Workers, three independent
+edge-gateway Workers, and one Pages project. This split is required to keep each Cloudflare Worker
+artifact below the 3 MiB limit; the boundaries must not be recombined into a monolithic Worker.
+
+| Boundary | Worker / Pages project | Routes | Deployment unit |
+| --- | --- | --- | --- |
+| SSR public pages | `frontend-ssr-public-uat` | `/*`, `/_edge/public/*` | Independent lightweight Worker |
+| SSR content pages | `frontend-ssr-content-uat` | `/blogs*`, `/docs*`, `/download*` | Independent lightweight Worker |
+| SSR identity pages | `frontend-ssr-auth-uat` | `/login*`, `/register*`, etc. | Independent lightweight Worker |
+| SSR console | `frontend-ssr-console-uat` | `/panel*`, `/dashboard*` | Independent lightweight Worker |
+| SSR workspace | `frontend-ssr-workspace-uat` | `/ai-workspace*`, `/editor*`, etc. | Independent lightweight Worker |
+| API auth | `edge-gateway-auth-uat` | `accounts-cloudflare-uat.onwalk.net/api/auth/*` | Independent lightweight Worker |
+| API admin | `edge-gateway-admin-uat` | `accounts-cloudflare-uat.onwalk.net/api/admin/*` | Independent lightweight Worker |
+| API core | `edge-gateway-core-uat` | `accounts-cloudflare-uat.onwalk.net/api/*` fallback | Independent lightweight Worker |
+| Static assets | `ai-workspace-portal-uat` | `/static/*`, `/assets/*` | Pages deployment |
+
+The canonical names and complete route suffixes are declared in `spec.serverless.ssr` and
+`spec.serverless.edge_gateway`; the table is a human-readable summary of that contract.
+
 The production naming contract follows the same shape:
 
 | Canonical hostname | VPS CNAME | Serverless CNAME |
