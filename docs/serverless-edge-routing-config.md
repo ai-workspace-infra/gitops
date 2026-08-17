@@ -9,11 +9,11 @@ resources/svc.plus/uat/cloudflare/edge-routing.yaml
 The declaration exposes exactly three runtime modes:
 
 ```text
-runtime.mode = vps | serverless | hybrid
+runtime.mode = selfhost | serverless | hybrid
 ```
 
 ```text
-VPS mode
+Selfhost mode
 DNS → VPS Full Stack → Console / Accounts / Content / Billing
                     → self-managed PostgreSQL
 
@@ -24,14 +24,15 @@ DNS → Cloudflare Pages → SSR ×5 → edge-gateway ×3
 
 Hybrid mode
 DNS → Cloudflare edge → edge-gateway
-                    → VPS primary → Cloud Run request-level fallback
+                    → selfhost primary → Cloud Run request-level fallback
 ```
 
 ## Runtime contract
 
 `spec.runtime` is the single runtime control plane:
 
-- `mode` selects `vps`, `serverless`, or `hybrid`.
+- `mode` selects `selfhost`, `serverless`, or `hybrid`. `selfhost` is the runtime mode name;
+  the physical target remains the existing VPS Full Stack.
 - `routing.dns` owns canonical DNS targets and the 60-second TTL.
 - `routing.load-balancer` declares the hybrid request-failover strategy.
 - `routing.weight` is reserved for explicit traffic weighting; it is not changed implicitly by
@@ -39,9 +40,9 @@ DNS → Cloudflare edge → edge-gateway
 - `services` maps Console, Accounts, Content, and Billing to their mode-specific runtimes.
 - `data` declares primary/replica roles and the migration reservation.
 
-UAT currently declares `runtime.mode: hybrid`, with VPS weight 100 and Serverless weight 0. This
-keeps the required VPS→Cloud Run request-level failover explicit. A pure `serverless` rollout or
-DNS-only `vps` rollout is a deliberate GitOps change.
+UAT currently declares `runtime.mode: hybrid`, with selfhost weight 100 and Serverless weight 0. This
+keeps the required Hybrid selfhost→Cloud Run request-level failover explicit. A pure `serverless`
+rollout or DNS-only `selfhost` rollout is a deliberate GitOps change.
 
 ## Canonical DNS contract
 
@@ -52,8 +53,8 @@ Canonical hostnames remain stable; only their CNAME targets change:
 | `console-uat.onwalk.net` | `console-vps-uat.onwalk.net` | `console-cloudflare-uat.onwalk.net` |
 | `accounts-uat.onwalk.net` | `accounts-vps-uat.onwalk.net` | `accounts-cloudflare-uat.onwalk.net` |
 
-DNS is the top-level switch for `vps` and `serverless`. `hybrid` adds request-level failover at
-edge-gateway: VPS is tried first for 2500 ms, then Cloud Run is retried on timeout, connection
+DNS is the top-level switch for `selfhost` and `serverless`. `hybrid` adds request-level failover at
+edge-gateway: selfhost is tried first for 2500 ms, then Cloud Run is retried on timeout, connection
 failure, or a 5xx response. The edge-gateway failover is not a silent DNS mutation.
 
 The production naming contract follows the same shape:
@@ -70,7 +71,7 @@ file does not enable production traffic.
 
 `spec.runtime.data` reserves both database targets:
 
-- `vps` uses self-managed PostgreSQL;
+- `selfhost` uses self-managed PostgreSQL;
 - `serverless` uses Supabase Cloud DB;
 - `primary` and `replica` identify the current writer and prepared standby by mode;
 - `migration.enabled` is `false` until an engine, network path, slot/publication policy, and
@@ -89,7 +90,7 @@ without overwriting or deleting migration checkpoints.
 Consumers must read this GitOps declaration rather than repository-local environment constants:
 
 - `spec.runtime` defines mode, routing, services, and data handover;
-- `spec.domains` defines the canonical `vps` and `serverless` CNAME targets;
+- `spec.domains` defines the canonical `selfhost` and `serverless` CNAME targets;
 - `spec.cloudflare` defines the Pages project and zone;
 - `spec.serverless.ssr` defines exactly five independently deployable SSR boundaries;
 - `spec.serverless.edge_gateway` defines `auth`, `admin`, and `core`; `core` owns `/api/*`.

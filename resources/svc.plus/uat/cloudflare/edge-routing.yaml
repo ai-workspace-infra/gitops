@@ -17,29 +17,29 @@ spec:
       load-balancer:
         strategy: request-failover
         hybrid:
-          primary: vps
+          primary: selfhost
           fallback: serverless
       weight:
-        vps: 100
+        selfhost: 100
         serverless: 0
     services:
       console:
-        vps: vps-full-stack
+        selfhost: vps-full-stack
         serverless: cloudflare-pages
       accounts:
-        vps: vps-full-stack
+        selfhost: vps-full-stack
         serverless: cloud-run
       content:
-        vps: vps-full-stack
+        selfhost: vps-full-stack
         serverless: cloud-run
       billing:
-        vps: vps-full-stack
+        selfhost: vps-full-stack
         serverless: cloud-run
     data:
       primary: serverless
-      replica: vps
+      replica: selfhost
       providers:
-        vps: self-managed-postgresql
+        selfhost: self-managed-postgresql
         serverless: supabase
       migration:
         enabled: false
@@ -49,18 +49,18 @@ spec:
         require_quiesce_for_cutover: true
         checkpoint_vault_ref: kv/uat/serverless/dts
         directions:
-          vps_to_serverless:
-            source: vps
+          selfhost_to_serverless:
+            source: selfhost
             target: serverless
-          serverless_to_vps:
+          serverless_to_selfhost:
             source: serverless
-            target: vps
+            target: selfhost
   domains:
     console-uat.onwalk.net:
-      vps: console-vps-uat.onwalk.net
+      selfhost: console-vps-uat.onwalk.net
       serverless: console-cloudflare-uat.onwalk.net
     accounts-uat.onwalk.net:
-      vps: accounts-vps-uat.onwalk.net
+      selfhost: accounts-vps-uat.onwalk.net
       serverless: accounts-cloudflare-uat.onwalk.net
   cloudflare:
     zone_name: onwalk.net
