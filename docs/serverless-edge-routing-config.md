@@ -1,12 +1,16 @@
 # Web SaaS runtime modes, routing, and database handover
 
-The UAT mode-specific sources of truth are:
+The environment- and mode-specific runtime topology sources of truth follow this matrix:
 
 ```text
-resources/svc.plus/uat/selfhost/edge-routing.yaml
-resources/svc.plus/uat/serverless/edge-routing.yaml
-resources/svc.plus/uat/hybrid/edge-routing.yaml
+topology/<env>/serverless/runtime-topology.yaml
+topology/<env>/selfhost/runtime-topology.yaml
+topology/<env>/hybrid/runtime-topology.yaml
 ```
+
+where `<env>` is `sit`, `uat`, or `prod`. The UAT declarations are currently populated; SIT and
+production declarations must be introduced with their environment-specific domains, origins,
+Worker names, and database topology before those workflow choices can deploy.
 
 The mode directories intentionally are not nested under `cloudflare/`. These declarations cover
 the complete runtime topology—DNS, VPS Full Stack, Cloud Run, Supabase Cloud DB, and Cloudflare
