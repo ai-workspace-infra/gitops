@@ -40,6 +40,15 @@ automation, and does not conflict with the exclusion above. The line is:
 Generated inventories remain out of scope. The *declaration they are generated from* is in
 scope.
 
+### Serverless edge routing config backend
+
+Non-sensitive Cloudflare/Cloud Run/VPS routing for the web-saas domain is declared in
+`resources/<project>/<env>/cloudflare/edge-routing.json`. The serverless orchestrator checks
+out the selected GitOps ref and passes this file to the portal and edge-gateway deployers;
+those repositories do not own environment hostnames or Worker names. Keep tokens, passwords,
+JWT secrets, and database connection strings in Vault. The declaration may describe public
+origins and the primary/fallback routing policy.
+
 ## Layout
 
 - `environments/`: cluster-level overlays and entrypoints (`clusters/<env>/`)
