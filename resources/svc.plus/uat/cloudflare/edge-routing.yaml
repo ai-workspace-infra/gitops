@@ -5,27 +5,40 @@ metadata:
   project: svc.plus
   environment: uat
 spec:
+  mode: serverless
+  domains:
+    console-uat.onwalk.net:
+      vps: console-vps-uat.onwalk.net
+      serverless: console-cloudflare-uat.onwalk.net
+    accounts-uat.onwalk.net:
+      vps: accounts-vps-uat.onwalk.net
+      serverless: accounts-cloudflare-uat.onwalk.net
   cloudflare:
     zone_name: onwalk.net
     pages_project: ai-workspace-portal-uat
     pages_branch: uat
-  hosts:
-    console_cloudflare: console-cloudflare-uat.onwalk.net
-    accounts_cloudflare: accounts-cloudflare-uat.onwalk.net
-    console_vps: console-vps-uat.onwalk.net
-    accounts_vps: accounts-vps-uat.onwalk.net
-  origins:
-    accounts_cloud_run: https://accounts-service-uc.a.run.app
-    content_cloud_run: https://content-service-uc.a.run.app
-    billing_cloud_run: https://billing-service-uc.a.run.app
-  routing:
-    console:
-      primary: cloudflare-pages
-      fallback: vps
-    accounts:
-      primary: vps
-      fallback: cloud-run
-  ssr:
+  dns:
+    control_plane: cloudflare-dns
+    ttl_seconds: 60
+    canonical_records:
+      console-uat.onwalk.net: console-cloudflare-uat.onwalk.net
+      accounts-uat.onwalk.net: accounts-cloudflare-uat.onwalk.net
+  vps:
+    stack: full-stack
+    services:
+      - console
+      - accounts
+      - content
+      - billing
+    database: self-managed-postgresql
+  serverless:
+    console_host: console-cloudflare-uat.onwalk.net
+    accounts_host: accounts-cloudflare-uat.onwalk.net
+    cloud_run:
+      accounts: https://accounts-service-uc.a.run.app
+      content_service: https://content-service-uc.a.run.app
+      billing_service: https://billing-service-uc.a.run.app
+    ssr:
     - id: public
       worker_name: frontend-ssr-public-uat
       route_suffixes:
@@ -61,19 +74,44 @@ spec:
         - /support*
         - /xworkmate*
         - /_edge/workspace/*
-  edge_gateway:
-    defaults:
-      primary_upstream: https://accounts-vps-uat.onwalk.net
-      fallback_upstream: https://accounts-service-uc.a.run.app
-      jwt_issuer: https://accounts-cloudflare-uat.onwalk.net
-      timeout_ms: '2500'
-    boundaries:
-      - id: auth
-        worker_name: edge-gateway-auth-uat
-        route: /api/auth/*
-      - id: admin
-        worker_name: edge-gateway-admin-uat
-        route: /api/admin/*
-      - id: core
-        worker_name: edge-gateway-core-uat
-        route: /api/*
+    edge_gateway:
+      defaults:
+        # Required request-level failover contract; DNS remains the mode switch.
+        primary_upstream: https://accounts-vps-uat.onwalk.net
+        fallback_upstream: https://accounts-service-uc.a.run.app
+        jwt_issuer: https://accounts-cloudflare-uat.onwalk.net
+        timeout_ms: '2500'
+      boundaries:
+        - id: auth
+          worker_name: edge-gateway-auth-uat
+          route: /api/auth/*
+        - id: admin
+          worker_name: edge-gateway-admin-uat
+          route: /api/admin/*
+        - id: core
+          worker_name: edge-gateway-core-uat
+          route: /api/*
+  database:
+    modes:
+      vps:
+        provider: self-managed-postgresql
+        vault_ref: kv/uat/serverless/vps-postgresql
+      serverless:
+        provider: supabase
+        vault_ref: kv/uat/serverless/supabase
+    dts:
+      enabled: false
+      strategy: async
+      single_writer: true
+      max_lag_seconds: 60
+      require_quiesce_for_cutover: true
+      active_writer_mode: serverless
+      directions:
+        vps_to_serverless:
+          source: vps
+          target: serverless
+          checkpoint_vault_ref: kv/uat/serverless/dts
+        serverless_to_vps:
+          source: serverless
+          target: vps
+          checkpoint_vault_ref: kv/uat/serverless/dts
