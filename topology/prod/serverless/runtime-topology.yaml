@@ -1,0 +1,133 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: EdgeRoutingConfig
+metadata:
+  name: web-saas
+  project: svc.plus
+  environment: prod
+  mode: serverless
+spec:
+  runtime:
+    mode: serverless
+    routing:
+      dns:
+        control_plane: cloudflare-dns
+        ttl_seconds: 60
+        canonical_records:
+          console.svc.plus: console-cloudflare-prod.svc.plus
+          accounts.svc.plus: accounts-cloudflare-prod.svc.plus
+      load-balancer:
+        strategy: dns-only
+      weight:
+        selfhost: 0
+        serverless: 100
+    services:
+      console:
+        selfhost: vps-full-stack
+        serverless: cloudflare-pages
+      accounts:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+      content:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+      billing:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+    data:
+      primary: serverless
+      replica: selfhost
+      providers:
+        selfhost: self-managed-postgresql
+        serverless: supabase
+      migration:
+        enabled: false
+        strategy: async
+        single_writer: true
+        max_lag_seconds: 60
+        require_quiesce_for_cutover: true
+        checkpoint_vault_ref: kv/prod/serverless/dts
+        directions:
+          selfhost_to_serverless:
+            source: selfhost
+            target: serverless
+          serverless_to_selfhost:
+            source: serverless
+            target: selfhost
+  domains:
+    console.svc.plus:
+      selfhost: console-vps-prod.svc.plus
+      serverless: console-cloudflare-prod.svc.plus
+    accounts.svc.plus:
+      selfhost: accounts-vps-prod.svc.plus
+      serverless: accounts-cloudflare-prod.svc.plus
+  cloudflare:
+    zone_name: svc.plus
+    pages_project: ai-workspace-portal-prod
+    pages_branch: prod
+  vps:
+    stack: full-stack
+    services:
+      - console
+      - accounts
+      - content
+      - billing
+    database: self-managed-postgresql
+  serverless:
+    console_host: console-cloudflare-prod.svc.plus
+    accounts_host: accounts-cloudflare-prod.svc.plus
+    cloud_run:
+      accounts: https://accounts-service-uc.a.run.app
+      content_service: https://content-service-uc.a.run.app
+      billing_service: https://billing-service-uc.a.run.app
+    ssr:
+      - id: public
+        worker_name: frontend-ssr-public-prod
+        route_suffixes:
+          - /*
+          - /_edge/public/*
+      - id: content
+        worker_name: frontend-ssr-content-prod
+        route_suffixes:
+          - /blogs*
+          - /docs*
+          - /download*
+          - /_edge/content/*
+      - id: auth
+        worker_name: frontend-ssr-auth-prod
+        route_suffixes:
+          - /login*
+          - /register*
+          - /email-verification*
+          - /logout*
+          - /_edge/auth/*
+      - id: console
+        worker_name: frontend-ssr-console-prod
+        route_suffixes:
+          - /panel*
+          - /dashboard*
+          - /_edge/console/*
+      - id: workspace
+        worker_name: frontend-ssr-workspace-prod
+        route_suffixes:
+          - /ai-workspace*
+          - /cloud_iac*
+          - /editor*
+          - /support*
+          - /xworkmate*
+          - /_edge/workspace/*
+    edge_gateway:
+      defaults:
+        primary_upstream: https://accounts-vps-prod.svc.plus
+        fallback_upstream: https://accounts-service-uc.a.run.app
+        jwt_issuer: https://accounts-cloudflare-prod.svc.plus
+        timeout_ms: '2500'
+      boundaries:
+        - id: auth
+          worker_name: edge-gateway-auth-prod
+          route: /api/auth/*
+        - id: admin
+          worker_name: edge-gateway-admin-prod
+          route: /api/admin/*
+        - id: core
+          worker_name: edge-gateway-core-prod
+          route: /api/*

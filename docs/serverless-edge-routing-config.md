@@ -8,9 +8,9 @@ topology/<env>/selfhost/runtime-topology.yaml
 topology/<env>/hybrid/runtime-topology.yaml
 ```
 
-where `<env>` is `sit`, `uat`, or `prod`. The UAT declarations are currently populated; SIT and
-production declarations must be introduced with their environment-specific domains, origins,
-Worker names, and database topology before those workflow choices can deploy.
+where `<env>` is `sit`, `uat`, or `prod`. Each environment has its own domains, origins, Worker
+names, Pages project, and database topology; consumers must select the declaration matching both
+the requested environment and runtime mode.
 
 The mode directories intentionally are not nested under `cloudflare/`. These declarations cover
 the complete runtime topology—DNS, VPS Full Stack, Cloud Run, Supabase Cloud DB, and Cloudflare
