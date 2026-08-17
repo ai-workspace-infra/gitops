@@ -14,7 +14,7 @@ service:
       HEALTHCHECK_PATH: /healthz
   readinessProbe:
     httpGet:
-      path: /healthz
+      path: /readyz
       port: http
     initialDelaySeconds: 10
     periodSeconds: 10
