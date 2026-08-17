@@ -1,4 +1,4 @@
-# Web SaaS dual-mode routing and database handover
+# Web SaaS runtime modes, routing, and database handover
 
 The UAT source of truth is:
 
@@ -6,8 +6,11 @@ The UAT source of truth is:
 resources/svc.plus/uat/cloudflare/edge-routing.yaml
 ```
 
-It defines exactly two runtime modes. `spec.mode` is the desired mode for the environment;
-the actual traffic switch is performed only by changing the canonical DNS CNAME target.
+The declaration exposes exactly three runtime modes:
+
+```text
+runtime.mode = vps | serverless | hybrid
+```
 
 ```text
 VPS mode
@@ -18,19 +21,40 @@ Serverless mode
 DNS → Cloudflare Pages → SSR ×5 → edge-gateway ×3
                       → Cloud Run: accounts / content-service / billing-service
                       → Supabase Cloud DB
+
+Hybrid mode
+DNS → Cloudflare edge → edge-gateway
+                    → VPS primary → Cloud Run request-level fallback
 ```
+
+## Runtime contract
+
+`spec.runtime` is the single runtime control plane:
+
+- `mode` selects `vps`, `serverless`, or `hybrid`.
+- `routing.dns` owns canonical DNS targets and the 60-second TTL.
+- `routing.load-balancer` declares the hybrid request-failover strategy.
+- `routing.weight` is reserved for explicit traffic weighting; it is not changed implicitly by
+  health checks.
+- `services` maps Console, Accounts, Content, and Billing to their mode-specific runtimes.
+- `data` declares primary/replica roles and the migration reservation.
+
+UAT currently declares `runtime.mode: hybrid`, with VPS weight 100 and Serverless weight 0. This
+keeps the required VPS→Cloud Run request-level failover explicit. A pure `serverless` rollout or
+DNS-only `vps` rollout is a deliberate GitOps change.
 
 ## Canonical DNS contract
 
-UAT keeps stable canonical hostnames and uses a 60-second TTL:
+Canonical hostnames remain stable; only their CNAME targets change:
 
 | Canonical hostname | VPS CNAME | Serverless CNAME |
 | --- | --- | --- |
 | `console-uat.onwalk.net` | `console-vps-uat.onwalk.net` | `console-cloudflare-uat.onwalk.net` |
 | `accounts-uat.onwalk.net` | `accounts-vps-uat.onwalk.net` | `accounts-cloudflare-uat.onwalk.net` |
 
-The UAT declaration defaults to `serverless`. DNS is the only top-level traffic switch;
-health checks must not silently rewrite the selected mode.
+DNS is the top-level switch for `vps` and `serverless`. `hybrid` adds request-level failover at
+edge-gateway: VPS is tried first for 2500 ms, then Cloud Run is retried on timeout, connection
+failure, or a 5xx response. The edge-gateway failover is not a silent DNS mutation.
 
 The production naming contract follows the same shape:
 
@@ -44,44 +68,31 @@ file does not enable production traffic.
 
 ## Database handover and async DTS reservation
 
-Both database targets are declared so the two runtime modes can be prepared and switched without
-changing application configuration at the last moment:
+`spec.runtime.data` reserves both database targets:
 
-- VPS mode uses self-managed PostgreSQL.
-- Serverless mode uses Supabase Cloud DB.
-- `database.dts.enabled` is `false` until an engine, network path, slot/publication policy, and
-  cutover runbook have been approved.
-- The reserved DTS contract is asynchronous and declares both directions, a shared checkpoint
-  Vault reference, a 60-second maximum lag target, and a required quiesce window.
-- `single_writer: true` is mandatory. DTS does not imply dual-write or automatic failover.
-- Database connection strings, replication credentials, JWT secrets, Cloudflare tokens, and
-  service-account keys are never stored in GitOps; consumers resolve them from Vault/OIDC.
+- `vps` uses self-managed PostgreSQL;
+- `serverless` uses Supabase Cloud DB;
+- `primary` and `replica` identify the current writer and prepared standby by mode;
+- `migration.enabled` is `false` until an engine, network path, slot/publication policy, and
+  cutover runbook have been approved;
+- the reserved migration is asynchronous, bidirectional, single-writer, and capped at a
+  60-second lag target with a required quiesce window;
+- connection strings, replication credentials, JWT secrets, Cloudflare tokens, and service
+  account keys are never stored in GitOps.
 
-Before switching the canonical CNAME, the operator must verify that the target database has caught
-up, freeze writes for the cutover window, promote exactly one writer, switch DNS, and then verify
-the selected mode. Rollback reverses the same order and must not delete or overwrite checkpoints.
+Before a mode or DNS cutover, the operator must validate lag, freeze writes, promote exactly one
+writer, apply the selected DNS/runtime mode, and run verification. Rollback reverses those steps
+without overwriting or deleting migration checkpoints.
 
 ## Consumer contract
 
-Consumers must read the GitOps declaration rather than repository-local environment constants:
+Consumers must read this GitOps declaration rather than repository-local environment constants:
 
-- `spec.mode` and `spec.domains` define the two-mode contract.
-- `spec.cloudflare` defines the Pages project and zone.
-- `spec.serverless.ssr` defines exactly five independently deployable SSR boundaries.
+- `spec.runtime` defines mode, routing, services, and data handover;
+- `spec.domains` defines the canonical `vps` and `serverless` CNAME targets;
+- `spec.cloudflare` defines the Pages project and zone;
+- `spec.serverless.ssr` defines exactly five independently deployable SSR boundaries;
 - `spec.serverless.edge_gateway` defines `auth`, `admin`, and `core`; `core` owns `/api/*`.
-- `spec.database.modes` and `spec.database.dts` define database targets and the disabled DTS
-  reservation.
-
-The edge-gateway keeps its repository-mandated request-level VPS→Cloud Run failover for an
-individual request. That is an emergency resilience path, not the DNS mode switch: VPS mode is
-selected by canonical DNS, while the normal Serverless deployment chain remains
-Pages → SSR → edge-gateway → Cloud Run → Supabase.
-
-Deployment order is separate from request topology:
-
-```text
-Supabase → Cloud Run ×3 → SSR ×5 → edge-gateway ×3 → Pages → Verify
-```
 
 All declaration changes require a GitOps PR to `main` before the platform orchestrator consumes
 them.
