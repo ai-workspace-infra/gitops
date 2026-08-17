@@ -1,9 +1,11 @@
 # Web SaaS runtime modes, routing, and database handover
 
-The UAT source of truth is:
+The UAT mode-specific sources of truth are:
 
 ```text
-resources/svc.plus/uat/cloudflare/edge-routing.yaml
+resources/svc.plus/uat/cloudflare/selfhost/edge-routing.yaml
+resources/svc.plus/uat/cloudflare/serverless/edge-routing.yaml
+resources/svc.plus/uat/cloudflare/hybrid/edge-routing.yaml
 ```
 
 The declaration exposes exactly three runtime modes:
@@ -29,7 +31,7 @@ DNS → Cloudflare edge → edge-gateway
 
 ## Runtime contract
 
-`spec.runtime` is the single runtime control plane:
+Each file is a complete `EdgeRoutingConfig`; `spec.runtime` is its single runtime control plane:
 
 - `mode` selects `selfhost`, `serverless`, or `hybrid`. `selfhost` is the runtime mode name;
   the physical target remains the existing VPS Full Stack.
@@ -40,9 +42,14 @@ DNS → Cloudflare edge → edge-gateway
 - `services` maps Console, Accounts, Content, and Billing to their mode-specific runtimes.
 - `data` declares primary/replica roles and the migration reservation.
 
-UAT currently declares `runtime.mode: hybrid`, with selfhost weight 100 and Serverless weight 0. This
-keeps the required Hybrid selfhost→Cloud Run request-level failover explicit. A pure `serverless`
-rollout or DNS-only `selfhost` rollout is a deliberate GitOps change.
+The three UAT pre-configurations are intentionally explicit:
+
+- `selfhost`: DNS targets the VPS Full Stack, with selfhost as the database primary.
+- `serverless`: DNS targets Cloudflare Pages / edge-gateway, with Supabase as the database primary.
+- `hybrid`: selfhost is the request-level primary and Cloud Run is the edge-gateway fallback.
+
+The active traffic choice is made by selecting the matching declaration in the orchestrator; the
+pipeline must never validate or deploy against a different mode file.
 
 ## Canonical DNS contract
 
@@ -117,4 +124,5 @@ Consumers must read this GitOps declaration rather than repository-local environ
 - `spec.serverless.edge_gateway` defines `auth`, `admin`, and `core`; `core` owns `/api/*`.
 
 All declaration changes require a GitOps PR to `main` before the platform orchestrator consumes
-them.
+them. Keep the three mode documents structurally aligned when changing shared domains, service
+names, database migration reservations, or Cloudflare boundary names.
