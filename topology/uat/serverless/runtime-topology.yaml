@@ -76,9 +76,9 @@ spec:
     console_host: console-cloudflare-uat.onwalk.net
     accounts_host: accounts-cloudflare-uat.onwalk.net
     cloud_run:
-      accounts: https://accounts-service-uc.a.run.app
-      content_service: https://content-service-uc.a.run.app
-      billing_service: https://billing-service-uc.a.run.app
+      accounts: https://uat-accounts-1004637461064.asia-northeast1.run.app
+      content_service: https://uat-content-service-1004637461064.asia-northeast1.run.app
+      billing_service: https://uat-billing-service-1004637461064.asia-northeast1.run.app
     ssr:
       - id: public
         worker_name: frontend-ssr-public-uat
@@ -118,7 +118,7 @@ spec:
     edge_gateway:
       defaults:
         primary_upstream: https://accounts-vps-uat.onwalk.net
-        fallback_upstream: https://accounts-service-uc.a.run.app
+        fallback_upstream: https://uat-accounts-1004637461064.asia-northeast1.run.app
         jwt_issuer: https://accounts-cloudflare-uat.onwalk.net
         timeout_ms: '2500'
       boundaries:
