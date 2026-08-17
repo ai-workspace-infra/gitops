@@ -5,75 +5,132 @@ metadata:
   project: svc.plus
   environment: uat
 spec:
+  runtime:
+    mode: hybrid
+    routing:
+      dns:
+        control_plane: cloudflare-dns
+        ttl_seconds: 60
+        canonical_records:
+          console-uat.onwalk.net: console-cloudflare-uat.onwalk.net
+          accounts-uat.onwalk.net: accounts-cloudflare-uat.onwalk.net
+      load-balancer:
+        strategy: request-failover
+        hybrid:
+          primary: selfhost
+          fallback: serverless
+      weight:
+        selfhost: 100
+        serverless: 0
+    services:
+      console:
+        selfhost: vps-full-stack
+        serverless: cloudflare-pages
+      accounts:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+      content:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+      billing:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+    data:
+      primary: serverless
+      replica: selfhost
+      providers:
+        selfhost: self-managed-postgresql
+        serverless: supabase
+      migration:
+        enabled: false
+        strategy: async
+        single_writer: true
+        max_lag_seconds: 60
+        require_quiesce_for_cutover: true
+        checkpoint_vault_ref: kv/uat/serverless/dts
+        directions:
+          selfhost_to_serverless:
+            source: selfhost
+            target: serverless
+          serverless_to_selfhost:
+            source: serverless
+            target: selfhost
+  domains:
+    console-uat.onwalk.net:
+      selfhost: console-vps-uat.onwalk.net
+      serverless: console-cloudflare-uat.onwalk.net
+    accounts-uat.onwalk.net:
+      selfhost: accounts-vps-uat.onwalk.net
+      serverless: accounts-cloudflare-uat.onwalk.net
   cloudflare:
     zone_name: onwalk.net
     pages_project: ai-workspace-portal-uat
     pages_branch: uat
-  hosts:
-    console_cloudflare: console-cloudflare-uat.onwalk.net
-    accounts_cloudflare: accounts-cloudflare-uat.onwalk.net
-    console_vps: console-vps-uat.onwalk.net
-    accounts_vps: accounts-vps-uat.onwalk.net
-  origins:
-    accounts_cloud_run: https://accounts-service-uc.a.run.app
-    content_cloud_run: https://content-service-uc.a.run.app
-    billing_cloud_run: https://billing-service-uc.a.run.app
-  routing:
-    console:
-      primary: cloudflare-pages
-      fallback: vps
-    accounts:
-      primary: vps
-      fallback: cloud-run
-  ssr:
-    - id: public
-      worker_name: frontend-ssr-public-uat
-      route_suffixes:
-        - /*
-        - /_edge/public/*
-    - id: content
-      worker_name: frontend-ssr-content-uat
-      route_suffixes:
-        - /blogs*
-        - /docs*
-        - /download*
-        - /_edge/content/*
-    - id: auth
-      worker_name: frontend-ssr-auth-uat
-      route_suffixes:
-        - /login*
-        - /register*
-        - /email-verification*
-        - /logout*
-        - /_edge/auth/*
-    - id: console
-      worker_name: frontend-ssr-console-uat
-      route_suffixes:
-        - /panel*
-        - /dashboard*
-        - /_edge/console/*
-    - id: workspace
-      worker_name: frontend-ssr-workspace-uat
-      route_suffixes:
-        - /ai-workspace*
-        - /cloud_iac*
-        - /editor*
-        - /support*
-        - /xworkmate*
-        - /_edge/workspace/*
-  edge_gateway:
-    defaults:
-      primary_upstream: https://accounts-vps-uat.onwalk.net
-      fallback_upstream: https://accounts-service-uc.a.run.app
-      jwt_issuer: https://accounts-cloudflare-uat.onwalk.net
-      timeout_ms: '2500'
-    boundaries:
+  vps:
+    stack: full-stack
+    services:
+      - console
+      - accounts
+      - content
+      - billing
+    database: self-managed-postgresql
+  serverless:
+    console_host: console-cloudflare-uat.onwalk.net
+    accounts_host: accounts-cloudflare-uat.onwalk.net
+    cloud_run:
+      accounts: https://accounts-service-uc.a.run.app
+      content_service: https://content-service-uc.a.run.app
+      billing_service: https://billing-service-uc.a.run.app
+    ssr:
+      - id: public
+        worker_name: frontend-ssr-public-uat
+        route_suffixes:
+          - /*
+          - /_edge/public/*
+      - id: content
+        worker_name: frontend-ssr-content-uat
+        route_suffixes:
+          - /blogs*
+          - /docs*
+          - /download*
+          - /_edge/content/*
       - id: auth
-        worker_name: edge-gateway-auth-uat
-        route: /api/auth/*
-      - id: admin
-        worker_name: edge-gateway-admin-uat
-        route: /api/admin/*
-      - id: core
-        worker_name: edge-gateway-core-uat
-        route: /api/*
+        worker_name: frontend-ssr-auth-uat
+        route_suffixes:
+          - /login*
+          - /register*
+          - /email-verification*
+          - /logout*
+          - /_edge/auth/*
+      - id: console
+        worker_name: frontend-ssr-console-uat
+        route_suffixes:
+          - /panel*
+          - /dashboard*
+          - /_edge/console/*
+      - id: workspace
+        worker_name: frontend-ssr-workspace-uat
+        route_suffixes:
+          - /ai-workspace*
+          - /cloud_iac*
+          - /editor*
+          - /support*
+          - /xworkmate*
+          - /_edge/workspace/*
+    edge_gateway:
+      defaults:
+        # These request-level failover values are active only in hybrid mode.
+        primary_upstream: https://accounts-vps-uat.onwalk.net
+        fallback_upstream: https://accounts-service-uc.a.run.app
+        jwt_issuer: https://accounts-cloudflare-uat.onwalk.net
+        timeout_ms: '2500'
+      boundaries:
+        - id: auth
+          worker_name: edge-gateway-auth-uat
+          route: /api/auth/*
+        - id: admin
+          worker_name: edge-gateway-admin-uat
+          route: /api/admin/*
+        - id: core
+          worker_name: edge-gateway-core-uat
+          route: /api/*

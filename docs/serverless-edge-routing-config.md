@@ -1,53 +1,120 @@
-# Serverless edge routing configuration
+# Web SaaS runtime modes, routing, and database handover
 
-The UAT serverless delivery chain consumes one declarative configuration file:
+The UAT source of truth is:
 
 ```text
 resources/svc.plus/uat/cloudflare/edge-routing.yaml
 ```
 
-It is the configuration backend for:
+The declaration exposes exactly three runtime modes:
 
 ```text
-Supabase → Cloud Run → SSR Workers ×5 → edge-gateway Workers ×3 → Pages → Verify
+runtime.mode = selfhost | serverless | hybrid
 ```
 
-The YAML declaration contains only non-sensitive values:
+```text
+Selfhost mode
+DNS → VPS Full Stack → Console / Accounts / Content / Billing
+                    → self-managed PostgreSQL
 
-- Cloudflare zone, Pages project, and environment domains;
-- SSR Worker names and route suffixes;
-- edge-gateway Worker names and API routes;
-- VPS and Cloud Run origin URLs;
-- primary/fallback routing policy.
+Serverless mode
+DNS → Cloudflare Pages → SSR ×5 → edge-gateway ×3
+                      → Cloud Run: accounts / content-service / billing-service
+                      → Supabase Cloud DB
 
-Cloudflare tokens, Vault tokens, JWT secrets, database credentials, and service-account
-credentials remain runtime inputs from Vault/OIDC. A deployment must fail when the selected
-GitOps ref does not contain the expected declaration.
+Hybrid mode
+DNS → Cloudflare edge → edge-gateway
+                    → selfhost primary → Cloud Run request-level fallback
+```
 
-## Definition contract
+## Runtime contract
 
-The file is a single `EdgeRoutingConfig` document with these required fields:
+`spec.runtime` is the single runtime control plane:
 
-| Path | Type | Requirement |
-|---|---|---|
-| `apiVersion` | string | `gitops.svc.plus/v1alpha1` |
-| `kind` | string | `EdgeRoutingConfig` |
-| `metadata.environment` | string | Matches the selected environment directory |
-| `spec.cloudflare.zone_name` | string | Cloudflare zone name |
-| `spec.cloudflare.pages_project` | string | Pages project name |
-| `spec.hosts.console_cloudflare` | string | Console Cloudflare hostname |
-| `spec.hosts.accounts_cloudflare` | string | Accounts Cloudflare hostname |
-| `spec.hosts.console_vps` | string | VPS console fallback hostname |
-| `spec.hosts.accounts_vps` | string | VPS Accounts primary/fallback hostname |
-| `spec.ssr` | list | Exactly five independently deployable boundaries |
-| `spec.edge_gateway.boundaries` | list | `auth`, `admin`, and `core`; `core` must use `/api/*` |
-| `spec.edge_gateway.defaults` | map | Public upstream and timeout policy; no secrets |
+- `mode` selects `selfhost`, `serverless`, or `hybrid`. `selfhost` is the runtime mode name;
+  the physical target remains the existing VPS Full Stack.
+- `routing.dns` owns canonical DNS targets and the 60-second TTL.
+- `routing.load-balancer` declares the hybrid request-failover strategy.
+- `routing.weight` is reserved for explicit traffic weighting; it is not changed implicitly by
+  health checks.
+- `services` maps Console, Accounts, Content, and Billing to their mode-specific runtimes.
+- `data` declares primary/replica roles and the migration reservation.
 
-Every Worker name and route is declared once here. Consumers must not override these values
-with repository-local environment-specific constants. Add SIT or production only by creating
-the corresponding environment-scoped YAML file and validating it before enabling that
-environment.
+UAT currently declares `runtime.mode: hybrid`, with selfhost weight 100 and Serverless weight 0. This
+keeps the required Hybrid selfhost→Cloud Run request-level failover explicit. A pure `serverless`
+rollout or DNS-only `selfhost` rollout is a deliberate GitOps change.
 
-To test a branch of this repository from the orchestrator, set `gitops_ref` to that branch in
-the manual dispatch. Production and SIT declarations should be added under their own
-`resources/svc.plus/<env>/cloudflare/` path before those environments are enabled.
+## Canonical DNS contract
+
+Canonical hostnames remain stable; only their CNAME targets change:
+
+| Canonical hostname | VPS CNAME | Serverless CNAME |
+| --- | --- | --- |
+| `console-uat.onwalk.net` | `console-vps-uat.onwalk.net` | `console-cloudflare-uat.onwalk.net` |
+| `accounts-uat.onwalk.net` | `accounts-vps-uat.onwalk.net` | `accounts-cloudflare-uat.onwalk.net` |
+
+DNS is the top-level switch for `selfhost` and `serverless`. `hybrid` adds request-level failover at
+edge-gateway: selfhost is tried first for 2500 ms, then Cloud Run is retried on timeout, connection
+failure, or a 5xx response. The edge-gateway failover is not a silent DNS mutation.
+
+## Cloudflare boundary split
+
+The Portal is deliberately built as five independent OpenNext SSR Workers, three independent
+edge-gateway Workers, and one Pages project. This split is required to keep each Cloudflare Worker
+artifact below the 3 MiB limit; the boundaries must not be recombined into a monolithic Worker.
+
+| Boundary | Worker / Pages project | Routes | Deployment unit |
+| --- | --- | --- | --- |
+| SSR public pages | `frontend-ssr-public-uat` | `/*`, `/_edge/public/*` | Independent lightweight Worker |
+| SSR content pages | `frontend-ssr-content-uat` | `/blogs*`, `/docs*`, `/download*` | Independent lightweight Worker |
+| SSR identity pages | `frontend-ssr-auth-uat` | `/login*`, `/register*`, etc. | Independent lightweight Worker |
+| SSR console | `frontend-ssr-console-uat` | `/panel*`, `/dashboard*` | Independent lightweight Worker |
+| SSR workspace | `frontend-ssr-workspace-uat` | `/ai-workspace*`, `/editor*`, etc. | Independent lightweight Worker |
+| API auth | `edge-gateway-auth-uat` | `accounts-cloudflare-uat.onwalk.net/api/auth/*` | Independent lightweight Worker |
+| API admin | `edge-gateway-admin-uat` | `accounts-cloudflare-uat.onwalk.net/api/admin/*` | Independent lightweight Worker |
+| API core | `edge-gateway-core-uat` | `accounts-cloudflare-uat.onwalk.net/api/*` fallback | Independent lightweight Worker |
+| Static assets | `ai-workspace-portal-uat` | `/static/*`, `/assets/*` | Pages deployment |
+
+The canonical names and complete route suffixes are declared in `spec.serverless.ssr` and
+`spec.serverless.edge_gateway`; the table is a human-readable summary of that contract.
+
+The production naming contract follows the same shape:
+
+| Canonical hostname | VPS CNAME | Serverless CNAME |
+| --- | --- | --- |
+| `console.svc.plus` | `console-vps-prod.svc.plus` | `console-cloudflare-prod.svc.plus` |
+| `accounts.svc.plus` | `accounts-vps-prod.svc.plus` | `accounts-cloudflare-prod.svc.plus` |
+
+Production must be introduced through its own environment-scoped declaration and PR; the UAT
+file does not enable production traffic.
+
+## Database handover and async DTS reservation
+
+`spec.runtime.data` reserves both database targets:
+
+- `selfhost` uses self-managed PostgreSQL;
+- `serverless` uses Supabase Cloud DB;
+- `primary` and `replica` identify the current writer and prepared standby by mode;
+- `migration.enabled` is `false` until an engine, network path, slot/publication policy, and
+  cutover runbook have been approved;
+- the reserved migration is asynchronous, bidirectional, single-writer, and capped at a
+  60-second lag target with a required quiesce window;
+- connection strings, replication credentials, JWT secrets, Cloudflare tokens, and service
+  account keys are never stored in GitOps.
+
+Before a mode or DNS cutover, the operator must validate lag, freeze writes, promote exactly one
+writer, apply the selected DNS/runtime mode, and run verification. Rollback reverses those steps
+without overwriting or deleting migration checkpoints.
+
+## Consumer contract
+
+Consumers must read this GitOps declaration rather than repository-local environment constants:
+
+- `spec.runtime` defines mode, routing, services, and data handover;
+- `spec.domains` defines the canonical `selfhost` and `serverless` CNAME targets;
+- `spec.cloudflare` defines the Pages project and zone;
+- `spec.serverless.ssr` defines exactly five independently deployable SSR boundaries;
+- `spec.serverless.edge_gateway` defines `auth`, `admin`, and `core`; `core` owns `/api/*`.
+
+All declaration changes require a GitOps PR to `main` before the platform orchestrator consumes
+them.
