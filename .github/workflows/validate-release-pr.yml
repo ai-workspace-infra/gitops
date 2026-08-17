@@ -55,3 +55,6 @@ jobs:
       # docker ps 上看不出任何异常。这一步把那个错误提前到 PR 阶段。
       - name: Verify every declared image resolves
         run: scripts/verify-images.sh
+
+      - name: Validate runtime topology declarations
+        run: scripts/validate-runtime-topologies.sh

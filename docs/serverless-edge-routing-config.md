@@ -110,10 +110,10 @@ file does not enable production traffic.
 - `selfhost` uses self-managed PostgreSQL;
 - `serverless` uses Supabase Cloud DB;
 - `primary` and `replica` identify the current writer and prepared standby by mode;
-- `migration.enabled` is `false` until an engine, network path, slot/publication policy, and
-  cutover runbook have been approved;
 - the reserved migration is asynchronous, bidirectional, single-writer, and capped at a
   60-second lag target with a required quiesce window;
+- execution is selected by the control-plane workflow `operation`; this declarative topology does
+  not contain an execution-enable flag.
 - connection strings, replication credentials, JWT secrets, Cloudflare tokens, and service
   account keys are never stored in GitOps.
 
