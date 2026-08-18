@@ -118,6 +118,8 @@ file does not enable production traffic.
   retains strategy and safety constraints but does not contain an enable/disable action switch;
 - the reserved migration is asynchronous, bidirectional, single-writer, and capped at a
   60-second lag target with a required quiesce window;
+- execution is selected by the control-plane workflow `operation`; this declarative topology does
+  not contain an execution-enable flag.
 - connection strings, replication credentials, JWT secrets, Cloudflare tokens, and service
   account keys are never stored in GitOps.
 
