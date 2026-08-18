@@ -13,8 +13,8 @@ spec:
         control_plane: cloudflare-dns
         ttl_seconds: 60
         canonical_records:
-          console-uat.onwalk.net: console-cloudflare-uat.onwalk.net
-          accounts-uat.onwalk.net: accounts-cloudflare-uat.onwalk.net
+          console-uat.onwalk.net: console-hybrid-uat.onwalk.net
+          accounts-uat.onwalk.net: accounts-hybrid-uat.onwalk.net
       load-balancer:
         strategy: request-failover
         hybrid:
@@ -57,11 +57,27 @@ spec:
             target: selfhost
   domains:
     console-uat.onwalk.net:
-      selfhost: console-vps-uat.onwalk.net
-      serverless: console-cloudflare-uat.onwalk.net
+      selfhost: console-selfhost-uat.onwalk.net
+      serverless: console-serverless-uat.onwalk.net
     accounts-uat.onwalk.net:
-      selfhost: accounts-vps-uat.onwalk.net
-      serverless: accounts-cloudflare-uat.onwalk.net
+      selfhost: accounts-selfhost-uat.onwalk.net
+      serverless: accounts-serverless-uat.onwalk.net
+  public_endpoints:
+    console:
+      host: console-hybrid-uat.onwalk.net
+      access: public
+    accounts:
+      host: accounts-hybrid-uat.onwalk.net
+      access: authenticated
+    billing:
+      host: billing-hybrid-uat.onwalk.net
+      access: authenticated
+    postgresql:
+      host: postgresql-hybrid-uat.onwalk.net
+      access: authenticated
+    agent-proxy:
+      host: agent-proxy-hybrid-uat.onwalk.net
+      access: public_uuid
   cloudflare:
     zone_name: onwalk.net
     pages_project: ai-workspace-portal-uat
@@ -75,8 +91,9 @@ spec:
       - billing
     database: self-managed-postgresql
   serverless:
-    console_host: console-cloudflare-uat.onwalk.net
-    accounts_host: accounts-cloudflare-uat.onwalk.net
+    console_host: console-serverless-uat.onwalk.net
+    accounts_host: accounts-serverless-uat.onwalk.net
+    billing_host: billing-serverless-uat.onwalk.net
     cloud_run:
       accounts: https://accounts-service-uc.a.run.app
       content_service: https://content-service-uc.a.run.app
@@ -119,9 +136,9 @@ spec:
           - /_edge/workspace/*
     edge_gateway:
       defaults:
-        primary_upstream: https://accounts-vps-uat.onwalk.net
+        primary_upstream: https://accounts-selfhost-uat.onwalk.net
         fallback_upstream: https://accounts-service-uc.a.run.app
-        jwt_issuer: https://accounts-cloudflare-uat.onwalk.net
+        jwt_issuer: https://accounts-serverless-uat.onwalk.net
         timeout_ms: '2500'
       boundaries:
         - id: auth

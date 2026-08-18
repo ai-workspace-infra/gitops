@@ -61,12 +61,28 @@ pipeline must never validate or deploy against a different mode file.
 
 ## Canonical DNS contract
 
-Canonical hostnames remain stable; only their CNAME targets change:
+Canonical hostnames remain stable; only their CNAME targets change. In addition, every complete
+runtime profile declares five mode-qualified public service entrances using the form
+`<service>-<mode>-<environment>.<base-domain>`:
 
-| Canonical hostname | VPS CNAME | Serverless CNAME |
+| Canonical hostname | Selfhost CNAME | Serverless CNAME |
 | --- | --- | --- |
-| `console-uat.onwalk.net` | `console-vps-uat.onwalk.net` | `console-cloudflare-uat.onwalk.net` |
-| `accounts-uat.onwalk.net` | `accounts-vps-uat.onwalk.net` | `accounts-cloudflare-uat.onwalk.net` |
+| `console-uat.onwalk.net` | `console-selfhost-uat.onwalk.net` | `console-serverless-uat.onwalk.net` |
+| `accounts-uat.onwalk.net` | `accounts-selfhost-uat.onwalk.net` | `accounts-serverless-uat.onwalk.net` |
+
+| Service | Access contract | Serverless UAT entrance |
+| --- | --- | --- |
+| Console | public | `console-serverless-uat.onwalk.net` |
+| Accounts | authenticated | `accounts-serverless-uat.onwalk.net` |
+| Billing | authenticated | `billing-serverless-uat.onwalk.net` |
+| PostgreSQL | authenticated | `postgresql-serverless-uat.onwalk.net` |
+| Agent-Proxy | public UUID with internal validation | `agent-proxy-serverless-uat.onwalk.net` |
+
+The same five entries are declared for `selfhost`, `serverless`, and `hybrid`; only the mode
+segment changes. The complete declaration is `spec.public_endpoints`. The Serverless workflow
+actively reconciles and verifies Console, Accounts, and Billing. PostgreSQL and Agent-Proxy keep
+their provider-owned authenticated/UUID validation paths until their Serverless providers expose
+an equivalent public adapter.
 
 DNS is the top-level switch for `selfhost` and `serverless`. `hybrid` adds request-level failover at
 edge-gateway: selfhost is tried first for 2500 ms, then Cloud Run is retried on timeout, connection
@@ -81,28 +97,28 @@ into a monolithic Worker.
 
 | Boundary | Worker / Pages project | Routes | Deployment unit |
 | --- | --- | --- | --- |
-| Frontend Router | `frontend-router-uat` | `console-cloudflare-uat.onwalk.net/*` | Console Custom Domain owner; static/API/SSR dispatcher |
+| Frontend Router | `frontend-router-uat` | `console-serverless-uat.onwalk.net/*` | Console Custom Domain owner; static/API/SSR dispatcher |
 | SSR public pages | `frontend-ssr-public-uat` | Router Service Binding fallback | Independent lightweight Worker |
 | SSR content pages | `frontend-ssr-content-uat` | `/blogs*`, `/docs*`, `/download*` | Independent lightweight Worker |
 | SSR identity pages | `frontend-ssr-auth-uat` | `/login*`, `/register*`, etc. | Independent lightweight Worker |
 | SSR console | `frontend-ssr-console-uat` | `/panel*`, `/dashboard*` | Independent lightweight Worker |
 | SSR workspace | `frontend-ssr-workspace-uat` | `/ai-workspace*`, `/editor*`, etc. | Independent lightweight Worker |
-| API auth | `edge-gateway-auth-uat` | `accounts-cloudflare-uat.onwalk.net/api/auth/*`, `/api/v1/auth/*` | Independent lightweight Worker |
-| API admin | `edge-gateway-admin-uat` | `accounts-cloudflare-uat.onwalk.net/api/admin/*` | Independent lightweight Worker |
-| Edge Gateway Router Core | `edge-gateway-core-uat` | `accounts-cloudflare-uat.onwalk.net` Custom Domain owner; `/api/*` fallback | Accounts entry owner and independent lightweight Worker |
+| API auth | `edge-gateway-auth-uat` | `accounts-serverless-uat.onwalk.net/api/auth/*`, `/api/v1/auth/*` | Independent lightweight Worker |
+| API admin | `edge-gateway-admin-uat` | `accounts-serverless-uat.onwalk.net/api/admin/*` | Independent lightweight Worker |
+| Edge Gateway Router Core | `edge-gateway-core-uat` | `accounts-serverless-uat.onwalk.net` Custom Domain owner; `/api/*` fallback | Accounts entry owner and independent lightweight Worker |
 | Static assets | `ai-workspace-portal-uat` | `PAGES_ORIGIN` for `/_next/*`, `/static/*`, `/assets/*` | Pages deployment |
 
 The canonical names and complete route suffixes are declared in `spec.serverless.frontend_router`,
 `spec.serverless.ssr`, and `spec.serverless.edge_gateway`; the table is a human-readable summary
-of that contract. The canonical Console and Accounts DNS names remain the only user-facing entries;
-their `*-cloudflare-*` hosts are environment-specific Worker Custom Domain targets.
+of that contract. The canonical Console and Accounts DNS names remain stable traffic-switch aliases;
+the five mode-qualified hosts in `spec.public_endpoints` are the service-specific public entrances.
 
 The production naming contract follows the same shape:
 
-| Canonical hostname | VPS CNAME | Serverless CNAME |
+| Canonical hostname | Selfhost CNAME | Serverless CNAME |
 | --- | --- | --- |
-| `console.svc.plus` | `console-vps-prod.svc.plus` | `console-cloudflare-prod.svc.plus` |
-| `accounts.svc.plus` | `accounts-vps-prod.svc.plus` | `accounts-cloudflare-prod.svc.plus` |
+| `console.svc.plus` | `console-selfhost-prod.svc.plus` | `console-serverless-prod.svc.plus` |
+| `accounts.svc.plus` | `accounts-selfhost-prod.svc.plus` | `accounts-serverless-prod.svc.plus` |
 
 Production must be introduced through its own environment-scoped declaration and PR; the UAT
 file does not enable production traffic.
@@ -132,7 +148,9 @@ without overwriting or deleting migration checkpoints.
 Consumers must read this GitOps declaration rather than repository-local environment constants:
 
 - `spec.runtime` defines mode, routing, services, and data handover;
-- `spec.domains` defines the canonical `selfhost` and `serverless` CNAME targets;
+- `spec.domains` defines the canonical Console/Accounts aliases;
+- `spec.public_endpoints` defines the five mode-qualified public service entrances and access
+  contracts (`public`, `authenticated`, `public_uuid`);
 - `spec.cloudflare` defines the Pages project and zone;
 - `spec.serverless.frontend_router` defines the Console Worker Custom Domain, Pages/API origins,
   static prefixes, and the five SSR Service Bindings;
