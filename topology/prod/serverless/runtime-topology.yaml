@@ -13,8 +13,8 @@ spec:
         control_plane: cloudflare-dns
         ttl_seconds: 60
         canonical_records:
-          console.svc.plus: console-cloudflare-prod.svc.plus
-          accounts.svc.plus: accounts-cloudflare-prod.svc.plus
+          console.svc.plus: console-serverless-prod.svc.plus
+          accounts.svc.plus: accounts-serverless-prod.svc.plus
       load-balancer:
         strategy: dns-only
       weight:
@@ -54,11 +54,27 @@ spec:
             target: selfhost
   domains:
     console.svc.plus:
-      selfhost: console-vps-prod.svc.plus
-      serverless: console-cloudflare-prod.svc.plus
+      selfhost: console-selfhost-prod.svc.plus
+      serverless: console-serverless-prod.svc.plus
     accounts.svc.plus:
-      selfhost: accounts-vps-prod.svc.plus
-      serverless: accounts-cloudflare-prod.svc.plus
+      selfhost: accounts-selfhost-prod.svc.plus
+      serverless: accounts-serverless-prod.svc.plus
+  public_endpoints:
+    console:
+      host: console-serverless-prod.svc.plus
+      access: public
+    accounts:
+      host: accounts-serverless-prod.svc.plus
+      access: authenticated
+    billing:
+      host: billing-serverless-prod.svc.plus
+      access: authenticated
+    postgresql:
+      host: postgresql-serverless-prod.svc.plus
+      access: authenticated
+    agent-proxy:
+      host: agent-proxy-serverless-prod.svc.plus
+      access: public_uuid
   cloudflare:
     zone_name: svc.plus
     pages_project: ai-workspace-portal-prod
@@ -72,13 +88,14 @@ spec:
       - billing
     database: self-managed-postgresql
   serverless:
-    console_host: console-cloudflare-prod.svc.plus
-    accounts_host: accounts-cloudflare-prod.svc.plus
+    console_host: console-serverless-prod.svc.plus
+    accounts_host: accounts-serverless-prod.svc.plus
+    billing_host: billing-serverless-prod.svc.plus
     frontend_router:
       worker_name: frontend-router-prod
-      host: console-cloudflare-prod.svc.plus
+      host: console-serverless-prod.svc.plus
       pages_origin: https://ai-workspace-portal-prod.pages.dev
-      api_origin: https://accounts-cloudflare-prod.svc.plus
+      api_origin: https://accounts-serverless-prod.svc.plus
       static_prefixes:
         - /_next/*
         - /static/*
@@ -131,9 +148,9 @@ spec:
           - /_edge/workspace/*
     edge_gateway:
       defaults:
-        primary_upstream: https://accounts-vps-prod.svc.plus
+        primary_upstream: https://accounts-selfhost-prod.svc.plus
         fallback_upstream: https://accounts-service-uc.a.run.app
-        jwt_issuer: https://accounts-cloudflare-prod.svc.plus
+        jwt_issuer: https://accounts-serverless-prod.svc.plus
         timeout_ms: '2500'
       boundaries:
         - id: auth
