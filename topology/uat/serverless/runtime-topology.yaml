@@ -74,6 +74,21 @@ spec:
   serverless:
     console_host: console-cloudflare-uat.onwalk.net
     accounts_host: accounts-cloudflare-uat.onwalk.net
+    frontend_router:
+      worker_name: frontend-router-uat
+      host: console-cloudflare-uat.onwalk.net
+      pages_origin: https://ai-workspace-portal-uat.pages.dev
+      api_origin: https://accounts-cloudflare-uat.onwalk.net
+      static_prefixes:
+        - /_next/*
+        - /static/*
+        - /assets/*
+      bindings:
+        auth: frontend-ssr-auth-uat
+        content: frontend-ssr-content-uat
+        console: frontend-ssr-console-uat
+        workspace: frontend-ssr-workspace-uat
+        public: frontend-ssr-public-uat
     cloud_run:
       accounts: https://uat-accounts-1004637461064.asia-northeast1.run.app
       content_service: https://uat-content-service-1004637461064.asia-northeast1.run.app
@@ -123,10 +138,15 @@ spec:
       boundaries:
         - id: auth
           worker_name: edge-gateway-auth-uat
-          route: /api/auth/*
+          routes:
+            - /api/auth/*
+            - /api/v1/auth/*
         - id: admin
           worker_name: edge-gateway-admin-uat
-          route: /api/admin/*
+          routes:
+            - /api/admin/*
         - id: core
+          display_name: Edge Gateway Router Core
           worker_name: edge-gateway-core-uat
-          route: /api/*
+          routes:
+            - /api/*
