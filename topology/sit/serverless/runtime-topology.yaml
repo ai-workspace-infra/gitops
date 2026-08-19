@@ -79,6 +79,7 @@ spec:
     zone_name: onwalk.net
     pages_project: ai-workspace-portal-sit
     pages_branch: sit
+    static_cdn_url: https://ai-workspace-portal-sit.pages.dev
   vps:
     stack: full-stack
     services:
