@@ -101,6 +101,7 @@ spec:
         - /static/*
         - /assets/*
       bindings:
+        api_auth: edge-gateway-auth-uat
         auth: frontend-ssr-auth-uat
         content: frontend-ssr-content-uat
         console: frontend-ssr-console-uat
