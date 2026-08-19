@@ -91,6 +91,7 @@ spec:
     console_host: console-serverless-prod.svc.plus
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
+    billing_origin_host: billing-origin-serverless-prod.svc.plus
     frontend_router:
       worker_name: frontend-router-prod
       host: console-serverless-prod.svc.plus
