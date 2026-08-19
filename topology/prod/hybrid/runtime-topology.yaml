@@ -5,6 +5,19 @@ metadata:
   project: svc.plus
   environment: prod
   mode: hybrid
+# Hybrid is the serverless edge topology with a different backend policy. It is
+# structurally identical to topology/prod/serverless/runtime-topology.yaml and
+# differs only where the two modes genuinely diverge:
+#
+#   1. runtime.mode / metadata.mode           -> hybrid (edge-gateway RUNTIME_MODE var)
+#   2. routing.load-balancer                  -> request-failover instead of dns-only
+#   3. runtime.data                           -> selfhost is the single writer
+#   4. edge_gateway.defaults.failover_methods -> only safe methods may fail over
+#
+# Everything else — Pages project, frontend router, the five SSR boundaries, the
+# three edge-gateway boundaries, Cloud Run URLs, canonical DNS records — is byte
+# for byte the serverless declaration, because hybrid reuses those exact
+# Cloudflare resources rather than standing up a parallel set.
 spec:
   runtime:
     mode: hybrid
@@ -12,14 +25,24 @@ spec:
       dns:
         control_plane: cloudflare-dns
         ttl_seconds: 60
+        # Hybrid serves the public canonical names from the same Cloudflare edge
+        # entry as serverless mode. Failing the whole environment back to the
+        # selfhost full stack is a manual operation: repoint these two records at
+        # the selfhost targets declared under spec.domains. GitOps declares both
+        # targets; it does not switch them.
         canonical_records:
-          console.svc.plus: console-hybrid-prod.svc.plus
-          accounts.svc.plus: accounts-hybrid-prod.svc.plus
+          console.svc.plus: console-serverless-prod.svc.plus
+          accounts.svc.plus: accounts-serverless-prod.svc.plus
       load-balancer:
+        # Request-scoped failover inside the edge-gateway Worker: no health
+        # checks, no state, no control loop — a single request that the selfhost
+        # primary cannot answer is retried against Cloud Run.
         strategy: request-failover
         hybrid:
           primary: selfhost
           fallback: serverless
+      # DNS weight stays fully on selfhost: the split is decided per request at
+      # the edge, not by resolver weighting.
       weight:
         selfhost: 100
         serverless: 0
@@ -36,9 +59,16 @@ spec:
       billing:
         selfhost: vps-full-stack
         serverless: cloud-run
+    # The two data planes never move. Cloud Run is wired to Supabase for its
+    # whole lifetime; the selfhost applications are wired to the VPS-managed
+    # PostgreSQL for theirs. In hybrid mode every mutating request is served by
+    # the selfhost primary, so self-managed-postgresql is the single writer and
+    # Supabase is the async replica. Fallback traffic is restricted to safe
+    # methods (see edge_gateway.defaults.failover_methods) precisely so that a
+    # failover can never produce a second writer.
     data:
-      primary: serverless
-      replica: selfhost
+      primary: selfhost
+      replica: serverless
       providers:
         selfhost: self-managed-postgresql
         serverless: supabase
@@ -62,21 +92,24 @@ spec:
     accounts.svc.plus:
       selfhost: accounts-selfhost-prod.svc.plus
       serverless: accounts-serverless-prod.svc.plus
+  # Hybrid owns no hostnames of its own. Console, accounts, and billing are
+  # served by the shared Cloudflare edge; PostgreSQL and the agent proxy have no
+  # edge presence at all and are reached on the VPS directly.
   public_endpoints:
     console:
-      host: console-hybrid-prod.svc.plus
+      host: console-serverless-prod.svc.plus
       access: public
     accounts:
-      host: accounts-hybrid-prod.svc.plus
+      host: accounts-serverless-prod.svc.plus
       access: authenticated
     billing:
-      host: billing-hybrid-prod.svc.plus
+      host: billing-serverless-prod.svc.plus
       access: authenticated
     postgresql:
-      host: postgresql-hybrid-prod.svc.plus
+      host: postgresql-selfhost-prod.svc.plus
       access: authenticated
     agent-proxy:
-      host: agent-proxy-hybrid-prod.svc.plus
+      host: agent-proxy-selfhost-prod.svc.plus
       access: public_uuid
   cloudflare:
     zone_name: svc.plus
@@ -94,6 +127,25 @@ spec:
     console_host: console-serverless-prod.svc.plus
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
+    # Deployed and owned by serverless-orchestrator. Declared here because the
+    # hybrid contract asserts that the frontend is the identical, unmodified
+    # edge chain: a mode flip must never redeploy or reconfigure the frontend.
+    frontend_router:
+      worker_name: frontend-router-prod
+      host: console-serverless-prod.svc.plus
+      pages_origin: https://ai-workspace-portal-prod.pages.dev
+      api_origin: https://accounts-serverless-prod.svc.plus
+      static_prefixes:
+        - /_next/*
+        - /static/*
+        - /assets/*
+      bindings:
+        api_auth: edge-gateway-auth-prod
+        auth: frontend-ssr-auth-prod
+        content: frontend-ssr-content-prod
+        console: frontend-ssr-console-prod
+        workspace: frontend-ssr-workspace-prod
+        public: frontend-ssr-public-prod
     cloud_run:
       accounts: https://accounts-service-uc.a.run.app
       content_service: https://content-service-uc.a.run.app
@@ -140,14 +192,26 @@ spec:
         fallback_upstream: https://accounts-service-uc.a.run.app
         jwt_issuer: https://accounts-serverless-prod.svc.plus
         timeout_ms: '2500'
+        # The failover leg crosses a database boundary: the primary writes to the
+        # VPS PostgreSQL, the fallback writes to Supabase. Only methods that
+        # cannot mutate state are allowed to cross it. A mutating request that
+        # the primary cannot serve fails as a mutating request should.
+        failover_methods:
+          - GET
+          - HEAD
+          - OPTIONS
       boundaries:
         - id: auth
           worker_name: edge-gateway-auth-prod
-          route: /api/auth/*
+          routes:
+            - /api/auth/*
+            - /api/v1/auth/*
         - id: admin
           worker_name: edge-gateway-admin-prod
-          route: /api/admin/*
+          routes:
+            - /api/admin/*
         - id: core
           display_name: Edge Gateway Router Core
           worker_name: edge-gateway-core-prod
-          route: /api/*
+          routes:
+            - /api/*
