@@ -151,7 +151,7 @@ Consumers must read this GitOps declaration rather than repository-local environ
 - `spec.domains` defines the canonical Console/Accounts aliases;
 - `spec.public_endpoints` defines the five mode-qualified public service entrances and access
   contracts (`public`, `authenticated`, `public_uuid`);
-- `spec.cloudflare` defines the Pages project and zone;
+- `spec.cloudflare` defines the Pages project, zone, and static_cdn_url (direct Pages origin for SIT/UAT, dedicated assets domain for PROD);
 - `spec.serverless.frontend_router` defines the Console Worker Custom Domain, Pages/API origins,
   static prefixes, the `api_auth` Edge Gateway Service Binding, and the five SSR Service Bindings;
 - `spec.serverless.ssr` defines exactly five independently deployable SSR boundaries;

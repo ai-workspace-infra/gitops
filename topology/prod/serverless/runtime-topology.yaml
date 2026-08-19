@@ -79,6 +79,7 @@ spec:
     zone_name: svc.plus
     pages_project: ai-workspace-portal-prod
     pages_branch: prod
+    static_cdn_url: https://assets.svc.plus
   vps:
     stack: full-stack
     services:
