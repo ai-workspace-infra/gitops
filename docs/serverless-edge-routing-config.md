@@ -153,7 +153,7 @@ Consumers must read this GitOps declaration rather than repository-local environ
   contracts (`public`, `authenticated`, `public_uuid`);
 - `spec.cloudflare` defines the Pages project and zone;
 - `spec.serverless.frontend_router` defines the Console Worker Custom Domain, Pages/API origins,
-  static prefixes, and the five SSR Service Bindings;
+  static prefixes, the `api_auth` Edge Gateway Service Binding, and the five SSR Service Bindings;
 - `spec.serverless.ssr` defines exactly five independently deployable SSR boundaries;
 - `spec.serverless.edge_gateway` defines `auth`, `admin`, and `core`; `core` owns `/api/*`.
   Its stable `id: core` has the display name **Edge Gateway Router Core** because it also owns the
