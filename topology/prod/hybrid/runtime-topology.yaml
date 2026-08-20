@@ -139,6 +139,16 @@ spec:
         - /_next/*
         - /static/*
         - /assets/*
+      # Content sections published as a prebuilt static site instead of by an
+      # SSR boundary. A section is only redirected there when its origin is
+      # declared here, so removing an entry is the rollback. Each section reads
+      # its own origin, which is what allows one to be moved to a dedicated
+      # Pages project and republished without touching the others or the main
+      # site — `support` is reserved for exactly that and stays on its SSR
+      # boundary until it is declared.
+      # Production stays on the SSR boundaries until the section has been
+      # published and verified in UAT. Declare a section here to switch it.
+      static_sections: {}
       bindings:
         api_auth: edge-gateway-auth-prod
         auth: frontend-ssr-auth-prod

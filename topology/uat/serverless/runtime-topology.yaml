@@ -108,6 +108,17 @@ spec:
         - /_next/*
         - /static/*
         - /assets/*
+      # Content sections published as a prebuilt static site instead of by an
+      # SSR boundary. A section is only redirected there when its origin is
+      # declared here, so removing an entry is the rollback. Each section reads
+      # its own origin, which is what allows one to be moved to a dedicated
+      # Pages project and republished without touching the others or the main
+      # site — `support` is reserved for exactly that and stays on its SSR
+      # boundary until it is declared.
+      static_sections:
+        blogs: https://ai-workspace-portal-uat.pages.dev
+        docs: https://ai-workspace-portal-uat.pages.dev
+        products: https://ai-workspace-portal-uat.pages.dev
       bindings:
         api_auth: edge-gateway-auth-uat
         auth: frontend-ssr-auth-uat
