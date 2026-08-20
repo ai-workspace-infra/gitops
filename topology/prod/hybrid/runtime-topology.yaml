@@ -135,6 +135,8 @@ spec:
       host: console-serverless-prod.svc.plus
       pages_origin: https://ai-workspace-portal-prod.pages.dev
       api_origin: https://accounts-serverless-prod.svc.plus
+      static_cache_ttl: 604800
+      public_cache_ttl: 3600
       static_prefixes:
         - /_next/*
         - /static/*

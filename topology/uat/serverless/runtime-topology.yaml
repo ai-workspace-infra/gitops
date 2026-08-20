@@ -104,6 +104,8 @@ spec:
       host: console-serverless-uat.onwalk.net
       pages_origin: https://ai-workspace-portal-uat.pages.dev
       api_origin: https://accounts-serverless-uat.onwalk.net
+      static_cache_ttl: 604800
+      public_cache_ttl: 3600
       static_prefixes:
         - /_next/*
         - /static/*
