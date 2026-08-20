@@ -154,6 +154,12 @@ Consumers must read this GitOps declaration rather than repository-local environ
 - `spec.cloudflare` defines the Pages project, zone, and static_cdn_url (direct Pages origin for SIT/UAT, dedicated assets domain for PROD);
 - `spec.serverless.frontend_router` defines the Console Worker Custom Domain, Pages/API origins,
   static prefixes, the `api_auth` Edge Gateway Service Binding, and the five SSR Service Bindings;
+- `spec.serverless.frontend_router.static_sections` maps a content section
+  (`blogs`, `docs`, `products`, `support`) to the origin of the prebuilt static
+  site that serves it. A section that is absent or empty stays on its SSR
+  boundary, so declaring an entry is the rollout and removing it is the
+  rollback. Sections may point at different Pages projects, which is what lets
+  one be republished without touching the others or the main site;
 - `spec.serverless.ssr` defines exactly five independently deployable SSR boundaries;
 - `spec.serverless.edge_gateway` defines `auth`, `admin`, and `core`; `core` owns `/api/*`.
   Its stable `id: core` has the display name **Edge Gateway Router Core** because it also owns the
