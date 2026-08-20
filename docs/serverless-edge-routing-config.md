@@ -149,6 +149,9 @@ Consumers must read this GitOps declaration rather than repository-local environ
 
 - `spec.runtime` defines mode, routing, services, and data handover;
 - `spec.domains` defines the canonical Console/Accounts aliases;
+- `spec.serverless.console_aliases` lists extra hostnames that still reach the Console and must
+  therefore stay in the accounts CORS allowlist; it creates no DNS record and takes part in no
+  traffic switch, unlike the canonical aliases above;
 - `spec.public_endpoints` defines the five mode-qualified public service entrances and access
   contracts (`public`, `authenticated`, `public_uuid`);
 - `spec.cloudflare` defines the Pages project, zone, and static_cdn_url (direct Pages origin for SIT/UAT, dedicated assets domain for PROD);
