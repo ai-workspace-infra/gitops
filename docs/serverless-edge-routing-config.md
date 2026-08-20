@@ -153,7 +153,8 @@ Consumers must read this GitOps declaration rather than repository-local environ
   contracts (`public`, `authenticated`, `public_uuid`);
 - `spec.cloudflare` defines the Pages project, zone, and static_cdn_url (direct Pages origin for SIT/UAT, dedicated assets domain for PROD);
 - `spec.serverless.frontend_router` defines the Console Worker Custom Domain, Pages/API origins,
-  static prefixes, the `api_auth` Edge Gateway Service Binding, and the five SSR Service Bindings;
+  static prefixes, `static_cache_ttl` (defaults to 168 hours = 604,800s), `public_cache_ttl`
+  (defaults to 1 hour = 3,600s), the `api_auth` Edge Gateway Service Binding, and the five SSR Service Bindings;
 - `spec.serverless.frontend_router.static_sections` maps a content section
   (`blogs`, `docs`, `products`, `support`) to the origin of the prebuilt static
   site that serves it. A section that is absent or empty stays on its SSR
