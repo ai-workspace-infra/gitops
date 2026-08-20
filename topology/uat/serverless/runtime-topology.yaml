@@ -90,6 +90,13 @@ spec:
     database: self-managed-postgresql
   serverless:
     console_host: console-serverless-uat.onwalk.net
+    # Legacy hostnames that still reach the console. They are outside the
+    # canonical alias contract above (nothing here creates or moves a DNS
+    # record), but a browser still sends whichever hostname the user typed as
+    # the Origin, so accounts must accept them or those logins fail with an
+    # empty 403.
+    console_aliases:
+      - console-cloudflare-uat.onwalk.net
     accounts_host: accounts-serverless-uat.onwalk.net
     billing_host: billing-serverless-uat.onwalk.net
     frontend_router:
