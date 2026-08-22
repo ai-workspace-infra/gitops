@@ -117,10 +117,13 @@ spec:
       # Pages project and republished without touching the others or the main
       # site — `support` is reserved for exactly that and stays on its SSR
       # boundary until it is declared.
-      static_sections:
-        blogs: https://ai-workspace-portal-uat.pages.dev
-        docs: https://ai-workspace-portal-uat.pages.dev
-        products: https://ai-workspace-portal-uat.pages.dev
+      # 2026-08-22: rolled back to the SSR boundaries. The Pages project served
+      # 404 for every declared section (/blogs, /docs and all /products/*, on
+      # the Pages origin and through the console host alike) while /support --
+      # the one section never declared here -- kept answering 200 from its SSR
+      # boundary. Re-declare a section only once its prebuilt output is
+      # verified present on the Pages origin.
+      static_sections: {}
       bindings:
         api_auth: edge-gateway-auth-uat
         auth: frontend-ssr-auth-uat
