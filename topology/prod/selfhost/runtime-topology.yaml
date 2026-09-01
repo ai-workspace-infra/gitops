@@ -92,9 +92,9 @@ spec:
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
     cloud_run:
-      accounts: https://accounts-service-uc.a.run.app
-      content_service: https://content-service-uc.a.run.app
-      billing_service: https://billing-service-uc.a.run.app
+      accounts: https://prod-accounts-1004637461064.asia-northeast1.run.app
+      content_service: https://prod-content-service-1004637461064.asia-northeast1.run.app
+      billing_service: https://prod-billing-service-1004637461064.asia-northeast1.run.app
     ssr:
       - id: public
         worker_name: frontend-ssr-public-prod
@@ -134,7 +134,7 @@ spec:
     edge_gateway:
       defaults:
         primary_upstream: https://accounts-selfhost-prod.svc.plus
-        fallback_upstream: https://accounts-service-uc.a.run.app
+        fallback_upstream: https://prod-accounts-1004637461064.asia-northeast1.run.app
         jwt_issuer: https://accounts-serverless-prod.svc.plus
         timeout_ms: '2500'
       boundaries:
