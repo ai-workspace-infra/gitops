@@ -6,6 +6,11 @@ metadata:
   environment: prod
 spec:
   provider: cloudflare
+  # This policy is consumed by the playbook; CI must validate it before any apply.
+  validation:
+    required_from_addresses: 4
+    requires_single_apex_spf: true
+    production_apply_requires_explicit_opt_in: true
   zone: xworktech.com
   resend:
     domain: xworktech.com
