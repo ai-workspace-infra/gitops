@@ -94,6 +94,12 @@ The serverless `EdgeRoutingConfig` described below is an explicit environment-sc
 configuration backend: its selected environment domains and routing targets are intentional
 desired state, not renderer fallback defaults.
 
+`resources/svc.plus/prod/aws/github-actions-oidc.json` is the non-secret production
+declaration for the AWS GitHub Actions OIDC provider, role ARN, and the permitted
+`platform-ops-toolkit` branch/tag subjects. Both the Terraform bootstrap identity module and
+the selfhost orchestrator consume this file. Do not put AWS keys, GitHub App keys, or Vault
+tokens in this declaration.
+
 ## Consuming this repository
 
 Pin a ref. A consumer that tracks a moving branch inherits every change here at the moment it
