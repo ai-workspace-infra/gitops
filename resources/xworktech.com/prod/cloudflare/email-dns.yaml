@@ -1,0 +1,29 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: EmailDnsConfig
+metadata:
+  name: xworktech-transactional-email
+  project: xworktech.com
+  environment: prod
+spec:
+  provider: cloudflare
+  zone: xworktech.com
+  resend:
+    domain: xworktech.com
+    spf_include: include:amazonses.com
+    from_addresses:
+      - no-reply@xworktech.com
+      - support@xworktech.com
+      - billing@xworktech.com
+      - security@xworktech.com
+  google_workspace:
+    mx:
+      - {name: xworktech.com, type: MX, content: aspmx.l.google.com, priority: 1}
+      - {name: xworktech.com, type: MX, content: alt1.aspmx.l.google.com, priority: 5}
+      - {name: xworktech.com, type: MX, content: alt2.aspmx.l.google.com, priority: 5}
+      - {name: xworktech.com, type: MX, content: alt3.aspmx.l.google.com, priority: 10}
+      - {name: xworktech.com, type: MX, content: alt4.aspmx.l.google.com, priority: 10}
+    spf_include: include:_spf.google.com
+  dmarc:
+    name: _dmarc.xworktech.com
+    value: "v=DMARC1; p=none; rua=mailto:security@xworktech.com; adkim=s; aspf=s"
+    ttl: 3600
