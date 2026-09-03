@@ -18,7 +18,8 @@
     },
     "subjects": [
       "repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main",
-      "repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/v*"
+      "repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/v*",
+      "repo:ai-workspace-infra/platform-ops-toolkit:environment:production"
     ]
   }
 }
