@@ -1,0 +1,149 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: PersonalAIAggregator
+metadata:
+  name: ai-aggregator
+  project: ai-workspace
+  environment: uat
+  mode: selfhost
+spec:
+  enabled: false
+  delivery:
+    runtime: systemd
+    playbook: deploy-ai-aggregator-v1.yml
+    deployment_controller: platform-ops-toolkit
+    rollback_upstream: litellm
+    deployment_mode: embedded
+  entrypoint:
+    component: caddy
+    domain: ai.onwalk.net
+    tls: automatic
+    public_port: 443
+    basic_auth_enabled: true
+    source_cidrs: []
+    # An empty allowlist deliberately denies external access. Add only fixed
+    # operator /32 or /128 addresses before setting enabled: true.
+  testing_environment:
+    provider: aws
+    instance_type: t4g.medium
+    architecture: arm64
+    os_name: "Debian 12 ARM64 (bookworm)"
+    spot_instance: true
+    max_runtime_minutes: 60
+    auto_terminate: true
+    # Spot instances terminate after 60 minutes via instance shutdown to eliminate idle costs.
+  nodes:
+    - id: gateway-01
+      inventory_host: jp-xhttp-contabo.svc.plus
+      role: gateway
+      caddy_mode: reuse-existing
+    - id: cpa-codex-01
+      inventory_host: tky-proxy.svc.plus
+      role: cpa
+      transport: private-network-required
+      spot_instance: true
+      max_runtime_minutes: 60
+    - id: cpa-claude-01
+      inventory_host: tky-proxy.svc.plus
+      role: cpa
+      transport: private-network-required
+      spot_instance: true
+      max_runtime_minutes: 60
+    - id: cpa-grok-01
+      inventory_host: tky-proxy.svc.plus
+      role: cpa
+      transport: private-network-required
+      spot_instance: true
+      max_runtime_minutes: 60
+  resources:
+    minimum_resources:
+      cpu: 2
+      memory: 4Gi
+      disk: 40Gi
+    recommended_resources:
+      cpu: 4
+      memory: 8Gi
+      disk: 80Gi
+  artifacts:
+    # Immutable revisions and checksums are mandatory when enabled is true.
+    # Binaries must be built for linux/arm64.
+    new_api:
+      repository: ai-workspace-lab/new-api
+      revision: ""
+      sha256: ""
+      arch: arm64
+    cliproxyapi:
+      repository: ai-workspace-lab/CLIProxyAPI
+      revision: ""
+      sha256: ""
+      arch: arm64
+  new_api:
+    node: gateway-01
+    bind_address: 127.0.0.1
+    port: 3000
+    # Fill only after testing the pinned New API revision and proving with ss
+    # that it listens on loopback. The stage role refuses an empty command.
+    start_command: ""
+    persistence:
+      driver: sqlite
+      path: /var/lib/ai-aggregator/new-api/one-api.db
+    client_token:
+      managed_by: new-api
+      secret_ref: vault://kv/uat/ai-aggregator/nodes/jp-xhttp-contabo/new-api#api_client_token
+  cpa_instances:
+    - id: codex-gpt-01
+      node: cpa-codex-01
+      provider: openai
+      cli: codex
+      account_alias: codex-gpt-01
+      bind_address: 127.0.0.1
+      port: 8317
+      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/codex-gpt-01#oauth_bundle
+      new_api_channel:
+        name: cpa-codex-gpt-01
+        protocol: openai-responses
+        model_mapping:
+          codex-main: gpt-5.x-codex
+        enabled: false
+    - id: claude-code-01
+      node: cpa-claude-01
+      provider: anthropic
+      cli: claude-code
+      account_alias: claude-code-01
+      bind_address: 127.0.0.1
+      port: 8318
+      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/claude-code-01#oauth_bundle
+      new_api_channel:
+        name: cpa-claude-code-01
+        protocol: anthropic-messages
+        model_mapping:
+          claude-main: claude-3-7-sonnet
+        enabled: false
+    - id: grok-01
+      node: cpa-grok-01
+      provider: xai
+      cli: grok
+      account_alias: grok-01
+      bind_address: 127.0.0.1
+      port: 8319
+      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/grok-01#oauth_bundle
+      new_api_channel:
+        name: cpa-grok-01
+        protocol: openai-chat
+        model_mapping:
+          grok-main: grok-3
+        enabled: false
+  observability:
+    log_request_bodies: false
+    log_authorization_headers: false
+    health_paths:
+      new_api: /api/status
+      cpa: /health
+  migration:
+    phase: parallel
+    default_upstream: litellm
+    cutover_requires:
+      - caddy_tls_healthy
+      - new_api_local_only
+      - every_cpa_local_only
+      - token_validation
+      - provider_smoke_tests
