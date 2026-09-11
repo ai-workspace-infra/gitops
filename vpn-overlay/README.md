@@ -65,3 +65,17 @@ built by the Gateway project's own CI and downloaded by deployment. Desktop
 acceptance requires independent local sync/runtime, exact-peer handshake,
 private ping and exact-run HTTP checks. A Linux pass or a Gateway peer count
 does not certify either desktop.
+# Existing VPS One inventory
+
+`uat/xconnect-one-nodes.yaml` and `prod/xconnect-one-nodes.yaml` declare only
+the non-sensitive fixed and dynamic One-node contract. They do not contain IPs,
+SSH credentials, VLESS IDs, WireGuard private keys, device credentials or
+invites.
+
+- Fixed nodes are `persistent`: they need an explicit operator revocation.
+- Pipeline Spot nodes are `ephemeral`: Accounts owns their lease and revokes
+  them at expiry; Gateway then removes the peer through its next signed-config
+  sync.
+- UAT and Prod always use distinct overlay CIDRs. A current single-network
+  Gateway cannot host both environments simultaneously; a Prod declaration is
+  intentionally non-deployable until a dedicated Prod Gateway is selected.

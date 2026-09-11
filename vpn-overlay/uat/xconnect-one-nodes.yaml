@@ -1,0 +1,39 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: XConnectOneNodeSet
+metadata:
+  name: xconnect-one-existing-vps
+  environment: uat
+spec:
+  # This is a public, non-sensitive contract. SSH and controller credentials
+  # are resolved only at workflow runtime from Vault.
+  network:
+    id: net_uat
+    cidr: 10.77.0.0/24
+    gateway_ref: TW-XConnect.svc.plus
+    transport: vless-tls-xudp
+    public_wireguard_ingress: false
+  runtime:
+    cli_release: v0.1.11
+    wireguard_interface: xconone0
+    xray_loopback_udp_port: 18080
+    state_dir_prefix: /var/lib/xconnect-one
+    sync_interval_seconds: 300
+  fixed_nodes:
+    - id: observability-uat
+      fqdn: observability.svc.plus
+      role: one
+      lifecycle: persistent
+      deployment: enabled
+      connection_source: vault-runtime
+      observability: required
+  dynamic_nodes:
+    lifecycle: ephemeral
+    source: xconnect-zero-cloud-spot
+    lease_source: spot-instance-expiry
+    max_lease_minutes: 60
+    reconcile:
+      owner: accounts
+      action: revoke-device-and-credential
+      gateway_effect: next-signed-config-sync-removes-peer
+      unexpected_termination: reconcile-expired-lease
+    observability: required
