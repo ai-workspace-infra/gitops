@@ -2,7 +2,7 @@
   "enabled": true,
   "client_id": "Ov23lig2e4djTzbo3vo1",
   "redirect_url": "https://accounts-cloudflare-uat.onwalk.net/api/auth/oauth/callback/github",
-  "frontend_url": "https://console-cloudflare-uat.onwalk.net",
+  "frontend_url": "https://console.onwalk.net",
   "vault_secret_path": "kv/data/uat/accounts/oauth/github",
   "vault_secret_key": "client_secret"
 }
