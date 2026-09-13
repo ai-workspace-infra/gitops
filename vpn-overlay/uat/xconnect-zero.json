@@ -1,0 +1,34 @@
+{
+  "apiVersion": "gitops.svc.plus/v1alpha1",
+  "kind": "XConnectZeroControlPlane",
+  "metadata": {"name": "xconnect-zero", "environment": "uat"},
+  "spec": {
+    "source_of_truth": "accounts-api-and-portal",
+    "accounts_api_url": "https://accounts-uat.onwalk.net",
+    "portal_url": "https://console-serverless-uat.onwalk.net/panel/xconnect-zero",
+    "resources": ["networks", "gateways", "devices", "invitations", "policies", "signed-config", "acks"],
+    "tenant_isolation": "account-scoped",
+    "vault": {
+      "address": "https://vault.svc.plus",
+      "auth_method": "github-actions-jwt",
+      "runtime_secret_path": "kv/data/uat/xconnect-one",
+      "gateway_tls_path": "kv/data/CICD/domains/svc.plus",
+      "observability_path": "kv/data/CICD/observability",
+      "sensitive_fields": [
+        "VLESS_ID",
+        "ZERO_SERVICE_TOKEN",
+        "ZERO_OWNER_EMAIL",
+        "tls_fullchain_pem_b64",
+        "tls_key_pem_b64",
+        "tls_trust_bundle_pem_b64",
+        "tls_ca_pem_b64"
+      ]
+    },
+    "boundary": {
+      "gitops_contains": ["endpoints", "paths", "versions", "network-and-transport-policy"],
+      "vault_contains": ["credentials", "private-keys", "certificates", "service-tokens"],
+      "zero_carries_vpn_data": false,
+      "gateway_and_one_data_plane": "wireguard-over-vless"
+    }
+  }
+}
