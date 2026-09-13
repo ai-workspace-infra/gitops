@@ -126,9 +126,10 @@ The production naming contract follows the same shape:
 Production must be introduced through its own environment-scoped declaration and PR; the UAT
 file does not enable production traffic.
 
-The production Frontend Router Worker also owns the declared custom-domain aliases
-`console-serverless-prod.xworktech.com` and `www.xworktech.com`. Requests to either hostname
-retain that hostname at the edge; neither alias is redirected to `console.xworktech.com`.
+The production Frontend Router Worker owns `xworktech.com` as the homepage custom domain. Console
+traffic uses the `svc.plus` aliases declared in the production topology. The deprecated
+`console.xworktech.com`, `console-serverless-prod.xworktech.com`, and `www.xworktech.com` hostnames
+must not be declared as production console or homepage domains.
 
 ## Database handover and async DTS reservation
 
@@ -164,10 +165,8 @@ Consumers must read this GitOps declaration rather than repository-local environ
 - `spec.public_endpoints` defines the five mode-qualified public service entrances and access
   contracts (`public`, `authenticated`, `public_uuid`);
 - `spec.cloudflare` defines the Pages project, zone, and static_cdn_url (direct Pages origin for SIT/UAT, dedicated assets domain for PROD);
-- Production `console_aliases` includes `www.xworktech.com` as a direct custom domain
-  of `frontend-router-prod`, in both serverless and hybrid topology. The domains
-  job reconciles aliases even with `dns_mode=none`; the website must remain at
-  `www.xworktech.com` without redirecting to `console.xworktech.com`.
+- Production `frontend_router.website.hosts` contains only `xworktech.com`; the domains job must
+  not recreate deprecated console or `www` aliases.
 - `spec.serverless.frontend_router` defines the Console Worker Custom Domain, Pages/API origins,
   static prefixes, `static_cache_ttl` (defaults to 168 hours = 604,800s), `public_cache_ttl`
   (defaults to 1 hour = 3,600s), the `api_auth` Edge Gateway Service Binding, and the five SSR Service Bindings;
