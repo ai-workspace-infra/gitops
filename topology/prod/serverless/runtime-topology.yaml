@@ -97,6 +97,7 @@ spec:
     # www must serve in place, without redirecting to console.xworktech.com.
     console_aliases:
       - console.svc.plus
+      - console-serverless-prod.svc.plus
       - console-serverless-prod.xworktech.com
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
