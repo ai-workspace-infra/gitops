@@ -94,6 +94,7 @@ spec:
     console_host: console-serverless-uat.onwalk.net
     console_aliases:
       - console.onwalk.net
+      - console-cloudflare-uat.onwalk.net
     accounts_host: accounts-serverless-uat.onwalk.net
     accounts_aliases:
       - accounts-cloudflare-uat.onwalk.net
