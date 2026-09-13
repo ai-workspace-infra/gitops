@@ -94,11 +94,9 @@ spec:
     # aliases preserve the hostname entered by the user; they are not redirects
     # to console.xworktech.com.
     # Production UI hostnames are direct custom domains of Frontend Router.
-    # www must serve in place, without redirecting to console.xworktech.com.
     console_aliases:
       - console.svc.plus
       - console-serverless-prod.svc.plus
-      - console-serverless-prod.xworktech.com
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
     frontend_router:
@@ -108,7 +106,6 @@ spec:
       website:
         hosts:
           - xworktech.com
-          - www.xworktech.com
         zone_name: xworktech.com
         platform_origin: https://svc.plus
       pages_origin: https://ai-workspace-portal-prod.pages.dev

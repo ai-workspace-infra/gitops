@@ -140,7 +140,6 @@ spec:
     # Keep the shared frontend aliases aligned with serverless mode.
     console_aliases:
       - console.svc.plus
-      - console-serverless-prod.xworktech.com
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
     # Deployed and owned by serverless-orchestrator. Declared here because the
@@ -153,7 +152,6 @@ spec:
       website:
         hosts:
           - xworktech.com
-          - www.xworktech.com
         zone_name: xworktech.com
         platform_origin: https://svc.plus
       pages_origin: https://ai-workspace-portal-prod.pages.dev
