@@ -9,6 +9,7 @@ spec:
   network:
     id: net_uat
     cidr: 10.77.0.0/24
+    gateway_wireguard_address: 10.77.0.1/32
     gateway_ref: tw-xconnect.svc.plus
     transport: vless-tls-xudp
     public_wireguard_ingress: false
