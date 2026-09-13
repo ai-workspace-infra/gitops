@@ -1,0 +1,53 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: XConnectOneNodeSet
+metadata:
+  name: xconnect-one-existing-vps
+  environment: prod
+spec:
+  # Prod uses a distinct overlay range. Do not enable deployment until the
+  # referenced Prod Gateway exists; the current Gateway runtime is single
+  # network / single state-directory and must not mix UAT and Prod peers.
+  network:
+    id: net_prod
+    cidr: 10.78.0.0/24
+    gateway_ref: required-prod-gateway
+    transport: vless-tls-xudp
+    public_wireguard_ingress: false
+  activation:
+    state: pending-prod-gateway
+    required_before_deploy:
+      - dedicated-prod-gateway-runtime
+      - prod-accounts-network-and-signed-config
+      - vault-backed-controller-and-node-access
+  runtime:
+    cli_release: v0.1.11
+    wireguard_interface: xconone0
+    xray_loopback_udp_port: 18080
+    state_dir_prefix: /var/lib/xconnect-one
+    sync_interval_seconds: 300
+  fixed_nodes:
+    - id: jp-xconnect-prod
+      fqdn: jp-xconnect.svc.plus
+      role: one
+      lifecycle: persistent
+      deployment: blocked-by-prod-gateway
+      connection_source: terraform-cmdb
+      observability: required
+    - id: ph-xconnect-prod
+      fqdn: ph-xconnect.svc.plus
+      role: one
+      lifecycle: persistent
+      deployment: blocked-by-prod-gateway
+      connection_source: vault-runtime
+      observability: required
+  dynamic_nodes:
+    lifecycle: ephemeral
+    source: xconnect-zero-cloud-spot
+    lease_source: spot-instance-expiry
+    max_lease_minutes: 60
+    reconcile:
+      owner: accounts
+      action: revoke-device-and-credential
+      gateway_effect: next-signed-config-sync-removes-peer
+      unexpected_termination: reconcile-expired-lease
+    observability: required
