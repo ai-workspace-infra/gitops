@@ -15,6 +15,7 @@
       "release_on_failure": true
     },
     "zero": {
+      "control_plane_ref": "vpn-overlay/uat/xconnect-zero.json",
       "accounts_api_url": "https://accounts-uat.onwalk.net",
       "portal_url": "https://console-serverless-uat.onwalk.net/panel/xconnect-zero",
       "source_of_truth": "formal-accounts-api-and-portal",
