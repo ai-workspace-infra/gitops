@@ -9,11 +9,11 @@ spec:
   network:
     id: net_uat
     cidr: 10.77.0.0/24
-    gateway_ref: TW-XConnect.svc.plus
+    gateway_ref: tw-xconnect.svc.plus
     transport: vless-tls-xudp
     public_wireguard_ingress: false
   runtime:
-    cli_release: v0.1.11
+    cli_release: v0.1.12
     wireguard_interface: xconone0
     xray_loopback_udp_port: 18080
     state_dir_prefix: /var/lib/xconnect-one
