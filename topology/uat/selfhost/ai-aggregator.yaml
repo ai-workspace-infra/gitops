@@ -13,12 +13,31 @@ spec:
     deployment_controller: platform-ops-toolkit
     rollback_upstream: litellm
     deployment_mode: embedded
+  infrastructure:
+    provider: aws
+    provisioner: terraform
+    resource_contract:
+      repository: ai-workspace-infra/iac_modules
+      path: terraform-hcl-standard/aws-cloud/config/resources/uat/ai-aggregator.yaml
+      ref: main
+      renderer: terraform-hcl-standard/aws-cloud/scripts/generate.py
+      workdir: terraform-hcl-standard/aws-cloud/envs/ai-aggregator-uat
+    lifecycle: ephemeral
+    spot_instance: true
+    max_runtime_minutes: 60
+    state_strategy: pipeline-local
+    outputs:
+      cmdb: terraform-output:cmdb_runtime
+      inventory: generated:inventory.ini
+    destroy_policy: always_after_pipeline
   entrypoint:
     component: caddy
     domain: ai.onwalk.net
+    direct_api_domain: direct.ai.onwalk.net
     tls: automatic
     public_port: 443
     basic_auth_enabled: true
+    admin_basic_auth_ref: vault://kv/uat/ai-aggregator/gateway/caddy#admin_password_hash
     source_cidrs: []
     # An empty allowlist deliberately denies external access. Add only fixed
     # operator /32 or /128 addresses before setting enabled: true.
@@ -33,25 +52,48 @@ spec:
     # Spot instances terminate after 60 minutes via instance shutdown to eliminate idle costs.
   nodes:
     - id: gateway-01
-      inventory_host: jp-xhttp-contabo.svc.plus
+      inventory_host: gateway-01
+      resource_ref: aws://ai-aggregator-uat/hosts/gateway-01
       role: gateway
+      provider: aws
+      lifecycle: ephemeral
+      spot_instance: true
+      max_runtime_minutes: 60
       caddy_mode: reuse-existing
     - id: cpa-codex-01
-      inventory_host: tky-proxy.svc.plus
+      inventory_host: cpa-codex-01
+      resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-01
       role: cpa
       transport: private-network-required
+      provider: aws
+      lifecycle: ephemeral
       spot_instance: true
       max_runtime_minutes: 60
     - id: cpa-claude-01
-      inventory_host: tky-proxy.svc.plus
+      inventory_host: cpa-claude-01
+      resource_ref: aws://ai-aggregator-uat/hosts/cpa-claude-01
       role: cpa
       transport: private-network-required
+      provider: aws
+      lifecycle: ephemeral
+      spot_instance: true
+      max_runtime_minutes: 60
+    - id: cpa-codex-02
+      inventory_host: cpa-codex-02
+      resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-02
+      role: cpa
+      transport: private-network-required
+      provider: aws
+      lifecycle: ephemeral
       spot_instance: true
       max_runtime_minutes: 60
     - id: cpa-grok-01
-      inventory_host: tky-proxy.svc.plus
+      inventory_host: cpa-grok-01
+      resource_ref: aws://ai-aggregator-uat/hosts/cpa-grok-01
       role: cpa
       transport: private-network-required
+      provider: aws
+      lifecycle: ephemeral
       spot_instance: true
       max_runtime_minutes: 60
   resources:
@@ -82,50 +124,113 @@ spec:
     port: 3000
     # Fill only after testing the pinned New API revision and proving with ss
     # that it listens on loopback. The stage role refuses an empty command.
-    start_command: ""
+    start_command: /opt/ai-aggregator/new-api/new-api
     persistence:
-      driver: sqlite
-      path: /var/lib/ai-aggregator/new-api/one-api.db
+      driver: postgresql
+      database: new_api
+      secret_ref: vault://kv/uat/ai-aggregator/database/postgresql#new_api_dsn
+    session_secret_ref: vault://kv/uat/ai-aggregator/gateway/new-api#session_secret
+    crypto_secret_ref: vault://kv/uat/ai-aggregator/gateway/new-api#crypto_secret
     client_token:
       managed_by: new-api
-      secret_ref: vault://kv/uat/ai-aggregator/nodes/jp-xhttp-contabo/new-api#api_client_token
+      secret_ref: vault://kv/uat/ai-aggregator/gateway/new-api#api_client_token
+  litellm:
+    node: gateway-01
+    bind_address: 127.0.0.1
+    port: 4000
+    direct_api_domain: direct.ai.onwalk.net
+    persistence:
+      driver: postgresql
+      database: litellm
+      secret_ref: vault://kv/uat/ai-aggregator/database/postgresql#litellm_dsn
+    master_key_ref: vault://kv/uat/ai-aggregator/gateway/litellm#master_key
+    provider_secret_refs:
+      openai: vault://kv/uat/ai-aggregator/litellm/providers/openai#api_key
+      anthropic: vault://kv/uat/ai-aggregator/litellm/providers/anthropic#api_key
+      xai: vault://kv/uat/ai-aggregator/litellm/providers/xai#api_key
+    legacy_upstream: true
+  client_profiles:
+    - id: claude-code
+      chain: new-api-cpa
+      base_url: https://ai.onwalk.net
+      protocol: anthropic-messages
+      model_alias: claude-main
+      token_secret_ref: vault://kv/uat/ai-aggregator/clients/claude-code#client_token
+    - id: android-studio
+      chain: litellm-direct
+      base_url: https://direct.ai.onwalk.net/v1
+      protocol: openai-chat
+      model_alias: anthropic-api
+      token_secret_ref: vault://kv/uat/ai-aggregator/clients/android-studio#client_token
+    - id: openai-compatible
+      chain: new-api-cpa
+      base_url: https://ai.onwalk.net/v1
+      protocol: openai-chat-or-responses
+      model_alias: codex-main
+      token_secret_ref: vault://kv/uat/ai-aggregator/clients/openai-compatible#client_token
   cpa_instances:
-    - id: codex-gpt-01
+    - id: cpa-codex-01
       node: cpa-codex-01
       provider: openai
       cli: codex
-      account_alias: codex-gpt-01
+      account_email: manbuzhe2009@qq.com
+      account_alias: cpa-codex-01
       bind_address: 127.0.0.1
       port: 8317
-      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/codex-gpt-01#oauth_bundle
+      network_endpoint: cmdb://nodes/cpa-codex-01/private_ip:8317
+      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/cpa-codex-01#oauth_bundle
+      channel_token_ref: vault://kv/uat/ai-aggregator/instances/cpa-codex-01#channel_token
       new_api_channel:
-        name: cpa-codex-gpt-01
+        name: cpa-codex-01
         protocol: openai-responses
         model_mapping:
           codex-main: gpt-5.x-codex
         enabled: false
-    - id: claude-code-01
+    - id: cpa-codex-02
+      node: cpa-codex-02
+      provider: openai
+      cli: codex
+      account_email: manbuzhe2008@gmail.com
+      account_alias: cpa-codex-02
+      bind_address: 127.0.0.1
+      port: 8320
+      network_endpoint: cmdb://nodes/cpa-codex-02/private_ip:8320
+      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/cpa-codex-02#oauth_bundle
+      channel_token_ref: vault://kv/uat/ai-aggregator/instances/cpa-codex-02#channel_token
+      new_api_channel:
+        name: cpa-codex-02
+        protocol: openai-responses
+        model_mapping:
+          codex-main: gpt-5.x-codex
+        enabled: false
+    - id: cpa-claude-01
       node: cpa-claude-01
       provider: anthropic
       cli: claude-code
-      account_alias: claude-code-01
+      account_email: haitaopanhq@gmail.com
+      account_alias: cpa-claude-01
       bind_address: 127.0.0.1
       port: 8318
-      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/claude-code-01#oauth_bundle
+      network_endpoint: cmdb://nodes/cpa-claude-01/private_ip:8318
+      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/cpa-claude-01#oauth_bundle
+      channel_token_ref: vault://kv/uat/ai-aggregator/instances/cpa-claude-01#channel_token
       new_api_channel:
-        name: cpa-claude-code-01
+        name: cpa-claude-01
         protocol: anthropic-messages
         model_mapping:
           claude-main: claude-3-7-sonnet
         enabled: false
-    - id: grok-01
+    - id: cpa-grok-01
       node: cpa-grok-01
       provider: xai
       cli: grok
-      account_alias: grok-01
+      account_email: haitaopanhq@gmail.com
+      account_alias: cpa-grok-01
       bind_address: 127.0.0.1
       port: 8319
-      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/grok-01#oauth_bundle
+      network_endpoint: cmdb://nodes/cpa-grok-01/private_ip:8319
+      auth_secret_ref: vault://kv/uat/ai-aggregator/accounts/cpa-grok-01#oauth_bundle
+      channel_token_ref: vault://kv/uat/ai-aggregator/instances/cpa-grok-01#channel_token
       new_api_channel:
         name: cpa-grok-01
         protocol: openai-chat
