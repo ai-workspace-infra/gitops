@@ -29,12 +29,12 @@
     "artifacts": {
       "gateway": {
         "repository": "ai-workspace-xstream/XConnect-Gateway",
-        "release_tag": "v0.1.5",
+        "release_tag": "v0.1.6",
         "asset": "xconnect-gateway-linux-arm64"
       },
       "one": {
         "repository": "ai-workspace-xstream/XConnect-One",
-        "release_tag": "v0.1.11",
+        "release_tag": "v0.1.13",
         "asset": "xconnect-linux-arm64"
       },
       "xray": {
