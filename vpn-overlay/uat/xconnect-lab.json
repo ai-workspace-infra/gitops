@@ -96,6 +96,7 @@
       "gateway_address": "10.77.0.1/32",
       "device_address": "10.77.0.2/32",
       "transport": "vless-xhttp",
+      "transport_profile": {"kind": "vless-xhttp", "port": 443, "path": "/xconnect", "mode": "auto", "host": "tw-xconnect.svc.plus"},
       "gateway_tls_port": 443,
       "zero_port": 8443,
       "wireguard_port": 51820,
