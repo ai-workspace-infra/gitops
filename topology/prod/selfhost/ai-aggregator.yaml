@@ -104,7 +104,7 @@ spec:
     persistence:
       driver: postgresql
       database: new_api
-      secret_ref: vault://kv/prod/ai-aggregator/database#new_api_dsn
+      secret_ref: vault://kv/prod/ai-aggregator/database/new-api#dsn
     session_secret_ref: vault://kv/prod/ai-aggregator/gateway/new-api#session_secret
     crypto_secret_ref: vault://kv/prod/ai-aggregator/gateway/new-api#crypto_secret
     client_token:
@@ -118,7 +118,7 @@ spec:
     persistence:
       driver: postgresql
       database: litellm
-      secret_ref: vault://kv/prod/ai-aggregator/database#litellm_dsn
+      secret_ref: vault://kv/prod/ai-aggregator/database/litellm#dsn
     master_key_ref: vault://kv/prod/ai-aggregator/gateway/litellm#master_key
     provider_secret_refs:
       openai: vault://kv/prod/ai-aggregator/litellm/providers/openai#api_key
@@ -154,8 +154,8 @@ spec:
       bind_address: 127.0.0.1
       port: 8317
       network_endpoint: cmdb://nodes/cpa-codex-01/private_ip:8317
-      auth_secret_ref: vault://kv/prod/ai-aggregator/gateway/cpa/cpa-codex-01#oauth_bundle
-      channel_token_ref: vault://kv/prod/ai-aggregator/gateway/cpa/cpa-codex-01#channel_token
+      auth_secret_ref: vault://kv/prod/ai-aggregator/cpa/cpa-codex-01#oauth_bundle
+      channel_token_ref: vault://kv/prod/ai-aggregator/cpa/cpa-codex-01#channel_token
       new_api_channel:
         name: cpa-codex-01
         protocol: openai-responses
@@ -171,8 +171,8 @@ spec:
       bind_address: 127.0.0.1
       port: 8320
       network_endpoint: cmdb://nodes/cpa-codex-02/private_ip:8320
-      auth_secret_ref: vault://kv/prod/ai-aggregator/gateway/cpa/cpa-codex-02#oauth_bundle
-      channel_token_ref: vault://kv/prod/ai-aggregator/gateway/cpa/cpa-codex-02#channel_token
+      auth_secret_ref: vault://kv/prod/ai-aggregator/cpa/cpa-codex-02#oauth_bundle
+      channel_token_ref: vault://kv/prod/ai-aggregator/cpa/cpa-codex-02#channel_token
       new_api_channel:
         name: cpa-codex-02
         protocol: openai-responses
@@ -188,8 +188,8 @@ spec:
       bind_address: 127.0.0.1
       port: 8318
       network_endpoint: cmdb://nodes/cpa-claude-01/private_ip:8318
-      auth_secret_ref: vault://kv/prod/ai-aggregator/gateway/cpa/cpa-claude-01#oauth_bundle
-      channel_token_ref: vault://kv/prod/ai-aggregator/gateway/cpa/cpa-claude-01#channel_token
+      auth_secret_ref: vault://kv/prod/ai-aggregator/cpa/cpa-claude-01#oauth_bundle
+      channel_token_ref: vault://kv/prod/ai-aggregator/cpa/cpa-claude-01#channel_token
       new_api_channel:
         name: cpa-claude-01
         protocol: anthropic-messages
@@ -205,8 +205,8 @@ spec:
       bind_address: 127.0.0.1
       port: 8319
       network_endpoint: cmdb://nodes/cpa-grok-01/private_ip:8319
-      auth_secret_ref: vault://kv/prod/ai-aggregator/gateway/cpa/cpa-grok-01#oauth_bundle
-      channel_token_ref: vault://kv/prod/ai-aggregator/gateway/cpa/cpa-grok-01#channel_token
+      auth_secret_ref: vault://kv/prod/ai-aggregator/cpa/cpa-grok-01#oauth_bundle
+      channel_token_ref: vault://kv/prod/ai-aggregator/cpa/cpa-grok-01#channel_token
       new_api_channel:
         name: cpa-grok-01
         protocol: openai-chat
