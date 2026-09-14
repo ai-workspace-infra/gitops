@@ -6,7 +6,10 @@ metadata:
   environment: uat
   mode: selfhost
 spec:
-  enabled: false
+  # Non-sensitive GitOps declaration: the aggregator is managed in UAT.
+  # An empty allowlist keeps public traffic closed until stage/activate gates
+  # are explicitly satisfied.
+  enabled: true
   delivery:
     runtime: systemd
     playbook: deploy-ai-aggregator-v1.yml
@@ -40,7 +43,7 @@ spec:
     admin_basic_auth_ref: vault://kv/uat/ai-aggregator/gateway/caddy#admin_password_hash
     source_cidrs: []
     # An empty allowlist deliberately denies external access. Add only fixed
-    # operator /32 or /128 addresses before setting enabled: true.
+    # operator /32 or /128 addresses before stage/activate.
   testing_environment:
     provider: aws
     instance_type: t4g.medium
