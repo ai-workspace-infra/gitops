@@ -9,8 +9,11 @@
     "compute_policy": "all-cloud-compute-is-aws-spot-by-default",
     "created_resource_scope": ["gateway-spot-instance", "linux-one-spot-instance", "ephemeral-security-groups"],
     "transport": {
-      "protocol": "wireguard-over-vless-tls-xudp",
+      "protocol": "wireguard-over-vless-xhttp",
       "gateway_tls_port": 443,
+      "xhttp_path": "/xconnect",
+      "xhttp_mode": "auto",
+      "xhttp_host": "tw-xconnect.svc.plus",
       "gateway_wireguard_port": 51820,
       "one_loopback_endpoint": "127.0.0.1:51830",
       "public_wireguard_ingress": false,

@@ -75,7 +75,8 @@
       "ingress_cidrs": [],
       "platforms": ["darwin", "windows"],
       "max_join_window_minutes": 20,
-      "transport": "vless-tls-xudp",
+      "transport": "vless-xhttp",
+      "transport_profile": {"kind": "vless-xhttp", "port": 443, "path": "/xconnect", "mode": "auto", "host": "tw-xconnect.svc.plus"},
       "public_wireguard_ingress": false,
       "acceptance": ["formal-invite", "signed-sync-ack", "owned-runtime", "exact-peer-handshake", "private-ping", "exact-run-http-marker"]
     },
@@ -94,7 +95,7 @@
       "cidr": "10.77.0.0/24",
       "gateway_address": "10.77.0.1/32",
       "device_address": "10.77.0.2/32",
-      "transport": "vless-tls-xudp",
+      "transport": "vless-xhttp",
       "gateway_tls_port": 443,
       "zero_port": 8443,
       "wireguard_port": 51820,
@@ -104,8 +105,9 @@
     "gateway_transport": {
       "enabled": true,
       "exposure": "public-restricted",
-      "transport": "vless-tls-xudp",
+      "transport": "vless-xhttp",
       "port": 443,
+      "profile": {"kind": "vless-xhttp", "path": "/xconnect", "mode": "auto", "host": "tw-xconnect.svc.plus"},
       "ingress_cidrs": [],
       "public_wireguard_ingress": false,
       "allowlist_source": "workflow-dispatch-runtime-only"
