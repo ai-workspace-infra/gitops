@@ -11,7 +11,13 @@ spec:
     id: net_prod
     cidr: 10.78.0.0/24
     gateway_ref: required-prod-gateway
-    transport: vless-tls-xudp
+    transport: vless-xhttp
+    transport_profile:
+      kind: vless-xhttp
+      port: 443
+      path: /xconnect
+      mode: auto
+      host: tw-xconnect.svc.plus
     public_wireguard_ingress: false
   activation:
     state: pending-prod-gateway
@@ -22,7 +28,7 @@ spec:
   runtime:
     cli_release: v0.1.11
     wireguard_interface: xconone0
-    xray_loopback_udp_port: 18080
+    xray_loopback_udp_port: 51830
     state_dir_prefix: /var/lib/xconnect-one
     sync_interval_seconds: 300
   fixed_nodes:
