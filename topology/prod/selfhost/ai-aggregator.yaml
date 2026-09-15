@@ -35,7 +35,7 @@ spec:
     tls: automatic
     public_port: 443
     basic_auth_enabled: true
-    admin_basic_auth_ref: vault://kv/prod/ai-aggregator/gateway/caddy#admin_password_hash
+    admin_basic_auth_ref: vault://kv/prod/ai-aggregator/gateway/caddy#admin_basic_auth_hash
     source_cidrs: []
     # An empty allowlist deliberately denies external access. Add only fixed
     # operator /32 or /128 addresses before setting enabled: true.
@@ -107,9 +107,9 @@ spec:
       secret_ref: vault://kv/prod/ai-aggregator/database/new-api#dsn
     session_secret_ref: vault://kv/prod/ai-aggregator/gateway/new-api#session_secret
     crypto_secret_ref: vault://kv/prod/ai-aggregator/gateway/new-api#crypto_secret
-    client_token:
-      managed_by: new-api
-      secret_ref: vault://kv/prod/ai-aggregator/gateway/new-api#api_client_token
+    jwt_private_key_ref: vault://kv/prod/ai-aggregator/gateway/new-api#jwt_private_key
+    jwt_issuer_ref: vault://kv/prod/ai-aggregator/gateway/new-api#jwt_issuer
+    jwt_audience: ai-aggregator-cpa
   litellm:
     node: gateway-01
     bind_address: 127.0.0.1
@@ -121,9 +121,15 @@ spec:
       secret_ref: vault://kv/prod/ai-aggregator/database/litellm#dsn
     master_key_ref: vault://kv/prod/ai-aggregator/gateway/litellm#master_key
     provider_secret_refs:
-      openai: vault://kv/prod/ai-aggregator/litellm/providers/openai#api_key
-      anthropic: vault://kv/prod/ai-aggregator/litellm/providers/anthropic#api_key
-      xai: vault://kv/prod/ai-aggregator/litellm/providers/xai#api_key
+      openai:
+        endpoint: vault://kv/prod/ai-aggregator/litellm/providers/openai#endpoint
+        api_key: vault://kv/prod/ai-aggregator/litellm/providers/openai#api_key
+      anthropic:
+        endpoint: vault://kv/prod/ai-aggregator/litellm/providers/anthropic#endpoint
+        api_key: vault://kv/prod/ai-aggregator/litellm/providers/anthropic#api_key
+      xai:
+        endpoint: vault://kv/prod/ai-aggregator/litellm/providers/xai#endpoint
+        api_key: vault://kv/prod/ai-aggregator/litellm/providers/xai#api_key
     legacy_upstream: true
   client_profiles:
     - id: claude-code
@@ -131,16 +137,19 @@ spec:
       base_url: https://ai.svc.plus
       protocol: anthropic-messages
       model_alias: claude-main
+      token_source: database
     - id: android-studio
       chain: litellm-direct
       base_url: https://direct.ai.svc.plus/v1
       protocol: openai-chat
       model_alias: anthropic-api
+      token_source: database
     - id: openai-compatible
       chain: new-api-cpa
       base_url: https://ai.svc.plus/v1
       protocol: openai-chat-or-responses
       model_alias: codex-main
+      token_source: database
   cpa_instances:
     - id: cpa-codex-01
       node: cpa-codex-01
@@ -148,11 +157,15 @@ spec:
       cli: codex
       account_email: manbuzhe2009@qq.com
       account_alias: cpa-codex-01
-      bind_address: 127.0.0.1
+      bind_address: private_ip
       port: 8317
       network_endpoint: cmdb://nodes/cpa-codex-01/private_ip:8317
-      auth_secret_ref: vault://kv/prod/ai-aggregator/cpa/cpa-codex-01#oauth_bundle
-      channel_token_ref: vault://kv/prod/ai-aggregator/cpa/cpa-codex-01#channel_token
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-01/auth
+      jwt:
+        issuer: ai-aggregator
+        audience: cpa:cpa-codex-01
+        public_key_file: /etc/ai-aggregator/cpa/cpa-codex-01/jwt-public.pem
+        ttl_seconds: 300
       new_api_channel:
         name: cpa-codex-01
         protocol: openai-responses
@@ -165,11 +178,15 @@ spec:
       cli: codex
       account_email: manbuzhe2008@gmail.com
       account_alias: cpa-codex-02
-      bind_address: 127.0.0.1
+      bind_address: private_ip
       port: 8320
       network_endpoint: cmdb://nodes/cpa-codex-02/private_ip:8320
-      auth_secret_ref: vault://kv/prod/ai-aggregator/cpa/cpa-codex-02#oauth_bundle
-      channel_token_ref: vault://kv/prod/ai-aggregator/cpa/cpa-codex-02#channel_token
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-02/auth
+      jwt:
+        issuer: ai-aggregator
+        audience: cpa:cpa-codex-02
+        public_key_file: /etc/ai-aggregator/cpa/cpa-codex-02/jwt-public.pem
+        ttl_seconds: 300
       new_api_channel:
         name: cpa-codex-02
         protocol: openai-responses
@@ -182,11 +199,15 @@ spec:
       cli: claude-code
       account_email: haitaopanhq@gmail.com
       account_alias: cpa-claude-01
-      bind_address: 127.0.0.1
+      bind_address: private_ip
       port: 8318
       network_endpoint: cmdb://nodes/cpa-claude-01/private_ip:8318
-      auth_secret_ref: vault://kv/prod/ai-aggregator/cpa/cpa-claude-01#oauth_bundle
-      channel_token_ref: vault://kv/prod/ai-aggregator/cpa/cpa-claude-01#channel_token
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-claude-01/auth
+      jwt:
+        issuer: ai-aggregator
+        audience: cpa:cpa-claude-01
+        public_key_file: /etc/ai-aggregator/cpa/cpa-claude-01/jwt-public.pem
+        ttl_seconds: 300
       new_api_channel:
         name: cpa-claude-01
         protocol: anthropic-messages
@@ -199,11 +220,15 @@ spec:
       cli: grok
       account_email: haitaopanhq@gmail.com
       account_alias: cpa-grok-01
-      bind_address: 127.0.0.1
+      bind_address: private_ip
       port: 8319
       network_endpoint: cmdb://nodes/cpa-grok-01/private_ip:8319
-      auth_secret_ref: vault://kv/prod/ai-aggregator/cpa/cpa-grok-01#oauth_bundle
-      channel_token_ref: vault://kv/prod/ai-aggregator/cpa/cpa-grok-01#channel_token
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-grok-01/auth
+      jwt:
+        issuer: ai-aggregator
+        audience: cpa:cpa-grok-01
+        public_key_file: /etc/ai-aggregator/cpa/cpa-grok-01/jwt-public.pem
+        ttl_seconds: 300
       new_api_channel:
         name: cpa-grok-01
         protocol: openai-chat
