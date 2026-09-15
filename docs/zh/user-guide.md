@@ -9,7 +9,7 @@
 - 文档目标仓库: `gitops`
 - 仓库类型: `infra-repo`
 - 构建与运行依据: repository structure and scripts only
-- 主要实现与运维目录: `scripts/`, `StackFlow/`, `config/`
+- 主要实现与运维目录: `scripts/`, `StackFlow/`, `resources/`
 - `package.json` 脚本快照: No package.json scripts were detected.
 
 ## 需要继续归并的现有文档

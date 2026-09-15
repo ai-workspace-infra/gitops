@@ -1,0 +1,21 @@
+global:
+  environment: uat
+  bootstrap_project_id: crypto-will-508602-m0
+  project_id: xworktech-open-platform-uat
+  project_name: XWork Open Platform UAT
+  organization_id: "744119519286"
+  region: asia-east1
+  github_owner: ai-workspace-infra
+  github_repository: platform-ops-toolkit
+  network_name: open-platform-uat
+  subnet_cidr: 10.60.0.0/20
+  artifact_registry_location: asia-east1
+  artifact_registry_id: xwork-services
+  cloud_run_service_name: open-platform-uat
+  cloud_run_image: us-docker.pkg.dev/cloudrun/container/hello
+  vault_machine_type: e2-medium
+  vault_image: projects/debian-cloud/global/images/family/debian-12
+
+vault_nodes:
+  - name: vault-uat-0
+    zone: asia-east1-a

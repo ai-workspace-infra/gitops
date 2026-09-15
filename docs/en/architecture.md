@@ -9,7 +9,7 @@ Use this page as the canonical bilingual overview of system boundaries, major co
 - Documentation target: `gitops`
 - Repo kind: `infra-repo`
 - Manifest and build evidence: repository structure and scripts only
-- Primary implementation and ops directories: `scripts/`, `StackFlow/`, `config/`
+- Primary implementation and ops directories: `scripts/`, `StackFlow/`, `resources/`
 - Package scripts snapshot: No package.json scripts were detected.
 
 ## Existing docs to reconcile

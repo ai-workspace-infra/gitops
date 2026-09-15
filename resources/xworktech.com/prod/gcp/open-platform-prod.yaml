@@ -1,0 +1,25 @@
+global:
+  environment: prod
+  bootstrap_project_id: crypto-will-508602-m0
+  project_id: xworktech-open-platform-prod
+  project_name: XWork Open Platform Production
+  organization_id: "744119519286"
+  region: asia-east1
+  github_owner: ai-workspace-infra
+  github_repository: platform-ops-toolkit
+  network_name: open-platform-prod
+  subnet_cidr: 10.70.0.0/20
+  artifact_registry_location: asia-east1
+  artifact_registry_id: xwork-services
+  cloud_run_service_name: open-platform-prod
+  cloud_run_image: us-docker.pkg.dev/cloudrun/container/hello
+  vault_machine_type: e2-standard-2
+  vault_image: projects/debian-cloud/global/images/family/debian-12
+
+vault_nodes:
+  - name: vault-prod-0
+    zone: asia-east1-a
+  - name: vault-prod-1
+    zone: asia-east1-b
+  - name: vault-prod-2
+    zone: asia-east1-c
