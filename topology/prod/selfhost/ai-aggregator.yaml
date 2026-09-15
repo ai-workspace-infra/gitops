@@ -131,19 +131,16 @@ spec:
       base_url: https://ai.svc.plus
       protocol: anthropic-messages
       model_alias: claude-main
-      token_secret_ref: vault://kv/prod/ai-aggregator/clients/claude-code#client_token
     - id: android-studio
       chain: litellm-direct
       base_url: https://direct.ai.svc.plus/v1
       protocol: openai-chat
       model_alias: anthropic-api
-      token_secret_ref: vault://kv/prod/ai-aggregator/clients/android-studio#client_token
     - id: openai-compatible
       chain: new-api-cpa
       base_url: https://ai.svc.plus/v1
       protocol: openai-chat-or-responses
       model_alias: codex-main
-      token_secret_ref: vault://kv/prod/ai-aggregator/clients/openai-compatible#client_token
   cpa_instances:
     - id: cpa-codex-01
       node: cpa-codex-01
