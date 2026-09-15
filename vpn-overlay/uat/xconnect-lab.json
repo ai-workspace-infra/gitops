@@ -34,7 +34,7 @@
       },
       "one": {
         "repository": "ai-workspace-xstream/XConnect-One",
-        "release_tag": "v0.1.13",
+        "release_tag": "v0.1.14",
         "asset": "xconnect-linux-arm64"
       },
       "xray": {
