@@ -17,14 +17,16 @@ spec:
     rollback_upstream: litellm
     deployment_mode: embedded
   infrastructure:
-    provider: aws
+    # Provider is selected declaratively per environment. The workflow only
+    # dispatches to the matching adapter; it must not infer AWS as a default.
+    provider: gcp
     provisioner: terraform
     resource_contract:
       repository: ai-workspace-infra/iac_modules
-      path: terraform-hcl-standard/aws-cloud/config/resources/uat/ai-aggregator.yaml
+      path: terraform-hcl-standard/gcp-cloud/config/resources/ai-aggregator-vps-uat.yaml
       ref: main
-      renderer: terraform-hcl-standard/aws-cloud/scripts/generate.py
-      workdir: terraform-hcl-standard/aws-cloud/envs/ai-aggregator-uat
+      renderer: terraform-hcl-standard/gcp-cloud/scripts/generate_ai_aggregator.py
+      workdir: terraform-hcl-standard/gcp-cloud/envs/ai-aggregator-uat
     lifecycle: ephemeral
     spot_instance: true
     max_runtime_minutes: 60
@@ -45,10 +47,11 @@ spec:
     # An empty allowlist deliberately denies external access. Add only fixed
     # operator /32 or /128 addresses before stage/activate.
   testing_environment:
-    provider: aws
-    instance_type: t4g.medium
-    architecture: arm64
-    os_name: "Debian 12 ARM64 (bookworm)"
+    provider: gcp
+    instance_type: e2-medium
+    architecture: amd64
+    region: asia-east1
+    os_name: "Debian 12 AMD64 (bookworm)"
     spot_instance: true
     max_runtime_minutes: 60
     auto_terminate: true
@@ -56,46 +59,46 @@ spec:
   nodes:
     - id: gateway-01
       inventory_host: gateway-01
-      resource_ref: aws://ai-aggregator-uat/hosts/gateway-01
+      resource_ref: gcp://ai-aggregator-uat/hosts/gateway-01
       role: gateway
-      provider: aws
+      provider: gcp
       lifecycle: ephemeral
       spot_instance: true
       max_runtime_minutes: 60
       caddy_mode: reuse-existing
     - id: cpa-codex-01
       inventory_host: cpa-codex-01
-      resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-01
+      resource_ref: gcp://ai-aggregator-uat/hosts/cpa-codex-01
       role: cpa
       transport: private-network-required
-      provider: aws
+      provider: gcp
       lifecycle: ephemeral
       spot_instance: true
       max_runtime_minutes: 60
     - id: cpa-claude-01
       inventory_host: cpa-claude-01
-      resource_ref: aws://ai-aggregator-uat/hosts/cpa-claude-01
+      resource_ref: gcp://ai-aggregator-uat/hosts/cpa-claude-01
       role: cpa
       transport: private-network-required
-      provider: aws
+      provider: gcp
       lifecycle: ephemeral
       spot_instance: true
       max_runtime_minutes: 60
     - id: cpa-codex-02
       inventory_host: cpa-codex-02
-      resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-02
+      resource_ref: gcp://ai-aggregator-uat/hosts/cpa-codex-02
       role: cpa
       transport: private-network-required
-      provider: aws
+      provider: gcp
       lifecycle: ephemeral
       spot_instance: true
       max_runtime_minutes: 60
     - id: cpa-grok-01
       inventory_host: cpa-grok-01
-      resource_ref: aws://ai-aggregator-uat/hosts/cpa-grok-01
+      resource_ref: gcp://ai-aggregator-uat/hosts/cpa-grok-01
       role: cpa
       transport: private-network-required
-      provider: aws
+      provider: gcp
       lifecycle: ephemeral
       spot_instance: true
       max_runtime_minutes: 60
@@ -110,17 +113,17 @@ spec:
       disk: 80Gi
   artifacts:
     # Immutable revisions and checksums are mandatory when enabled is true.
-    # Binaries must be built for linux/arm64.
+    # Binaries must be built for linux/amd64 for the GCP e2-medium profile.
     new_api:
       repository: ai-workspace-lab/new-api
       revision: ""
       sha256: ""
-      arch: arm64
+      arch: amd64
     cliproxyapi:
       repository: ai-workspace-lab/CLIProxyAPI
       revision: ""
       sha256: ""
-      arch: arm64
+      arch: amd64
   new_api:
     node: gateway-01
     bind_address: 127.0.0.1
