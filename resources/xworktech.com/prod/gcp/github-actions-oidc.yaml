@@ -4,6 +4,7 @@ metadata:
   environment: prod
   provider: gcp
 spec:
+  gcp_account_id: xworktech
   project_id: xworktech-open-platform-prod
   organization_id: "744119519286"
   provider_url: https://token.actions.githubusercontent.com
@@ -18,4 +19,4 @@ spec:
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/v*
   state:
     bucket: xworktech-platform-terraform-state
-    key: platform-ops-toolkit/prod/gcp-oidc-bootstrap/terraform.tfstate
+    key: platform-ops-toolkit/prod/xworktech/gcp-oidc-bootstrap/terraform.tfstate
