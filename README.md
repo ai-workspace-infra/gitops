@@ -65,6 +65,11 @@ in Vault. The declarations may describe public origins and the primary/fallback 
 - `skills/`: repository-scoped conventions consumed by agents
 - `docs/`: repository conventions and operational documentation
 
+The IaC declaration migration and provider/environment mapping are documented in
+[`docs/iac-resource-layout.md`](docs/iac-resource-layout.md) and
+[`docs/iac-resource-layout.zh.md`](docs/iac-resource-layout.zh.md).
+The environment-scoped Vault contract is documented in [`docs/vault-kv-paths.md`](docs/vault-kv-paths.md).
+
 For a directory-level overview, see [docs/repo-structure.md](docs/repo-structure.md).
 
 ### `resources/` path convention
@@ -77,7 +82,7 @@ This shape accommodates the two conventions already in use:
 
 | Consumer | Path |
 |---|---|
-| Multi-cloud account/resource matrices | `resources/svc.plus/uat/aws/account/bootstrap.yaml` |
+| Multi-cloud account/resource matrices | `resources/svc.plus/uat/aws/` |
 | Vultr VPS topology per business domain | `resources/svc.plus/uat/vultr/web-saas.yaml` |
 
 `<project>` is the domain base or account grouping, `<env>` is `sit` / `uat` / `prod`, and

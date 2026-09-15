@@ -1,0 +1,100 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: FixedEgressNodes
+metadata:
+  name: xconnect
+  project: svc.plus
+  environment: prod
+spec:
+  lifecycle: manual
+  provider: ucloud-ulighthost
+  plan:
+    tier: standard
+    cpu: 1
+    memory_gb: 1
+    system_disk_gb: 40
+    bandwidth_mbps: 30
+    traffic_gb_per_month: 200
+    price_cny_per_month: 34
+  scheduler:
+    implementation:
+      repository: git@github.com:ai-workspace-xstream/xconnect-edge-agent.git
+      deploy_when: multi-node
+    strategy: health-aware-weighted
+    failover_scope: region
+    health_check:
+      path: /healthz
+      interval_seconds: 30
+      unhealthy_after: 3
+      recover_after: 2
+  pools:
+    - name: jp
+      region: jpn-tky
+      entrypoint:
+        fqdn: JP-XConnect.svc.plus
+        mode: auto
+        single_node_binding: direct
+        multi_node_binding: scheduler
+        scheduler_node: jp-01
+        dns_record:
+          type: A
+          target_node: jp-01
+          ttl: 1
+          proxied: false
+      legacy_cname: tky-proxy.svc.plus
+      legacy_cname_target: JP-XConnect.svc.plus
+      nodes:
+        - id: jp-01
+          vault_key: jp-01
+          enabled: true
+          role: standalone
+          weight: 100
+    - name: us
+      region: us-ca
+      entrypoint:
+        fqdn: US-XConnect.svc.plus
+        mode: auto
+        single_node_binding: direct
+        multi_node_binding: scheduler
+        scheduler_node: us-01
+      nodes:
+        - id: us-01
+          vault_key: us-01
+          enabled: true
+          role: standalone
+          weight: 100
+    - name: hk
+      region: hk
+      entrypoint:
+        fqdn: HK-XConnect.svc.plus
+        mode: auto
+        single_node_binding: direct
+        multi_node_binding: scheduler
+        scheduler_node: hk-01
+      nodes:
+        - id: hk-01
+          vault_key: hk-01
+          enabled: true
+          role: standalone
+          weight: 100
+    - name: ph
+      region: ph-mnl
+      entrypoint:
+        fqdn: PH-XConnect.svc.plus
+        mode: auto
+        single_node_binding: direct
+        multi_node_binding: scheduler
+        scheduler_node: ph-surfercloud-01
+      nodes:
+        - id: ph-surfercloud-01
+          vault_key: ph-surfercloud-01
+          enabled: true
+          role: standalone
+          weight: 100
+          provider: surfercloud
+          product: ulighthost
+  connection:
+    vault_secret: kv/prod/ulighthost-xconnect
+    secret_fields:
+      - public_ipv4
+      - ansible_user
+      - ansible_password

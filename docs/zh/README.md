@@ -6,7 +6,7 @@
 
 - 根 README 标题: `Cloud-Neutral Toolkit GitOps`
 - 构建与运行时证据: repository structure and scripts only
-- 自动识别的主要目录: `infra/`, `apps/`, `clusters/`, `config/`, `scripts/`
+- 自动识别的主要目录: `infra/`, `apps/`, `clusters/`, `resources/`, `scripts/`
 - 现有文档数量: 3
 
 ## 核心双语文档

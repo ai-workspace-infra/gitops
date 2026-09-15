@@ -6,7 +6,7 @@ This repository organizes declarative GitOps assets for infrastructure delivery.
 
 - Root README title: `Cloud-Neutral Toolkit GitOps`
 - Build/runtime evidence: repository structure and scripts only
-- Primary directories detected: `infra/`, `apps/`, `clusters/`, `config/`, `scripts/`
+- Primary directories detected: `infra/`, `apps/`, `clusters/`, `resources/`, `scripts/`
 - Existing docs count: 3
 
 ## Canonical pages
