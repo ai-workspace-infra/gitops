@@ -1,0 +1,165 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GlobalMeshPools
+metadata:
+  name: global-mesh
+  project: svc.plus
+  environment: prod
+  labels:
+    tier: out-of-band-network
+    protocol: wireguard-mtls
+spec:
+  lifecycle: gitops
+  mesh:
+    overlay_cidr: 10.240.0.0/16
+    inbound_ports_allowed: 0
+    heartbeat_interval_seconds: 10
+    rtt_probe_threshold_ms: 35
+    failover_mode: automatic-multi-cloud
+  routing:
+    uat_frontend_route: https://console.onwalk.net/products/global-mesh
+    prod_frontend_route: https://console.svc.plus/products/global-mesh
+  providers:
+    - name: linode
+      role: backbone-transit
+      regions:
+        - id: jp-tyo
+          name: Tokyo
+          pop: ap-northeast-1
+        - id: sg-sin
+          name: Singapore
+          pop: ap-southeast-1
+        - id: au-syd
+          name: Sydney
+          pop: ap-southeast-2
+        - id: de-fra
+          name: Frankfurt
+          pop: eu-central-1
+        - id: uk-lon
+          name: London
+          pop: eu-west-1
+        - id: us-fmt
+          name: Fremont
+          pop: us-west-1
+        - id: us-ewr
+          name: Newark
+          pop: us-east-1
+    - name: hetzner
+      role: telemetry-log-hub
+      regions:
+        - id: de-fsn
+          name: Falkenstein
+          pop: fsn1
+        - id: de-nbg
+          name: Nuremberg
+          pop: nbg1
+        - id: fi-hel
+          name: Helsinki
+          pop: hel1
+        - id: us-ash
+          name: Ashburn
+          pop: ash
+        - id: us-hil
+          name: Hillsboro
+          pop: hil
+        - id: sg-sin
+          name: Singapore
+          pop: sin
+    - name: ucloud
+      role: apac-low-latency-bastion
+      regions:
+        - id: hk-hkg
+          name: Hong Kong
+          pop: cn2-bgp
+        - id: tw-tpe
+          name: Taipei
+          pop: apac-direct
+        - id: jp-tyo
+          name: Tokyo
+          pop: ntt-direct
+        - id: kr-sel
+          name: Seoul
+          pop: apac-core
+        - id: sg-sin
+          name: Singapore
+          pop: sea-hub
+        - id: th-bkk
+          name: Bangkok
+          pop: local-direct
+        - id: us-lax
+          name: Los Angeles
+          pop: us-transit
+    - name: contabo
+      role: heavy-storage-ci-cache
+      regions:
+        - id: de-nbg
+          name: Nuremberg
+          pop: eu-core
+        - id: de-fra
+          name: Frankfurt
+          pop: de-hub
+        - id: uk-lon
+          name: London
+          pop: uk-core
+        - id: us-nyc
+          name: New York
+          pop: us-east
+        - id: us-stl
+          name: St. Louis
+          pop: us-central
+        - id: us-sea
+          name: Seattle
+          pop: us-west
+        - id: sg-sin
+          name: Singapore
+          pop: ap-core
+        - id: jp-tyo
+          name: Tokyo
+          pop: ap-east
+        - id: ae-dxb
+          name: Dubai
+          pop: mea-hub
+    - name: vultr
+      role: global-edge-anycast
+      regions:
+        - id: jp-nrt
+          name: Tokyo (NRT)
+          pop: nrt
+        - id: kr-icn
+          name: Seoul (ICN)
+          pop: icn
+        - id: sg-sgp
+          name: Singapore (SGP)
+          pop: sgp
+        - id: au-syd
+          name: Sydney (SYD)
+          pop: syd
+        - id: de-fra
+          name: Frankfurt (FRA)
+          pop: fra
+        - id: nl-ams
+          name: Amsterdam (AMS)
+          pop: ams
+        - id: us-sjc
+          name: Silicon Valley (SJC)
+          pop: sjc
+        - id: us-lax
+          name: Los Angeles (LAX)
+          pop: lax
+        - id: us-ewr
+          name: New Jersey (EWR)
+          pop: ewr
+        - id: br-sao
+          name: Sao Paulo (SAO)
+          pop: sao
+        - id: cl-scl
+          name: Santiago (SCL)
+          pop: scl
+        - id: za-jnb
+          name: Johannesburg (JNB)
+          pop: jnb
+  connection:
+    vault_secret: kv/prod/global-mesh/peers
+    secret_fields:
+      - wireguard_private_key
+      - mtls_cert_bundle
+      - peer_public_keys

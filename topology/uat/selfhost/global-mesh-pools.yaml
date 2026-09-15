@@ -1,0 +1,91 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GlobalMeshPools
+metadata:
+  name: global-mesh
+  project: svc.plus
+  environment: uat
+  labels:
+    tier: out-of-band-network
+    protocol: wireguard-mtls
+spec:
+  lifecycle: gitops
+  mesh:
+    overlay_cidr: 10.240.0.0/16
+    inbound_ports_allowed: 0
+    heartbeat_interval_seconds: 15
+    rtt_probe_threshold_ms: 50
+    failover_mode: automatic-multi-cloud
+  routing:
+    uat_frontend_route: https://console.onwalk.net/products/global-mesh
+    prod_frontend_route: https://console.svc.plus/products/global-mesh
+  providers:
+    - name: linode
+      role: backbone-transit
+      regions:
+        - id: jp-tyo
+          name: Tokyo
+          pop: ap-northeast-1
+        - id: sg-sin
+          name: Singapore
+          pop: ap-southeast-1
+        - id: de-fra
+          name: Frankfurt
+          pop: eu-central-1
+        - id: us-fmt
+          name: Fremont
+          pop: us-west-1
+    - name: hetzner
+      role: telemetry-log-hub
+      regions:
+        - id: de-fsn
+          name: Falkenstein
+          pop: fsn1
+        - id: fi-hel
+          name: Helsinki
+          pop: hel1
+        - id: us-ash
+          name: Ashburn
+          pop: ash
+    - name: ucloud
+      role: apac-low-latency-bastion
+      regions:
+        - id: hk-hkg
+          name: Hong Kong
+          pop: cn2-bgp
+        - id: jp-tyo
+          name: Tokyo
+          pop: ntt-direct
+        - id: tw-tpe
+          name: Taipei
+          pop: apac-direct
+    - name: contabo
+      role: heavy-storage-ci-cache
+      regions:
+        - id: de-nbg
+          name: Nuremberg
+          pop: eu-core
+        - id: us-stl
+          name: St. Louis
+          pop: us-central
+        - id: sg-sin
+          name: Singapore
+          pop: ap-core
+    - name: vultr
+      role: global-edge-anycast
+      regions:
+        - id: jp-nrt
+          name: Tokyo (NRT)
+          pop: nrt
+        - id: kr-icn
+          name: Seoul (ICN)
+          pop: icn
+        - id: us-sjc
+          name: Silicon Valley (SJC)
+          pop: sjc
+        - id: br-sao
+          name: Sao Paulo (SAO)
+          pop: sao
+  telemetry:
+    metrics_path: /metrics
+    internal_port: 9100
+    export_to: prometheus.svc.plus

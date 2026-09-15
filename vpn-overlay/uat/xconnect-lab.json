@@ -15,8 +15,9 @@
       "release_on_failure": true
     },
     "zero": {
+      "control_plane_ref": "vpn-overlay/uat/xconnect-zero.json",
       "accounts_api_url": "https://accounts-uat.onwalk.net",
-      "portal_url": "https://console-cloudflare-uat.onwalk.net/panel/xconnect-zero",
+      "portal_url": "https://console-serverless-uat.onwalk.net/panel/xconnect-zero",
       "source_of_truth": "formal-accounts-api-and-portal",
       "config_contract": "devices-networks-policy-signed-config",
       "lab_controller": {
@@ -28,12 +29,12 @@
     "artifacts": {
       "gateway": {
         "repository": "ai-workspace-xstream/XConnect-Gateway",
-        "release_tag": "v0.1.5",
+        "release_tag": "v0.1.8",
         "asset": "xconnect-gateway-linux-arm64"
       },
       "one": {
         "repository": "ai-workspace-xstream/XConnect-One",
-        "release_tag": "v0.1.11",
+        "release_tag": "v0.1.14",
         "asset": "xconnect-linux-arm64"
       },
       "xray": {
@@ -74,7 +75,8 @@
       "ingress_cidrs": [],
       "platforms": ["darwin", "windows"],
       "max_join_window_minutes": 20,
-      "transport": "vless-tls-xudp",
+      "transport": "vless-xhttp",
+      "transport_profile": {"kind": "vless-xhttp", "port": 443, "path": "/xconnect", "mode": "auto", "host": "tw-xconnect.svc.plus"},
       "public_wireguard_ingress": false,
       "acceptance": ["formal-invite", "signed-sync-ack", "owned-runtime", "exact-peer-handshake", "private-ping", "exact-run-http-marker"]
     },
@@ -93,7 +95,8 @@
       "cidr": "10.77.0.0/24",
       "gateway_address": "10.77.0.1/32",
       "device_address": "10.77.0.2/32",
-      "transport": "vless-tls-xudp",
+      "transport": "vless-xhttp",
+      "transport_profile": {"kind": "vless-xhttp", "port": 443, "path": "/xconnect", "mode": "auto", "host": "tw-xconnect.svc.plus"},
       "gateway_tls_port": 443,
       "zero_port": 8443,
       "wireguard_port": 51820,
@@ -103,8 +106,9 @@
     "gateway_transport": {
       "enabled": true,
       "exposure": "public-restricted",
-      "transport": "vless-tls-xudp",
+      "transport": "vless-xhttp",
       "port": 443,
+      "profile": {"kind": "vless-xhttp", "path": "/xconnect", "mode": "auto", "host": "tw-xconnect.svc.plus"},
       "ingress_cidrs": [],
       "public_wireguard_ingress": false,
       "allowlist_source": "workflow-dispatch-runtime-only"
