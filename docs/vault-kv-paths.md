@@ -16,22 +16,27 @@ defaults belong in the corresponding GitOps declaration.
 
 ## AI Aggregator v1 minimal contract
 
-For both `uat` and `prod`, the only AI Aggregator secret roots are:
+For both `uat` and `prod`, the only AI Aggregator secret paths are:
 
 ```text
 kv/<env>/ai-aggregator/database/new-api
 kv/<env>/ai-aggregator/database/litellm
-kv/<env>/ai-aggregator/gateway/*
-kv/<env>/ai-aggregator/litellm/providers/*
+kv/<env>/ai-aggregator/database/kong
+kv/<env>/ai-aggregator/gateway/new-api
+kv/<env>/ai-aggregator/gateway/litellm
+kv/<env>/ai-aggregator/litellm/providers/openai
+kv/<env>/ai-aggregator/litellm/providers/anthropic
+kv/<env>/ai-aggregator/litellm/providers/xai
 ```
 
 The KV v2 API addresses these records as `kv/data/<env>/ai-aggregator/...`.
-The database records contain only `dsn`; Gateway records contain service
-secrets and the New API JWT signing material; provider records contain
-`endpoint` and `api_key` for OpenAI, Anthropic, and xAI. CPA OAuth, channel
-tokens, client tokens, and account/instance metadata are not stored under this
-namespace: OAuth remains in each CPA node's encrypted local auth directory,
-while client and runtime metadata belong in PostgreSQL.
+The database records contain only `dsn`; Gateway records contain New API and
+LiteLLM runtime secrets; provider records contain `endpoint` and `api_key` for
+OpenAI, Anthropic, and xAI. Kong v1 uses a non-secret JWT public key supplied
+by the node image or CMDB, so it does not need a Gateway KV secret. CPA OAuth,
+channel tokens, client tokens, and account/instance metadata are not stored
+under this namespace: OAuth remains in each CPA node's encrypted local auth
+directory, while client and runtime metadata belong in PostgreSQL.
 
 The deprecated `accounts/*`, `instances/*`, `clients/*`, `cpa/*`, and
 `database/backup` paths must not be created by new automation. Existing records

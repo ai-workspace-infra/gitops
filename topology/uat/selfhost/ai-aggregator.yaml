@@ -10,6 +10,7 @@ spec:
   delivery:
     runtime: systemd
     playbook: deploy-ai-aggregator-v1.yml
+    cpa_desktop_playbook: deploy_ai_desktop.yml
     deployment_controller: platform-ops-toolkit
     rollback_upstream: litellm
     deployment_mode: embedded
@@ -36,11 +37,36 @@ spec:
     direct_api_domain: direct.ai.onwalk.net
     tls: automatic
     public_port: 443
-    basic_auth_enabled: true
-    admin_basic_auth_ref: vault://kv/uat/ai-aggregator/gateway/caddy#admin_basic_auth_hash
-    source_cidrs: []
-    # An empty allowlist deliberately denies external access. Add only fixed
-    # operator /32 or /128 addresses before setting enabled: true.
+    source_cidrs:
+      - 35.79.83.48/32
+    # Fixed operator egress allowlist. Keep enabled: false until artifact
+    # pins, Vault access, and CPA OAuth validation are complete.
+  kong:
+    node: gateway-01
+    mode: traditional
+    bind_address: 127.0.0.1
+    proxy_port: 8000
+    admin_bind_address: 127.0.0.1
+    admin_port: 8001
+    persistence:
+      driver: postgresql
+      database: kong
+      secret_ref: vault://kv/uat/ai-aggregator/gateway/kong#database_dsn
+    auth:
+      mode: jwt
+      issuer: ai-aggregator
+      audience: ai-gateway
+      public_key_file: /etc/ai-aggregator/kong/jwt-public.pem
+    plugins:
+      - jwt
+      - acl
+      - rate-limiting
+      - request-size-limiting
+      - correlation-id
+      - prometheus
+    ai_proxy:
+      enabled: false
+      reason: liteLLM-remains-the-official-provider-aggregator-in-v1
   testing_environment:
     provider: aws
     instance_type: t4g.medium
@@ -65,6 +91,7 @@ spec:
       resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-01
       role: cpa
       transport: private-network-required
+      desktop_role: ai_desktop
       provider: aws
       lifecycle: ephemeral
       spot_instance: true
@@ -74,6 +101,7 @@ spec:
       resource_ref: aws://ai-aggregator-uat/hosts/cpa-claude-01
       role: cpa
       transport: private-network-required
+      desktop_role: ai_desktop
       provider: aws
       lifecycle: ephemeral
       spot_instance: true
@@ -83,6 +111,7 @@ spec:
       resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-02
       role: cpa
       transport: private-network-required
+      desktop_role: ai_desktop
       provider: aws
       lifecycle: ephemeral
       spot_instance: true
@@ -92,6 +121,7 @@ spec:
       resource_ref: aws://ai-aggregator-uat/hosts/cpa-grok-01
       role: cpa
       transport: private-network-required
+      desktop_role: ai_desktop
       provider: aws
       lifecycle: ephemeral
       spot_instance: true
@@ -161,19 +191,25 @@ spec:
       base_url: https://ai.onwalk.net
       protocol: anthropic-messages
       model_alias: claude-main
-      token_source: database
+      token_source: kong
     - id: android-studio
       chain: litellm-direct
       base_url: https://direct.ai.onwalk.net/v1
       protocol: openai-chat
       model_alias: anthropic-api
-      token_source: database
+      token_source: kong
     - id: openai-compatible
       chain: new-api-cpa
       base_url: https://ai.onwalk.net/v1
       protocol: openai-chat-or-responses
       model_alias: codex-main
-      token_source: database
+      token_source: kong
+  tenants:
+    - id: personal
+      status: disabled
+      applications: [claude-code, android-studio, openai-compatible]
+      allowed_entrypoints: [new-api, litellm]
+      rate_limit_per_minute: 60
   cpa_instances:
     - id: cpa-codex-01
       node: cpa-codex-01
@@ -185,6 +221,11 @@ spec:
       port: 8317
       network_endpoint: cmdb://nodes/cpa-codex-01/private_ip:8317
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-01/auth
+      codeagent:
+        enabled: true
+        runtime_role: ai_agent_runtime
+        cli: codex
+        workspace_dir: /var/lib/ai-aggregator/cpa/cpa-codex-01/workspace
       jwt:
         issuer: ai-aggregator
         audience: cpa:cpa-codex-01
@@ -206,6 +247,11 @@ spec:
       port: 8320
       network_endpoint: cmdb://nodes/cpa-codex-02/private_ip:8320
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-02/auth
+      codeagent:
+        enabled: true
+        runtime_role: ai_agent_runtime
+        cli: codex
+        workspace_dir: /var/lib/ai-aggregator/cpa/cpa-codex-02/workspace
       jwt:
         issuer: ai-aggregator
         audience: cpa:cpa-codex-02
@@ -227,6 +273,11 @@ spec:
       port: 8318
       network_endpoint: cmdb://nodes/cpa-claude-01/private_ip:8318
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-claude-01/auth
+      codeagent:
+        enabled: true
+        runtime_role: ai_agent_runtime
+        cli: claude-code
+        workspace_dir: /var/lib/ai-aggregator/cpa/cpa-claude-01/workspace
       jwt:
         issuer: ai-aggregator
         audience: cpa:cpa-claude-01
@@ -248,6 +299,11 @@ spec:
       port: 8319
       network_endpoint: cmdb://nodes/cpa-grok-01/private_ip:8319
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-grok-01/auth
+      codeagent:
+        enabled: true
+        runtime_role: ai_agent_runtime
+        cli: grok
+        workspace_dir: /var/lib/ai-aggregator/cpa/cpa-grok-01/workspace
       jwt:
         issuer: ai-aggregator
         audience: cpa:cpa-grok-01
