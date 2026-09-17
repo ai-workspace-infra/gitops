@@ -88,6 +88,9 @@ spec:
         - region: ph-mnl
           entrypoint: ph-xconnect.svc.plus
           pool: ph
+        - region: tw-tpe
+          entrypoint: tw-xconnect.svc.plus
+          pool: tw-agent-proxy
   cloudflare:
     zone_name: svc.plus
     pages_project: ai-workspace-portal-prod

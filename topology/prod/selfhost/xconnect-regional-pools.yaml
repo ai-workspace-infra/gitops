@@ -11,6 +11,7 @@ spec:
   provisioning:
     managed_by: mixed
     iac_status: active_for_jp_hk_us
+    external_nodes_allowed: true
   entrypoint_defaults:
     dns_record:
       zone: svc.plus
@@ -93,6 +94,29 @@ spec:
           provider: external
           enabled: true
           role: standalone
+          weight: 100
+    - name: tw
+      region: tw-tpe
+      entrypoint:
+        fqdn: tw-xconnect-gateway.svc.plus
+        mode: auto
+        single_node_binding: direct
+        multi_node_binding: scheduler
+        scheduler_node: tw-xconnect-gateway-01
+        dns_record:
+          type: A
+          target_node: tw-xconnect-gateway-01
+          ttl: 1
+          proxied: false
+      nodes:
+        - id: tw-xconnect-gateway-01
+          connection_source: vault
+          credentials_vault_path: prod/ulighthost-xconnect/tw-xconnect-gateway.svc.plus
+          provider: external
+          enabled: true
+          role: standalone
+          service_roles:
+            - xconnect-gateway
           weight: 100
   connection_sources:
     terraform_cmdb:

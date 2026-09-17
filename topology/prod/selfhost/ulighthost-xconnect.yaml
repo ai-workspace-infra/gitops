@@ -92,6 +92,27 @@ spec:
           weight: 100
           provider: surfercloud
           product: ulighthost
+    - name: tw-agent-proxy
+      region: tw-tpe
+      entrypoint:
+        fqdn: tw-xconnect.svc.plus
+        mode: auto
+        single_node_binding: direct
+        multi_node_binding: scheduler
+        scheduler_node: tw-agent-proxy-01
+        dns_record:
+          type: A
+          target_node: tw-agent-proxy-01
+          ttl: 1
+          proxied: false
+      nodes:
+        - id: tw-agent-proxy-01
+          vault_key: tw-xconnect.svc.plus
+          enabled: true
+          role: standalone
+          service_roles:
+            - agent-proxy
+          weight: 100
   connection:
     vault_secret: kv/prod/ulighthost-xconnect
     secret_fields:
