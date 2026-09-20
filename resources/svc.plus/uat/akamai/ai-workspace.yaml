@@ -7,7 +7,10 @@ global:
   region: us-east
   image: linode/debian12
   # UAT AI Workspace target: 2C8G.
-  type: g6-highmem-2
+  # Akamai Cloud 2C8G plan.  Do not use the deprecated g6-highmem-2 alias;
+  # Linode resolves that alias to a g7-highmem-2 48G plan and Terraform then
+  # attempts an invalid no-op resize on every subsequent run.
+  type: g8-dedicated-8-2
   name_prefix: ai-workspace-uat-ak
   user_data_file: cloud-init.yaml
 
@@ -17,7 +20,7 @@ ssh_keys:
 
 hosts:
   - name: node
-    type: g6-highmem-2
+    type: g8-dedicated-8-2
     image: linode/debian12
     private_ip: true
     backups_enabled: false
