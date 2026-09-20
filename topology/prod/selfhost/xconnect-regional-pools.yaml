@@ -106,7 +106,7 @@ spec:
       nodes:
         - id: tw-01
           connection_source: vault
-          credentials_vault_path: prod/XConnect/TW/TW-XConnect.svc.plus
+          credentials_vault_path: prod/ulighthost-xconnect/tw-xconnect.svc.plus
           provider: external
           enabled: true
           role: standalone

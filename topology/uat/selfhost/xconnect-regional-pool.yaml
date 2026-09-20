@@ -82,9 +82,10 @@ spec:
       nodes:
         - id: tw-01
           connection_source: vault
-          # The existing-node inventory is stored under the environment-level
-          # KV record; the renderer selects the tw-01 record by node id.
-          credentials_vault_path: uat/ulighthost-xconnect
+          # Each existing node has its own KV v2 record.  This keeps UAT
+          # credentials scoped to the node instead of using an environment-wide
+          # aggregate secret.
+          credentials_vault_path: uat/ulighthost-xconnect/tw-xconnect.svc.plus
           provider: external
           enabled: true
           role: standalone
