@@ -1,0 +1,72 @@
+global:
+  provider: akamai-cloud
+  environment: prod
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: xconnect
+  image: linode/debian12
+  type: g6-standard-1
+  name_prefix: xconn-prod-ak
+  user_data_file: cloud-init.yaml
+
+ssh_keys:
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+hosts:
+  - name: jpn-tky
+    region: jp-tyo-3
+    type: g6-standard-1
+    image: linode/debian12
+    private_ip: true
+    ansible_user: root
+    groups: [xconnect, prod, akamai_cloud]
+    tags: [svc-plus, prod, xconnect, logical-jpn-tky, provider-jp-tyo-3]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: false
+      allow_https: false
+    host_vars:
+      role: xconnect
+      logical_region: jpn-tky
+      provider_region: jp-tyo-3
+      service_domains: [jp-xconnect.svc.plus]
+
+  - name: us-ca
+    region: us-lax
+    type: g6-standard-1
+    image: linode/debian12
+    private_ip: true
+    ansible_user: root
+    groups: [xconnect, prod, akamai_cloud]
+    tags: [svc-plus, prod, xconnect, logical-us-ca, provider-us-lax]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: false
+      allow_https: false
+    host_vars:
+      role: xconnect
+      logical_region: us-ca
+      provider_region: us-lax
+      service_domains: [us-xconnect.svc.plus]
+
+  - name: hk
+    region: sg-sin-2
+    type: g6-standard-1
+    image: linode/debian12
+    private_ip: true
+    ansible_user: root
+    groups: [xconnect, prod, akamai_cloud]
+    tags: [svc-plus, prod, xconnect, logical-hk, provider-sg-sin-2]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: false
+      allow_https: false
+    host_vars:
+      role: xconnect
+      logical_region: hk
+      provider_region: sg-sin-2
+      service_domains: [hk-xconnect.svc.plus]
