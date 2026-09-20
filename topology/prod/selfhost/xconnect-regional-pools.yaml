@@ -5,12 +5,12 @@ metadata:
   project: svc.plus
   environment: prod
 spec:
-  # AWS regions are declared in the IaC CMDB; PH remains a Vault-backed
+  # Akamai Cloud regions are declared in the IaC CMDB; PH remains a Vault-backed
   # manually supplied edge. The runtime contract is one pool per region.
   lifecycle: hybrid
   provisioning:
     managed_by: mixed
-    iac_status: active_for_jp_hk_us
+    iac_status: active_for_jp_sg_us
   entrypoint_defaults:
     dns_record:
       zone: svc.plus
@@ -63,17 +63,17 @@ spec:
           enabled: true
           role: standalone
           weight: 100
-    - name: hk
-      region: hk
+    - name: sg
+      region: sg
       entrypoint:
-        fqdn: hk-xconnect.svc.plus
+        fqdn: sg-xconnect.svc.plus
         mode: auto
         single_node_binding: direct
         multi_node_binding: scheduler
-        scheduler_node: hk-01
+        scheduler_node: sg-01
       nodes:
-        - id: hk-01
-          node_id: ap-prod-hk
+        - id: sg-01
+          node_id: ap-prod-sg
           connection_source: terraform_cmdb
           enabled: true
           role: standalone

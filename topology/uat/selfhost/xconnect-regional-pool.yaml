@@ -6,9 +6,10 @@ metadata:
   environment: uat
 spec:
   # GitOps owns the public regional contract. Terraform only creates the
-  # AWS instances and emits CMDB facts; playbooks install the edge agent.
-  lifecycle: terraform
-  provider: aws
+  # Akamai Cloud instances and emits CMDB facts; playbooks install the edge
+  # agent. TW remains an existing Ulighthost node.
+  lifecycle: hybrid
+  provider: mixed
   scheduler:
     implementation:
       repository: git@github.com:ai-workspace-xstream/xconnect-edge-agent.git
@@ -37,18 +38,18 @@ spec:
           enabled: true
           role: standalone
           weight: 100
-    - name: hk
-      region: hk
+    - name: sg
+      region: sg
       entrypoint:
-        fqdn: hk-xconnect.onwalk.net
+        fqdn: sg-xconnect.onwalk.net
         dns_record:
           type: A
-          target_node: hk-01
+          target_node: sg-01
           ttl: 1
           proxied: false
       nodes:
-        - id: hk-01
-          node_id: ap-uat-hk
+        - id: sg-01
+          node_id: ap-uat-sg
           connection_source: terraform_cmdb
           enabled: true
           role: standalone
@@ -69,6 +70,23 @@ spec:
           enabled: true
           role: standalone
           weight: 100
+    - name: tw
+      region: tw
+      entrypoint:
+        fqdn: tw-xconnect.onwalk.net
+        dns_record:
+          type: A
+          target_node: tw-01
+          ttl: 1
+          proxied: false
+      nodes:
+        - id: tw-01
+          connection_source: vault
+          credentials_vault_path: uat/XConnect/TW/TW-XConnect.svc.plus
+          provider: external
+          enabled: true
+          role: standalone
+          weight: 100
   connection_sources:
     terraform_cmdb:
       requires:
@@ -77,3 +95,8 @@ spec:
         - ansible_user
         - instance_id
       credentials: deployment_key
+    vault:
+      requires:
+        - ansible_host
+        - ansible_user
+        - SSH_PASSWORD
