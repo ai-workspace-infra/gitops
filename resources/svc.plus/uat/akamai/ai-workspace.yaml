@@ -1,0 +1,33 @@
+global:
+  provider: akamai-cloud
+  environment: uat
+  region: us-east
+  image: linode/debian12
+  type: g6-nanode-1
+  name_prefix: aiws-uat-ak
+  user_data_file: cloud-init.yaml
+
+ssh_keys:
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+hosts:
+  - name: node
+    type: g6-nanode-1
+    image: linode/debian12
+    private_ip: true
+    backups_enabled: false
+    ansible_user: root
+    groups: [ai_workspace, debian, akamai_cloud]
+    tags: [svc-plus, uat, ai-workspace, akamai-cloud]
+    firewall:
+      # Explicitly authorized UAT bootstrap default. Restrict this before
+      # exposing a service or promoting the workspace to production.
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: false
+      allow_https: false
+    host_vars:
+      role: primary
+      cloud_provider: akamai-cloud
+      service_domains: []
