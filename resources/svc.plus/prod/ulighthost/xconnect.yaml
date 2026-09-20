@@ -1,0 +1,36 @@
+global:
+  provider: ulighthost
+  environment: prod
+  project: svc.plus
+  account: ucloud-ulighthost
+  workspace: xconnect
+  management_mode: existing
+  provisioner: ansible
+  lifecycle: external
+  inventory_backend: s3
+  inventory_key: inventory/prod/svc.plus/ulighthost/ucloud-ulighthost/xconnect.json
+  vault_path: kv/data/prod/ulighthost-xconnect
+
+# Taiwan and Philippines reuse the existing Ulighthost nodes. This declaration
+# records ownership and connection facts only; it must never trigger Terraform
+# apply, destroy, or provider-side resource creation.
+hosts:
+  - name: tw-01
+    logical_region: tw
+    provider_region: tw
+    inventory_host: tw-xconnect.svc.plus
+    resource_ref: cmdb://nodes/tw-xconnect.svc.plus
+    vault_key: tw-01
+    role: standalone
+    groups: [xconnect, prod, ulighthost]
+    service_domains: [tw-xconnect.svc.plus]
+
+  - name: ph-01
+    logical_region: ph
+    provider_region: ph-mnl
+    inventory_host: ph-xconnect.svc.plus
+    resource_ref: cmdb://nodes/ph-xconnect.svc.plus
+    vault_key: ph-surfercloud-01
+    role: standalone
+    groups: [xconnect, prod, ulighthost]
+    service_domains: [ph-xconnect.svc.plus]
