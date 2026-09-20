@@ -20,7 +20,7 @@ hosts:
     image: linode/debian12
     private_ip: true
     ansible_user: root
-    groups: [xconnect, uat, akamai_cloud]
+    groups: [xconnect, agent_proxy, uat, akamai_cloud]
     tags: [svc-plus, uat, xconnect, logical-jpn-tky, provider-jp-tyo-3]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
@@ -39,7 +39,7 @@ hosts:
     image: linode/debian12
     private_ip: true
     ansible_user: root
-    groups: [xconnect, uat, akamai_cloud]
+    groups: [xconnect, agent_proxy, uat, akamai_cloud]
     tags: [svc-plus, uat, xconnect, logical-us-ca, provider-us-lax]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
@@ -58,7 +58,7 @@ hosts:
     image: linode/debian12
     private_ip: true
     ansible_user: root
-    groups: [xconnect, uat, akamai_cloud]
+    groups: [xconnect, agent_proxy, uat, akamai_cloud]
     tags: [svc-plus, uat, xconnect, logical-sg, provider-sg-sin-2]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
