@@ -7,7 +7,7 @@ metadata:
 spec:
   # GitOps owns the public regional contract. Terraform only creates the
   # Akamai Cloud instances and emits CMDB facts; playbooks install the edge
-  # agent. TW remains an existing Ulighthost node.
+  # agent. TW and PH remain existing Ulighthost nodes.
   lifecycle: hybrid
   provider: mixed
   scheduler:
@@ -86,6 +86,23 @@ spec:
           # credentials scoped to the node instead of using an environment-wide
           # aggregate secret.
           credentials_vault_path: uat/ulighthost-xconnect/tw-xconnect.svc.plus
+          provider: external
+          enabled: true
+          role: standalone
+          weight: 100
+    - name: ph
+      region: ph
+      entrypoint:
+        fqdn: ph-xconnect.onwalk.net
+        dns_record:
+          type: A
+          target_node: ph-01
+          ttl: 1
+          proxied: false
+      nodes:
+        - id: ph-01
+          connection_source: vault
+          credentials_vault_path: uat/ulighthost-xconnect/ph-xconnect.svc.plus
           provider: external
           enabled: true
           role: standalone
