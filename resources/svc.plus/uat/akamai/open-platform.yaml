@@ -1,0 +1,39 @@
+# UAT Open Platform runs on the selectable Akamai Cloud/Linode Terraform
+# adapter. This host carries the Vault and observability entrypoints during
+# the migration from the legacy platform host.
+global:
+  provider: akamai-cloud
+  environment: uat
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: open-platform
+  region: us-east
+  image: linode/debian12
+  type: g6-standard-2
+  name_prefix: open-platform-uat-ak
+  user_data_file: cloud-init.yaml
+
+ssh_keys:
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+hosts:
+  - name: open-platform
+    type: g6-standard-2
+    image: linode/debian12
+    private_ip: true
+    backups_enabled: true
+    ansible_user: root
+    groups: [infra_platform, open_platform, debian, akamai_cloud]
+    tags: [svc-plus, uat, open-platform, akamai-cloud]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: true
+      allow_https: true
+    host_vars:
+      role: primary
+      cloud_provider: akamai-cloud
+      service_domains:
+        - vault.svc.plus
+        - observability.svc.plus

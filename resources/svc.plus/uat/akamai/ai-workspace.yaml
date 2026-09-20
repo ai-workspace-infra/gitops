@@ -1,10 +1,14 @@
 global:
   provider: akamai-cloud
   environment: uat
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: ai-workspace
   region: us-east
   image: linode/debian12
-  type: g6-nanode-1
-  name_prefix: aiws-uat-ak
+  # UAT AI Workspace target: 2C8G.
+  type: g6-highmem-2
+  name_prefix: ai-workspace-uat-ak
   user_data_file: cloud-init.yaml
 
 ssh_keys:
@@ -13,13 +17,13 @@ ssh_keys:
 
 hosts:
   - name: node
-    type: g6-nanode-1
+    type: g6-highmem-2
     image: linode/debian12
     private_ip: true
     backups_enabled: false
     ansible_user: root
     groups: [ai_workspace, debian, akamai_cloud]
-    tags: [svc-plus, uat, ai-workspace, akamai-cloud]
+    tags: [svc-plus, uat, ai-workspace, akamai-cloud, 2c8g]
     firewall:
       # Explicitly authorized UAT bootstrap default. Restrict this before
       # exposing a service or promoting the workspace to production.
