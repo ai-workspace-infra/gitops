@@ -1,0 +1,41 @@
+# UAT Web SaaS runs on the selectable Akamai Cloud/Linode Terraform adapter.
+# The 2C4G shape is explicit here so changing the workflow input cannot
+# silently resize this state to a different provider-specific plan.
+global:
+  provider: akamai-cloud
+  environment: uat
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: web-saas
+  region: us-east
+  image: linode/debian12
+  type: g6-standard-2
+  name_prefix: web-saas-uat-ak
+  user_data_file: cloud-init.yaml
+
+ssh_keys:
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+hosts:
+  - name: web-saas
+    type: g6-standard-2
+    image: linode/debian12
+    private_ip: true
+    backups_enabled: true
+    ansible_user: root
+    groups: [web_saas, debian, database, akamai_cloud]
+    tags: [svc-plus, uat, web-saas, akamai-cloud]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: true
+      allow_https: true
+    host_vars:
+      role: primary
+      cloud_provider: akamai-cloud
+      service_domains:
+        - console-uat.onwalk.net
+        - accounts-uat.onwalk.net
+        - billing-uat.onwalk.net
+        - postgresql-saas-uat.onwalk.net
