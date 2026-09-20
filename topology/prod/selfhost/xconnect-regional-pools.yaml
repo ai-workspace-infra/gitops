@@ -5,8 +5,9 @@ metadata:
   project: svc.plus
   environment: prod
 spec:
-  # Akamai Cloud regions are declared in the IaC CMDB; PH remains a Vault-backed
-  # manually supplied edge. The runtime contract is one pool per region.
+  # Akamai Cloud regions are declared in the IaC CMDB; PH and TW remain
+  # Vault-backed manually supplied edges. The runtime contract is one pool per
+  # region.
   lifecycle: hybrid
   provisioning:
     managed_by: mixed
@@ -90,6 +91,22 @@ spec:
         - id: ph-surfercloud-01
           connection_source: vault
           credentials_vault_path: prod/XConnect/PH/PH-XConnect.svc.plus
+          provider: external
+          enabled: true
+          role: standalone
+          weight: 100
+    - name: tw
+      region: tw
+      entrypoint:
+        fqdn: tw-xconnect.svc.plus
+        mode: auto
+        single_node_binding: direct
+        multi_node_binding: scheduler
+        scheduler_node: tw-01
+      nodes:
+        - id: tw-01
+          connection_source: vault
+          credentials_vault_path: prod/XConnect/TW/TW-XConnect.svc.plus
           provider: external
           enabled: true
           role: standalone
