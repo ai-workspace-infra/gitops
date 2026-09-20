@@ -6,11 +6,10 @@ global:
   workspace: ai-workspace
   region: us-east
   image: linode/debian12
-  # UAT AI Workspace target: 2C8G.
-  # Akamai Cloud 2C8G plan.  Do not use the deprecated g6-highmem-2 alias;
-  # Linode resolves that alias to a g7-highmem-2 48G plan and Terraform then
-  # attempts an invalid no-op resize on every subsequent run.
-  type: g8-dedicated-8-2
+  # UAT target is at least 2C8G.  The existing us-east instance is already
+  # g7-highmem-2 (2 vCPU / 48 GiB); g8-dedicated-8-2 is unavailable in this
+  # region, so keep the available current plan and avoid a failed resize.
+  type: g7-highmem-2
   name_prefix: ai-workspace-uat-ak
   user_data_file: cloud-init.yaml
 
@@ -20,13 +19,13 @@ ssh_keys:
 
 hosts:
   - name: node
-    type: g8-dedicated-8-2
+    type: g7-highmem-2
     image: linode/debian12
     private_ip: true
     backups_enabled: false
     ansible_user: root
     groups: [ai_workspace, debian, akamai_cloud]
-    tags: [svc-plus, uat, ai-workspace, akamai-cloud, 2c8g]
+    tags: [svc-plus, uat, ai-workspace, akamai-cloud, 2c48g]
     firewall:
       # Explicitly authorized UAT bootstrap default. Restrict this before
       # exposing a service or promoting the workspace to production.
