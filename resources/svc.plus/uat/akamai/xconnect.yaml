@@ -1,3 +1,6 @@
+# Legacy aggregate declaration retained for compatibility/reference only.
+# UAT Terraform routing must use agent-proxy-jp.yaml, agent-proxy-us.yaml, or
+# agent-proxy-sg.yaml; this three-host document is not a supported state scope.
 global:
   provider: akamai-cloud
   environment: uat

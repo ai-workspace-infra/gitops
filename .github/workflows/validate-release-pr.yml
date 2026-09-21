@@ -58,3 +58,6 @@ jobs:
 
       - name: Validate runtime topology declarations
         run: scripts/validate-runtime-topologies.sh
+
+      - name: Validate six isolated UAT Akamai namespaces
+        run: scripts/validate-akamai-uat-namespaces.sh

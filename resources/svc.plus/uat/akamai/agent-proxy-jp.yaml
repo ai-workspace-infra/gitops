@@ -1,0 +1,36 @@
+# UAT JP Agent Proxy is an independent Terraform namespace/state.
+global:
+  provider: akamai-cloud
+  environment: uat
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: agent-proxy-jp
+  region: jp-tyo-3
+  image: linode/debian12
+  type: g6-standard-1
+  name_prefix: ap-uat-ak-jp
+  user_data_file: cloud-init.yaml
+
+ssh_keys:
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+hosts:
+  - name: jpn-tky
+    type: g6-standard-1
+    image: linode/debian12
+    region: jp-tyo-3
+    private_ip: true
+    ansible_user: root
+    groups: [xconnect, agent_proxy, uat, akamai_cloud]
+    tags: [svc-plus, uat, xconnect, logical-jpn-tky, provider-jp-tyo-3]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: false
+      allow_https: false
+    host_vars:
+      role: xconnect
+      logical_region: jpn-tky
+      provider_region: jp-tyo-3
+      service_domains: [jp-xconnect.svc.plus]

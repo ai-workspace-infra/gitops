@@ -26,7 +26,7 @@ hosts:
     private_ip: true
     backups_enabled: true
     ansible_user: root
-    groups: [infra_platform, open_platform, debian, akamai_cloud]
+    groups: [infra_platform, open_platform, observability_hosts, debian, akamai_cloud]
     tags: [svc-plus, uat, open-platform, akamai-cloud]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]

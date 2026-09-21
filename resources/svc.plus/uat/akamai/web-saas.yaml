@@ -37,7 +37,7 @@ hosts:
       role: primary
       cloud_provider: akamai-cloud
       service_domains:
-        - console-uat.onwalk.net
-        - accounts-uat.onwalk.net
-        - billing-uat.onwalk.net
-        - postgresql-saas-uat.onwalk.net
+        - console-selfhost-uat.onwalk.net
+        - accounts-selfhost-uat.onwalk.net
+        - billing-selfhost-uat.onwalk.net
+        - postgresql-selfhost-uat.onwalk.net
