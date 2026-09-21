@@ -81,6 +81,9 @@ spec:
       inventory_host: gateway-01
       resource_ref: aws://ai-aggregator-uat/hosts/gateway-01
       role: gateway
+      xconnect:
+        enabled: true
+        overlay_ip: 10.77.0.10
       provider: aws
       lifecycle: ephemeral
       spot_instance: true
@@ -90,6 +93,9 @@ spec:
       inventory_host: cpa-codex-01
       resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-01
       role: cpa
+      xconnect:
+        enabled: true
+        overlay_ip: 10.77.0.11
       transport: private-network-required
       desktop_role: ai_desktop
       provider: aws
@@ -100,6 +106,9 @@ spec:
       inventory_host: cpa-claude-01
       resource_ref: aws://ai-aggregator-uat/hosts/cpa-claude-01
       role: cpa
+      xconnect:
+        enabled: true
+        overlay_ip: 10.77.0.12
       transport: private-network-required
       desktop_role: ai_desktop
       provider: aws
@@ -110,6 +119,9 @@ spec:
       inventory_host: cpa-codex-02
       resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-02
       role: cpa
+      xconnect:
+        enabled: true
+        overlay_ip: 10.77.0.13
       transport: private-network-required
       desktop_role: ai_desktop
       provider: aws
@@ -120,6 +132,9 @@ spec:
       inventory_host: cpa-grok-01
       resource_ref: aws://ai-aggregator-uat/hosts/cpa-grok-01
       role: cpa
+      xconnect:
+        enabled: true
+        overlay_ip: 10.77.0.14
       transport: private-network-required
       desktop_role: ai_desktop
       provider: aws
