@@ -10,8 +10,8 @@ kv/prod/platform/{oidc,jwt,cloudflare,gcp,observability,gitea}
 kv/prod/services/{xconnect,ai-workspace}
 ```
 
-UAT maps to `xworktech-open-platform-uat`; PROD maps to
-`xworktech-open-platform-prod`. There is no `kv/shared` credential path. Shared non-secret
+UAT maps to `xwork-open-platform-uat`; PROD maps to
+`xwork-open-platform-prod`. There is no `kv/shared` credential path. Shared non-secret
 defaults belong in the corresponding GitOps declaration.
 
 ## AI Aggregator v1 minimal contract

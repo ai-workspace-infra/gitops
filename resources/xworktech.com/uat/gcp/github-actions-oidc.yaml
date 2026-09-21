@@ -5,10 +5,10 @@ metadata:
   provider: gcp
 spec:
   gcp_account_id: xworktech
-  project_id: xworktech-open-platform-uat
+  project_id: xwork-open-platform-uat
   organization_id: "744119519286"
   provider_url: https://token.actions.githubusercontent.com
-  audience: https://iam.googleapis.com/projects/xworktech-open-platform-uat/locations/global/workloadIdentityPools/github-actions/providers/github
+  audience: https://iam.googleapis.com/projects/xwork-open-platform-uat/locations/global/workloadIdentityPools/github-actions/providers/github
   pool_id: github-actions
   provider_id: github
   service_account_id: github-actions-uat
