@@ -4,6 +4,7 @@ global:
   project: svc.plus
   account: manbuzhe2026
   workspace: ai-workspace
+  state_namespace: ai-workspace
   region: sg-sin-2
   image: linode/debian12
   # UAT target is exactly 4C8G: 4 vCPU / 8 GiB.

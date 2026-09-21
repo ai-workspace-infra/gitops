@@ -23,6 +23,7 @@ credentials, private keys, tokens and passwords stay in Vault or the CI secret s
 | `xworktech.com` | `prod` | `gcp` | `open-platform-prod.yaml` |
 | `svc.plus` | `sit`, `uat`, `prod` | `aws` | AWS host/resource declarations and GitHub Actions OIDC metadata |
 | `svc.plus` | `sit`, `uat`, `prod` | `vultr` | VPS host/resource declarations |
+| `svc.plus` | `uat` | `akamai` | six isolated namespaces for web-saas, open-platform, ai-workspace and JP/US/SG Agent Proxy |
 | `svc.plus` | `dev` | `supabase` | Supabase project declaration |
 
 The environment and provider directories are intentionally separate. This prevents a UAT
@@ -35,6 +36,12 @@ Pipelines check out this repository at a pinned ref and pass an absolute declara
 the renderer (`--resources` or `RESOURCES`). Terraform modules receive declaration paths as
 inputs; they do not discover files under the module repository. Rendered HCL, tfvars, state,
 CMDB and Ansible inventory remain build artifacts and are ignored by Git.
+
+For isolated Akamai UAT resources, each YAML declares exactly one host. The
+`global.state_namespace`, `global.workspace` and filename stem must match. The existing consuming
+workflow derives the canonical state key from its `workspace` input, so it must be invoked with
+the matching namespace; declarations must not be regrouped under shared `selfhost`. CI validates this contract with
+`scripts/validate-akamai-uat-six-namespaces.sh`.
 
 When adding a provider or environment:
 

@@ -7,6 +7,7 @@ global:
   project: svc.plus
   account: manbuzhe2026
   workspace: web-saas
+  state_namespace: web-saas
   region: us-east
   image: linode/debian12
   type: g6-standard-2
@@ -37,7 +38,7 @@ hosts:
       role: primary
       cloud_provider: akamai-cloud
       service_domains:
-        - console-uat.onwalk.net
+        - console-selfhost-uat.onwalk.net
         - accounts-uat.onwalk.net
         - billing-uat.onwalk.net
         - postgresql-saas-uat.onwalk.net
