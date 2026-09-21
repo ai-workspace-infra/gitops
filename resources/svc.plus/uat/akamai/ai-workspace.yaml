@@ -11,6 +11,10 @@ global:
   type: g8-dedicated-8-4
   name_prefix: ai-workspace-uat-ak
   user_data_file: cloud-init.yaml
+  # This namespace is migrating an existing state that already owns the
+  # account-level GitHub Actions key. Keep that historical object managed
+  # until the state/resource ownership is explicitly retired.
+  manage_account_ssh_keys: true
 
 ssh_keys:
   - name: vault-platform-ops-deploy
