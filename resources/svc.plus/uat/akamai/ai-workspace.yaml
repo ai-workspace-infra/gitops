@@ -4,10 +4,10 @@ global:
   project: svc.plus
   account: manbuzhe2026
   workspace: ai-workspace
-  region: us-east
+  region: sg-sin-2
   image: linode/debian12
-  # UAT target is exactly 2C8G: 2 vCPU / 8 GiB.
-  type: g8-dedicated-8-2
+  # UAT target is exactly 4C8G: 4 vCPU / 8 GiB.
+  type: g8-dedicated-8-4
   name_prefix: ai-workspace-uat-ak
   user_data_file: cloud-init.yaml
 
@@ -19,13 +19,13 @@ ssh_keys:
 
 hosts:
   - name: node
-    type: g8-dedicated-8-2
+    type: g8-dedicated-8-4
     image: linode/debian12
     private_ip: true
     backups_enabled: false
     ansible_user: root
     groups: [ai_workspace, debian, akamai_cloud]
-    tags: [svc-plus, uat, ai-workspace, akamai-cloud, 2c8g]
+    tags: [svc-plus, uat, ai-workspace, akamai-cloud, 4c8g]
     firewall:
       # Explicitly authorized UAT bootstrap default. Restrict this before
       # exposing a service or promoting the workspace to production.
