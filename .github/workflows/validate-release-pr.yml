@@ -29,6 +29,17 @@ jobs:
       - name: Run gitleaks detect
         run: gitleaks detect -v --redact --exit-code 1
 
+  validate-akamai-uat-six-namespaces:
+    name: Validate Akamai UAT state namespaces
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate six isolated Akamai declarations
+        run: scripts/validate-akamai-uat-six-namespaces.sh
+
   verify-images:
     name: Verify declared images exist
     runs-on: ubuntu-latest

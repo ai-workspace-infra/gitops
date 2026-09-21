@@ -21,6 +21,7 @@ resources/<project>/<environment>/<provider>/<declaration>.yaml
 | `xworktech.com` | `prod` | `gcp` | `open-platform-prod.yaml` |
 | `svc.plus` | `sit`、`uat`、`prod` | `aws` | AWS 主机/资源声明及 GitHub Actions OIDC 元数据 |
 | `svc.plus` | `sit`、`uat`、`prod` | `vultr` | VPS 主机/资源声明 |
+| `svc.plus` | `uat` | `akamai` | `web-saas`、`open-platform`、`ai-workspace` 与 JP/US/SG Agent Proxy 六个独立 namespace |
 | `svc.plus` | `dev` | `supabase` | Supabase 项目声明 |
 
 环境和云厂商目录必须分开，避免 UAT 渲染器误读生产值，也允许同一服务在 AWS 与 Vultr
@@ -31,6 +32,11 @@ resources/<project>/<environment>/<provider>/<declaration>.yaml
 流水线以固定 ref 检出 GitOps，并把绝对声明路径通过 `--resources` 或 `RESOURCES` 传给渲染器。
 Terraform 模块通过输入接收声明路径，不在模块仓库内搜索文件。渲染后的 HCL、tfvars、state、
 CMDB 和 Ansible inventory 都是构建产物，并由 Git 忽略。
+
+Akamai UAT 资源按 Terraform state namespace 拆分时，每个 YAML 只声明一台主机；
+`global.state_namespace`、`global.workspace` 和文件名（不含 `.yaml`）必须一致。现有消费流水线
+通过 `workspace` 参数生成统一 state key，因此触发时必须使用声明中的 namespace；不能把多个服务重新合并进 `selfhost`。
+`scripts/validate-akamai-uat-six-namespaces.sh` 是此契约的 CI 校验。
 
 新增云厂商或环境时：
 

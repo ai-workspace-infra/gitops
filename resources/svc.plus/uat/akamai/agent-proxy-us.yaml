@@ -1,17 +1,15 @@
-# UAT Open Platform runs on the selectable Akamai Cloud/Linode Terraform
-# adapter. This host carries the Vault and observability entrypoints during
-# the migration from the legacy platform host.
+# UAT US Agent Proxy is isolated in its own Akamai Terraform state.
 global:
   provider: akamai-cloud
   environment: uat
   project: svc.plus
   account: manbuzhe2026
-  workspace: open-platform
-  state_namespace: open-platform
-  region: us-east
+  workspace: agent-proxy-us
+  state_namespace: agent-proxy-us
+  region: us-lax
   image: linode/debian12
-  type: g6-standard-2
-  name_prefix: open-platform-uat-ak
+  type: g6-standard-1
+  name_prefix: xconn-uat-ak
   user_data_file: cloud-init.yaml
 
 ssh_keys:
@@ -21,22 +19,21 @@ ssh_keys:
     public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
 
 hosts:
-  - name: open-platform
-    type: g6-standard-2
+  - name: us-ca
+    region: us-lax
+    type: g6-standard-1
     image: linode/debian12
     private_ip: true
-    backups_enabled: true
     ansible_user: root
-    groups: [infra_platform, open_platform, debian, akamai_cloud]
-    tags: [svc-plus, uat, open-platform, akamai-cloud]
+    groups: [xconnect, agent_proxy, uat, akamai_cloud]
+    tags: [svc-plus, uat, xconnect, logical-us-ca, provider-us-lax]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: ["::/0"]
-      allow_http: true
-      allow_https: true
+      allow_http: false
+      allow_https: false
     host_vars:
-      role: primary
-      cloud_provider: akamai-cloud
-      service_domains:
-        - vault.svc.plus
-        - observability.svc.plus
+      role: xconnect
+      logical_region: us-ca
+      provider_region: us-lax
+      service_domains: [us-xconnect.svc.plus]
