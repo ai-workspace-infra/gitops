@@ -153,7 +153,7 @@ spec:
         hosts:
           - xworktech.com
         zone_name: xworktech.com
-        platform_origin: https://svc.plus
+        platform_origin: https://console.svc.plus
       pages_origin: https://ai-workspace-portal-prod.pages.dev
       api_origin: https://accounts-serverless-prod.svc.plus
       static_cache_ttl: 604800
