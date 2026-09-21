@@ -1,0 +1,25 @@
+# Minimal UAT stack used only to prove the GCP runtime OIDC/WIF identity can
+# create a real resource (platform-ops-toolkit#806). Pass it to
+# gcp-iac-pipeline.yml with gcp_resource_manifest; it has its own Terraform
+# state workspace, so plan/apply/destroy never touch the full open-platform stack.
+# Only network_name/subnet_cidr are declared, so the renderer skips Artifact
+# Registry, Cloud Run and Vault nodes.
+global:
+  environment: uat
+  bootstrap_project_id: crypto-will-508602-m0
+  project_id: xwork-open-platform-uat
+  project_name: XWork Open Platform UAT
+  organization_id: "744119519286"
+  region: asia-east1
+  network_name: spot-validation-uat
+  subnet_cidr: 10.61.0.0/24
+
+spot_vms:
+  - name: oidc-spot-validation-uat
+    zone: asia-east1-a
+    machine_type: e2-micro
+    image: projects/debian-cloud/global/images/family/debian-12
+    labels:
+      owner: platform-ops-toolkit
+      purpose: oidc-spot-validation
+      ttl: disposable

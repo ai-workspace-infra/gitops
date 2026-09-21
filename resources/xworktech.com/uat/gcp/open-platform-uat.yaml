@@ -19,13 +19,3 @@ global:
 vault_nodes:
   - name: vault-uat-0
     zone: asia-east1-a
-
-spot_vms:
-  - name: oidc-spot-validation-uat
-    zone: asia-east1-a
-    machine_type: e2-micro
-    image: projects/debian-cloud/global/images/family/debian-12
-    labels:
-      owner: platform-ops-toolkit
-      purpose: oidc-spot-validation
-      ttl: disposable
