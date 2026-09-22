@@ -14,6 +14,7 @@ spec:
         ttl_seconds: 60
         canonical_records:
           accounts.svc.plus: accounts-serverless-prod.svc.plus
+          www.svc.plus: console-serverless-prod.svc.plus
       load-balancer:
         strategy: dns-only
       weight:
