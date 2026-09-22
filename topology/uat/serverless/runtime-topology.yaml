@@ -178,11 +178,12 @@ spec:
           - /_edge/workspace/*
     edge_gateway:
       defaults:
-        # The self-hosted Accounts UAT origin is unavailable. Authentication
-        # writes must use Cloud Run as the primary because POST never fails
-        # over by design; otherwise browser login fails with a 502.
+        # Serverless workers send requests to fallback_upstream by design.
+        # Keep both targets on the direct Cloud Run Accounts origin: pointing
+        # fallback at the public Accounts alias would loop back into Core and
+        # make the Auth boundary return "Unknown API boundary: core".
         primary_upstream: https://uat-accounts-1004637461064.asia-northeast1.run.app
-        fallback_upstream: https://accounts-serverless-uat.onwalk.net
+        fallback_upstream: https://uat-accounts-1004637461064.asia-northeast1.run.app
         jwt_issuer: https://accounts-serverless-uat.onwalk.net
         timeout_ms: '2500'
       boundaries:
