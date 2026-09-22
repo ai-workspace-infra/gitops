@@ -36,4 +36,8 @@ hosts:
     # The two runtimes keep separate processes and state; only Caddy :443 is
     # shared and routes /split and /xconnect independently.
     groups: [xconnect, agent_proxy, uat, ulighthost]
+    host_vars:
+      xconnect_gateway_caddy_enabled: true
+      xconnect_gateway_caddy_path: /xconnect
+      xconnect_gateway_caddy_socket: /run/xconnect-gateway/xray.sock
     service_domains: [ph-xconnect.svc.plus]
