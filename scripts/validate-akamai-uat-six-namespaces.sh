@@ -17,7 +17,12 @@ ruby -ryaml -e '
     "web-saas" => { "host" => "web-saas", "domain" => "console-selfhost-uat.onwalk.net", "groups" => %w[web_saas database] }
   }
 
+  # AI Aggregator has its own independently managed Akamai states. This
+  # validator owns only the six Selfhost UAT namespaces; keep the aggregator
+  # declarations in the same provider directory without folding them into the
+  # six-namespace contract.
   files = Dir.glob(File.join(root, "*.yaml")).sort
+  files = files.reject { |path| File.basename(path, ".yaml").start_with?("ai-aggregator-") }
   actual = files.map { |path| File.basename(path, ".yaml") }.sort
   abort("expected exactly these six Akamai UAT declarations: #{expected.keys.sort.join(", ")}; found #{actual.join(", ")}") unless actual == expected.keys.sort
 
