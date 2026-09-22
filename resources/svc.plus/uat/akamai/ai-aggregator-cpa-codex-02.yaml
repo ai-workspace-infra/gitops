@@ -1,0 +1,34 @@
+# One-host Akamai state for CPA Codex account 02.
+global:
+  provider: akamai-cloud
+  environment: uat
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: ai-aggregator-cpa-codex-02
+  state_namespace: ai-aggregator-cpa-codex-02
+  region: jp-tyo-3
+  image: linode/debian12
+  type: g6-standard-1
+  name_prefix: ai-aggregator-uat-ak
+  user_data_file: cloud-init.yaml
+ssh_keys:
+  - name: vault-platform-ops-deploy
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+hosts:
+  - name: cpa-codex-02
+    region: jp-tyo-3
+    type: g6-standard-1
+    image: linode/debian12
+    private_ip: true
+    ansible_user: root
+    groups: [ai_aggregator_cpa, ai_aggregator, uat, akamai_cloud]
+    tags: [svc-plus, uat, ai-aggregator, cpa, codex, akamai-cloud]
+    firewall:
+      ssh_cidrs: ["35.79.83.48/32"]
+      ssh_ipv6_cidrs: []
+      allow_http: false
+      allow_https: false
+    host_vars:
+      role: cpa
+      cloud_provider: akamai-cloud
+      service_domains: []

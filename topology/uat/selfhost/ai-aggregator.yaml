@@ -15,16 +15,38 @@ spec:
     rollback_upstream: litellm
     deployment_mode: embedded
   infrastructure:
-    provider: aws
+    provider: akamai-cloud
     provisioner: terraform
     resource_contract:
       repository: ai-workspace-infra/iac_modules
-      path: terraform-hcl-standard/aws-cloud/config/resources/uat/ai-aggregator.yaml
+      path: terraform-hcl-standard/akamai-cloud/resources/svc.plus/uat/akamai/ai-aggregator-gateway.yaml
       ref: main
-      renderer: terraform-hcl-standard/aws-cloud/scripts/generate.py
-      workdir: terraform-hcl-standard/aws-cloud/envs/ai-aggregator-uat
+      renderer: terraform-hcl-standard/akamai-cloud/scripts/generate.py
+      workdir: terraform-hcl-standard/akamai-cloud/envs/uat/ai-aggregator-gateway
+      account: manbuzhe2026
+      manifests:
+        - workspace: ai-aggregator-gateway
+          node: gateway-01
+          role: gateway
+          path: resources/svc.plus/uat/akamai/ai-aggregator-gateway.yaml
+        - workspace: ai-aggregator-cpa-codex-01
+          node: cpa-codex-01
+          role: cpa
+          path: resources/svc.plus/uat/akamai/ai-aggregator-cpa-codex-01.yaml
+        - workspace: ai-aggregator-cpa-codex-02
+          node: cpa-codex-02
+          role: cpa
+          path: resources/svc.plus/uat/akamai/ai-aggregator-cpa-codex-02.yaml
+        - workspace: ai-aggregator-cpa-claude-01
+          node: cpa-claude-01
+          role: cpa
+          path: resources/svc.plus/uat/akamai/ai-aggregator-cpa-claude-01.yaml
+        - workspace: ai-aggregator-cpa-grok-01
+          node: cpa-grok-01
+          role: cpa
+          path: resources/svc.plus/uat/akamai/ai-aggregator-cpa-grok-01.yaml
     lifecycle: ephemeral
-    spot_instance: true
+    spot_instance: false
     max_runtime_minutes: 60
     state_strategy: pipeline-local
     outputs:
@@ -68,78 +90,78 @@ spec:
       enabled: false
       reason: liteLLM-remains-the-official-provider-aggregator-in-v1
   testing_environment:
-    provider: aws
-    instance_type: t4g.medium
-    architecture: arm64
-    os_name: "Debian 12 ARM64 (bookworm)"
-    spot_instance: true
+    provider: akamai-cloud
+    instance_type: g6-standard-1
+    architecture: amd64
+    os_name: "Debian 12 AMD64 (bookworm)"
+    spot_instance: false
     max_runtime_minutes: 60
-    auto_terminate: true
-    # Spot instances terminate after 60 minutes via instance shutdown to eliminate idle costs.
+    auto_terminate: false
+    # Akamai UAT has no Spot contract; workflow_dispatch controls destroy.
   nodes:
     - id: gateway-01
       inventory_host: gateway-01
-      resource_ref: aws://ai-aggregator-uat/hosts/gateway-01
+      resource_ref: akamai://ai-aggregator-uat/hosts/gateway-01
       role: gateway
       xconnect:
         enabled: true
         overlay_ip: 10.77.0.10
-      provider: aws
+      provider: akamai-cloud
       lifecycle: ephemeral
-      spot_instance: true
+      spot_instance: false
       max_runtime_minutes: 60
       caddy_mode: reuse-existing
     - id: cpa-codex-01
       inventory_host: cpa-codex-01
-      resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-01
+      resource_ref: akamai://ai-aggregator-uat/hosts/cpa-codex-01
       role: cpa
       xconnect:
         enabled: true
         overlay_ip: 10.77.0.11
       transport: private-network-required
       desktop_role: ai_desktop
-      provider: aws
+      provider: akamai-cloud
       lifecycle: ephemeral
-      spot_instance: true
+      spot_instance: false
       max_runtime_minutes: 60
     - id: cpa-claude-01
       inventory_host: cpa-claude-01
-      resource_ref: aws://ai-aggregator-uat/hosts/cpa-claude-01
+      resource_ref: akamai://ai-aggregator-uat/hosts/cpa-claude-01
       role: cpa
       xconnect:
         enabled: true
         overlay_ip: 10.77.0.12
       transport: private-network-required
       desktop_role: ai_desktop
-      provider: aws
+      provider: akamai-cloud
       lifecycle: ephemeral
-      spot_instance: true
+      spot_instance: false
       max_runtime_minutes: 60
     - id: cpa-codex-02
       inventory_host: cpa-codex-02
-      resource_ref: aws://ai-aggregator-uat/hosts/cpa-codex-02
+      resource_ref: akamai://ai-aggregator-uat/hosts/cpa-codex-02
       role: cpa
       xconnect:
         enabled: true
         overlay_ip: 10.77.0.13
       transport: private-network-required
       desktop_role: ai_desktop
-      provider: aws
+      provider: akamai-cloud
       lifecycle: ephemeral
-      spot_instance: true
+      spot_instance: false
       max_runtime_minutes: 60
     - id: cpa-grok-01
       inventory_host: cpa-grok-01
-      resource_ref: aws://ai-aggregator-uat/hosts/cpa-grok-01
+      resource_ref: akamai://ai-aggregator-uat/hosts/cpa-grok-01
       role: cpa
       xconnect:
         enabled: true
         overlay_ip: 10.77.0.14
       transport: private-network-required
       desktop_role: ai_desktop
-      provider: aws
+      provider: akamai-cloud
       lifecycle: ephemeral
-      spot_instance: true
+      spot_instance: false
       max_runtime_minutes: 60
   resources:
     minimum_resources:
