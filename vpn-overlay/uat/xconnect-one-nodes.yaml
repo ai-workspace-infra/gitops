@@ -10,14 +10,14 @@ spec:
     id: net_uat
     cidr: 10.77.0.0/24
     gateway_wireguard_address: 10.77.0.1/32
-    gateway_ref: tw-xconnect.svc.plus
+    gateway_ref: ph-xconnect.svc.plus
     transport: vless-xhttp
     transport_profile:
       kind: vless-xhttp
       port: 443
       path: /xconnect
       mode: auto
-      host: tw-xconnect.svc.plus
+      host: ph-xconnect.svc.plus
     public_wireguard_ingress: false
   runtime:
     cli_release: v0.1.14
