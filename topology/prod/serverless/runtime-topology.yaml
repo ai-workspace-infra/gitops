@@ -97,6 +97,7 @@ spec:
     console_aliases:
       - console.svc.plus
       - console-serverless-prod.svc.plus
+      - www.svc.plus
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
     frontend_router:
