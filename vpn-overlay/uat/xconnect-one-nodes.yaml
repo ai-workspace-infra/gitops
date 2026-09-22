@@ -24,7 +24,9 @@ spec:
   runtime:
     cli_release: v0.1.14
     wireguard_interface: xconone0
-    xray_loopback_udp_port: 51830
+    # observability.svc.plus already owns 127.0.0.1:51830 for its existing
+    # tunnel. Keep the XConnect One runtime isolated instead of replacing it.
+    xray_loopback_udp_port: 51831
     state_dir_prefix: /var/lib/xconnect-one
     sync_interval_seconds: 300
   fixed_nodes:
