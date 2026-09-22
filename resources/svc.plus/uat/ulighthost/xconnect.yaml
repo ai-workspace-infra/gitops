@@ -32,5 +32,8 @@ hosts:
     resource_ref: cmdb://nodes/ph-xconnect.svc.plus
     vault_key: ph-surfercloud-01
     role: standalone
-    groups: [xconnect, uat, ulighthost]
+    # UAT's stable PH node is the shared Agent Proxy + XConnect Gateway host.
+    # The two runtimes keep separate processes and state; only Caddy :443 is
+    # shared and routes /split and /xconnect independently.
+    groups: [xconnect, agent_proxy, uat, ulighthost]
     service_domains: [ph-xconnect.svc.plus]
