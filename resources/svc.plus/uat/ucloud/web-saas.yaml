@@ -1,0 +1,34 @@
+# UAT UHost declaration. IDs are resolved by the UCloud bootstrap Job.
+management_mode: terraform
+provisioner: terraform
+environment: uat
+bootstrap:
+  security_group_id_env: UCLOUD_BOOTSTRAP_SECURITY_GROUP_ID
+  key_pair_id_env: UCLOUD_BOOTSTRAP_KEY_PAIR_ID
+global:
+  region: cn-bj2
+  availability_zone: cn-bj2-03
+  image_name_regex: ^Ubuntu 22.04
+  instance_type: n-basic-2
+  boot_disk_type: cloud_ssd
+  tag: svc-plus-uat
+  name_prefix: web-saas-uat
+hosts:
+- name: web-saas
+  instance_type: n-basic-2
+  groups:
+  - web_saas
+  - debian
+  - database
+  tags:
+  - svc-plus
+  - uat
+  - web-saas
+  - ucloud
+  host_vars:
+    role: primary
+    service_domains:
+    - console-selfhost-uat.onwalk.net
+    - accounts-uat.onwalk.net
+    - billing-uat.onwalk.net
+    - postgresql-saas-uat.onwalk.net
