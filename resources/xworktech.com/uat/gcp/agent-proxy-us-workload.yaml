@@ -7,14 +7,29 @@ metadata:
   provider: gcp
 spec:
   gcp_account_id: xworktech
+  bootstrap_project_id: crypto-will-508602-m0
   project_id: xwork-open-platform-uat
   organization_id: "744119519286"
   region: us-central1
   workspace: agent-proxy-us
   state_namespace: agent-proxy-us
+  network_name: agent-proxy-us-uat-gcp
+  subnet_cidr: 10.66.0.0/24
+  enable_cloud_nat: false
   state:
     key: terraform/uat/xwork-open-platform-uat/gcp-cloud/xworktech/agent-proxy-us/terraform.tfstate
   resource:
     name: agent-proxy-us-uat
     type: workload_namespace
     lifecycle: ephemeral
+  resources:
+    spot_vms:
+      - name: agent-proxy-us-uat
+        zone: us-central1-a
+        machine_type: e2-micro
+        image: projects/debian-cloud/global/images/family/debian-12
+        max_run_duration_seconds: 3600
+        labels:
+          owner: platform-ops-toolkit
+          workload: agent-proxy-us
+          ttl: disposable
