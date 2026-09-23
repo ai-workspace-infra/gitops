@@ -27,19 +27,19 @@ spec:
     vault_nodes:
       - name: vault-prod-0
         zone: asia-east1-a
-        machine_type: e2-custom-2-2048
+        machine_type: e2-highcpu-2
         image: projects/debian-cloud/global/images/family/debian-12
         xconnect_role: gateway
         public_ip: true
       - name: vault-prod-1
         zone: asia-east1-b
-        machine_type: e2-custom-2-2048
+        machine_type: e2-highcpu-2
         image: projects/debian-cloud/global/images/family/debian-12
         xconnect_role: one
         public_ip: true
       - name: vault-prod-2
         zone: asia-east1-c
-        machine_type: e2-custom-2-2048
+        machine_type: e2-highcpu-2
         image: projects/debian-cloud/global/images/family/debian-12
         xconnect_role: one
         public_ip: true
