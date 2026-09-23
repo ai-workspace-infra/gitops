@@ -1,0 +1,32 @@
+# UAT UHost declaration. IDs are resolved by the UCloud bootstrap Job.
+management_mode: terraform
+provisioner: terraform
+environment: uat
+bootstrap:
+  security_group_id_env: UCLOUD_BOOTSTRAP_SECURITY_GROUP_ID
+  key_pair_id_env: UCLOUD_BOOTSTRAP_KEY_PAIR_ID
+global:
+  region: cn-bj2
+  availability_zone: cn-bj2-03
+  image_name_regex: ^Ubuntu 22.04
+  instance_type: n-basic-2
+  boot_disk_type: cloud_ssd
+  tag: svc-plus-uat
+  name_prefix: open-platform-uat
+hosts:
+- name: open-platform
+  instance_type: n-basic-2
+  groups:
+  - infra_platform
+  - open_platform
+  - debian
+  tags:
+  - svc-plus
+  - uat
+  - open-platform
+  - ucloud
+  host_vars:
+    role: primary
+    service_domains:
+    - vault.svc.plus
+    - observability.svc.plus
