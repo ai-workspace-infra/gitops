@@ -1,0 +1,37 @@
+# Declaration-only namespace contract for the UAT GCP workload set.
+# This file is intentionally not a gcp-iac-pipeline input yet: the current
+# renderer owns the shared open-platform stack in open-platform-uat.yaml.
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GCPWorkloadNamespace
+metadata:
+  name: open-platform
+  environment: uat
+  provider: gcp
+spec:
+  gcp_account_id: xworktech
+  bootstrap_project_id: crypto-will-508602-m0
+  project_id: xwork-open-platform-uat
+  organization_id: "744119519286"
+  region: asia-east1
+  workspace: open-platform
+  state_namespace: open-platform
+  network_name: open-platform-uat-gcp
+  subnet_cidr: 10.62.0.0/24
+  enable_cloud_nat: false
+  state:
+    key: terraform/uat/xwork-open-platform-uat/gcp-cloud/xworktech/open-platform/terraform.tfstate
+  resource:
+    name: open-platform-uat
+    type: workload_namespace
+    lifecycle: ephemeral
+  resources:
+    spot_vms:
+      - name: open-platform-uat
+        zone: asia-east1-a
+        machine_type: e2-micro
+        image: projects/debian-cloud/global/images/family/debian-12
+        max_run_duration_seconds: 3600
+        labels:
+          owner: platform-ops-toolkit
+          workload: open-platform
+          ttl: disposable

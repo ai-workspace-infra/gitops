@@ -1,0 +1,35 @@
+# Declaration-only namespace contract for the UAT GCP workload set.
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GCPWorkloadNamespace
+metadata:
+  name: agent-proxy-sg
+  environment: uat
+  provider: gcp
+spec:
+  gcp_account_id: xworktech
+  bootstrap_project_id: crypto-will-508602-m0
+  project_id: xwork-open-platform-uat
+  organization_id: "744119519286"
+  region: asia-southeast1
+  workspace: agent-proxy-sg
+  state_namespace: agent-proxy-sg
+  network_name: agent-proxy-sg-uat-gcp
+  subnet_cidr: 10.67.0.0/24
+  enable_cloud_nat: false
+  state:
+    key: terraform/uat/xwork-open-platform-uat/gcp-cloud/xworktech/agent-proxy-sg/terraform.tfstate
+  resource:
+    name: agent-proxy-sg-uat
+    type: workload_namespace
+    lifecycle: ephemeral
+  resources:
+    spot_vms:
+      - name: agent-proxy-sg-uat
+        zone: asia-southeast1-a
+        machine_type: e2-micro
+        image: projects/debian-cloud/global/images/family/debian-12
+        max_run_duration_seconds: 3600
+        labels:
+          owner: platform-ops-toolkit
+          workload: agent-proxy-sg
+          ttl: disposable
