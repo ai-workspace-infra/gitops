@@ -1,0 +1,20 @@
+# Declaration-only namespace contract for the UAT GCP workload set.
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GCPWorkloadNamespace
+metadata:
+  name: ai-workspace
+  environment: uat
+  provider: gcp
+spec:
+  gcp_account_id: xworktech
+  project_id: xwork-open-platform-uat
+  organization_id: "744119519286"
+  region: asia-east1
+  workspace: ai-workspace
+  state_namespace: ai-workspace
+  state:
+    key: terraform/uat/xwork-open-platform-uat/gcp-cloud/xworktech/ai-workspace/terraform.tfstate
+  resource:
+    name: ai-workspace-uat
+    type: workload_namespace
+    lifecycle: ephemeral
