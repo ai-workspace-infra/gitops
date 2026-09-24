@@ -36,6 +36,8 @@ ruby -ryaml -e '
   operators = spec.fetch("operator_devices")
   abort("the operator Mac must be declared once") unless operators.map { |item| item["id"] } == [operator_id]
   abort("operator enrollment must use a short-lived single-use invite") unless operators.first["enrollment"] == "short-lived-single-use-invite"
+  operator_overlay_ip = operators.first.dig("xconnect", "overlay_ip")
+  abort("operator Mac must use the reserved shared overlay address") unless operator_overlay_ip == "10.79.0.2"
   policy = spec.fetch("access_policy")
   abort("XConnect policy must default-deny") unless policy["default_action"] == "deny"
   rules = policy.fetch("rules")
@@ -45,6 +47,13 @@ ruby -ryaml -e '
     rules.first["protocol"] == "tcp" && Array(rules.first["ports"]) == [22] &&
     rules.first["action"] == "allow"
   abort("only the operator Mac may SSH to the three Vault nodes") unless valid_rule
+
+  gcp_path = "resources/xworktech.com/shared/gcp/vault-shared.yaml"
+  gcp_doc = YAML.safe_load(File.read(gcp_path))
+  abort("shared GCP declaration must target open-platform-prod") unless gcp_doc.dig("spec", "project_id") == "open-platform-prod"
+  ssh_sources = gcp_doc.dig("spec", "ssh_source_ranges")
+  abort("shared GCP SSH firewall must allow the operator overlay /32") unless ssh_sources.include?("#{operator_overlay_ip}/32")
+  abort("shared GCP SSH sources must remain individual IPv4 /32s") unless ssh_sources.all? { |cidr| cidr.match?(/\A(?:\d{1,3}\.){3}\d{1,3}\/32\z/) }
 
   abort("runtime credential path must be Vault-backed") unless spec.dig("security", "credential_source") == "vault" && spec.dig("security", "credential_path") == "kv/data/CICD/shared/xconnect"
   scan = lambda do |value|

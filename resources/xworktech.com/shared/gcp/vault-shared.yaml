@@ -17,6 +17,9 @@ spec:
   enable_cloud_nat: false
   ssh_source_ranges:
     - 35.79.83.48/32
+    # Mac's stable XConnect overlay address; the Zero policy further limits
+    # TCP/22 to the declared operator device identity.
+    - 10.79.0.2/32
   state:
     key: terraform/shared/open-platform-prod/gcp-cloud/open-platform-prod/vault-shared/terraform.tfstate
   resource:

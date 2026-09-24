@@ -72,6 +72,8 @@ spec:
     - id: xconnect-darwin-haitaodemacbook-pro.local
       name: Haitao operations Mac
       role: one
+      xconnect:
+        overlay_ip: 10.79.0.2
       enrollment: short-lived-single-use-invite
       lifecycle: persistent
       deployment: operator-enrolled
