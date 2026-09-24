@@ -44,7 +44,11 @@ network for the Vault cluster. `vault-prod-0` is its Gateway; `vault-prod-1`
 and `vault-prod-2` are persistent One nodes; the operator Mac is enrolled
 separately with a short-lived, single-use invitation. The signed Zero policy is
 default-deny and allows only that Mac device to reach TCP/22 on the three Vault
-nodes. The Gateway transport shares `vault.svc.plus:443` through Caddy's
+nodes. The Mac uses reserved overlay address `10.79.0.2`; the shared GCP
+firewall allows that exact `/32` (alongside the existing operations-proxy `/32`)
+for SSH, while the Zero policy remains the device-identity enforcement point.
+No broad overlay CIDR or public WireGuard ingress is opened. The Gateway
+transport shares `vault.svc.plus:443` through Caddy's
 `/xconnect` Unix-socket frontend; public WireGuard ingress remains disabled.
 The declaration is intent only: the network, device identities, invitation,
 and signed policy must also be provisioned in the production Accounts control
