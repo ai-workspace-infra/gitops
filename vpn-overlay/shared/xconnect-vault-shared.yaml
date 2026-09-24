@@ -1,0 +1,93 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: XConnectOneNodeSet
+metadata:
+  name: xconnect-vault-shared
+  environment: shared
+spec:
+  # Dedicated shared-services overlay. This is distinct from the GCP VPC CIDR
+  # (10.81.0.0/20) and the UAT/Prod XConnect overlays (10.77/10.78).
+  network:
+    id: net_shared_vault
+    cidr: 10.79.0.0/24
+    gateway_wireguard_address: 10.79.0.1/32
+    gateway_ref: vault-prod-0
+    transport: vless-xhttp
+    transport_profile:
+      kind: vless-xhttp
+      port: 443
+      path: /xconnect
+      mode: auto
+      host: vault.svc.plus
+      frontend: caddy-unix-h2c
+      listen_socket: /run/xconnect-gateway/xray.sock
+    public_wireguard_ingress: false
+  control_plane:
+    source_of_truth: accounts-api-and-portal
+    accounts_api_url: https://accounts.svc.plus
+    network_id: net_shared_vault
+    runtime_config: signed-by-xconnect-zero
+  access_policy:
+    default_action: deny
+    rules:
+      - id: ops-macos-to-vault-ssh
+        source_device_id: xconnect-darwin-haitaodemacbook-pro.local
+        destination_node_ids:
+          - vault-prod-0
+          - vault-prod-1
+          - vault-prod-2
+        protocol: tcp
+        ports: [22]
+        action: allow
+  runtime:
+    cli_release: v0.1.14
+    gateway_release: v0.1.4
+    wireguard_interface: xconone0
+    xray_loopback_udp_port: 51830
+    state_dir_prefix: /var/lib/xconnect-one
+    gateway_state_dir: /var/lib/xconnect-gateway/shared
+    sync_interval_seconds: 300
+  gateway:
+    id: vault-prod-0
+    host_ref: vault-prod-0
+    role: gateway
+    connection_source: terraform-cmdb
+    deployment: enabled
+    observability: required
+  fixed_nodes:
+    - id: vault-prod-1
+      host_ref: vault-prod-1
+      role: one
+      lifecycle: persistent
+      deployment: enabled
+      connection_source: terraform-cmdb
+      observability: required
+    - id: vault-prod-2
+      host_ref: vault-prod-2
+      role: one
+      lifecycle: persistent
+      deployment: enabled
+      connection_source: terraform-cmdb
+      observability: required
+  operator_devices:
+    - id: xconnect-darwin-haitaodemacbook-pro.local
+      name: Haitao operations Mac
+      role: one
+      enrollment: short-lived-single-use-invite
+      lifecycle: persistent
+      deployment: operator-enrolled
+      access_policy_ref: ops-macos-to-vault-ssh
+  security:
+    public_wireguard_ingress: false
+    allowed_public_service:
+      port: 443
+      host: vault.svc.plus
+      path: /xconnect
+    credential_source: vault
+    credential_path: kv/data/CICD/shared/xconnect
+    forbidden_in_git:
+      - invitation_tokens
+      - device_credentials
+      - device_private_keys
+      - wireguard_private_keys
+      - vless_credentials
+      - service_tokens

@@ -39,6 +39,18 @@ automation to retain both nodes for observation through their absolute
 earlier release when validation fails. AWS Spot capacity interruption can still
 terminate either node before expiry.
 
+`shared/xconnect-vault-shared.yaml` declares the dedicated shared-services
+network for the Vault cluster. `vault-prod-0` is its Gateway; `vault-prod-1`
+and `vault-prod-2` are persistent One nodes; the operator Mac is enrolled
+separately with a short-lived, single-use invitation. The signed Zero policy is
+default-deny and allows only that Mac device to reach TCP/22 on the three Vault
+nodes. The Gateway transport shares `vault.svc.plus:443` through Caddy's
+`/xconnect` Unix-socket frontend; public WireGuard ingress remains disabled.
+The declaration is intent only: the network, device identities, invitation,
+and signed policy must also be provisioned in the production Accounts control
+plane before any node or operator device can join. All enrollment/runtime
+credentials remain in Vault and are never committed here.
+
 ## Desktop acceptance stage
 
 `spec.desktop_validation` declares an optional, operator-run macOS (`darwin`)
