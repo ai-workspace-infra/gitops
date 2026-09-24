@@ -8,6 +8,17 @@ permissions:
   contents: read
 
 jobs:
+  validate-shared-vault-xconnect:
+    name: Validate shared Vault XConnect topology
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate dedicated shared network and SSH-only policy
+        run: bash scripts/validate-shared-vault-xconnect.sh
+
   sec-qa-gate:
     name: Sec QA Gate (gitleaks)
     runs-on: ubuntu-latest
