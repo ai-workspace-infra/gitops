@@ -52,7 +52,16 @@ ruby -ryaml -e '
   gcp_doc = YAML.safe_load(File.read(gcp_path))
   abort("shared GCP declaration must target open-platform-prod") unless gcp_doc.dig("spec", "project_id") == "open-platform-prod"
   ssh_sources = gcp_doc.dig("spec", "ssh_source_ranges")
-  abort("shared GCP SSH firewall must allow the operator overlay /32") unless ssh_sources.include?("#{operator_overlay_ip}/32")
+  access_mode = gcp_doc.dig("spec", "ssh_access_mode")
+  case access_mode
+  when "bootstrap-public"
+    abort("bootstrap SSH firewall must allow only the operator egress /32") unless ssh_sources == ["35.79.83.48/32"]
+  when "xconnect-zero"
+    abort("zero-trust mode must remove the public SSH ingress rule") unless ssh_sources.empty?
+    abort("zero-trust mode must not enable IAP") unless gcp_doc.dig("spec", "enable_iap_ssh") == false
+  else
+    abort("unknown shared Vault SSH access mode")
+  end
   abort("shared GCP SSH sources must remain individual IPv4 /32s") unless ssh_sources.all? { |cidr| cidr.match?(/\A(?:\d{1,3}\.){3}\d{1,3}\/32\z/) }
 
   abort("runtime credential path must be Vault-backed") unless spec.dig("security", "credential_source") == "vault" && spec.dig("security", "credential_path") == "kv/data/CICD/shared/xconnect"
