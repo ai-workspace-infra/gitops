@@ -29,6 +29,11 @@ ruby -ryaml -e '
   abort("gateway must use HTTPS port 443 and /xconnect") unless transport["port"] == 443 && transport["path"] == "/xconnect"
   abort("gateway must share Caddy TLS over its Unix socket") unless transport["frontend"] == "caddy-unix-h2c" && transport["listen_socket"] == "/run/xconnect-gateway/xray.sock"
 
+  runtime = spec.fetch("runtime")
+  %w[cli_release gateway_release xray_release].each do |key|
+    abort("runtime.#{key} must be a pinned vX.Y.Z release") unless runtime[key].to_s.match?(/\Av\d+\.\d+\.\d+\z/)
+  end
+
   gateway = spec.fetch("gateway")
   abort("vault-prod-0 must be the Gateway") unless gateway["id"] == "vault-prod-0" && gateway["role"] == "gateway"
   nodes = spec.fetch("fixed_nodes").map { |node| node.fetch("id") }.sort
