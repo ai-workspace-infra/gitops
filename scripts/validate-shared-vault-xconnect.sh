@@ -21,7 +21,11 @@ ruby -ryaml -e '
   abort("wrong overlay CIDR") unless network["cidr"] == "10.79.0.0/24"
   abort("overlay must not expose public WireGuard") unless network["public_wireguard_ingress"] == false
   transport = network.fetch("transport_profile")
-  abort("gateway must use the Vault TLS hostname") unless transport["host"] == "vault.svc.plus"
+  # The Gateway has its own hostname: vault.svc.plus stays on the existing
+  # Vault node until cutover, so it cannot also front the overlay.
+  gateway_host = "vault-xconnect.svc.plus"
+  abort("gateway must use its dedicated TLS hostname") unless transport["host"] == gateway_host
+  abort("the public /xconnect service must match the Gateway hostname") unless spec.dig("security", "allowed_public_service", "host") == gateway_host
   abort("gateway must use HTTPS port 443 and /xconnect") unless transport["port"] == 443 && transport["path"] == "/xconnect"
   abort("gateway must share Caddy TLS over its Unix socket") unless transport["frontend"] == "caddy-unix-h2c" && transport["listen_socket"] == "/run/xconnect-gateway/xray.sock"
 

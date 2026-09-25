@@ -17,7 +17,10 @@ spec:
       port: 443
       path: /xconnect
       mode: auto
-      host: vault.svc.plus
+      # Dedicated Gateway hostname on vault-prod-0. vault.svc.plus keeps
+      # pointing at the existing Vault node until migrate-cutover, and the
+      # old node must reach this Gateway before then to join over overlay.
+      host: vault-xconnect.svc.plus
       frontend: caddy-unix-h2c
       listen_socket: /run/xconnect-gateway/xray.sock
     public_wireguard_ingress: false
@@ -82,7 +85,7 @@ spec:
     public_wireguard_ingress: false
     allowed_public_service:
       port: 443
-      host: vault.svc.plus
+      host: vault-xconnect.svc.plus
       path: /xconnect
     credential_source: vault
     credential_path: kv/data/CICD/shared/xconnect
