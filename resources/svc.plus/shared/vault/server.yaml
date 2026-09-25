@@ -1,0 +1,42 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: VaultServerDeployment
+metadata:
+  name: vault-server
+  environment: shared
+spec:
+  service_domain: vault.svc.plus
+  automation:
+    github_environment: prod
+    vault_addr: https://vault.svc.plus
+    runtime_identity_path: kv/data/shared/platform/oidc/open-platform-prod
+    monitoring_secret_path: kv/data/CICD/observability
+    xconnect_secret_path: kv/data/CICD/shared/xconnect
+    node_role: github-actions-platform-ops-toolkit-shared-vault-node-oidc-open-platform-prod
+    monitoring_role: github-actions-platform-ops-toolkit-shared-vault-monitoring
+    xconnect_role: github-actions-platform-ops-toolkit-shared-vault-xconnect
+  storage:
+    backend: raft
+    address_scope: private
+    members: 3
+    leader: vault-prod-0
+    peers:
+      - vault-prod-1
+      - vault-prod-2
+  nodes:
+    - id: vault-prod-0
+      xconnect_role: gateway
+    - id: vault-prod-1
+      xconnect_role: one
+    - id: vault-prod-2
+      xconnect_role: one
+  stages:
+    - node-preflight
+    - vault-shared-leader
+    - vault-shared-peers
+    - node-process-metrics
+    - xconnect-gateway
+    - xconnect-one
+  access:
+    bootstrap: bootstrap-public
+    steady_state: xconnect-zero
+    xconnect_topology: vpn-overlay/shared/xconnect-vault-shared.yaml
