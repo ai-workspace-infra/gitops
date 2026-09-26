@@ -55,6 +55,8 @@ spec:
   gateway:
     id: vault-prod-0
     host_ref: vault-prod-0
+    xconnect:
+      overlay_ip: 10.79.0.1
     role: gateway
     connection_source: terraform-cmdb
     deployment: enabled
@@ -62,6 +64,8 @@ spec:
   fixed_nodes:
     - id: vault-prod-1
       host_ref: vault-prod-1
+      xconnect:
+        overlay_ip: 10.79.0.2
       role: one
       lifecycle: persistent
       deployment: enabled
@@ -69,6 +73,8 @@ spec:
       observability: required
     - id: vault-prod-2
       host_ref: vault-prod-2
+      xconnect:
+        overlay_ip: 10.79.0.3
       role: one
       lifecycle: persistent
       deployment: enabled
@@ -79,7 +85,7 @@ spec:
       name: Haitao operations Mac
       role: one
       xconnect:
-        overlay_ip: 10.79.0.2
+        overlay_ip: 10.79.0.5
       enrollment: short-lived-single-use-invite
       lifecycle: persistent
       deployment: operator-enrolled
