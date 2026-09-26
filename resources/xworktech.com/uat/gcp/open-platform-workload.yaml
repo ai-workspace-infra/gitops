@@ -28,7 +28,7 @@ spec:
     spot_vms:
       - name: open-platform-uat
         zone: asia-east1-a
-        machine_type: e2-micro
+        machine_type: e2-custom-2-4096  # 2C4G
         image: projects/debian-cloud/global/images/family/debian-12
         max_run_duration_seconds: 3600
         labels:

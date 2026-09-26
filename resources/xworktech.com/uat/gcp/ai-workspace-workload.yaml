@@ -26,7 +26,7 @@ spec:
     spot_vms:
       - name: ai-workspace-uat
         zone: asia-east1-a
-        machine_type: e2-micro
+        machine_type: e2-custom-4-8192  # 4C8G
         image: projects/debian-cloud/global/images/family/debian-12
         max_run_duration_seconds: 3600
         labels:

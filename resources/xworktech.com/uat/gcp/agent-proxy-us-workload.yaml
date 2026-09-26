@@ -26,7 +26,7 @@ spec:
     spot_vms:
       - name: agent-proxy-us-uat
         zone: us-central1-a
-        machine_type: e2-micro
+        machine_type: e2-highcpu-2  # 2C2G
         image: projects/debian-cloud/global/images/family/debian-12
         max_run_duration_seconds: 3600
         labels:
