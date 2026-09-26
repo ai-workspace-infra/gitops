@@ -14,6 +14,22 @@ spec:
     node_role: github-actions-platform-ops-toolkit-shared-vault-node-oidc-open-platform-prod
     monitoring_role: github-actions-platform-ops-toolkit-shared-vault-monitoring
     xconnect_role: github-actions-platform-ops-toolkit-shared-vault-xconnect
+    raft_operator_role: github-actions-platform-ops-toolkit-shared-vault-raft-operator
+  migration:
+    source:
+      id: vault-legacy
+      address: 46.250.251.132
+      ssh_user: vault-migrate
+      ssh_port: 22
+      ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIE9TSuVdNkyh7JA8a75cYBrmEvdYDC/DHiugJ2vIbcpo
+      # Record overlay_address only after the live Zero allocation is verified.
+    ssh_ca:
+      role: github-actions-platform-ops-toolkit-shared-vault-legacy-ssh
+      sign_path: ssh-client-signer/sign/vault-legacy-ops
+    raft_network: overlay
+    overlay_interface: xconone0
+    observation:
+      hours: 24
   storage:
     backend: raft
     address_scope: private
