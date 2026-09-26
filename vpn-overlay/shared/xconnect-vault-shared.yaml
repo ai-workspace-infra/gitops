@@ -43,7 +43,7 @@ spec:
         action: allow
   runtime:
     cli_release: v0.1.14
-    gateway_release: v0.1.11
+    gateway_release: v0.1.12
     # Xray-core for the Gateway data plane; the pipeline verifies the
     # release's published SHA2-256 digest before installing it.
     xray_release: v26.3.27
