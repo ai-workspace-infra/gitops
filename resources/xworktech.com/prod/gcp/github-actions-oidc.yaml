@@ -8,7 +8,10 @@ spec:
   project_id: open-platform-prod
   organization_id: "744119519286"
   provider_url: https://token.actions.githubusercontent.com
-  audience: https://iam.googleapis.com/projects/open-platform-prod/locations/global/workloadIdentityPools/github-actions/providers/github
+  # Use the canonical provider resource name. GCP's auth action emits this
+  # audience by default; the numeric project number avoids an audience mismatch
+  # when the project ID is renamed or resolved through a different API path.
+  audience: https://iam.googleapis.com/projects/986070475391/locations/global/workloadIdentityPools/github-actions/providers/github
   pool_id: github-actions
   provider_id: github
   service_account_id: github-actions-prod

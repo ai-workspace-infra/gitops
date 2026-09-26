@@ -8,7 +8,7 @@ spec:
   project_id: open-platform-prod
   organization_id: "744119519286"
   provider_url: https://token.actions.githubusercontent.com
-  audience: https://iam.googleapis.com/projects/open-platform-prod/locations/global/workloadIdentityPools/github-actions/providers/github
+  audience: https://iam.googleapis.com/projects/986070475391/locations/global/workloadIdentityPools/github-actions/providers/github
   pool_id: github-actions
   provider_id: github
   service_account_id: github-actions-shared
