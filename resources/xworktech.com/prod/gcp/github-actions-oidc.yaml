@@ -1,0 +1,22 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GitHubActionsOIDCConfig
+metadata:
+  environment: prod
+  provider: gcp
+spec:
+  gcp_account_id: xworktech
+  project_id: open-platform-prod
+  organization_id: "744119519286"
+  provider_url: https://token.actions.githubusercontent.com
+  audience: https://iam.googleapis.com/projects/open-platform-prod/locations/global/workloadIdentityPools/github-actions/providers/github
+  pool_id: github-actions
+  provider_id: github
+  service_account_id: github-actions-prod
+  repository: ai-workspace-infra/platform-ops-toolkit
+  subjects:
+    - repo:ai-workspace-infra/platform-ops-toolkit:environment:prod
+    - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main
+    - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/v*
+  state:
+    bucket: xworktech-platform-terraform-state
+    key: platform-ops-toolkit/prod/xworktech/gcp-oidc-bootstrap/terraform.tfstate

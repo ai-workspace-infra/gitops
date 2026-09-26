@@ -1,7 +1,7 @@
 global:
   environment: prod
   bootstrap_project_id: crypto-will-508602-m0
-  project_id: xworktech-open-platform-prod
+  project_id: open-platform-prod
   project_name: XWork Open Platform Production
   organization_id: "744119519286"
   region: asia-east1
