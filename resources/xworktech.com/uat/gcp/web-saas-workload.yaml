@@ -8,7 +8,7 @@ metadata:
 spec:
   gcp_account_id: xworktech
   bootstrap_project_id: crypto-will-508602-m0
-  project_id: xwork-open-platform-uat
+  project_id: open-platform-uat
   organization_id: "744119519286"
   region: asia-east1
   workspace: web-saas
@@ -17,7 +17,7 @@ spec:
   subnet_cidr: 10.63.0.0/24
   enable_cloud_nat: false
   state:
-    key: terraform/uat/xwork-open-platform-uat/gcp-cloud/xworktech/web-saas/terraform.tfstate
+    key: terraform/uat/open-platform-uat/gcp-cloud/xworktech/web-saas/terraform.tfstate
   resource:
     name: web-saas-uat
     type: workload_namespace

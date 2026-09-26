@@ -7,7 +7,7 @@
 global:
   environment: uat
   bootstrap_project_id: crypto-will-508602-m0
-  project_id: xwork-open-platform-uat
+  project_id: open-platform-uat
   project_name: XWork Open Platform UAT
   organization_id: "744119519286"
   region: asia-east1
