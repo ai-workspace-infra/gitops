@@ -138,9 +138,9 @@ spec:
         workspace: frontend-ssr-workspace-prod
         public: frontend-ssr-public-prod
     cloud_run:
-      accounts: https://prod-accounts-1004637461064.asia-northeast1.run.app
-      content_service: https://prod-content-service-1004637461064.asia-northeast1.run.app
-      billing_service: https://prod-billing-service-1004637461064.asia-northeast1.run.app
+      accounts: https://prod-accounts-b7wzzanztq-de.a.run.app
+      content_service: https://prod-content-service-b7wzzanztq-de.a.run.app
+      billing_service: https://prod-billing-service-b7wzzanztq-de.a.run.app
     ssr:
       - id: public
         worker_name: frontend-ssr-public-prod
@@ -180,7 +180,7 @@ spec:
     edge_gateway:
       defaults:
         primary_upstream: https://accounts-selfhost-prod.svc.plus
-        fallback_upstream: https://prod-accounts-1004637461064.asia-northeast1.run.app
+        fallback_upstream: https://prod-accounts-b7wzzanztq-de.a.run.app
         jwt_issuer: https://accounts-serverless-prod.svc.plus
         timeout_ms: '2500'
       boundaries:

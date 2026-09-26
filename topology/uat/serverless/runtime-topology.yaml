@@ -137,9 +137,9 @@ spec:
         workspace: frontend-ssr-workspace-uat
         public: frontend-ssr-public-uat
     cloud_run:
-      accounts: https://uat-accounts-1004637461064.asia-northeast1.run.app
-      content_service: https://uat-content-service-1004637461064.asia-northeast1.run.app
-      billing_service: https://uat-billing-service-1004637461064.asia-northeast1.run.app
+      accounts: https://uat-accounts-4ueoyqlpbq-de.a.run.app
+      content_service: https://uat-content-service-4ueoyqlpbq-de.a.run.app
+      billing_service: https://uat-billing-service-4ueoyqlpbq-de.a.run.app
     ssr:
       - id: public
         worker_name: frontend-ssr-public-uat
@@ -182,8 +182,8 @@ spec:
         # Keep both targets on the direct Cloud Run Accounts origin: pointing
         # fallback at the public Accounts alias would loop back into Core and
         # make the Auth boundary return "Unknown API boundary: core".
-        primary_upstream: https://uat-accounts-1004637461064.asia-northeast1.run.app
-        fallback_upstream: https://uat-accounts-1004637461064.asia-northeast1.run.app
+        primary_upstream: https://uat-accounts-4ueoyqlpbq-de.a.run.app
+        fallback_upstream: https://uat-accounts-4ueoyqlpbq-de.a.run.app
         jwt_issuer: https://accounts-serverless-uat.onwalk.net
         timeout_ms: '2500'
       boundaries:

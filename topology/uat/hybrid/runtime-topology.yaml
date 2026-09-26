@@ -169,9 +169,9 @@ spec:
         workspace: frontend-ssr-workspace-uat
         public: frontend-ssr-public-uat
     cloud_run:
-      accounts: https://uat-accounts-1004637461064.asia-northeast1.run.app
-      content_service: https://uat-content-service-1004637461064.asia-northeast1.run.app
-      billing_service: https://uat-billing-service-1004637461064.asia-northeast1.run.app
+      accounts: https://uat-accounts-4ueoyqlpbq-de.a.run.app
+      content_service: https://uat-content-service-4ueoyqlpbq-de.a.run.app
+      billing_service: https://uat-billing-service-4ueoyqlpbq-de.a.run.app
     ssr:
       - id: public
         worker_name: frontend-ssr-public-uat
@@ -213,8 +213,8 @@ spec:
         # The self-hosted Accounts UAT origin is unavailable. Use the direct
         # Cloud Run origin for both targets: a public Accounts alias can route
         # back into Core rather than the Auth boundary.
-        primary_upstream: https://uat-accounts-1004637461064.asia-northeast1.run.app
-        fallback_upstream: https://uat-accounts-1004637461064.asia-northeast1.run.app
+        primary_upstream: https://uat-accounts-4ueoyqlpbq-de.a.run.app
+        fallback_upstream: https://uat-accounts-4ueoyqlpbq-de.a.run.app
         jwt_issuer: https://accounts-serverless-uat.onwalk.net
         timeout_ms: '2500'
         # Keep automatic failover restricted to safe methods. A mutating request
