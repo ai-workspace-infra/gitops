@@ -46,7 +46,7 @@ ruby -ryaml -e '
   abort("the operator Mac must be declared once") unless operators.map { |item| item["id"] } == [operator_id]
   abort("operator enrollment must use a short-lived single-use invite") unless operators.first["enrollment"] == "short-lived-single-use-invite"
   operator_overlay_ip = operators.first.dig("xconnect", "overlay_ip")
-  abort("operator Mac must use the reserved shared overlay address") unless operator_overlay_ip == "10.79.0.2"
+  abort("operator Mac must use the reserved shared overlay address") unless operator_overlay_ip == "10.79.0.5"
   policy = spec.fetch("access_policy")
   abort("XConnect policy must default-deny") unless policy["default_action"] == "deny"
   rules = policy.fetch("rules")

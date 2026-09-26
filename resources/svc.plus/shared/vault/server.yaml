@@ -22,7 +22,7 @@ spec:
       ssh_user: vault-migrate
       ssh_port: 22
       ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIE9TSuVdNkyh7JA8a75cYBrmEvdYDC/DHiugJ2vIbcpo
-      # Record overlay_address only after the live Zero allocation is verified.
+      overlay_address: 10.79.0.4
     ssh_ca:
       role: github-actions-platform-ops-toolkit-shared-vault-legacy-ssh
       sign_path: ssh-client-signer/sign/vault-legacy-ops
