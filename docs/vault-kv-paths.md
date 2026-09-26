@@ -10,8 +10,8 @@ kv/prod/platform/{oidc,jwt,cloudflare,gcp,observability,gitea}
 kv/prod/services/{xconnect,ai-workspace}
 ```
 
-UAT maps to `xwork-open-platform-uat`; PROD maps to
-`xwork-open-platform-prod`. There is no `kv/shared` credential path. Shared non-secret
+UAT maps to `open-platform-uat`; PROD maps to
+`open-platform-prod`. There is no `kv/shared` credential path. Shared non-secret
 defaults belong in the corresponding GitOps declaration.
 
 ## AI Aggregator v1 minimal contract
@@ -44,7 +44,8 @@ are retained only for an explicitly approved migration and revocation process.
 
 | Path | Required keys |
 |---|---|
-| `kv/<env>/platform/oidc` | `gcp_workload_identity_provider`, `deploy_service_account` |
+| `kv/<env>/platform/oidc/<account_id>` | `gcp_workload_identity_provider`, `deploy_service_account`, `gcp_oidc_audience` |
+| `kv/<env>/serverless/gcp` | `GCP_WORKLOAD_IDENTITY_PROVIDER`, `GCP_SERVICE_ACCOUNT_EMAIL` |
 | `kv/<env>/platform/jwt` | `issuer`, `audience`, `signing_key` |
 | `kv/<env>/platform/cloudflare` | `api_token`, `account_id`, `zone_id` |
 | `kv/<env>/platform/gcp` | `project_id`, `region`, `artifact_registry` |
@@ -57,3 +58,6 @@ The UAT and PROD GitHub Actions identities may read only their own environment r
 explicit service allowlist. Terraform provisions the project, identity and network; Ansible
 configures Vault policies and writes runtime values after deployment. CI logs must never print
 secret values or Vault responses.
+
+`GCP_PROJECT_ID` and `GCP_REGION` are non-sensitive and are read from the checked-in GitOps GCP
+manifest by the Serverless workflow. They must not be duplicated in `kv/<env>/serverless/gcp`.
