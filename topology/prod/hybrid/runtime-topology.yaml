@@ -140,6 +140,11 @@ spec:
     # Keep the shared frontend aliases aligned with serverless mode.
     console_aliases:
       - console.svc.plus
+      # Keep the legacy public aliases on the production Frontend Router
+      # Worker while callers migrate away from the retired Contabo host.
+      - xworkmate.com
+      - www.xworkmate.com
+      - console.xworkmate.com
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
     # Deployed and owned by serverless-orchestrator. Declared here because the
