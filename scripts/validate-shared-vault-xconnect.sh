@@ -41,12 +41,12 @@ ruby -ryaml -e '
   abort("One nodes must be vault-prod-1 and vault-prod-2") unless nodes == expected_nodes
   abort("all Vault nodes must require observability") unless spec.fetch("fixed_nodes").all? { |node| node["observability"] == "required" } && gateway["observability"] == "required"
 
-  operator_id = "xconnect-darwin-haitaodemacbook-pro.local"
+  operator_id = "xconnect-darwin-haitaodemacbook-pro-rejoin.local"
   operators = spec.fetch("operator_devices")
   abort("the operator Mac must be declared once") unless operators.map { |item| item["id"] } == [operator_id]
   abort("operator enrollment must use a short-lived single-use invite") unless operators.first["enrollment"] == "short-lived-single-use-invite"
   operator_overlay_ip = operators.first.dig("xconnect", "overlay_ip")
-  abort("operator Mac must use the reserved shared overlay address") unless operator_overlay_ip == "10.79.0.5"
+  abort("operator Mac must use the reserved shared overlay address") unless operator_overlay_ip == "10.79.0.9"
   policy = spec.fetch("access_policy")
   abort("XConnect policy must default-deny") unless policy["default_action"] == "deny"
   rules = policy.fetch("rules")
