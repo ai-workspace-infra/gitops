@@ -18,7 +18,7 @@ spec:
   migration:
     source:
       id: vault-legacy
-      address: 46.250.251.132
+      address: jp-xhttp-contabo.svc.plus
       ssh_user: vault-migrate
       ssh_port: 22
       ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIE9TSuVdNkyh7JA8a75cYBrmEvdYDC/DHiugJ2vIbcpo
