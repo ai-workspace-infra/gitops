@@ -39,14 +39,14 @@ spec:
         public_ip: true
       - name: vault-prod-1
         zone: asia-east1-b
-        ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAICrc2apTWLq2GL6g4W/SX6mxiz8jPTKLDU2NBeYeiCnn
+        ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIKWYExh022jRb3H5x0YpC6uUaorzYDm8ClinJ7cptPU6
         machine_type: e2-highcpu-2
         image: projects/debian-cloud/global/images/family/debian-12
         xconnect_role: one
         public_ip: true
       - name: vault-prod-2
         zone: asia-east1-c
-        ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIIyBYb/UtFNOuWjBxpp8TK6FRXihiJ+y4b1JRnpZteYO
+        ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAICLKkJ1G7ziaqzvoynosMTVH9KmT/E3PiWSsTbEJGLEe
         machine_type: e2-highcpu-2
         image: projects/debian-cloud/global/images/family/debian-12
         xconnect_role: one
