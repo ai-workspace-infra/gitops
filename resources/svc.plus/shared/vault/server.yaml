@@ -33,12 +33,18 @@ spec:
   storage:
     backend: raft
     address_scope: private
-    members: 1
+    members: 3
     leader: vault-prod-0
-    peers: []
+    peers:
+      - vault-prod-1
+      - vault-prod-2
   nodes:
     - id: vault-prod-0
       xconnect_role: gateway
+    - id: vault-prod-1
+      xconnect_role: one
+    - id: vault-prod-2
+      xconnect_role: one
   stages:
     - node-preflight
     - vault-shared-leader
