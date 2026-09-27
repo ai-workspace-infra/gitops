@@ -33,7 +33,7 @@ spec:
     default_action: deny
     rules:
       - id: ops-macos-to-vault-ssh
-        source_device_id: xconnect-darwin-haitaodemacbook-pro.local
+        source_device_id: xconnect-darwin-haitaodemacbook-pro-rejoin.local
         destination_node_ids:
           - vault-prod-0
           - vault-prod-1
@@ -81,11 +81,11 @@ spec:
       connection_source: terraform-cmdb
       observability: required
   operator_devices:
-    - id: xconnect-darwin-haitaodemacbook-pro.local
-      name: Haitao operations Mac
+    - id: xconnect-darwin-haitaodemacbook-pro-rejoin.local
+      name: Haitao operations Mac (rejoin)
       role: one
       xconnect:
-        overlay_ip: 10.79.0.5
+        overlay_ip: 10.79.0.9
       enrollment: short-lived-single-use-invite
       lifecycle: persistent
       deployment: operator-enrolled
