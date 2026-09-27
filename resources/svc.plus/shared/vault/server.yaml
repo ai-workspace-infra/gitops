@@ -26,7 +26,9 @@ spec:
     ssh_ca:
       role: github-actions-platform-ops-toolkit-shared-vault-legacy-ssh
       sign_path: ssh-client-signer/sign/vault-legacy-ops
-    raft_network: overlay
+    # The one-node steady state uses the VPC address directly. The three-node
+    # expansion path switches this to the reviewed overlay before peers join.
+    raft_network: private
     overlay_interface: xconone0
     observation:
       hours: 24
