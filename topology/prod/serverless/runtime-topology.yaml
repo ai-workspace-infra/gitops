@@ -97,6 +97,12 @@ spec:
     console_aliases:
       - console.svc.plus
       - console-serverless-prod.svc.plus
+      # Legacy public aliases are direct custom domains of the same
+      # production Frontend Router Worker; they no longer point at the
+      # retired Contabo host.
+      - xworkmate.com
+      - www.xworkmate.com
+      - console.xworkmate.com
       - www.svc.plus
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing-serverless-prod.svc.plus
