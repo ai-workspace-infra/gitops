@@ -17,8 +17,6 @@ global:
   vault_image: projects/debian-cloud/global/images/family/debian-12
 
 vault_nodes:
-  - name: vault-uat-0
-    zone: asia-east1-a
   - name: open-platform-uat
     zone: asia-east1-a
     machine_type: e2-medium
