@@ -1,7 +1,10 @@
 global:
   environment: uat
   bootstrap_project_id: crypto-will-508602-m0
-  project_id: open-platform-uat
+  # UAT open-platform is deployed into the shared production GCP project so
+  # it can join the production Vault cluster over XConnect. The UAT domain
+  # and network names remain isolated at the workload layer.
+  project_id: open-platform-prod
   project_name: XWork Open Platform UAT
   organization_id: "744119519286"
   region: asia-east1
