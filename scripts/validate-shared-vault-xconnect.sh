@@ -48,7 +48,7 @@ ruby -ryaml -e '
   operator_overlay_ip = operators.first.dig("xconnect", "overlay_ip")
   abort("operator Mac must use the reserved shared overlay address") unless operator_overlay_ip == "10.79.0.9"
   dns = spec.fetch("dns")
-  abort("overlay DNS must be enabled on the Gateway address") unless dns["enabled"] == true && dns["interface"] == "xconone0" && dns["listen_address"] == "10.79.0.1"
+  abort("overlay DNS must bind the Gateway WireGuard interface and address") unless dns["enabled"] == true && dns["interface"] == "xconzero0" && dns["listen_address"] == "10.79.0.1"
   abort("overlay DNS must define its private zone and public recursive upstreams") unless dns["zone"] == "shared.internal" && dns["upstream_servers"] == %w[1.1.1.1 8.8.8.8]
   dns_alias = dns.fetch("records")
   expected_alias = [
