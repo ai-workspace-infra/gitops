@@ -18,10 +18,6 @@ spec:
   repository: ai-workspace-infra/platform-ops-toolkit
   subjects:
     - repo:ai-workspace-infra/platform-ops-toolkit:environment:prod
-    # The permanent open-platform-prod project also hosts the UAT
-    # open-platform resource. Keep UAT explicitly scoped to its GitHub
-    # environment and UAT tags; do not broaden this to arbitrary refs.
-    - repo:ai-workspace-infra/platform-ops-toolkit:environment:uat
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/v*
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/uat-*
