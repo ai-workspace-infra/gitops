@@ -16,6 +16,7 @@ spec:
   subjects:
     - repo:ai-workspace-infra/platform-ops-toolkit:environment:prod
     - repo:ai-workspace-infra/platform-ops-toolkit:environment:uat
+    - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/uat-*
   state:
     bucket: xworktech-platform-terraform-state
