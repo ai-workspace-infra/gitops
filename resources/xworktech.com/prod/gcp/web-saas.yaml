@@ -1,0 +1,23 @@
+global:
+  environment: prod
+  bootstrap_project_id: crypto-will-508602-m0
+  project_id: open-platform-prod
+  project_name: XWork Web SaaS Production
+  organization_id: "744119519286"
+  region: asia-east1
+  github_owner: ai-workspace-infra
+  github_repository: platform-ops-toolkit
+  network_name: web-saas-prod
+  subnet_cidr: 10.73.0.0/20
+  artifact_registry_location: asia-east1
+  artifact_registry_id: xwork-services
+  cloud_run_service_name: web-saas-prod
+  cloud_run_image: us-docker.pkg.dev/cloudrun/container/hello
+  vault_machine_type: e2-medium
+  vault_image: projects/debian-cloud/global/images/family/debian-12
+
+vault_nodes:
+  - name: web-saas-prod
+    zone: asia-east1-a
+    machine_type: e2-medium
+    public_ip: true
