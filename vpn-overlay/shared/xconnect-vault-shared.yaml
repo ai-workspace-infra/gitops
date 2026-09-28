@@ -29,9 +29,75 @@ spec:
     accounts_api_url: https://accounts.svc.plus
     network_id: net_shared_vault
     runtime_config: signed-by-xconnect-zero
+  # The Gateway also provides the lightweight overlay DNS service. Private
+  # records are authoritative there; all other names recurse through the
+  # declared public resolvers. This is data-plane configuration, not a public
+  # Cloudflare record.
+  dns:
+    enabled: true
+    interface: xconone0
+    listen_address: 10.79.0.1
+    zone: shared.internal
+    domains:
+      - shared.internal
+      - svc.plus
+    upstream_servers:
+      - 1.1.1.1
+      - 8.8.8.8
+    records:
+      - name: internal-xworkmate-bridge.svc.plus
+        device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
   access_policy:
     default_action: deny
     rules:
+      - id: vault-prod-1-to-gateway-dns-udp
+        source_device_id: vault-prod-1
+        destination_node_ids: [vault-prod-0]
+        protocol: udp
+        ports: [53]
+        action: allow
+      - id: vault-prod-1-to-gateway-dns-tcp
+        source_device_id: vault-prod-1
+        destination_node_ids: [vault-prod-0]
+        protocol: tcp
+        ports: [53]
+        action: allow
+      - id: vault-prod-2-to-gateway-dns-udp
+        source_device_id: vault-prod-2
+        destination_node_ids: [vault-prod-0]
+        protocol: udp
+        ports: [53]
+        action: allow
+      - id: vault-prod-2-to-gateway-dns-tcp
+        source_device_id: vault-prod-2
+        destination_node_ids: [vault-prod-0]
+        protocol: tcp
+        ports: [53]
+        action: allow
+      - id: ops-macos-to-gateway-dns-udp
+        source_device_id: xconnect-darwin-haitaodemacbook-pro-rejoin.local
+        destination_node_ids: [vault-prod-0]
+        protocol: udp
+        ports: [53]
+        action: allow
+      - id: ops-macos-to-gateway-dns-tcp
+        source_device_id: xconnect-darwin-haitaodemacbook-pro-rejoin.local
+        destination_node_ids: [vault-prod-0]
+        protocol: tcp
+        ports: [53]
+        action: allow
+      - id: secops-one-to-gateway-dns-udp
+        source_device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
+        destination_node_ids: [vault-prod-0]
+        protocol: udp
+        ports: [53]
+        action: allow
+      - id: secops-one-to-gateway-dns-tcp
+        source_device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
+        destination_node_ids: [vault-prod-0]
+        protocol: tcp
+        ports: [53]
+        action: allow
       - id: ops-macos-to-vault-ssh
         source_device_id: xconnect-darwin-haitaodemacbook-pro-rejoin.local
         destination_node_ids:
@@ -57,6 +123,7 @@ spec:
     host_ref: vault-prod-0
     xconnect:
       overlay_ip: 10.79.0.1
+      internal_dns: vault-prod-0.shared.internal
     role: gateway
     connection_source: terraform-cmdb
     deployment: enabled
@@ -66,6 +133,7 @@ spec:
       host_ref: vault-prod-1
       xconnect:
         overlay_ip: 10.79.0.2
+        internal_dns: vault-prod-1.shared.internal
       role: one
       lifecycle: persistent
       deployment: enabled
@@ -75,6 +143,7 @@ spec:
       host_ref: vault-prod-2
       xconnect:
         overlay_ip: 10.79.0.3
+        internal_dns: vault-prod-2.shared.internal
       role: one
       lifecycle: persistent
       deployment: enabled
@@ -86,6 +155,7 @@ spec:
       role: one
       xconnect:
         overlay_ip: 10.79.0.9
+        internal_dns: haitao-mac.shared.internal
       enrollment: short-lived-single-use-invite
       lifecycle: persistent
       deployment: operator-enrolled

@@ -47,15 +47,33 @@ ruby -ryaml -e '
   abort("operator enrollment must use a short-lived single-use invite") unless operators.first["enrollment"] == "short-lived-single-use-invite"
   operator_overlay_ip = operators.first.dig("xconnect", "overlay_ip")
   abort("operator Mac must use the reserved shared overlay address") unless operator_overlay_ip == "10.79.0.9"
+  dns = spec.fetch("dns")
+  abort("overlay DNS must be enabled on the Gateway address") unless dns["enabled"] == true && dns["interface"] == "xconone0" && dns["listen_address"] == "10.79.0.1"
+  abort("overlay DNS must define its private zone and public recursive upstreams") unless dns["zone"] == "shared.internal" && dns["upstream_servers"] == %w[1.1.1.1 8.8.8.8]
+  dns_alias = dns.fetch("records")
+  expected_alias = [{"name" => "internal-xworkmate-bridge.svc.plus", "device_id" => "xconnect-linux-secops-shenlan-inspiron-5415-ops"}]
+  abort("service DNS aliases must follow the enrolled One device address") unless dns_alias == expected_alias
   policy = spec.fetch("access_policy")
   abort("XConnect policy must default-deny") unless policy["default_action"] == "deny"
   rules = policy.fetch("rules")
   expected_targets = %w[vault-prod-0 vault-prod-1 vault-prod-2]
-  valid_rule = rules.length == 1 && rules.first["source_device_id"] == operator_id &&
-    rules.first["destination_node_ids"].sort == expected_targets &&
-    rules.first["protocol"] == "tcp" && Array(rules.first["ports"]) == [22] &&
-    rules.first["action"] == "allow"
-  abort("only the operator Mac may SSH to the three Vault nodes") unless valid_rule
+  ssh_rules = rules.select { |rule| Array(rule["ports"]) == [22] }
+  valid_ssh = ssh_rules.length == 1 && ssh_rules.first["source_device_id"] == operator_id &&
+    ssh_rules.first["destination_node_ids"].sort == expected_targets &&
+    ssh_rules.first["protocol"] == "tcp" && ssh_rules.first["action"] == "allow"
+  abort("only the operator Mac may SSH to the three Vault nodes") unless valid_ssh
+  dns_rules = rules.select { |rule| Array(rule["ports"]) == [53] }
+  dns_sources = %w[vault-prod-1 vault-prod-2 xconnect-linux-secops-shenlan-inspiron-5415-ops] + [operator_id]
+  expected_dns = dns_sources.product(%w[tcp udp])
+  valid_dns = dns_rules.length == expected_dns.length && expected_dns.all? do |source, protocol|
+    dns_rules.any? do |rule|
+      rule["source_device_id"] == source &&
+        rule["destination_node_ids"] == ["vault-prod-0"] &&
+        rule["protocol"] == protocol && rule["action"] == "allow"
+    end
+  end
+  abort("only declared One devices may use TCP/UDP DNS on the Gateway") unless valid_dns
+  abort("unexpected XConnect access policy rules") unless rules.length == ssh_rules.length + dns_rules.length
 
   gcp_path = "resources/xworktech.com/shared/gcp/vault-shared.yaml"
   gcp_doc = YAML.safe_load(File.read(gcp_path))
@@ -86,5 +104,5 @@ ruby -ryaml -e '
     end
   end
   scan.call(doc)
-  puts "Validated shared Vault XConnect topology and SSH-only operator policy"
+  puts "Validated shared Vault XConnect topology, scoped DNS, and operator SSH policy"
 '
