@@ -83,3 +83,26 @@ jq -e '
 ' "${uat_oidc_file}" >/dev/null
 
 echo "Validated UAT GitHub Actions AWS OIDC declaration"
+
+uat_aws_agent_proxy="resources/svc.plus/uat/aws/agent-proxy-jp.yaml"
+test -f "${uat_aws_agent_proxy}" || {
+  echo "Missing UAT AWS Agent Proxy declaration: ${uat_aws_agent_proxy}" >&2
+  exit 1
+}
+for required in \
+  'provider: aws-cloud' \
+  'account: "081434641398"' \
+  'workspace: agent-proxy-jp' \
+  'state_namespace: agent-proxy-jp' \
+  'aws_region: ap-northeast-1' \
+  "plan: {{ env.get('AGENT_PROXY_PLAN_API', 't4g.small') }}" \
+  'billing_mode: on_demand' \
+  'service_domains:' \
+  'jp-xconnect.svc.plus'; do
+  grep -Fq -- "${required}" "${uat_aws_agent_proxy}" || {
+    echo "UAT AWS Agent Proxy declaration is missing: ${required}" >&2
+    exit 1
+  }
+done
+
+echo "Validated UAT AWS Agent Proxy declaration"
