@@ -53,7 +53,8 @@ ruby -ryaml -e '
   dns_alias = dns.fetch("records")
   expected_alias = [
     {"name" => "secops.shared.internal", "device_id" => "xconnect-linux-secops-shenlan-inspiron-5415-ops"},
-    {"name" => "internal-xworkmate-bridge.svc.plus", "device_id" => "xconnect-linux-secops-shenlan-inspiron-5415-ops"}
+    {"name" => "internal-xworkmate-bridge.svc.plus", "device_id" => "xconnect-linux-secops-shenlan-inspiron-5415-ops"},
+    {"name" => "vault-xconnect.svc.plus", "device_id" => "vault-prod-0"}
   ]
   abort("service DNS aliases must follow the enrolled One device address") unless dns_alias == expected_alias
   policy = spec.fetch("access_policy")

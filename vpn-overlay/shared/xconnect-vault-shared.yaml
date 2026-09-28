@@ -50,6 +50,8 @@ spec:
         device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
       - name: internal-xworkmate-bridge.svc.plus
         device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
+      - name: vault-xconnect.svc.plus
+        device_id: vault-prod-0
   access_policy:
     default_action: deny
     rules:
