@@ -35,7 +35,8 @@ spec:
   # Cloudflare record.
   dns:
     enabled: true
-    interface: xconone0
+    # Gateway DNS binds the Gateway WireGuard device. xconone0 is reserved for One clients.
+    interface: xconzero0
     listen_address: 10.79.0.1
     zone: shared.internal
     domains:
