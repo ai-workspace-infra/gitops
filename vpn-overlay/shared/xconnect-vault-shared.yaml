@@ -45,18 +45,8 @@ spec:
       - 1.1.1.1
       - 8.8.8.8
     records:
-      - name: vault-prod-0.shared.internal
-        address: 10.79.0.1
-      - name: vault-prod-1.shared.internal
-        address: 10.79.0.2
-      - name: vault-prod-2.shared.internal
-        address: 10.79.0.3
-      - name: secops.shared.internal
-        address: 10.79.0.7
       - name: internal-xworkmate-bridge.svc.plus
-        address: 10.79.0.7
-      - name: vault-xconnect.svc.plus
-        address: 10.79.0.1
+        device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
   access_policy:
     default_action: deny
     rules:
