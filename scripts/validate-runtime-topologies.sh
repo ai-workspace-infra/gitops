@@ -57,3 +57,29 @@ jq -e '
 ' "${oidc_file}" >/dev/null
 
 echo "Validated GitHub Actions AWS OIDC declaration"
+
+uat_oidc_file="resources/svc.plus/uat/aws/github-actions-oidc.json"
+test -f "${uat_oidc_file}" || {
+  echo "Missing UAT GitHub Actions AWS OIDC declaration: ${uat_oidc_file}" >&2
+  exit 1
+}
+
+jq -e '
+  .apiVersion == "gitops.svc.plus/v1alpha1" and
+  .kind == "GitHubActionsOIDCConfig" and
+  .metadata.project == "svc.plus" and
+  .metadata.environment == "uat" and
+  .metadata.provider == "aws" and
+  .spec.provider_url == "https://token.actions.githubusercontent.com" and
+  .spec.audience == "sts.amazonaws.com" and
+  (.spec.aws.account_id | test("^[0-9]{12}$")) and
+  (.spec.aws.region | test("^[a-z]+-[a-z]+-[0-9]+$")) and
+  (.spec.aws.role_name | test("^[A-Za-z0-9+=,.@_-]+$")) and
+  .spec.aws.role_arn == ("arn:aws:iam::" + .spec.aws.account_id + ":role/" + .spec.aws.role_name) and
+  (.spec.subjects | type == "array" and length > 0) and
+  (.spec.subjects | index("repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main")) and
+  (.spec.subjects | index("repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/uat-daily-build-*")) and
+  (.spec.subjects | index("repo:ai-workspace-infra/platform-ops-toolkit:environment:uat"))
+' "${uat_oidc_file}" >/dev/null
+
+echo "Validated UAT GitHub Actions AWS OIDC declaration"
