@@ -83,8 +83,8 @@ ruby -ryaml -e '
   oidc = YAML.safe_load(File.read(oidc_path), aliases: false)
   abort("OIDC declaration must target open-platform-shared-510113") unless
     oidc.dig("spec", "project_id") == "open-platform-shared-510113" && oidc.dig("spec", "gcp_account_id") == "open-platform-shared"
-  abort("OIDC declaration must use the shared bootstrap state key") unless
-    oidc.dig("spec", "state", "key") == "platform-ops-toolkit/shared/open-platform-shared/gcp-oidc-bootstrap/terraform.tfstate"
+  abort("OIDC declaration must use the concrete shared project bootstrap state key") unless
+    oidc.dig("spec", "state", "key") == "platform-ops-toolkit/shared/open-platform-shared-510113/gcp-oidc-bootstrap/terraform.tfstate"
   abort("OIDC declaration must be restricted to the protected prod environment") unless
     oidc.dig("spec", "subjects") == [
       "repo:ai-workspace-infra/platform-ops-toolkit:environment:prod",

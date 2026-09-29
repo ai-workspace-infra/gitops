@@ -21,4 +21,4 @@ spec:
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main
   state:
     bucket: xworktech-platform-terraform-state
-    key: platform-ops-toolkit/shared/open-platform-shared/gcp-oidc-bootstrap/terraform.tfstate
+    key: platform-ops-toolkit/shared/open-platform-shared-510113/gcp-oidc-bootstrap/terraform.tfstate
