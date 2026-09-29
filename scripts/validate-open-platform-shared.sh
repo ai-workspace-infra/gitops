@@ -68,6 +68,13 @@ ruby -ryaml -e '
   end
 
   vault = YAML.safe_load(File.read(declarations.fetch("vault").fetch("path")), aliases: false)
+  expected_allowlist = declarations.values.map { |item| {"name" => item.fetch("host"), "zone" => "asia-east1-a"} }
+  abort("Vault state must own the shared project public-IP allowlist") unless
+    vault.dig("spec", "external_ip_allowed_instances") == expected_allowlist
+  ["observability", "iam"].each do |service|
+    member = YAML.safe_load(File.read(declarations.fetch(service).fetch("path")), aliases: false)
+    abort("#{service}: project policy must have a single owner") if member.dig("spec", "external_ip_allowed_instances")
+  end
   migration = vault.fetch("spec").fetch("migration")
   abort("Vault migration source must remain open-platform-prod/vault-prod-0") unless
     migration["source_project_id"] == "open-platform-prod" && migration["source_instance"] == "vault-prod-0"
