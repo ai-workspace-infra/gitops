@@ -6,6 +6,16 @@
     "target_domains": "all",
     "routing_mode": "selfhost-first",
     "frontend": "cloudflare-pages-workers",
+    "xconnect_network": {
+      "id": "net_uat",
+      "cidr": "10.77.0.0/24",
+      "gateway_id": "gw-uat-tw-xconnect",
+      "gateway_ref": "tw-xconnect.svc.plus",
+      "gateway_vault_key": "tw-xconnect.svc.plus",
+      "one_vault_key": "observability.svc.plus",
+      "gateway_provider": "ulighthost-existing",
+      "lifecycle": "uat"
+    },
     "resources": [
       {"order":1,"namespace":"open-platform","target_domain":"open-platform","release_scope":"shared-infrastructure","management_mode":"terraform","lifecycle":"permanent","provider":"gcp-cloud","account_ref":"gcp_account","project_id":"open-platform-uat","profile":"2C4G","agent_profile":"1C2G","region":"asia-east1","xconnect_required":true,"xconnect_gateway_ref":"tw-xconnect.svc.plus","vault_cluster_environment":"prod","vault_cluster_role":"prod-member","state_project":"svc.plus"},
       {"order":2,"namespace":"web-saas","target_domain":"web-saas","release_scope":"business","management_mode":"terraform+serverless","lifecycle":"ephemeral","provider":"gcp-cloud","account_ref":"gcp_account","profile":"2C4G","agent_profile":"1C2G","region":"asia-east1","serverless_target":"web-saas","state_project":"svc.plus"},
