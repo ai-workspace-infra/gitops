@@ -6,7 +6,7 @@ metadata:
   provider: gcp
 spec:
   gcp_account_id: open-platform-shared
-  project_id: open-platform-shared
+  project_id: open-platform-shared-510113
   project_name: Shared Open Platform Services
   organization_id: "744119519286"
   region: asia-east1
@@ -23,7 +23,7 @@ spec:
   ssh_source_ranges:
     - 35.79.83.48/32
   state:
-    key: terraform/shared/open-platform-shared/gcp-cloud/open-platform-shared/open-platform-shared-iam/terraform.tfstate
+    key: terraform/shared/open-platform-shared-510113/gcp-cloud/open-platform-shared/open-platform-shared-iam/terraform.tfstate
   resource:
     name: open-platform-shared-iam
     type: workload_namespace
