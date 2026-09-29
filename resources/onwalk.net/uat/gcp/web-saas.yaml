@@ -15,6 +15,10 @@ spec:
   network_name: web-saas-uat-gcp
   subnet_cidr: 10.63.0.0/24
   enable_cloud_nat: false
+  # See open-platform.yaml for the project-level external-IP allowlist.
+  spot_ssh_source_ranges: [0.0.0.0/0]
+  spot_network_tags: [web-saas-ssh]
+  ssh_username: github-actions
   state:
     key: terraform/uat/open-platform-uat/gcp-cloud/xworktech/web-saas/terraform.tfstate
   resource:
@@ -25,10 +29,12 @@ spec:
     spot_vms:
       - name: web-saas-uat
         zone: asia-east1-a
-        machine_type: e2-micro
+        machine_type: e2-medium
         image: projects/debian-cloud/global/images/family/debian-12
-        max_run_duration_seconds: 3600
+        public_ip: true
+        network_tags: [web-saas-ssh]
+        inventory_groups: [web_saas]
         labels:
           owner: platform-ops-toolkit
           workload: web-saas
-          ttl: disposable
+          lifecycle: ephemeral
