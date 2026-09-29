@@ -29,6 +29,9 @@ spec:
       zone: asia-east1-a
     - name: iam-shared-0
       zone: asia-east1-a
+  # The allowlist is seeded by an organization-policy administrator; runtime
+  # GitHub OIDC Terraform only consumes and verifies it.
+  manage_external_ip_policy: false
   state:
     key: terraform/shared/open-platform-shared/gcp-cloud/open-platform-shared/open-platform-shared-vault/terraform.tfstate
   resource:
