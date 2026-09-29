@@ -28,3 +28,6 @@ hosts:
       role: primary
       service_domains:
         - agent-proxy.{{ env['TARGET_DOMAIN_BASE'] }}
+      agent_proxy_legacy_domain: "{{ env.get('AGENT_PROXY_LEGACY_DOMAIN', '') }}"
+      vault_agent_tls_enabled: {{ env.get('AGENT_PROXY_VAULT_TLS_ENABLED', 'false') | lower }}
+      vault_tls_secret_path: "{{ env.get('AGENT_PROXY_TLS_SECRET_PATH', '') }}"
