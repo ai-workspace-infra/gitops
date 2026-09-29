@@ -72,5 +72,16 @@ ruby -ryaml -e '
   abort("Vault migration source must remain open-platform-prod/vault-prod-0") unless
     migration["source_project_id"] == "open-platform-prod" && migration["source_instance"] == "vault-prod-0"
   abort("Vault migration source must be immutable") unless migration["source_mutation"] == "forbidden"
+  oidc_path = "resources/svc.plus/shared/gcp/github-actions-oidc-open-platform-shared.yaml"
+  oidc = YAML.safe_load(File.read(oidc_path), aliases: false)
+  abort("OIDC declaration must target open-platform-shared") unless
+    oidc.dig("spec", "project_id") == "open-platform-shared" && oidc.dig("spec", "gcp_account_id") == "open-platform-shared"
+  abort("OIDC declaration must use the shared bootstrap state key") unless
+    oidc.dig("spec", "state", "key") == "platform-ops-toolkit/shared/open-platform-shared/gcp-oidc-bootstrap/terraform.tfstate"
+  abort("OIDC declaration must be restricted to the protected prod environment") unless
+    oidc.dig("spec", "subjects") == [
+      "repo:ai-workspace-infra/platform-ops-toolkit:environment:prod",
+      "repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main",
+    ]
   puts "Validated three isolated open-platform-shared states for Vault, Observability, and IAM"
 '
