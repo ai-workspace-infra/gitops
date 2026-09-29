@@ -15,12 +15,14 @@ global:
   cloud_run_image: us-docker.pkg.dev/cloudrun/container/hello
   vault_machine_type: e2-medium
   vault_image: projects/debian-cloud/global/images/family/debian-12
-  # Project-level exception is restricted to these two declared UAT VMs.
+  # Project-level exception is restricted to these declared UAT VMs.
   # Do not change this to a wildcard or allow_all policy.
   external_ip_allowed_instances:
     - name: open-platform-uat
       zone: asia-east1-a
     - name: web-saas-uat
+      zone: asia-east1-a
+    - name: ai-workspace-uat
       zone: asia-east1-a
 
 vault_nodes:
