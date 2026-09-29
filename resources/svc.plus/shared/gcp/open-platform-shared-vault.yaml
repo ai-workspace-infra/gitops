@@ -1,0 +1,49 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GCPWorkloadNamespace
+metadata:
+  name: open-platform-shared-vault
+  environment: shared
+  provider: gcp
+spec:
+  gcp_account_id: open-platform-shared
+  project_id: open-platform-shared
+  project_name: Shared Open Platform Services
+  organization_id: "744119519286"
+  region: asia-east1
+  bootstrap_project_id: crypto-will-508602-m0
+  workspace: open-platform-shared-vault
+  state_namespace: open-platform-shared-vault
+  network_name: open-platform-shared-vault
+  subnet_cidr: 10.82.0.0/20
+  enable_cloud_nat: false
+  enable_iap_ssh: false
+  enable_oslogin: true
+  ssh_access_mode: bootstrap-public
+  ssh_source_ranges:
+    - 35.79.83.48/32
+  state:
+    key: terraform/shared/open-platform-shared/gcp-cloud/open-platform-shared/open-platform-shared-vault/terraform.tfstate
+  resource:
+    name: open-platform-shared-vault
+    type: workload_namespace
+    lifecycle: persistent
+  migration:
+    source_project_id: open-platform-prod
+    source_instance: vault-prod-0
+    mode: staged-cutover
+    terraform_import_required: false
+    source_mutation: forbidden
+  xconnect:
+    network_id: net_security_vault
+    role: gateway
+    zero_trust_cidr: 10.79.0.0/24
+  resources:
+    vault_nodes:
+      - name: vault-shared-0
+        zone: asia-east1-a
+        machine_type: e2-highcpu-2
+        image: projects/debian-cloud/global/images/family/debian-12
+        xconnect_role: gateway
+        public_ip: true
+        service_domains:
+          - vault.svc.plus

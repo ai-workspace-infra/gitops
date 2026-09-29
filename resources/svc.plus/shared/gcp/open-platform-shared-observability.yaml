@@ -1,0 +1,44 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GCPWorkloadNamespace
+metadata:
+  name: open-platform-shared-observability
+  environment: shared
+  provider: gcp
+spec:
+  gcp_account_id: open-platform-shared
+  project_id: open-platform-shared
+  project_name: Shared Open Platform Services
+  organization_id: "744119519286"
+  region: asia-east1
+  bootstrap_project_id: crypto-will-508602-m0
+  workspace: open-platform-shared-observability
+  state_namespace: open-platform-shared-observability
+  network_name: open-platform-shared-observability
+  subnet_cidr: 10.83.0.0/20
+  enable_cloud_nat: false
+  enable_iap_ssh: false
+  enable_oslogin: true
+  xconnect_mode: member
+  ssh_access_mode: bootstrap-public
+  ssh_source_ranges:
+    - 35.79.83.48/32
+  state:
+    key: terraform/shared/open-platform-shared/gcp-cloud/open-platform-shared/open-platform-shared-observability/terraform.tfstate
+  resource:
+    name: open-platform-shared-observability
+    type: workload_namespace
+    lifecycle: persistent
+  xconnect:
+    network_id: net_security_vault
+    role: one
+    zero_trust_cidr: 10.79.0.0/24
+  resources:
+    vault_nodes:
+      - name: observability-shared-0
+        zone: asia-east1-a
+        machine_type: e2-medium
+        image: projects/debian-cloud/global/images/family/debian-12
+        xconnect_role: one
+        public_ip: true
+        service_domains:
+          - observability.svc.plus
