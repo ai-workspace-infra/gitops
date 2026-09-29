@@ -21,6 +21,14 @@ spec:
   ssh_access_mode: bootstrap-public
   ssh_source_ranges:
     - 35.79.83.48/32
+  # Vault state owns the project policy for all three public-IP shared nodes.
+  external_ip_allowed_instances:
+    - name: vault-shared-0
+      zone: asia-east1-a
+    - name: observability-shared-0
+      zone: asia-east1-a
+    - name: iam-shared-0
+      zone: asia-east1-a
   state:
     key: terraform/shared/open-platform-shared/gcp-cloud/open-platform-shared/open-platform-shared-vault/terraform.tfstate
   resource:
