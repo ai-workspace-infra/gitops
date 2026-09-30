@@ -39,12 +39,11 @@ spec:
   storage:
     backend: raft
     address_scope: private
-    # The provider declaration contains the new node only. The existing
-    # source is the live Raft leader and is represented by migration.source.
+    # The new node now leads Raft. The source stays a voter during the
+    # observation window and remains the temporary XConnect Gateway.
     members: 1
-    leader: vault-prod-0
-    peers:
-      - vault-shared-0
+    leader: vault-shared-0
+    peers: []
   nodes:
     - id: vault-shared-0
       xconnect_role: one
