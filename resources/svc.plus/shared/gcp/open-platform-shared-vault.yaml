@@ -43,7 +43,9 @@ spec:
     source_instance: vault-prod-0
     mode: staged-cutover
     terraform_import_required: false
-    source_mutation: forbidden
+    # The existing single-node Raft source may only change its advertised
+    # cluster_addr to the declared XConnect overlay during this migration.
+    source_mutation: raft-address-only
   xconnect:
     network_id: net_security_vault
     role: gateway
