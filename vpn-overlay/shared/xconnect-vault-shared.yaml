@@ -10,7 +10,9 @@ spec:
     id: net_shared_vault
     cidr: 10.79.0.0/24
     gateway_wireguard_address: 10.79.0.1/32
-    gateway_ref: vault-shared-0
+    # Transitional migration state: the source remains Gateway until Raft
+    # cutover; the target is a One at .10. Handoff to vault-shared-0 is later.
+    gateway_ref: vault-prod-0
     transport: vless-xhttp
     transport_profile:
       kind: vless-xhttp
@@ -50,7 +52,7 @@ spec:
       - name: internal-xworkmate-bridge.svc.plus
         device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
       - name: vault-xconnect.svc.plus
-        device_id: vault-shared-0
+        device_id: vault-prod-0
   access_policy:
     default_action: deny
     rules:
@@ -110,21 +112,21 @@ spec:
     gateway_state_dir: /var/lib/xconnect-gateway/shared
     sync_interval_seconds: 300
   gateway:
-    id: vault-shared-0
-    host_ref: vault-shared-0
+    id: vault-prod-0
+    host_ref: vault-prod-0
     xconnect:
       overlay_ip: 10.79.0.1
-      internal_dns: vault-shared-0.shared.internal
+      internal_dns: vault-prod-0.shared.internal
     role: gateway
     connection_source: terraform-cmdb
     deployment: enabled
     observability: required
   fixed_nodes:
-    - id: vault-prod-0
-      host_ref: vault-prod-0
+    - id: vault-shared-0
+      host_ref: vault-shared-0
       xconnect:
-        overlay_ip: 10.79.0.4
-        internal_dns: vault-prod-0.shared.internal
+        overlay_ip: 10.79.0.10
+        internal_dns: vault-shared-0.shared.internal
       role: one
       lifecycle: persistent
       deployment: enabled

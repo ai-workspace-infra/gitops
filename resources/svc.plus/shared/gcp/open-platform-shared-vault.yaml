@@ -46,7 +46,7 @@ spec:
     source_mutation: forbidden
   xconnect:
     network_id: net_security_vault
-    role: gateway
+    role: one
     zero_trust_cidr: 10.79.0.0/24
   resources:
     vault_nodes:
@@ -55,7 +55,7 @@ spec:
         ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAILDlwcO8EfWyVTdxO5KIQiZibnttfpohzihXe4j9un58
         machine_type: e2-highcpu-2
         image: projects/debian-cloud/global/images/family/debian-12
-        xconnect_role: gateway
+        xconnect_role: one
         public_ip: true
         service_domains:
           - vault.svc.plus

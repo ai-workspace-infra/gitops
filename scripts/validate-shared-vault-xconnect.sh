@@ -35,10 +35,12 @@ ruby -ryaml -e '
   end
 
   gateway = spec.fetch("gateway")
-  abort("vault-shared-0 must be the Gateway") unless gateway["id"] == "vault-shared-0" && gateway["role"] == "gateway"
+  # During the staged migration the source remains the Gateway; the target is
+  # enrolled as a One until the explicit Raft cutover/handoff.
+  abort("vault-prod-0 must remain the Gateway during migration") unless gateway["id"] == "vault-prod-0" && gateway["role"] == "gateway"
   nodes = spec.fetch("fixed_nodes").map { |node| node.fetch("id") }.sort
-  expected_nodes = %w[vault-prod-0]
-  abort("One nodes must be vault-prod-0") unless nodes == expected_nodes
+  expected_nodes = %w[vault-shared-0]
+  abort("One nodes must be vault-shared-0") unless nodes == expected_nodes
   abort("all Vault nodes must require observability") unless spec.fetch("fixed_nodes").all? { |node| node["observability"] == "required" } && gateway["observability"] == "required"
 
   operator_id = "xconnect-darwin-haitaodemacbook-pro-rejoin.local"
@@ -54,7 +56,7 @@ ruby -ryaml -e '
   expected_alias = [
     {"name" => "secops.shared.internal", "device_id" => "xconnect-linux-secops-shenlan-inspiron-5415-ops"},
     {"name" => "internal-xworkmate-bridge.svc.plus", "device_id" => "xconnect-linux-secops-shenlan-inspiron-5415-ops"},
-    {"name" => "vault-xconnect.svc.plus", "device_id" => "vault-shared-0"}
+    {"name" => "vault-xconnect.svc.plus", "device_id" => "vault-prod-0"}
   ]
   abort("service DNS aliases must follow the enrolled One device address") unless dns_alias == expected_alias
   policy = spec.fetch("access_policy")
