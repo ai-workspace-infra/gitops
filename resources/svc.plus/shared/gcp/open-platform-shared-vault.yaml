@@ -48,6 +48,9 @@ spec:
     network_id: net_security_vault
     role: one
     zero_trust_cidr: 10.79.0.0/24
+  # The protected prod Vault gateway owns this network; the shared Vault
+  # service is a member and must not be treated as a second gateway.
+  xconnect_mode: member
   resources:
     vault_nodes:
       - name: vault-shared-0
