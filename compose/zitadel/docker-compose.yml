@@ -23,9 +23,11 @@ services:
     image: ${ZITADEL_LOGIN_IMAGE:?GitOps ZITADEL_LOGIN_IMAGE is required}
     user: "0"
     restart: unless-stopped
+    # Doco-CD loads this project with compose-go, which only supports dotenv
+    # env files ("raw" is a Docker Compose CLI extension). The host file is
+    # rendered with single-quoted, literal values.
     env_file:
       - path: /etc/xcontrol/zitadel/login.env
-        format: raw
     environment:
       ZITADEL_API_URL: http://zitadel:8080
       NEXT_PUBLIC_BASE_PATH: /ui/v2/login

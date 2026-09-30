@@ -26,7 +26,11 @@ class ZitadelComposeContract(unittest.TestCase):
         self.assertIn('--masterkeyFile', services['zitadel']['command'])
         self.assertEqual(services['login']['depends_on']['zitadel']['condition'], 'service_healthy')
         self.assertEqual(services['login']['env_file'],
-                         [{'path': '/etc/xcontrol/zitadel/login.env', 'format': 'raw'}])
+                         [{'path': '/etc/xcontrol/zitadel/login.env'}])
+        # Doco-CD's compose-go rejects any env_file format other than dotenv.
+        for service in services.values():
+            for entry in service.get('env_file', []):
+                self.assertNotIn('format', entry if isinstance(entry, dict) else {})
         for service in services.values():
             self.assertIn('healthcheck', service)
             self.assertTrue(all(port.startswith('127.0.0.1:') for port in service['ports']))
