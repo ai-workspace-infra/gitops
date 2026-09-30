@@ -14,7 +14,9 @@ services:
       - /opt/zitadel:/current-dir:rw
     networks: [app, docker_postgres_network]
     healthcheck:
-      test: [CMD, /app/zitadel, ready]
+      # `ready` defaults to TLS.Enabled=true and would probe https://; load
+      # the same config as `start` (TLS disabled) so it probes plain HTTP.
+      test: [CMD, /app/zitadel, ready, --config, /etc/zitadel/config.yaml]
       interval: 10s
       timeout: 30s
       retries: 12
