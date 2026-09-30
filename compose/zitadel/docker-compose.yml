@@ -5,7 +5,9 @@ services:
     image: ${ZITADEL_IMAGE:?GitOps ZITADEL_IMAGE is required}
     user: "0"
     restart: unless-stopped
-    command: [start-from-init, --config, /etc/zitadel/config.yaml, --masterkeyFile, /etc/zitadel/masterkey, --tlsMode, disabled]
+    # FirstInstance (admin, Login client, PAT path) is read only through
+    # --steps; the rendered config file carries it, so pass it to both.
+    command: [start-from-init, --config, /etc/zitadel/config.yaml, --steps, /etc/zitadel/config.yaml, --masterkeyFile, /etc/zitadel/masterkey, --tlsMode, disabled]
     ports:
       - "127.0.0.1:19080:8080"
     volumes:
