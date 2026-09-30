@@ -25,6 +25,8 @@ class ZitadelComposeContract(unittest.TestCase):
         self.assertEqual(services['zitadel']['command'][0], 'start-from-init')
         self.assertIn('--masterkeyFile', services['zitadel']['command'])
         self.assertEqual(services['login']['depends_on']['zitadel']['condition'], 'service_healthy')
+        self.assertEqual(services['login']['env_file'],
+                         [{'path': '/etc/xcontrol/zitadel/login.env', 'format': 'raw'}])
         for service in services.values():
             self.assertIn('healthcheck', service)
             self.assertTrue(all(port.startswith('127.0.0.1:') for port in service['ports']))
