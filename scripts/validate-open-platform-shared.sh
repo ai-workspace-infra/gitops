@@ -54,9 +54,10 @@ ruby -ryaml -e '
     abort("#{service}: state key is incorrect") unless spec.dig("state", "key") == expected_state
     abort("#{service}: XConnect network must remain net_security_vault") unless spec.dig("xconnect", "network_id") == "net_security_vault"
     abort("#{service}: XConnect CIDR must remain 10.79.0.0/24") unless spec.dig("xconnect", "zero_trust_cidr") == "10.79.0.0/24"
-    expected_mode = service == "vault" ? nil : "member"
-    abort("#{service}: member-only XConnect mode is required") if expected_mode && spec["xconnect_mode"] != expected_mode
-    abort("vault: the Gateway state must keep the default gateway mode") if service == "vault" && spec["xconnect_mode"]
+    # The protected prod Vault node owns net_security_vault as the sole
+    # Gateway. Every shared-project service, including the staged Vault
+    # target, joins that network as a One/member.
+    abort("#{service}: member-only XConnect mode is required") unless spec["xconnect_mode"] == "member"
     abort("#{service}: public SSH must be limited to the operator /32") unless spec["ssh_source_ranges"] == ["35.79.83.48/32"]
     abort("#{service}: target must remain persistent") unless spec.dig("resource", "lifecycle") == "persistent"
 
