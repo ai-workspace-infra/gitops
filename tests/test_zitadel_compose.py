@@ -31,6 +31,14 @@ class ZitadelComposeContract(unittest.TestCase):
         for service in services.values():
             for entry in service.get('env_file', []):
                 self.assertNotIn('format', entry if isinstance(entry, dict) else {})
+        # The ready probe must read the same config file (TLS disabled) as
+        # start-from-init; without it ZITADEL's default TLS.Enabled=true makes
+        # the probe use https against a plain-HTTP server, forever unhealthy.
+        command = services['zitadel']['command']
+        config_file = command[command.index('--config') + 1]
+        self.assertEqual(services['zitadel']['healthcheck']['test'],
+                         ['CMD', '/app/zitadel', 'ready', '--config', config_file])
+        self.assertIn(f'/etc/xcontrol/zitadel/config.yaml:{config_file}:ro', services['zitadel']['volumes'])
         for service in services.values():
             self.assertIn('healthcheck', service)
             self.assertTrue(all(port.startswith('127.0.0.1:') for port in service['ports']))
