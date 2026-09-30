@@ -1,0 +1,10 @@
+name: shared-zitadel
+version: doco.v1
+working_dir: compose/zitadel
+compose_files:
+  - docker-compose.yml
+env_files:
+  - .env.shared
+force_image_pull: true
+remove_orphans: true
+timeout: 600

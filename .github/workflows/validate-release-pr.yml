@@ -8,6 +8,16 @@ permissions:
   contents: read
 
 jobs:
+  validate-zitadel-compose:
+    name: Validate Shared IAM single-host GitOps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install 'pyyaml==6.0.2'
+      - run: python3 -m unittest discover -s tests -p test_zitadel_compose.py
+      - name: Validate Compose without loading host secrets
+        run: python3 scripts/validate-zitadel-compose.py
+
   validate-shared-vault-xconnect:
     name: Validate shared Vault XConnect topology
     runs-on: ubuntu-latest
