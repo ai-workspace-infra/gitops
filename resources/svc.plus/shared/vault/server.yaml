@@ -25,7 +25,11 @@ spec:
       runtime_identity_path: kv/data/shared/platform/oidc/open-platform-prod
       ssh_port: 22
       ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIJcLDgstNjy7TC47bdXfLPZkVr/aF3Ck7wjtAmSbX1ir
-      overlay_address: 10.79.0.4
+      # During Raft join the existing source remains the XConnect Gateway at
+      # .1; the target is enrolled as a One at .10. Gateway handoff is a later
+      # explicit stage after Raft leadership cutover.
+      overlay_address: 10.79.0.1
+      xconnect_role: gateway
     # Raft uses the reviewed shared XConnect overlay while the source remains
     # the active leader during the staged cross-project cutover.
     raft_network: overlay
@@ -35,18 +39,20 @@ spec:
   storage:
     backend: raft
     address_scope: private
+    # The provider declaration contains the new node only. The existing
+    # source is the live Raft leader and is represented by migration.source.
     members: 1
-    leader: vault-shared-0
-    peers: []
+    leader: vault-prod-0
+    peers:
+      - vault-shared-0
   nodes:
     - id: vault-shared-0
-      xconnect_role: gateway
+      xconnect_role: one
   stages:
     - node-preflight
     - vault-shared-leader
     - vault-shared-peers
     - node-process-metrics
-    - xconnect-gateway
     - xconnect-one
   access:
     bootstrap: bootstrap-public

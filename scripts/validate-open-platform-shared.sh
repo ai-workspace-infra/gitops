@@ -12,7 +12,9 @@ ruby -ryaml -e '
       "path" => "resources/svc.plus/shared/gcp/open-platform-shared-vault.yaml",
       "namespace" => "open-platform-shared-vault",
       "host" => "vault-shared-0",
-      "role" => "gateway",
+      # During the staged migration the target is a One; the source remains
+      # the Gateway until the explicit Raft cutover/handoff.
+      "role" => "one",
       "machine_type" => "e2-highcpu-2",
       "domains" => ["vault.svc.plus"],
     },
