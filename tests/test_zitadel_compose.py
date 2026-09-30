@@ -39,6 +39,8 @@ class ZitadelComposeContract(unittest.TestCase):
         self.assertEqual(services['zitadel']['healthcheck']['test'],
                          ['CMD', '/app/zitadel', 'ready', '--config', config_file])
         self.assertIn(f'/etc/xcontrol/zitadel/config.yaml:{config_file}:ro', services['zitadel']['volumes'])
+        # A restart during first-instance setup loses the Login client PAT.
+        self.assertGreaterEqual(int(services['zitadel']['healthcheck']['start_period'].rstrip('s')), 300)
         for service in services.values():
             self.assertIn('healthcheck', service)
             self.assertTrue(all(port.startswith('127.0.0.1:') for port in service['ports']))

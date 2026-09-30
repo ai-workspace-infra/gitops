@@ -20,7 +20,11 @@ services:
       interval: 10s
       timeout: 30s
       retries: 12
-      start_period: 20s
+      # First-instance setup (schema, instance, Login client PAT) must finish
+      # before the probe can fail; an unhealthy verdict makes Doco-CD restart
+      # the container and an interrupted setup never writes the PAT. A passing
+      # probe ends the grace period at once, so restarts are not slowed.
+      start_period: 300s
   login:
     image: ${ZITADEL_LOGIN_IMAGE:?GitOps ZITADEL_LOGIN_IMAGE is required}
     user: "0"
