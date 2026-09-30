@@ -6,7 +6,7 @@ metadata:
   provider: gcp
 spec:
   gcp_account_id: open-platform-shared
-  project_id: open-platform-shared
+  project_id: open-platform-shared-510113
   project_name: Shared Open Platform Services
   organization_id: "744119519286"
   region: asia-east1
@@ -33,7 +33,7 @@ spec:
   # GitHub OIDC Terraform only consumes and verifies it.
   manage_external_ip_policy: false
   state:
-    key: terraform/shared/open-platform-shared/gcp-cloud/open-platform-shared/open-platform-shared-vault/terraform.tfstate
+    key: terraform/shared/open-platform-shared-510113/gcp-cloud/open-platform-shared/open-platform-shared-vault/terraform.tfstate
   resource:
     name: open-platform-shared-vault
     type: workload_namespace

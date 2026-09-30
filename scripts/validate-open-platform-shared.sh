@@ -44,11 +44,11 @@ ruby -ryaml -e '
     abort("#{service}: GCP provider required") unless doc.dig("metadata", "provider") == "gcp"
 
     spec = doc.fetch("spec")
-    abort("#{service}: project/account must be open-platform-shared") unless
-      spec["project_id"] == "open-platform-shared" && spec["gcp_account_id"] == "open-platform-shared"
+    abort("#{service}: project/account mapping is incorrect") unless
+      spec["project_id"] == "open-platform-shared-510113" && spec["gcp_account_id"] == "open-platform-shared"
     abort("#{service}: state namespace must be isolated") unless
       spec["workspace"] == expected.fetch("namespace") && spec["state_namespace"] == expected.fetch("namespace")
-    expected_state = "terraform/shared/open-platform-shared/gcp-cloud/open-platform-shared/#{expected.fetch("namespace")}/terraform.tfstate"
+    expected_state = "terraform/shared/open-platform-shared-510113/gcp-cloud/open-platform-shared/#{expected.fetch("namespace")}/terraform.tfstate"
     abort("#{service}: state key is incorrect") unless spec.dig("state", "key") == expected_state
     abort("#{service}: XConnect network must remain net_security_vault") unless spec.dig("xconnect", "network_id") == "net_security_vault"
     abort("#{service}: XConnect CIDR must remain 10.79.0.0/24") unless spec.dig("xconnect", "zero_trust_cidr") == "10.79.0.0/24"
@@ -81,10 +81,10 @@ ruby -ryaml -e '
   abort("Vault migration source must be immutable") unless migration["source_mutation"] == "forbidden"
   oidc_path = "resources/svc.plus/shared/gcp/github-actions-oidc-open-platform-shared.yaml"
   oidc = YAML.safe_load(File.read(oidc_path), aliases: false)
-  abort("OIDC declaration must target open-platform-shared") unless
-    oidc.dig("spec", "project_id") == "open-platform-shared" && oidc.dig("spec", "gcp_account_id") == "open-platform-shared"
-  abort("OIDC declaration must use the shared bootstrap state key") unless
-    oidc.dig("spec", "state", "key") == "platform-ops-toolkit/shared/open-platform-shared/gcp-oidc-bootstrap/terraform.tfstate"
+  abort("OIDC declaration must target open-platform-shared-510113") unless
+    oidc.dig("spec", "project_id") == "open-platform-shared-510113" && oidc.dig("spec", "gcp_account_id") == "open-platform-shared"
+  abort("OIDC declaration must use the concrete shared project bootstrap state key") unless
+    oidc.dig("spec", "state", "key") == "platform-ops-toolkit/shared/open-platform-shared-510113/gcp-oidc-bootstrap/terraform.tfstate"
   abort("OIDC declaration must be restricted to the protected prod environment") unless
     oidc.dig("spec", "subjects") == [
       "repo:ai-workspace-infra/platform-ops-toolkit:environment:prod",

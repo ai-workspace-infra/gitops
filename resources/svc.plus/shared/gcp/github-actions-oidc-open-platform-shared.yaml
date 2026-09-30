@@ -5,7 +5,7 @@ metadata:
   provider: gcp
 spec:
   gcp_account_id: open-platform-shared
-  project_id: open-platform-shared
+  project_id: open-platform-shared-510113
   organization_id: "744119519286"
   provider_url: https://token.actions.githubusercontent.com
   # Stable custom audience; the bootstrap Terraform provider and the runtime
@@ -21,4 +21,4 @@ spec:
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main
   state:
     bucket: xworktech-platform-terraform-state
-    key: platform-ops-toolkit/shared/open-platform-shared/gcp-oidc-bootstrap/terraform.tfstate
+    key: platform-ops-toolkit/shared/open-platform-shared-510113/gcp-oidc-bootstrap/terraform.tfstate
