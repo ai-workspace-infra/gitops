@@ -36,6 +36,9 @@ class ZitadelComposeContract(unittest.TestCase):
         # the probe use https against a plain-HTTP server, forever unhealthy.
         command = services['zitadel']['command']
         config_file = command[command.index('--config') + 1]
+        # Without --steps, start-from-init ignores FirstInstance and creates the
+        # instance with default credentials and no Login client PAT.
+        self.assertEqual(command[command.index('--steps') + 1], config_file)
         self.assertEqual(services['zitadel']['healthcheck']['test'],
                          ['CMD', '/app/zitadel', 'ready', '--config', config_file])
         self.assertIn(f'/etc/xcontrol/zitadel/config.yaml:{config_file}:ro', services['zitadel']['volumes'])
