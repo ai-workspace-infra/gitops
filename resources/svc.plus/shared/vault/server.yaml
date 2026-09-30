@@ -8,27 +8,27 @@ spec:
   automation:
     github_environment: prod
     vault_addr: https://vault.svc.plus
-    runtime_identity_path: kv/data/shared/platform/oidc/open-platform-prod
+    runtime_identity_path: kv/data/shared/platform/oidc/open-platform-shared
     monitoring_secret_path: kv/data/CICD/observability
     xconnect_secret_path: kv/data/CICD/shared/xconnect
-    node_role: github-actions-platform-ops-toolkit-shared-vault-node-oidc-open-platform-prod
+    node_role: github-actions-platform-ops-toolkit-shared-vault-node-oidc-open-platform-shared
     monitoring_role: github-actions-platform-ops-toolkit-shared-vault-monitoring
     xconnect_role: github-actions-platform-ops-toolkit-shared-vault-xconnect
     raft_operator_role: github-actions-platform-ops-toolkit-shared-vault-raft-operator
   migration:
     source:
-      id: vault-legacy
-      address: jp-xhttp-contabo.svc.plus
-      ssh_user: vault-migrate
+      id: vault-prod-0
+      provider: gcp-cloud
+      provider_manifest: resources/xworktech.com/shared/gcp/vault-shared.yaml
+      address: 35.221.167.104
+      node_role: github-actions-platform-ops-toolkit-shared-vault-node-oidc-open-platform-prod
+      runtime_identity_path: kv/data/shared/platform/oidc/open-platform-prod
       ssh_port: 22
-      ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIE9TSuVdNkyh7JA8a75cYBrmEvdYDC/DHiugJ2vIbcpo
+      ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAIJcLDgstNjy7TC47bdXfLPZkVr/aF3Ck7wjtAmSbX1ir
       overlay_address: 10.79.0.4
-    ssh_ca:
-      role: github-actions-platform-ops-toolkit-shared-vault-legacy-ssh
-      sign_path: ssh-client-signer/sign/vault-legacy-ops
-    # The one-node steady state uses the VPC address directly. The three-node
-    # expansion path switches this to the reviewed overlay before peers join.
-    raft_network: private
+    # Raft uses the reviewed shared XConnect overlay while the source remains
+    # the active leader during the staged cross-project cutover.
+    raft_network: overlay
     overlay_interface: xconone0
     observation:
       hours: 24
@@ -36,10 +36,10 @@ spec:
     backend: raft
     address_scope: private
     members: 1
-    leader: vault-prod-0
+    leader: vault-shared-0
     peers: []
   nodes:
-    - id: vault-prod-0
+    - id: vault-shared-0
       xconnect_role: gateway
   stages:
     - node-preflight

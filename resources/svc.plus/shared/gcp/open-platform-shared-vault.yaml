@@ -52,6 +52,7 @@ spec:
     vault_nodes:
       - name: vault-shared-0
         zone: asia-east1-a
+        ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAILDlwcO8EfWyVTdxO5KIQiZibnttfpohzihXe4j9un58
         machine_type: e2-highcpu-2
         image: projects/debian-cloud/global/images/family/debian-12
         xconnect_role: gateway
