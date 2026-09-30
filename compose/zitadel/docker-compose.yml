@@ -1,0 +1,51 @@
+# Ansible provisions host-only config/secrets and the PostgreSQL prerequisite.
+# Doco-CD alone reconciles this application stack; no secret lives in Git.
+services:
+  zitadel:
+    image: ${ZITADEL_IMAGE:?GitOps ZITADEL_IMAGE is required}
+    user: "0"
+    restart: unless-stopped
+    command: [start-from-init, --config, /etc/zitadel/config.yaml, --masterkeyFile, /etc/zitadel/masterkey, --tlsMode, disabled]
+    ports:
+      - "127.0.0.1:19080:8080"
+    volumes:
+      - /etc/xcontrol/zitadel/config.yaml:/etc/zitadel/config.yaml:ro
+      - /etc/xcontrol/zitadel/masterkey:/etc/zitadel/masterkey:ro
+      - /opt/zitadel:/current-dir:rw
+    networks: [app, docker_postgres_network]
+    healthcheck:
+      test: [CMD, /app/zitadel, ready]
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      start_period: 20s
+  login:
+    image: ${ZITADEL_LOGIN_IMAGE:?GitOps ZITADEL_LOGIN_IMAGE is required}
+    user: "0"
+    restart: unless-stopped
+    env_file:
+      - path: /etc/xcontrol/zitadel/login.env
+        format: raw
+    environment:
+      ZITADEL_API_URL: http://zitadel:8080
+      NEXT_PUBLIC_BASE_PATH: /ui/v2/login
+      ZITADEL_SERVICE_USER_TOKEN_FILE: /current-dir/login-client.pat
+    ports:
+      - "127.0.0.1:19081:3000"
+    volumes:
+      - /opt/zitadel:/current-dir:ro
+    networks: [app]
+    depends_on:
+      zitadel:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, /bin/sh, -c, "node /app/healthcheck.mjs http://localhost:3000/ui/v2/login/healthy"]
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      start_period: 20s
+networks:
+  app:
+    name: shared_zitadel_app
+  docker_postgres_network:
+    external: true
