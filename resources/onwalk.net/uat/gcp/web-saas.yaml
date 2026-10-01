@@ -30,6 +30,8 @@ spec:
       - name: web-saas-uat
         zone: asia-east1-a
         machine_type: e2-medium
+        # The project enforces requireOsLogin; deploy jobs log in through OS Login.
+        enable_oslogin: true
         image: projects/debian-cloud/global/images/family/debian-12
         public_ip: true
         network_tags: [web-saas-ssh]
