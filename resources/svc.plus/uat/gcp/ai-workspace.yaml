@@ -33,6 +33,7 @@ spec:
         zone: asia-east1-a
         machine_type: e2-custom-4-8192
         image: projects/debian-cloud/global/images/family/debian-12
+        enable_oslogin: true
         public_ip: true
         network_tags: [ai-workspace-ssh]
         inventory_groups: [ai_workspace]
