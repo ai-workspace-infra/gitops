@@ -106,3 +106,27 @@ for required in \
 done
 
 echo "Validated UAT AWS Agent Proxy declaration"
+
+# GCP enforces compute.requireOsLogin in the UAT project. Resolve business
+# manifests from the active Hybrid matrix so a provider switch cannot leave a
+# newly selected GCP workload with unsupported metadata SSH authentication.
+ruby -rjson -ryaml <<'RUBY'
+matrix = JSON.parse(File.read('topology/uat/hybrid/resource-matrix.json'))
+rows = matrix.fetch('spec').fetch('resources').select do |row|
+  row['provider'] == 'gcp-cloud' && row['release_scope'] == 'business' &&
+    %w[terraform terraform+serverless].include?(row['management_mode'])
+end
+abort 'UAT Hybrid has no GCP business workloads to validate' if rows.empty?
+
+roots = %w[resources/onwalk.net/uat/gcp resources/svc.plus/uat/gcp]
+rows.each do |row|
+  namespace = row.fetch('namespace')
+  paths = roots.map { |root| File.join(root, "#{namespace}.yaml") }.select { |path| File.file?(path) }
+  abort "#{namespace}: expected exactly one GCP manifest, found #{paths.length}" unless paths.length == 1
+  spec = YAML.safe_load(File.read(paths.first), aliases: false).fetch('spec')
+  abort "#{namespace}: wrong GCP project" unless spec.fetch('project_id') == 'open-platform-uat'
+  vms = spec.fetch('resources').fetch('spot_vms')
+  abort "#{namespace}: each Spot VM must enable OS Login" unless vms.any? && vms.all? { |vm| vm['enable_oslogin'] == true }
+end
+puts "Validated OS Login for #{rows.length} UAT GCP business declaration(s)"
+RUBY

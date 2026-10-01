@@ -35,6 +35,7 @@ spec:
         # The project enforces requireOsLogin; deploy jobs log in through OS Login.
         enable_oslogin: true
         image: projects/debian-cloud/global/images/family/debian-12
+        enable_oslogin: true
         public_ip: true
         network_tags: [ai-workspace-ssh]
         inventory_groups: [ai_workspace]
