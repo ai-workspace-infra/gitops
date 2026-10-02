@@ -57,10 +57,10 @@ spec:
       selfhost: console-selfhost-prod.svc.plus
       serverless: console-serverless-prod.svc.plus
     accounts.svc.plus:
-      selfhost: accounts.svc.plus
+      selfhost: accounts-selfhost-prod.svc.plus
       serverless: accounts-serverless-prod.svc.plus
     billing.svc.plus:
-      selfhost: billing.svc.plus
+      selfhost: billing-selfhost-prod.svc.plus
       serverless: billing.svc.plus
   public_endpoints:
     console:
