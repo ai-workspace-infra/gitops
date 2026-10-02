@@ -5,7 +5,6 @@ Daily 36800539711 (attempt 6) timed out waiting for root on jp-xconnect.
 These are the AWS manifests the UAT Hybrid matrix routes.
 """
 
-import json
 import os
 import unittest
 from pathlib import Path
@@ -14,12 +13,12 @@ import yaml
 from jinja2 import Template
 
 ROOT = Path(__file__).resolve().parents[1]
-MATRIX = ROOT / "topology" / "uat" / "hybrid" / "resource-matrix.json"
+MATRIX = ROOT / "topology" / "uat" / "hybrid" / "resource-matrix.yaml"
 
 
 class UatAwsLoginUserTest(unittest.TestCase):
     def test_routed_aws_debian_hosts_log_in_as_admin(self):
-        matrix = json.loads(MATRIX.read_text(encoding="utf-8"))
+        matrix = yaml.safe_load(MATRIX.read_text(encoding="utf-8"))
         rows = [row for row in matrix.get("rows", matrix.get("resources", []))
                 if isinstance(row, dict) and row.get("provider") == "aws-cloud"]
         if not rows:

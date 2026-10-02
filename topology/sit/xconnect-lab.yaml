@@ -1,0 +1,74 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: XConnectLabTopology
+metadata:
+  name: xconnect-lab
+  environment: sit
+spec:
+  gateway_provider: aws-spot
+  gateway_execution_model: self-hosted-linux-node
+  compute_policy: all-cloud-compute-is-aws-spot-by-default
+  ttl_minutes: 90
+  zero:
+    accounts_api_url: https://accounts.svc.plus
+    portal_url: https://portal.svc.plus
+    source_of_truth: formal-accounts-api-and-portal
+    config_contract: devices-networks-policy-signed-config
+    lab_controller:
+      enabled: true
+      co_located_on: gateway
+      purpose: cloud-debug-only-zero-api-compatibility-harness
+      is_formal_config_source: false
+  nodes:
+    gateway:
+      role: relay
+      service_role: relay/service
+      baseline: independent-linux-node-external-wireguard-xray
+      services:
+      - xconnect-gateway
+      - wireguard
+      - xray
+    one:
+      role: controlled-client
+      baseline: independent-linux-node-external-wireguard-xray
+      services:
+      - xconnect-one-cli
+      - wireguard
+      - xray
+  aws:
+    region: ap-northeast-1
+    instance_type: t3.small
+    vpc_cidr: 10.78.0.0/24
+    ami_ssm_parameter: /aws/service/canonical/ubuntu/server/24.04/stable/current/amd64/hvm/ebs-gp3/ami-id
+    role_arn: arn:aws:iam::950604983695:role/GithubAction_IAC_Deploy_Role
+    account_id: '950604983695'
+    audience: sts.amazonaws.com
+    spot:
+      market: spot
+      type: one-time
+      interruption_behavior: terminate
+  vultr:
+    enabled_only_when_gateway_provider_is: vultr
+    region: nrt
+    plan: vc2-1c-1gb
+    os_name: Ubuntu 24.04 LTS x64
+  overlay:
+    network_id: net_lab
+    cidr: 10.77.0.0/24
+    gateway_address: 10.77.0.1/24
+    device_address: 10.77.0.2/32
+    transport: vless-tls-xudp
+    gateway_tls_port: 443
+    zero_port: 8443
+    wireguard_port: 51820
+    public_wireguard_ingress: false
+    private_checks:
+    - ping
+    - http
+    - wireguard-handshake
+  vault:
+    address: https://vault.svc.plus
+    role: github-actions-platform-ops-toolkit-sit
+    audience: vault
+    infrastructure_path: kv/data/CICD/sit
+    runtime_path: kv/data/sit/xconnect-one
+    github_app_path: kv/data/CICD/github-app/daily-snapshot
