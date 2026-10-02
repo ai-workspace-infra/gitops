@@ -19,7 +19,7 @@ end
 def https!(value)
   fail "URL must be a string" unless value.is_a?(String)
   uri = URI.parse(value)
-  fail "URL must be absolute HTTPS without credentials, fragments or wildcards" unless uri.is_a?(URI::HTTPS) && uri.host && !uri.userinfo && !uri.fragment && !value.include?("*")
+  fail "URL must be absolute HTTPS without credentials, fragments or wildcards" unless uri.is_a?(URI::HTTPS) && uri.host && !uri.host.empty? && !uri.userinfo && !uri.fragment && !value.include?("*")
 end
 
 path = ENV.fetch("MANIFEST")
