@@ -11,8 +11,11 @@ global:
   network_name: open-platform-uat
   subnet_cidr: 10.60.0.0/20
   enable_cloud_nat: true
-  spot_ssh_source_ranges:
-    - 35.79.83.48/32
+  # The project denies VM external IPs. Use IAP over the private subnet for
+  # the deployment connection and keep the workload itself private.
+  enable_iap_ssh: true
+  enable_oslogin: true
+  spot_ssh_source_ranges: []
   spot_network_tags:
     - ai-aggregator-gcp-spot
   ssh_username: github-actions
@@ -21,7 +24,8 @@ spot_vms:
   - name: ai-aggregator-gcp-single-01
     zone: asia-east1-a
     machine_type: e2-standard-4
-    public_ip: true
+    public_ip: false
+    enable_oslogin: true
     network_tags:
       - ai-aggregator-gcp-spot
     inventory_groups:
