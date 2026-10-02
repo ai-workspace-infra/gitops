@@ -41,4 +41,4 @@ hosts:
       xconnect_region: sg
       xconnect_pool: sg
       xconnect_fqdn: sg-xconnect.onwalk.net
-      xconnect_open_to_users: false
+      xconnect_open_to_users: true
