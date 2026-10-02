@@ -1,0 +1,93 @@
+apiVersion: identity.svc.plus/v1alpha1
+kind: IdentityIntegrationSet
+metadata:
+  name: svc-plus-iam-integrations
+  project: svc.plus
+  environment: uat
+spec:
+  issuer: https://iam.svc.plus
+  integrations:
+    - name: gcp
+      provider: gcp
+      flows:
+        - purpose: workforce
+          protocol: oidc
+          oidc_supported: true
+          capability_evidence_url: https://cloud.google.com/iam/docs/workforce-identity-federation
+          vault_ref: kv/iam/uat/gcp/workforce/workforce
+        - purpose: workload
+          protocol: oidc
+          oidc_supported: true
+          capability_evidence_url: https://cloud.google.com/iam/docs/workload-identity-federation
+          vault_ref: kv/iam/uat/gcp/workload/workload
+    - name: aws
+      provider: aws
+      flows:
+        - purpose: workforce
+          protocol: saml
+          oidc_supported: false
+          selection_reason: AWS IAM Identity Center external identity source is SAML for this account.
+          capability_evidence_url: https://docs.aws.amazon.com/singlesignon/latest/userguide/manage-your-identity-source-idp.html
+          vault_ref: kv/iam/uat/aws/workforce/workforce
+        - purpose: workload
+          protocol: oidc
+          oidc_supported: true
+          capability_evidence_url: https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRoleWithWebIdentity.html
+          vault_ref: kv/iam/uat/aws/workload/workload
+    - name: linode
+      provider: linode
+      flows:
+        - purpose: workforce
+          protocol: saml
+          oidc_supported: false
+          selection_reason: Cloud Manager SSO capability is SAML for the target account.
+          capability_evidence_url: https://techdocs.akamai.com/cloud-computing/docs/single-sign-on-cm
+          vault_ref: kv/iam/uat/linode/workforce/workforce
+        - purpose: workload
+          protocol: vault-api-token
+          oidc_supported: false
+          selection_reason: Provider API federation requires account verification; use the existing Vault API token contract meanwhile.
+          capability_evidence_url: https://techdocs.akamai.com/cloud-computing/docs/api
+          vault_ref: kv/CICD/uat/akamai-cloud/linode
+    - name: vultr
+      provider: vultr
+      flows:
+        - purpose: workforce
+          protocol: oidc
+          oidc_supported: true
+          capability_evidence_url: https://docs.vultr.com/single-sign-on
+          redirect_uris:
+            - https://console.vultr.com/openid/
+          vault_ref: kv/iam/uat/vultr/workforce/workforce
+        - purpose: workload
+          protocol: vault-api-token
+          oidc_supported: false
+          selection_reason: Vultr documents OIDC for console SSO; API federation remains unverified.
+          capability_evidence_url: https://docs.vultr.com/single-sign-on
+          vault_ref: kv/CICD/uat
+    - name: ucloud-global
+      provider: ucloud-global
+      flows:
+        - purpose: workforce
+          protocol: saml
+          oidc_supported: false
+          selection_reason: UCloud Global documents SAML 2.0 for IAM sub-user SSO.
+          capability_evidence_url: https://www.ucloud-global.com/en/docs/uproject/user_sso
+          vault_ref: kv/iam/uat/ucloud-global/workforce/workforce
+        - purpose: workload
+          protocol: vault-api-token
+          oidc_supported: false
+          selection_reason: UCloud Global STS federation requires account verification; use the existing Vault API credential contract meanwhile.
+          capability_evidence_url: https://www.ucloud-global.com/en/docs/uproject/user_sso
+          vault_ref: kv/CICD/uat/ucloud/project
+    - name: grafana
+      provider: grafana
+      flows:
+        - purpose: application
+          protocol: oidc
+          oidc_supported: true
+          capability_evidence_url: https://grafana.com/docs/grafana/latest/setup-grafana/configure-access/configure-authentication/generic-oauth/
+          redirect_uris:
+            - https://grafana.svc.plus/login/generic_oauth
+          role_claim: urn:zitadel:iam:org:project:roles
+          vault_ref: kv/iam/uat/grafana/application/application
