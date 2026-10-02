@@ -21,7 +21,7 @@ ruby -ryaml -e '
   abort("wrong overlay CIDR") unless network["cidr"] == "10.79.0.0/24"
   abort("overlay must not expose public WireGuard") unless network["public_wireguard_ingress"] == false
   transport = network.fetch("transport_profile")
-  # The Gateway has its own hostname: vault.svc.plus stays on the existing
+  # The Gateway has its own hostname: vault.svc.plus stays on the source
   # Vault node until cutover, so it cannot also front the overlay.
   gateway_host = "vault-xconnect.svc.plus"
   abort("gateway must use its dedicated TLS hostname") unless transport["host"] == gateway_host
@@ -35,10 +35,12 @@ ruby -ryaml -e '
   end
 
   gateway = spec.fetch("gateway")
-  abort("vault-prod-0 must be the Gateway") unless gateway["id"] == "vault-prod-0" && gateway["role"] == "gateway"
+  # During the staged migration the source remains the Gateway; the target is
+  # enrolled as a One until the explicit Raft cutover/handoff.
+  abort("vault-prod-0 must remain the Gateway during migration") unless gateway["id"] == "vault-prod-0" && gateway["role"] == "gateway"
   nodes = spec.fetch("fixed_nodes").map { |node| node.fetch("id") }.sort
-  expected_nodes = %w[vault-prod-1 vault-prod-2]
-  abort("One nodes must be vault-prod-1 and vault-prod-2") unless nodes == expected_nodes
+  expected_nodes = %w[vault-shared-0]
+  abort("One nodes must be vault-shared-0") unless nodes == expected_nodes
   abort("all Vault nodes must require observability") unless spec.fetch("fixed_nodes").all? { |node| node["observability"] == "required" } && gateway["observability"] == "required"
 
   operator_id = "xconnect-darwin-haitaodemacbook-pro-rejoin.local"
@@ -60,28 +62,28 @@ ruby -ryaml -e '
   policy = spec.fetch("access_policy")
   abort("XConnect policy must default-deny") unless policy["default_action"] == "deny"
   rules = policy.fetch("rules")
-  expected_targets = %w[vault-prod-0 vault-prod-1 vault-prod-2]
+  expected_targets = %w[vault-prod-0 vault-shared-0]
   ssh_rules = rules.select { |rule| Array(rule["ports"]) == [22] }
   valid_ssh = ssh_rules.length == 1 && ssh_rules.first["source_device_id"] == operator_id &&
     ssh_rules.first["destination_node_ids"].sort == expected_targets &&
     ssh_rules.first["protocol"] == "tcp" && ssh_rules.first["action"] == "allow"
-  abort("only the operator Mac may SSH to the three Vault nodes") unless valid_ssh
+  abort("only the operator Mac may SSH to the source and target Vault nodes") unless valid_ssh
   dns_rules = rules.select { |rule| Array(rule["ports"]) == [53] }
-  dns_sources = %w[vault-prod-1 vault-prod-2 xconnect-linux-secops-shenlan-inspiron-5415-ops] + [operator_id]
+  dns_sources = %w[vault-prod-0 xconnect-linux-secops-shenlan-inspiron-5415-ops] + [operator_id]
   expected_dns = dns_sources.product(%w[tcp udp])
   valid_dns = dns_rules.length == expected_dns.length && expected_dns.all? do |source, protocol|
     dns_rules.any? do |rule|
       rule["source_device_id"] == source &&
-        rule["destination_node_ids"] == ["vault-prod-0"] &&
+        rule["destination_node_ids"] == ["vault-shared-0"] &&
         rule["protocol"] == protocol && rule["action"] == "allow"
     end
   end
   abort("only declared One devices may use TCP/UDP DNS on the Gateway") unless valid_dns
   abort("unexpected XConnect access policy rules") unless rules.length == ssh_rules.length + dns_rules.length
 
-  gcp_path = "resources/xworktech.com/shared/gcp/vault-shared.yaml"
+  gcp_path = "resources/svc.plus/shared/gcp/open-platform-shared-vault.yaml"
   gcp_doc = YAML.safe_load(File.read(gcp_path))
-  abort("shared GCP declaration must target open-platform-prod") unless gcp_doc.dig("spec", "project_id") == "open-platform-prod"
+  abort("shared GCP declaration must target open-platform-shared-510113") unless gcp_doc.dig("spec", "project_id") == "open-platform-shared-510113"
   ssh_sources = gcp_doc.dig("spec", "ssh_source_ranges")
   access_mode = gcp_doc.dig("spec", "ssh_access_mode")
   case access_mode

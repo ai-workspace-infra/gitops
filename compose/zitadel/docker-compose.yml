@@ -1,0 +1,61 @@
+# Ansible provisions host-only config/secrets and the PostgreSQL prerequisite.
+# Doco-CD alone reconciles this application stack; no secret lives in Git.
+services:
+  zitadel:
+    image: ${ZITADEL_IMAGE:?GitOps ZITADEL_IMAGE is required}
+    user: "0"
+    restart: unless-stopped
+    # FirstInstance (admin, Login client, PAT path) is read only through
+    # --steps; the rendered config file carries it, so pass it to both.
+    command: [start-from-init, --config, /etc/zitadel/config.yaml, --steps, /etc/zitadel/config.yaml, --masterkeyFile, /etc/zitadel/masterkey, --tlsMode, disabled]
+    ports:
+      - "127.0.0.1:19080:8080"
+    volumes:
+      - /etc/xcontrol/zitadel/config.yaml:/etc/zitadel/config.yaml:ro
+      - /etc/xcontrol/zitadel/masterkey:/etc/zitadel/masterkey:ro
+      - /opt/zitadel:/current-dir:rw
+    networks: [app, docker_postgres_network]
+    healthcheck:
+      # `ready` defaults to TLS.Enabled=true and would probe https://; load
+      # the same config as `start` (TLS disabled) so it probes plain HTTP.
+      test: [CMD, /app/zitadel, ready, --config, /etc/zitadel/config.yaml]
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      # First-instance setup (schema, instance, Login client PAT) must finish
+      # before the probe can fail; an unhealthy verdict makes Doco-CD restart
+      # the container and an interrupted setup never writes the PAT. A passing
+      # probe ends the grace period at once, so restarts are not slowed.
+      start_period: 300s
+  login:
+    image: ${ZITADEL_LOGIN_IMAGE:?GitOps ZITADEL_LOGIN_IMAGE is required}
+    user: "0"
+    restart: unless-stopped
+    # Doco-CD loads this project with compose-go, which only supports dotenv
+    # env files ("raw" is a Docker Compose CLI extension). The host file is
+    # rendered with single-quoted, literal values.
+    env_file:
+      - path: /etc/xcontrol/zitadel/login.env
+    environment:
+      ZITADEL_API_URL: http://zitadel:8080
+      NEXT_PUBLIC_BASE_PATH: /ui/v2/login
+      ZITADEL_SERVICE_USER_TOKEN_FILE: /current-dir/login-client.pat
+    ports:
+      - "127.0.0.1:19081:3000"
+    volumes:
+      - /opt/zitadel:/current-dir:ro
+    networks: [app]
+    depends_on:
+      zitadel:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, /bin/sh, -c, "node /app/healthcheck.mjs http://localhost:3000/ui/v2/login/healthy"]
+      interval: 10s
+      timeout: 30s
+      retries: 12
+      start_period: 20s
+networks:
+  app:
+    name: shared_zitadel_app
+  docker_postgres_network:
+    external: true

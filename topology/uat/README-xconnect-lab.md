@@ -1,6 +1,6 @@
 # XConnect UAT Spot validation declaration
 
-`xconnect-lab.json` is the static source for the XConnect One Linux client CLI
+`xconnect-lab.yaml` is the static source for the XConnect One Linux client CLI
 and XConnect One Gateway joint validation. The workflow consumes this file at
 an immutable Git commit and passes its values to `iac_modules/vpn-overlay/xconnect-lab`.
 

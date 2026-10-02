@@ -5,11 +5,13 @@ metadata:
   environment: shared
 spec:
   # Dedicated shared-services overlay. This is distinct from the GCP VPC CIDR
-  # (10.81.0.0/20) and the UAT/Prod XConnect overlays (10.77/10.78).
+  # (10.82.0.0/20) and the UAT/Prod XConnect overlays (10.77/10.78).
   network:
     id: net_shared_vault
     cidr: 10.79.0.0/24
     gateway_wireguard_address: 10.79.0.1/32
+    # Transitional migration state: the source remains Gateway until Raft
+    # cutover; the target is a One at .10. Handoff to vault-shared-0 is later.
     gateway_ref: vault-prod-0
     transport: vless-xhttp
     transport_profile:
@@ -17,9 +19,8 @@ spec:
       port: 443
       path: /xconnect
       mode: auto
-      # Dedicated Gateway hostname on vault-prod-0. vault.svc.plus keeps
-      # pointing at the existing Vault node until migrate-cutover, and the
-      # old node must reach this Gateway before then to join over overlay.
+      # Dedicated Gateway hostname on vault-shared-0. vault.svc.plus keeps
+      # pointing at the source node until migrate-cutover.
       host: vault-xconnect.svc.plus
       frontend: caddy-unix-h2c
       listen_socket: /run/xconnect-gateway/xray.sock
@@ -55,60 +56,47 @@ spec:
   access_policy:
     default_action: deny
     rules:
-      - id: vault-prod-1-to-gateway-dns-udp
-        source_device_id: vault-prod-1
-        destination_node_ids: [vault-prod-0]
+      - id: vault-prod-0-to-gateway-dns-udp
+        source_device_id: vault-prod-0
+        destination_node_ids: [vault-shared-0]
         protocol: udp
         ports: [53]
         action: allow
-      - id: vault-prod-1-to-gateway-dns-tcp
-        source_device_id: vault-prod-1
-        destination_node_ids: [vault-prod-0]
-        protocol: tcp
-        ports: [53]
-        action: allow
-      - id: vault-prod-2-to-gateway-dns-udp
-        source_device_id: vault-prod-2
-        destination_node_ids: [vault-prod-0]
-        protocol: udp
-        ports: [53]
-        action: allow
-      - id: vault-prod-2-to-gateway-dns-tcp
-        source_device_id: vault-prod-2
-        destination_node_ids: [vault-prod-0]
+      - id: vault-prod-0-to-gateway-dns-tcp
+        source_device_id: vault-prod-0
+        destination_node_ids: [vault-shared-0]
         protocol: tcp
         ports: [53]
         action: allow
       - id: ops-macos-to-gateway-dns-udp
         source_device_id: xconnect-darwin-haitaodemacbook-pro-rejoin.local
-        destination_node_ids: [vault-prod-0]
+        destination_node_ids: [vault-shared-0]
         protocol: udp
         ports: [53]
         action: allow
       - id: ops-macos-to-gateway-dns-tcp
         source_device_id: xconnect-darwin-haitaodemacbook-pro-rejoin.local
-        destination_node_ids: [vault-prod-0]
+        destination_node_ids: [vault-shared-0]
         protocol: tcp
         ports: [53]
         action: allow
       - id: secops-one-to-gateway-dns-udp
         source_device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
-        destination_node_ids: [vault-prod-0]
+        destination_node_ids: [vault-shared-0]
         protocol: udp
         ports: [53]
         action: allow
       - id: secops-one-to-gateway-dns-tcp
         source_device_id: xconnect-linux-secops-shenlan-inspiron-5415-ops
-        destination_node_ids: [vault-prod-0]
+        destination_node_ids: [vault-shared-0]
         protocol: tcp
         ports: [53]
         action: allow
       - id: ops-macos-to-vault-ssh
         source_device_id: xconnect-darwin-haitaodemacbook-pro-rejoin.local
         destination_node_ids:
+          - vault-shared-0
           - vault-prod-0
-          - vault-prod-1
-          - vault-prod-2
         protocol: tcp
         ports: [22]
         action: allow
@@ -134,21 +122,11 @@ spec:
     deployment: enabled
     observability: required
   fixed_nodes:
-    - id: vault-prod-1
-      host_ref: vault-prod-1
+    - id: vault-shared-0
+      host_ref: vault-shared-0
       xconnect:
-        overlay_ip: 10.79.0.2
-        internal_dns: vault-prod-1.shared.internal
-      role: one
-      lifecycle: persistent
-      deployment: enabled
-      connection_source: terraform-cmdb
-      observability: required
-    - id: vault-prod-2
-      host_ref: vault-prod-2
-      xconnect:
-        overlay_ip: 10.79.0.3
-        internal_dns: vault-prod-2.shared.internal
+        overlay_ip: 10.79.0.10
+        internal_dns: vault-shared-0.shared.internal
       role: one
       lifecycle: persistent
       deployment: enabled

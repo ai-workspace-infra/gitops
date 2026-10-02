@@ -1,0 +1,66 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GCPWorkloadNamespace
+metadata:
+  name: open-platform-shared-vault
+  environment: shared
+  provider: gcp
+spec:
+  gcp_account_id: open-platform-shared
+  project_id: open-platform-shared-510113
+  project_name: Shared Open Platform Services
+  organization_id: "744119519286"
+  region: asia-east1
+  bootstrap_project_id: crypto-will-508602-m0
+  workspace: open-platform-shared-vault
+  state_namespace: open-platform-shared-vault
+  network_name: open-platform-shared-vault
+  subnet_cidr: 10.82.0.0/20
+  enable_cloud_nat: false
+  enable_iap_ssh: false
+  enable_oslogin: true
+  ssh_access_mode: bootstrap-public
+  ssh_source_ranges:
+    - 35.79.83.48/32
+  # Vault state owns the project policy for all three public-IP shared nodes.
+  external_ip_allowed_instances:
+    - name: vault-shared-0
+      zone: asia-east1-a
+    - name: observability-shared-0
+      zone: asia-east1-a
+    - name: iam-shared-0
+      zone: asia-east1-a
+  # The allowlist is seeded by an organization-policy administrator; runtime
+  # GitHub OIDC Terraform only consumes and verifies it.
+  manage_external_ip_policy: false
+  state:
+    key: terraform/shared/open-platform-shared-510113/gcp-cloud/open-platform-shared/open-platform-shared-vault/terraform.tfstate
+  resource:
+    name: open-platform-shared-vault
+    type: workload_namespace
+    lifecycle: persistent
+  migration:
+    source_project_id: open-platform-prod
+    source_instance: vault-prod-0
+    mode: staged-cutover
+    terraform_import_required: false
+    # The existing single-node Raft source may only change its advertised
+    # cluster_addr to the declared XConnect overlay during this migration.
+    source_mutation: raft-address-only
+  xconnect:
+    network_id: net_security_vault
+    role: one
+    zero_trust_cidr: 10.79.0.0/24
+  # The protected prod Vault gateway owns this network; the shared Vault
+  # service is a member and must not be treated as a second gateway.
+  xconnect_mode: member
+  resources:
+    vault_nodes:
+      - name: vault-shared-0
+        zone: asia-east1-a
+        ssh_host_ed25519: AAAAC3NzaC1lZDI1NTE5AAAAILDlwcO8EfWyVTdxO5KIQiZibnttfpohzihXe4j9un58
+        machine_type: e2-highcpu-2
+        image: projects/debian-cloud/global/images/family/debian-12
+        xconnect_role: one
+        public_ip: true
+        service_domains:
+          - vault.svc.plus

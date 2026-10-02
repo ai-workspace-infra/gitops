@@ -28,7 +28,10 @@ spec:
       - name: agent-proxy-us-uat
         zone: us-central1-a
         machine_type: e2-custom-2-2048
+        # The project enforces requireOsLogin; deploy jobs log in through OS Login.
+        enable_oslogin: true
         image: projects/debian-cloud/global/images/family/debian-12
+        enable_oslogin: true
         max_run_duration_seconds: 3600
         labels:
           owner: platform-ops-toolkit

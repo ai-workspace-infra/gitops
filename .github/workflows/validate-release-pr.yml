@@ -8,6 +8,16 @@ permissions:
   contents: read
 
 jobs:
+  validate-zitadel-compose:
+    name: Validate Shared IAM single-host GitOps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 -m pip install 'pyyaml==6.0.2'
+      - run: python3 -m unittest discover -s tests -p test_zitadel_compose.py
+      - name: Validate Compose without loading host secrets
+        run: python3 scripts/validate-zitadel-compose.py
+
   validate-shared-vault-xconnect:
     name: Validate shared Vault XConnect topology
     runs-on: ubuntu-latest
@@ -18,6 +28,17 @@ jobs:
 
       - name: Validate dedicated shared network and SSH-only policy
         run: bash scripts/validate-shared-vault-xconnect.sh
+
+  validate-open-platform-shared:
+    name: Validate open-platform-shared migration target
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate shared project and service host declaration
+        run: bash scripts/validate-open-platform-shared.sh
 
   sec-qa-gate:
     name: Sec QA Gate (gitleaks)

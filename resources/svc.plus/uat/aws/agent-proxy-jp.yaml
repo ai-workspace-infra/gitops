@@ -20,13 +20,21 @@ ssh_keys:
 hosts:
   - name: jpn-tky
     os_name: "Debian 13 ARM64 (trixie)"
+    # The image the running instance was created from. Without a pin the
+    # Debian "most recent" AMI lookup moves with every upstream release and
+    # forces an instance replacement, which the UAT apply guard refuses
+    # (Daily 36923755060: ami-09ddc97002eeb7efb -> ami-01c15b64fa74185e3).
+    # Change this only in a reviewed PR that intends to replace the host.
+    ami_id: ami-09ddc97002eeb7efb
     plan: {{ env.get('AGENT_PROXY_PLAN_API', 't4g.small') }}
     billing_mode: on_demand
     elastic_ip: true
     deletion_protection: false
     backups: false
     enable_ipv6: true
-    ansible_user: root
+    # Debian AMIs refuse root SSH ("Please login as the user admin"); the
+    # deploy jobs log in as admin and use sudo.
+    ansible_user: admin
     groups: [xconnect, agent_proxy, uat, aws_cloud]
     tags: [svc-plus, uat, xconnect, logical-jpn-tky, provider-ap-northeast-1]
     cloud_provider: aws-cloud

@@ -1,0 +1,51 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: XConnectNetworkBoundaryCatalog
+metadata:
+  name: xconnect-three-network-boundaries
+  project: svc.plus
+  environment: multi
+spec:
+  # This catalog is descriptive GitOps topology. It contains no credentials
+  # and is not itself a Terraform or Zero API request.
+  networks:
+    - id: net_security_vault
+      environment: shared
+      cidr: 10.79.0.0/24
+      gateway:
+        node: vault-prod-0
+        provider: existing-protected
+        endpoint_ref: vault.svc.plus
+        vault_record_path: prod/ulighthost-xconnect/vault-prod-0
+      lifecycle: permanent
+      management_mode: security-platform
+      notes: >-
+        Protected security-management network. Business workflows must not
+        modify, rename, enroll, or destroy vault-prod-0.
+    - id: net_uat
+      environment: uat
+      cidr: 10.77.0.0/24
+      gateway:
+        node: tw-01
+        provider: ulighthost-existing
+        endpoint_ref: tw-xconnect.svc.plus
+        vault_record_path: prod/ulighthost-xconnect/tw-xconnect.svc.plus
+      one:
+        record_path: prod/ulighthost-xconnect/observability.svc.plus
+      lifecycle: environment
+      management_mode: existing
+      notes: UAT TW Gateway owns the UAT overlay; no Terraform state is created for it.
+    - id: net_prod_dedicated
+      environment: prod
+      cidr: 10.81.0.0/24
+      gateway:
+        node: prod-xconnect-gateway-01
+        provider: terraform
+        endpoint_ref: prod-xconnect.svc.plus
+        vault_record_path: prod/xconnect/prod-xconnect-gateway-01
+      lifecycle: permanent
+      management_mode: terraform
+      terraform_namespace: xconnect-gateway-prod
+      notes: >-
+        Planned dedicated PROD Gateway. The endpoint, public key, and Vault
+        record must be finalized before apply; do not reuse vault-prod-0 or the
+        UAT TW Gateway.

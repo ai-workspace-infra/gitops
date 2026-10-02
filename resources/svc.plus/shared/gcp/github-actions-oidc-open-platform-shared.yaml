@@ -4,20 +4,21 @@ metadata:
   environment: shared
   provider: gcp
 spec:
-  gcp_account_id: open-platform-prod
-  project_id: open-platform-prod
+  gcp_account_id: open-platform-shared
+  project_id: open-platform-shared-510113
   organization_id: "744119519286"
   provider_url: https://token.actions.githubusercontent.com
-  audience: https://iam.googleapis.com/projects/986070475391/locations/global/workloadIdentityPools/github-actions/providers/github
+  # Stable custom audience; the bootstrap Terraform provider and the runtime
+  # auth action both use this exact value. It does not require knowing the
+  # target project's numeric ID in GitOps.
+  audience: https://github.com/ai-workspace-infra/platform-ops-toolkit/open-platform-shared
   pool_id: github-actions
   provider_id: github
   service_account_id: github-actions-shared
   repository: ai-workspace-infra/platform-ops-toolkit
   subjects:
     - repo:ai-workspace-infra/platform-ops-toolkit:environment:prod
-    - repo:ai-workspace-infra/platform-ops-toolkit:environment:uat
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main
-    - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/uat-*
   state:
     bucket: xworktech-platform-terraform-state
-    key: platform-ops-toolkit/shared/open-platform-prod/gcp-oidc-bootstrap/terraform.tfstate
+    key: platform-ops-toolkit/shared/open-platform-shared-510113/gcp-oidc-bootstrap/terraform.tfstate

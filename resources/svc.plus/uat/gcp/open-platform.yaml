@@ -17,9 +17,7 @@ global:
   vault_image: projects/debian-cloud/global/images/family/debian-12
 
 vault_nodes:
-  # Independent PROD open-platform host. This declaration must not reuse the
-  # shared Vault service host (vault-prod-0).
-  - name: open-platform-prod
+  - name: vault-prod-0
     zone: asia-east1-a
   - name: vault-prod-1
     zone: asia-east1-b
