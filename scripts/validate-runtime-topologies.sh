@@ -107,6 +107,29 @@ done
 
 echo "Validated UAT AWS Agent Proxy declaration"
 
+# The UAT apply refuses any delete or replacement, so a routed AWS host that
+# follows the Debian "most recent" AMI lookup blocks every Daily as soon as
+# Debian publishes a new image. Each such host must pin the image it runs.
+ruby -rjson -ryaml <<'RUBY'
+matrix = JSON.parse(File.read('topology/uat/hybrid/resource-matrix.json'))
+rows = matrix.fetch('spec').fetch('resources').select do |row|
+  row['provider'] == 'aws-cloud' && %w[terraform terraform+serverless].include?(row['management_mode'])
+end
+abort 'UAT Hybrid has no AWS Terraform lanes to validate' if rows.empty?
+rows.each do |row|
+  path = File.join('resources/svc.plus/uat/aws', "#{row.fetch('namespace')}.yaml")
+  abort "#{row['namespace']}: missing AWS manifest #{path}" unless File.file?(path)
+  # Jinja expressions are not YAML; their values are irrelevant here.
+  hosts = YAML.safe_load(File.read(path).gsub(/\{\{.*?\}\}/, 'templated')).fetch('hosts')
+  abort "#{path}: declares no hosts" if hosts.nil? || hosts.empty?
+  hosts.each do |host|
+    next if host['ami_id'].to_s.match?(/\Aami-[0-9a-f]{8,17}\z/)
+    abort "#{path}: host #{host['name']} must pin ami_id; the AMI lookup replaces the instance on every new upstream image"
+  end
+end
+puts 'Validated pinned AMIs on routed UAT AWS Terraform hosts'
+RUBY
+
 # GCP enforces compute.requireOsLogin in the UAT project. Resolve business
 # manifests from the active Hybrid matrix so a provider switch cannot leave a
 # newly selected GCP workload with unsupported metadata SSH authentication.
