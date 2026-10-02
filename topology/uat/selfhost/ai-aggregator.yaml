@@ -5,6 +5,7 @@ metadata:
   project: ai-workspace
   environment: uat
   mode: selfhost
+  topology: distributed
 spec:
   enabled: false
   delivery:
@@ -55,7 +56,7 @@ spec:
     destroy_policy: always_after_pipeline
   entrypoint:
     component: caddy
-    domain: ai-internal.onwalk.net
+    domain: ai.onwalk.net
     tls: automatic
     public_port: 443
     source_cidrs:
@@ -241,19 +242,19 @@ spec:
   client_profiles:
     - id: claude-code
       chain: new-api-cpa
-      base_url: https://ai-internal.onwalk.net
+      base_url: https://ai.onwalk.net
       protocol: anthropic-messages
       model_alias: claude-main
       token_source: database
     - id: android-studio
       chain: litellm-direct
-      base_url: https://ai-internal.onwalk.net/litellm/v1
+      base_url: https://ai.onwalk.net/litellm/v1
       protocol: openai-chat
       model_alias: anthropic-api
       token_source: database
     - id: openai-compatible
       chain: new-api-cpa
-      base_url: https://ai-internal.onwalk.net/v1
+      base_url: https://ai.onwalk.net/v1
       protocol: openai-chat-or-responses
       model_alias: codex-main
       token_source: database

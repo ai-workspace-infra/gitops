@@ -5,6 +5,7 @@ metadata:
   project: ai-workspace
   environment: prod
   mode: selfhost
+  topology: distributed
 spec:
   enabled: false
   delivery:
