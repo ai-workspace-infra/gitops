@@ -57,17 +57,20 @@ spec:
       selfhost: console-selfhost-prod.svc.plus
       serverless: console-serverless-prod.svc.plus
     accounts.svc.plus:
-      selfhost: accounts-selfhost-prod.svc.plus
+      selfhost: accounts.svc.plus
       serverless: accounts-serverless-prod.svc.plus
+    billing.svc.plus:
+      selfhost: billing.svc.plus
+      serverless: billing.svc.plus
   public_endpoints:
     console:
       host: console-selfhost-prod.svc.plus
       access: public
     accounts:
-      host: accounts-selfhost-prod.svc.plus
+      host: accounts.svc.plus
       access: authenticated
     billing:
-      host: billing-selfhost-prod.svc.plus
+      host: billing.svc.plus
       access: authenticated
     postgresql:
       host: postgresql-selfhost-prod.svc.plus
@@ -103,7 +106,7 @@ spec:
   serverless:
     console_host: console-serverless-prod.svc.plus
     accounts_host: accounts-serverless-prod.svc.plus
-    billing_host: billing-serverless-prod.svc.plus
+    billing_host: billing.svc.plus
     cloud_run:
       accounts: https://prod-accounts-b7wzzanztq-de.a.run.app
       content_service: https://prod-content-service-b7wzzanztq-de.a.run.app

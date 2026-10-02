@@ -94,15 +94,18 @@ spec:
   # Hybrid owns no hostnames of its own. Console, accounts, and billing are
   # served by the shared Cloudflare edge; PostgreSQL and the agent proxy have no
   # edge presence at all and are reached on the VPS directly.
+    billing.svc.plus:
+      selfhost: billing-selfhost-prod.svc.plus
+      serverless: billing.svc.plus
   public_endpoints:
     console:
       host: console-serverless-prod.svc.plus
       access: public
     accounts:
-      host: accounts-serverless-prod.svc.plus
+      host: accounts.svc.plus
       access: authenticated
     billing:
-      host: billing-serverless-prod.svc.plus
+      host: billing.svc.plus
       access: authenticated
     postgresql:
       host: postgresql-selfhost-prod.svc.plus
@@ -146,7 +149,7 @@ spec:
       - www.xworkmate.com
       - console.xworkmate.com
     accounts_host: accounts-serverless-prod.svc.plus
-    billing_host: billing-serverless-prod.svc.plus
+    billing_host: billing.svc.plus
     # Deployed and owned by serverless-orchestrator. Declared here because the
     # hybrid contract asserts that the frontend is the identical, unmodified
     # edge chain: a mode flip must never redeploy or reconfigure the frontend.
