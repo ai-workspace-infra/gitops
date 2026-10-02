@@ -57,10 +57,10 @@ spec:
       selfhost: console-selfhost-uat.onwalk.net
       serverless: console-serverless-uat.onwalk.net
     accounts-uat.onwalk.net:
-      selfhost: accounts-uat.onwalk.net
+      selfhost: accounts-selfhost-uat.onwalk.net
       serverless: accounts-serverless-uat.onwalk.net
     billing-uat.onwalk.net:
-      selfhost: billing-uat.onwalk.net
+      selfhost: billing-selfhost-uat.onwalk.net
       serverless: billing-uat.onwalk.net
   public_endpoints:
     console:
