@@ -81,7 +81,8 @@ ruby -ryaml -e '
   migration = vault.fetch("spec").fetch("migration")
   abort("Vault migration source must remain open-platform-prod/vault-prod-0") unless
     migration["source_project_id"] == "open-platform-prod" && migration["source_instance"] == "vault-prod-0"
-  abort("Vault migration source must be immutable") unless migration["source_mutation"] == "forbidden"
+  abort("Vault migration source may only receive the declared Raft overlay address") unless
+    migration["source_mutation"] == "raft-address-only"
   oidc_path = "resources/svc.plus/shared/gcp/github-actions-oidc-open-platform-shared.yaml"
   oidc = YAML.safe_load(File.read(oidc_path), aliases: false)
   abort("OIDC declaration must target open-platform-shared-510113") unless
