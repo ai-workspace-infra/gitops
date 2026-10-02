@@ -17,3 +17,5 @@ token. Validate it with:
 ```sh
 scripts/validate-iam-integrations.sh
 ```
+
+Behavior tests and manual acceptance references: [IAM testing](iam-testing.md).
