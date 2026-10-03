@@ -16,7 +16,9 @@ spec:
   state_namespace: agent-proxy-us
   network_name: agent-proxy-us-uat-gcp
   subnet_cidr: 10.66.0.0/24
-  enable_cloud_nat: false
+  # Private Spot nodes use IAP for SSH and NAT for package/artifact downloads.
+  enable_iap_ssh: true
+  enable_cloud_nat: true
   state:
     key: terraform/uat/svc.plus/gcp-cloud/xworktech/agent-proxy-us/terraform.tfstate
   resource:
@@ -31,7 +33,6 @@ spec:
         # The project enforces requireOsLogin; deploy jobs log in through OS Login.
         enable_oslogin: true
         image: projects/debian-cloud/global/images/family/debian-12
-        enable_oslogin: true
         max_run_duration_seconds: 3600
         labels:
           owner: platform-ops-toolkit
