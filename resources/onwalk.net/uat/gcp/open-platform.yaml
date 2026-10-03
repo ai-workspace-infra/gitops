@@ -30,6 +30,8 @@ global:
       zone: asia-east1-a
     - name: ai-workspace-uat
       zone: asia-east1-a
+    - name: agent-proxy-us-uat
+      zone: us-central1-a
 
 vault_nodes:
   - name: open-platform-uat

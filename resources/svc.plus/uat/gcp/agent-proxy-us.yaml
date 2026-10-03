@@ -16,9 +16,14 @@ spec:
   state_namespace: agent-proxy-us
   network_name: agent-proxy-us-uat-gcp
   subnet_cidr: 10.66.0.0/24
-  # Private Spot nodes use IAP for SSH and NAT for package/artifact downloads.
+  # The node is a public regional entry (see the public_ip note below). IAP
+  # SSH and Cloud NAT stay declared: both already exist in this state, and a
+  # normal UAT apply refuses a plan that deletes resources.
   enable_iap_ssh: true
   enable_cloud_nat: true
+  # Set to a narrower runner egress CIDR when a stable egress IP is available.
+  spot_ssh_source_ranges: [0.0.0.0/0]
+  spot_network_tags: [agent-proxy-us]
   state:
     key: terraform/uat/svc.plus/gcp-cloud/xworktech/agent-proxy-us/terraform.tfstate
   resource:
@@ -33,6 +38,24 @@ spec:
         # The project enforces requireOsLogin; deploy jobs log in through OS Login.
         enable_oslogin: true
         image: projects/debian-cloud/global/images/family/debian-12
+        # An Agent Proxy is a public regional entry, like the AWS JP and Akamai
+        # SG nodes: clients reach it directly and the deploy jobs SSH to the
+        # address in the CMDB. A private address cannot serve either.
+        public_ip: true
+        network_tags: [agent-proxy-us]
+        # Same public surface as the AWS JP node: ACME HTTP-01 and HTTPS.
+        public_tcp_ports: [80, 443]
+        inventory_groups: [xconnect, agent_proxy, uat, gcp_cloud]
+        tags: [svc-plus, uat, xconnect, logical-us-ca, provider-us-central1]
+        location: us
+        node_label: agent-proxy-us
+        host_vars:
+          role: xconnect
+          logical_region: us-ca
+          provider_region: us-central1
+          # The first service domain is the CMDB key and the node's hostname.
+          service_domains:
+            - us-xconnect.svc.plus
         max_run_duration_seconds: 3600
         labels:
           owner: platform-ops-toolkit
