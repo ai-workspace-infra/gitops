@@ -19,6 +19,15 @@ UAT_GCP_SPOT_MANIFESTS = (
 
 
 class UatGcpOsLoginTest(unittest.TestCase):
+    def test_private_us_proxy_has_deploy_and_egress_paths(self):
+        path = ROOT / "resources/svc.plus/uat/gcp/agent-proxy-us.yaml"
+        spec = yaml.safe_load(path.read_text(encoding="utf-8"))["spec"]
+        self.assertIs(spec.get("enable_iap_ssh"), True)
+        self.assertIs(spec.get("enable_cloud_nat"), True)
+        for vm in spec["resources"]["spot_vms"]:
+            self.assertFalse(vm.get("public_ip", False))
+            self.assertIs(vm.get("enable_oslogin"), True)
+
     def test_every_routed_uat_gcp_spot_vm_enables_os_login(self):
         for relative in UAT_GCP_SPOT_MANIFESTS:
             document = yaml.safe_load((ROOT / relative).read_text(encoding="utf-8"))
