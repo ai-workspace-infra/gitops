@@ -35,19 +35,20 @@ spec:
     public_port: 443
     source_cidrs: []
   gateway:
+    entry_mode: gateway
     adapter: apisix
+    client_token_source: new-api
     mode: standalone
     runtime_config_backend: gitops-file
     etcd: false
     routes:
       new_api: {path: /, upstream: new-api}
-      litellm: {path_prefix: /litellm, upstream: litellm, strip_path: true}
   apisix:
     node: gateway-01
     bind_address: 127.0.0.1
     proxy_port: 9080
-    runtime_secret_refs:
-      AI_GATEWAY_CLIENT_KEY: vault://kv/prod/ai-aggregator/gateway/apisix#bootstrap_client_key
+    auth_mode: new-api-token-pass-through
+    runtime_secret_refs: {}
     model_allowlist_source: new_api.public_models
     activation_validated: false
   nodes:
@@ -89,9 +90,9 @@ spec:
       xai: {endpoint: vault://kv/prod/ai-aggregator/litellm/providers/xai#endpoint, api_key: vault://kv/prod/ai-aggregator/litellm/providers/xai#api_key}
     legacy_upstream: true
   client_profiles:
-    - {id: claude-code, chain: new-api-cpa, base_url: https://ai.svc.plus, protocol: anthropic-messages, model_alias: claude-main, token_source: database}
-    - {id: android-studio, chain: litellm-direct, base_url: https://ai.svc.plus/litellm/v1, protocol: openai-chat, model_alias: anthropic-api, token_source: database}
-    - {id: openai-compatible, chain: new-api-cpa, base_url: https://ai.svc.plus/v1, protocol: openai-chat-or-responses, model_alias: codex-main, token_source: database}
+    - {id: claude-code, chain: new-api-cpa, base_url: https://ai.svc.plus, protocol: anthropic-messages, model_alias: claude-main, token_source: new-api}
+    - {id: android-studio, chain: new-api-litellm, base_url: https://ai.svc.plus/v1, protocol: openai-chat, model_alias: anthropic-api, token_source: new-api}
+    - {id: openai-compatible, chain: new-api-cpa, base_url: https://ai.svc.plus/v1, protocol: openai-chat-or-responses, model_alias: codex-main, token_source: new-api}
   tenants:
     - {id: personal, status: disabled, applications: [claude-code, android-studio, openai-compatible], allowed_entrypoints: [new-api, litellm], rate_limit_per_minute: 60}
   cpa_instances:
