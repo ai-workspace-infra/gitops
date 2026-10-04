@@ -148,8 +148,16 @@ rows.each do |row|
   abort "#{namespace}: expected exactly one GCP manifest, found #{paths.length}" unless paths.length == 1
   spec = YAML.safe_load(File.read(paths.first), aliases: false).fetch('spec')
   abort "#{namespace}: wrong GCP project" unless spec.fetch('project_id') == 'open-platform-uat'
-  vms = spec.fetch('resources').fetch('spot_vms')
-  abort "#{namespace}: each Spot VM must enable OS Login" unless vms.any? && vms.all? { |vm| vm['enable_oslogin'] == true }
+  resources = spec.fetch('resources')
+  vms = Array(resources['spot_vms']) + Array(resources['service_vms'])
+  abort "#{namespace}: each GCP VM must enable OS Login" unless vms.any? && vms.all? { |vm| vm['enable_oslogin'] == true }
+  if row['lifecycle'] == 'persistent'
+    abort "#{namespace}: persistent host requires protected STANDARD VM and independent /data disk" unless
+      Array(resources['service_vms']).any? && Array(resources['service_vms']).all? do |vm|
+        vm['provisioning_model'] == 'STANDARD' && vm['deletion_protection'] == true &&
+          vm.fetch('data_disk', {})['mount_path'] == '/data'
+      end
+  end
 end
 puts "Validated OS Login for #{rows.length} UAT GCP business declaration(s)"
 RUBY
