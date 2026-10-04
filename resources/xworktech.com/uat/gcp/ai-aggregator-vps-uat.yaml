@@ -1,19 +1,80 @@
-# Provider contract only for v1. GCP is not automatically selected for UAT.
+# Optional five-node GCP Spot UAT contract. Selection is explicit.
+# The shared IaC renderer expands these hosts; secrets remain runtime inputs.
 global:
-  provider: gcp
   environment: uat
-  lifecycle: ephemeral
+  bootstrap_project_id: crypto-will-508602-m0
+  project_id: open-platform-uat
+  project_name: XWork Open Platform UAT - AI Aggregator
+  organization_id: "744119519286"
   region: asia-east1
-  network: projects/example/global/networks/private
-  subnet: regions/asia-east1/subnetworks/private
-  hosts:
-    - id: gateway-01
-      role: gateway
-      zone: asia-east1-a
-      machine_type: e2-medium
-      network_tags: [ai-aggregator-gateway]
-    - id: cpa-codex-01
-      role: cpa
-      zone: asia-east1-a
-      machine_type: e2-small
-      network_tags: [ai-aggregator-cpa]
+  network_name: ai-aggregator-uat
+  subnet_cidr: 10.86.0.0/24
+  enable_cloud_nat: true
+  enable_iap_ssh: true
+  enable_oslogin: true
+  spot_ssh_source_ranges: []
+  spot_network_tags: [ai-aggregator-ssh]
+  ssh_username: github-actions
+
+spot_vms:
+  - name: gateway-01
+    zone: asia-east1-a
+    machine_type: e2-medium
+    image: projects/debian-cloud/global/images/family/debian-12
+    public_ip: false
+    enable_oslogin: true
+    network_tags: [ai-aggregator-gateway, ai-aggregator-ssh]
+    inventory_groups: [ai_aggregator_gateway]
+    max_run_duration_seconds: 3600
+  - name: cpa-codex-01
+    zone: asia-east1-a
+    machine_type: e2-medium
+    public_ip: false
+    enable_oslogin: true
+    network_tags: [ai-aggregator-cpa-codex-01, ai-aggregator-ssh]
+    inventory_groups: [ai_aggregator_cpa, cpa_codex]
+    private_tcp_ports: [8317]
+    private_source_tags: [ai-aggregator-gateway]
+    private_target_tags: [ai-aggregator-cpa-codex-01]
+    host_vars:
+      cpa_instance_id: cpa-codex-01
+    max_run_duration_seconds: 3600
+  - name: cpa-codex-02
+    zone: asia-east1-b
+    machine_type: e2-medium
+    public_ip: false
+    enable_oslogin: true
+    network_tags: [ai-aggregator-cpa-codex-02, ai-aggregator-ssh]
+    inventory_groups: [ai_aggregator_cpa, cpa_codex]
+    private_tcp_ports: [8320]
+    private_source_tags: [ai-aggregator-gateway]
+    private_target_tags: [ai-aggregator-cpa-codex-02]
+    host_vars:
+      cpa_instance_id: cpa-codex-02
+    max_run_duration_seconds: 3600
+  - name: cpa-claude-01
+    zone: asia-east1-a
+    machine_type: e2-medium
+    public_ip: false
+    enable_oslogin: true
+    network_tags: [ai-aggregator-cpa-claude-01, ai-aggregator-ssh]
+    inventory_groups: [ai_aggregator_cpa, cpa_claude]
+    private_tcp_ports: [8318]
+    private_source_tags: [ai-aggregator-gateway]
+    private_target_tags: [ai-aggregator-cpa-claude-01]
+    host_vars:
+      cpa_instance_id: cpa-claude-01
+    max_run_duration_seconds: 3600
+  - name: cpa-grok-01
+    zone: asia-east1-b
+    machine_type: e2-medium
+    public_ip: false
+    enable_oslogin: true
+    network_tags: [ai-aggregator-cpa-grok-01, ai-aggregator-ssh]
+    inventory_groups: [ai_aggregator_cpa, cpa_grok]
+    private_tcp_ports: [8319]
+    private_source_tags: [ai-aggregator-gateway]
+    private_target_tags: [ai-aggregator-cpa-grok-01]
+    host_vars:
+      cpa_instance_id: cpa-grok-01
+    max_run_duration_seconds: 3600
