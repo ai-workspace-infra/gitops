@@ -26,6 +26,16 @@ spec:
     type: workload_namespace
     lifecycle: ephemeral
   resources:
+    # Retained backup storage is separate from the Spot VM's system disk.
+    # IaC must show only creation/attachment before this is applied.
+    persistent_data_disks:
+      - name: web-saas-uat-upgrade-data
+        instance: web-saas-uat
+        zone: asia-east1-a
+        size_gb: 50
+        type: pd-balanced
+        device_name: web-saas-uat-upgrade-data
+        mount_path: /data
     spot_vms:
       - name: web-saas-uat
         zone: asia-east1-a
