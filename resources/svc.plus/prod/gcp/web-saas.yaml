@@ -25,8 +25,14 @@ spec:
   subnet_cidr: 10.73.0.0/24
   enable_cloud_nat: false
   enable_oslogin: true
-  # This namespace owns the initially empty project's VM external-IP policy.
+  # Adopt the existing V2 policy in the SAME state. Its imported parent uses
+  # the numeric project identity; a project-ID alias would force replacement.
+  external_ip_policy_parent_identity: project_number
+  # Preserve the preexisting 2026-09-29 allowance. Retirement is separate from
+  # adding the new Selfhost VM and must not remove another instance's permit.
   external_ip_allowed_instances:
+    - name: open-platform-prod
+      zone: asia-east1-a
     - name: web-saas-prod
       zone: asia-east1-a
   spot_ssh_source_ranges: [0.0.0.0/0]
