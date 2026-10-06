@@ -36,6 +36,8 @@ spec:
         enable_oslogin: true
         public_ip: true
         network_tags: [web-saas-ssh]
+        # Caddy terminates the declared public Web SaaS HTTPS endpoints.
+        public_tcp_ports: [80, 443]
         inventory_groups: [web_saas]
         labels:
           owner: platform-ops-toolkit
