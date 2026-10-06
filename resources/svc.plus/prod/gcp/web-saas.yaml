@@ -16,6 +16,10 @@ spec:
   state_namespace: web-saas
   state_project: svc.plus
   state:
+    # Same existing Vault backend as PROD identity bootstrap; no state move.
+    bucket: ai-workspace-tfstate
+    endpoint: https://s3.us-east-1.amazonaws.com
+    region: us-east-1
     key: terraform/prod/svc.plus/gcp-cloud/xworktech/web-saas/terraform.tfstate
   network_name: web-saas-prod-gcp
   subnet_cidr: 10.73.0.0/24
