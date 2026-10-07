@@ -30,7 +30,7 @@ if ! command -v ruby >/dev/null 2>&1; then
 fi
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PAYLOAD_FILE="${SKILL_DIR}/references/ruleset.release-branches.json"
+PAYLOAD_FILE="${SKILL_DIR}/references/ruleset.release-branches.yaml"
 
 if [[ ! -f "${PAYLOAD_FILE}" ]]; then
   echo "payload not found: ${PAYLOAD_FILE}" >&2
