@@ -1,0 +1,11 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: ExistingHostDeclaration
+metadata:
+  name: ai-workspace-existing-uat
+  environment: uat
+spec:
+  management_mode: existing
+  fact_source: explicit-target
+  groups: [ai_workspace, debian, database]
+  service_domains: [ai-workspace.onwalk.net, postgresql-ai-workspace.onwalk.net]
+  xconnect_required: true
