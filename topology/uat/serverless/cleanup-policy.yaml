@@ -1,0 +1,15 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: ServerlessCleanupPolicy
+metadata:
+  name: uat-ephemeral-compute
+  environment: uat
+spec:
+  # Enable only after the pinned owner/caller UAT plan and deletion receipt
+  # have been reviewed. Disabled policies allow inventory/plan only.
+  enabled: false
+  project_id: open-platform-uat
+  region: asia-east1
+  services:
+    - uat-accounts
+    - uat-billing-service
+    - uat-content-service
