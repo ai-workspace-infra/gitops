@@ -49,7 +49,17 @@ spec:
         # Caddy terminates the declared public Web SaaS HTTPS endpoints.
         public_tcp_ports: [80, 443]
         inventory_groups: [web_saas]
+        host_vars:
+          web_saas_data_device_path: /dev/disk/by-id/google-web-saas-data
         labels:
           owner: platform-ops-toolkit
           workload: web-saas
           lifecycle: ephemeral
+    persistent_data_disks:
+      - name: web-saas-uat-data
+        zone: asia-east1-a
+        size_gb: 100
+        type: pd-balanced
+        instance: web-saas-uat
+        device_name: web-saas-data
+        mount_path: /data
