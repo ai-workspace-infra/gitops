@@ -1,3 +1,5 @@
+# Desired UAT lifecycle; apply requires a reviewed plan with no disk deletion/replacement.
+# Preserve existing VM identity, state key and independently managed retained disks.
 apiVersion: gitops.svc.plus/v1alpha1
 kind: GCPWorkloadNamespace
 metadata:
@@ -8,48 +10,59 @@ spec:
   gcp_account_id: xworktech
   bootstrap_project_id: crypto-will-508602-m0
   project_id: open-platform-uat
-  state_project: svc.plus
-  organization_id: "744119519286"
+  organization_id: '744119519286'
   region: asia-east1
   workspace: web-saas
   state_namespace: web-saas
   network_name: web-saas-uat-gcp
   subnet_cidr: 10.63.0.0/24
   enable_cloud_nat: false
-  # See open-platform.yaml for the project-level external-IP allowlist.
-  spot_ssh_source_ranges: [0.0.0.0/0]
-  spot_network_tags: [web-saas-ssh]
+  spot_ssh_source_ranges:
+  - 0.0.0.0/0
+  spot_network_tags:
+  - web-saas-ssh
   ssh_username: github-actions
   state:
-    key: terraform/uat/svc.plus/gcp-cloud/xworktech/web-saas/terraform.tfstate
+    key: terraform/uat/open-platform-uat/gcp-cloud/xworktech/web-saas/terraform.tfstate
   resource:
     name: web-saas-uat
     type: workload_namespace
     lifecycle: persistent
   resources:
-    # The renderer keeps the original Terraform module address spot_web_saas_uat
-    # so this declaration does not itself rename or replace the live instance.
+    persistent_data_disks:
+    - name: web-saas-uat-upgrade-data
+      instance: web-saas-uat
+      zone: asia-east1-a
+      size_gb: 50
+      type: pd-balanced
+      device_name: web-saas-uat-upgrade-data
+      mount_path: /data
+    - name: web-saas-uat-data
+      zone: asia-east1-a
+      size_gb: 100
+      type: pd-balanced
+      instance: web-saas-uat
+      device_name: web-saas-data
+      mount_path: /data
     service_vms:
-      - name: web-saas-uat
-        zone: asia-east1-a
-        machine_type: e2-medium
-        provisioning_model: STANDARD
-        deletion_protection: true
-        # The project enforces requireOsLogin; deploy jobs log in through OS Login.
-        enable_oslogin: true
-        image: projects/debian-cloud/global/images/family/debian-12
-        public_ip: true
-        network_tags: [web-saas-ssh]
-        inventory_groups: [web_saas]
-        # Separate Terraform resource: VM replacement must not release this disk.
-        # Mount /data only after copying and verifying pre-existing host data.
-        data_disk:
-          name: web-saas-uat-data
-          size_gb: 100
-          type: pd-balanced
-          device_name: web-saas-data
-          mount_path: /data
-        labels:
-          owner: platform-ops-toolkit
-          workload: web-saas
-          lifecycle: persistent
+    - name: web-saas-uat
+      zone: asia-east1-a
+      machine_type: e2-medium
+      enable_oslogin: true
+      image: projects/debian-cloud/global/images/family/debian-12
+      public_ip: true
+      network_tags:
+      - web-saas-ssh
+      public_tcp_ports:
+      - 80
+      - 443
+      inventory_groups:
+      - web_saas
+      host_vars:
+        web_saas_data_device_path: /dev/disk/by-id/google-web-saas-data
+      labels:
+        owner: platform-ops-toolkit
+        workload: web-saas
+        lifecycle: persistent
+      provisioning_model: STANDARD
+      deletion_protection: true

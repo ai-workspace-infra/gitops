@@ -1,3 +1,6 @@
+# LEGACY bootstrap candidate. Canonical PROD Selfhost Web SaaS is declared at
+# resources/svc.plus/prod/gcp/web-saas.yaml. Retain this file until its callers
+# and any historical state are audited; do not apply both for the same workload.
 global:
   environment: prod
   bootstrap_project_id: crypto-will-508602-m0

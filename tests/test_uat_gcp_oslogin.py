@@ -40,12 +40,31 @@ class UatGcpOsLoginTest(unittest.TestCase):
             # The project only admits external IPs for allowlisted instances.
             self.assertIn((vm["name"], vm["zone"]), allowlisted)
 
+    def test_persistent_web_saas_keeps_retained_disks_and_state(self):
+        document = yaml.safe_load((ROOT / "resources/onwalk.net/uat/gcp/web-saas.yaml").read_text())
+        spec = document["spec"]
+        self.assertEqual(spec["resource"]["lifecycle"], "persistent")
+        self.assertEqual(spec["state"]["key"], "terraform/uat/open-platform-uat/gcp-cloud/xworktech/web-saas/terraform.tfstate")
+        resources = spec["resources"]
+        self.assertNotIn("spot_vms", resources)
+        vm, = resources["service_vms"]
+        self.assertEqual(vm["name"], "web-saas-uat")
+        self.assertEqual(vm["provisioning_model"], "STANDARD")
+        self.assertIs(vm["deletion_protection"], True)
+        self.assertNotIn("data_disk", vm)
+        disks = {disk["name"]: disk for disk in resources["persistent_data_disks"]}
+        self.assertEqual(set(disks), {"web-saas-uat-upgrade-data", "web-saas-uat-data"})
+        self.assertEqual(disks["web-saas-uat-upgrade-data"]["size_gb"], 50)
+        self.assertEqual(disks["web-saas-uat-data"]["size_gb"], 100)
+        self.assertEqual(disks["web-saas-uat-data"]["device_name"], "web-saas-data")
+
     def test_every_routed_uat_gcp_spot_vm_enables_os_login(self):
         for relative in UAT_GCP_SPOT_MANIFESTS:
             document = yaml.safe_load((ROOT / relative).read_text(encoding="utf-8"))
             self.assertEqual(document["kind"], "GCPWorkloadNamespace", relative)
             self.assertEqual(document["metadata"]["environment"], "uat", relative)
-            spot_vms = document["spec"]["resources"]["spot_vms"]
+            resources = document["spec"]["resources"]
+            spot_vms = resources.get("spot_vms", []) + resources.get("service_vms", [])
             self.assertTrue(spot_vms, relative)
             for vm in spot_vms:
                 with self.subTest(manifest=relative, vm=vm["name"]):

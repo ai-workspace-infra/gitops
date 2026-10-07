@@ -1,0 +1,19 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GitHubActionsOIDCConfig
+metadata:
+  name: selfhost-deployer
+  project: svc.plus
+  environment: uat
+  provider: aws
+spec:
+  provider_url: https://token.actions.githubusercontent.com
+  audience: sts.amazonaws.com
+  aws:
+    account_id: "081434641398"
+    region: ap-northeast-1
+    role_name: GithubAction_IAC_Deploy_Role
+    role_arn: arn:aws:iam::081434641398:role/GithubAction_IAC_Deploy_Role
+  subjects:
+  - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main
+  - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/uat-daily-build-*
+  - repo:ai-workspace-infra/platform-ops-toolkit:environment:uat

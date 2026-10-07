@@ -1,0 +1,6 @@
+enabled: true
+client_id: Ov23lijWHcN9Xa9HANCd
+redirect_url: https://accounts.svc.plus/api/auth/oauth/callback/github
+frontend_url: https://console.svc.plus
+vault_secret_path: kv/data/prod/accounts/oauth/github
+vault_secret_key: client_secret

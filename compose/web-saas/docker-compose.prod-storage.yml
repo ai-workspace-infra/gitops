@@ -1,0 +1,10 @@
+# Selected only by .doco-cd.prod.yml after Playbooks verifies/mounts the
+# IaC-declared web-saas-prod-data disk. Never relocate an existing Docker volume.
+services:
+  postgres:
+    volumes:
+      - type: bind
+        source: /data/postgresql
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false

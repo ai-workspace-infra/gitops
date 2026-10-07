@@ -1,8 +1,8 @@
 # XConnect SIT lab declaration
 
-`xconnect-lab.json` is an explicit cross-provider lab topology, separate from the
-existing selfhost/serverless/hybrid routing documents. JSON is used as YAML's data
-subset so the pipeline can validate it with its existing jq/Python dependencies.
+`xconnect-lab.yaml` is an explicit cross-provider lab topology, separate from the
+existing selfhost/serverless/hybrid routing documents. YAML is the canonical
+human-editable format for this declaration.
 It declares the intended AWS Spot client and co-located Vultr Zero/Gateway, overlay
 addresses, TTL, and Vault references. It contains no secrets or generated state.
 
