@@ -1,0 +1,37 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: uat-akamai-agent-proxy-jp
+  environment: uat
+  project: svc.plus
+  provider: akamai-cloud
+  account: manbuzhe2026
+  workspace: agent-proxy-jp
+  auth:
+    expected_identity: manbuzhe2026
+    vault_role: github-actions-platform-ops-toolkit-uat-akamai-oidc-bootstrap-manbuzhe2026
+    record: kv/data/CICD/uat/akamai-cloud/manbuzhe2026
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Verify the existing Vault-backed account token; never create or revoke
+        the management identity.
+    account:
+      mode: not_applicable
+      reason: Akamai namespaces use declared public keys and workload firewalls; this
+        adapter owns no independent account resources.
+    resources:
+      mode: terraform
+      manifest: resources/svc.plus/uat/akamai/agent-proxy-jp.yaml
+      state:
+        key: terraform/uat/svc.plus/akamai-cloud/manbuzhe2026/agent-proxy-jp/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - module.compute_jpn_tky
+      - linode_firewall.fw_jpn_tky
+      protected: []
+      ownership_reviewed: true
+      requires_existing_state: true
+      destroy_allowed: false
+      reason: Retain existing state; destroy stays disabled until per-target UAT/cleanup
+        review.

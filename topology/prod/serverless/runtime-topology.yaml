@@ -6,6 +6,8 @@ metadata:
   environment: prod
   mode: serverless
 spec:
+  iac:
+    target_manifest: iac/targets/prod-serverless-runtime.yaml
   runtime:
     mode: serverless
     routing:

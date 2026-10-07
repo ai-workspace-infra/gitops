@@ -1,0 +1,34 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: prod-serverless-runtime
+  environment: prod
+  project: svc.plus
+  provider: gcp-cloud
+  account: xworktech
+  workspace: serverless-runtime
+  auth:
+    expected_identity: open-platform-prod
+    vault_role: github-actions-platform-ops-toolkit-prod-gcp-oidc-xworktech
+    record: kv/data/prod/platform/oidc/xworktech
+    forbidden_project: open-platform-prod
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Use existing runtime WIF; ordinary deployment never rebuilds identity.
+    account:
+      mode: verify
+      manifest: resources/xworktech.com/prod/gcp/open-platform-prod.yaml
+      checks:
+      - kind: gcp-network
+        name: open-platform-prod
+      reason: Shared network is owned by the existing platform state.
+    resources:
+      mode: verify
+      manifest: resources/xworktech.com/prod/gcp/open-platform-prod.yaml
+      checks:
+      - kind: gcp-artifact-registry
+        name: xwork-services
+        location: asia-east1
+      reason: Verify the declared shared registry. Cloud Run application release and
+        Cloudflare DNS remain independent owners.

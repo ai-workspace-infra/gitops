@@ -1,0 +1,39 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCCapabilityDeclarations
+providers:
+  aws-cloud:
+    bootstrap: runtime identity verification
+    account: requires declared live checks or reviewed state split
+    resources: GitOps renderer; explicit ownership/state/auth contract required
+    runtime_acceptance: pending
+    reason: A provider entry alone does not authorize execution.
+  azure-cloud:
+    bootstrap: runtime identity verification
+    account: requires declared live checks or reviewed state split
+    resources: unsupported
+    runtime_acceptance: pending
+    reason: A provider entry alone does not authorize execution.
+  vultr-vps:
+    bootstrap: runtime identity verification
+    account: not_applicable
+    resources: GitOps renderer; explicit ownership/state/auth contract required
+    runtime_acceptance: pending
+    reason: A provider entry alone does not authorize execution.
+  gcp-cloud:
+    bootstrap: runtime identity verification
+    account: requires declared live checks or reviewed state split
+    resources: GitOps renderer; explicit ownership/state/auth contract required
+    runtime_acceptance: pending
+    reason: A provider entry alone does not authorize execution.
+  ucloud:
+    bootstrap: runtime identity verification
+    account: requires declared live checks or reviewed state split
+    resources: GitOps renderer; explicit ownership/state/auth contract required
+    runtime_acceptance: pending
+    reason: A provider entry alone does not authorize execution.
+  akamai-cloud:
+    bootstrap: runtime identity verification
+    account: not_applicable
+    resources: GitOps renderer; explicit ownership/state/auth contract required
+    runtime_acceptance: pending
+    reason: A provider entry alone does not authorize execution.
