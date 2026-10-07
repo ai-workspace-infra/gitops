@@ -153,13 +153,17 @@ spec:
       - claude-opus-4-8
       - claude-opus-5
       - claude-sonnet-4-5-20250929
-      - claude-sonnet-4-6
       - claude-sonnet-5
       - claude-sonnet-5-5
       - codex-auto-review
+      - deepseek-ai/deepseek-v4.1-flash
       - gemini-3-flash
       - gemini-3.1-flash-lite
+      - gemini-3.1-pro-low
       - gemini-3.5-flash-lite
+      - gemini-3.6-flash-high
+      - gemini-3.7-flash-high
+      - gemini-3.8-flash-high
       - gemini-pro-agent
       - gpt-5.5
       - gpt-5.6-luna
@@ -169,6 +173,11 @@ spec:
       - gpt-6-luna
       - gpt-6-sol
       - gpt-6.1-sol
+      - gpt-oss-120b-medium
+      - nvidia/nemotron-3.5-lightning-30b-a3b
+      - openai/gpt-oss-20b
+      - z-ai/glm-5.3
+      - z-ai/glm-5.3-flash
     # Fill only after testing the pinned New API revision and proving with ss
     # that it listens on loopback. The stage role refuses an empty command.
     start_command: /opt/ai-aggregator/new-api/new-api
@@ -181,6 +190,19 @@ spec:
     jwt_private_key_ref: vault://kv/uat/ai-aggregator/gateway/new-api#jwt_private_key
     jwt_issuer_ref: vault://kv/uat/ai-aggregator/gateway/new-api#jwt_issuer
     jwt_audience: ai-aggregator-cpa
+    channels:
+      - id: litellm-nvidia-open-models
+        name: litellm-nvidia-open-models
+        provider: nvidia
+        protocol: openai-chat
+        endpoint: http://127.0.0.1:4000
+        credential_ref: vault://kv/uat/ai-aggregator/gateway/litellm#master_key
+        public_models:
+          - openai/gpt-oss-20b
+          - nvidia/nemotron-3.5-lightning-30b-a3b
+          - deepseek-ai/deepseek-v4.1-flash
+          - z-ai/glm-5.3
+          - z-ai/glm-5.3-flash
   litellm:
     node: gateway-01
     bind_address: 127.0.0.1
@@ -200,6 +222,25 @@ spec:
       xai:
         endpoint: vault://kv/uat/ai-aggregator/litellm/providers/xai#endpoint
         api_key: vault://kv/uat/ai-aggregator/litellm/providers/xai#api_key
+      nvidia:
+        endpoint: vault://kv/uat/ai-aggregator/litellm/providers/nvidia#endpoint
+        api_key: vault://kv/uat/ai-aggregator/litellm/providers/nvidia#api_key
+    models:
+      - id: openai/gpt-oss-20b
+        provider: nvidia
+        backend_model: nvidia_nim/openai/gpt-oss-20b
+      - id: nvidia/nemotron-3.5-lightning-30b-a3b
+        provider: nvidia
+        backend_model: nvidia_nim/nvidia/nemotron-3.5-lightning-30b-a3b
+      - id: deepseek-ai/deepseek-v4.1-flash
+        provider: nvidia
+        backend_model: nvidia_nim/deepseek-ai/deepseek-v4.1-flash
+      - id: z-ai/glm-5.3
+        provider: nvidia
+        backend_model: nvidia_nim/z-ai/glm-5.3
+      - id: z-ai/glm-5.3-flash
+        provider: nvidia
+        backend_model: nvidia_nim/z-ai/glm-5.3-flash
     legacy_upstream: true
   client_profiles:
     - id: claude-code
