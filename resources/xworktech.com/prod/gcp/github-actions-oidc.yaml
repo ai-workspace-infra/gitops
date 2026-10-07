@@ -22,5 +22,9 @@ spec:
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/v*
     - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/uat-*
   state:
-    bucket: xworktech-platform-terraform-state
+    # Existing runtime Vault backend, verified 2026-10-06. Preserve the key;
+    # this declaration does not migrate state or create a bucket.
+    bucket: ai-workspace-tfstate
+    endpoint: https://s3.us-east-1.amazonaws.com
+    region: us-east-1
     key: platform-ops-toolkit/prod/xworktech/gcp-oidc-bootstrap/terraform.tfstate

@@ -8,6 +8,20 @@ permissions:
   contents: read
 
 jobs:
+  yaml-only-source:
+    name: Reject tracked JSON sources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enforce the repository YAML source rule
+        run: |
+          python3 - <<'PY'
+          import subprocess
+          paths = subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0')
+          forbidden = sorted(path for path in paths if path.lower().endswith('.json'))
+          if forbidden:
+              raise SystemExit('GitOps tracks YAML sources only; convert: ' + ', '.join(forbidden))
+          PY
   validate-zitadel-compose:
     name: Validate Shared IAM single-host GitOps
     runs-on: ubuntu-latest

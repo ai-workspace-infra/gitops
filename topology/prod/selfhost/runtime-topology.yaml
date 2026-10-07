@@ -12,6 +12,14 @@ spec:
       dns:
         control_plane: cloudflare-dns
         ttl_seconds: 60
+        api_alias_mode: worker-routes-cname
+        api_cname_records:
+          accounts.svc.plus:
+            serverless: accounts-serverless-prod.svc.plus
+            selfhost: accounts-selfhost-prod.svc.plus
+          billing.svc.plus:
+            serverless: billing-serverless-prod.svc.plus
+            selfhost: billing-selfhost-prod.svc.plus
         canonical_records:
           console.svc.plus: console-selfhost-prod.svc.plus
           accounts.svc.plus: accounts-selfhost-prod.svc.plus
@@ -59,15 +67,18 @@ spec:
     accounts.svc.plus:
       selfhost: accounts-selfhost-prod.svc.plus
       serverless: accounts-serverless-prod.svc.plus
+    billing.svc.plus:
+      selfhost: billing-selfhost-prod.svc.plus
+      serverless: billing-serverless-prod.svc.plus
   public_endpoints:
     console:
       host: console-selfhost-prod.svc.plus
       access: public
     accounts:
-      host: accounts-selfhost-prod.svc.plus
+      host: accounts.svc.plus
       access: authenticated
     billing:
-      host: billing-selfhost-prod.svc.plus
+      host: billing.svc.plus
       access: authenticated
     postgresql:
       host: postgresql-selfhost-prod.svc.plus
@@ -103,7 +114,10 @@ spec:
   serverless:
     console_host: console-serverless-prod.svc.plus
     accounts_host: accounts-serverless-prod.svc.plus
-    billing_host: billing-serverless-prod.svc.plus
+    billing_host: billing.svc.plus
+    billing_serverless_host: billing-serverless-prod.svc.plus
+    billing_aliases:
+      - billing-serverless-prod.svc.plus
     cloud_run:
       accounts: https://prod-accounts-b7wzzanztq-de.a.run.app
       content_service: https://prod-content-service-b7wzzanztq-de.a.run.app
@@ -149,6 +163,8 @@ spec:
         primary_upstream: https://accounts-selfhost-prod.svc.plus
         fallback_upstream: https://prod-accounts-b7wzzanztq-de.a.run.app
         jwt_issuer: https://accounts-serverless-prod.svc.plus
+        billing_primary_upstream: https://billing-selfhost-prod.svc.plus
+        billing_fallback_upstream: https://prod-billing-service-b7wzzanztq-de.a.run.app
         timeout_ms: '2500'
       boundaries:
         - id: auth

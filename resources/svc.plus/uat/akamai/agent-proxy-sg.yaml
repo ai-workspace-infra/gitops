@@ -31,9 +31,14 @@ hosts:
       ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: ["::/0"]
       allow_http: false
-      allow_https: false
+      allow_https: true
+      additional_tcp_ports: [1443]
     host_vars:
       role: xconnect
       logical_region: sg
       provider_region: sg-sin-2
-      service_domains: [sg-xconnect.svc.plus]
+      service_domains: [sg-xconnect.onwalk.net]
+      xconnect_region: sg
+      xconnect_pool: sg
+      xconnect_fqdn: sg-xconnect.onwalk.net
+      xconnect_open_to_users: true

@@ -59,15 +59,18 @@ spec:
     accounts-uat.onwalk.net:
       selfhost: accounts-selfhost-uat.onwalk.net
       serverless: accounts-serverless-uat.onwalk.net
+    billing-uat.onwalk.net:
+      selfhost: billing-selfhost-uat.onwalk.net
+      serverless: billing-uat.onwalk.net
   public_endpoints:
     console:
       host: console-serverless-uat.onwalk.net
       access: public
     accounts:
-      host: accounts-serverless-uat.onwalk.net
+      host: accounts-uat.onwalk.net
       access: authenticated
     billing:
-      host: billing-serverless-uat.onwalk.net
+      host: billing-uat.onwalk.net
       access: authenticated
     postgresql:
       host: postgresql-serverless-uat.onwalk.net
@@ -98,7 +101,7 @@ spec:
     accounts_host: accounts-serverless-uat.onwalk.net
     accounts_aliases:
       - accounts-cloudflare-uat.onwalk.net
-    billing_host: billing-serverless-uat.onwalk.net
+    billing_host: billing-uat.onwalk.net
     frontend_router:
       worker_name: frontend-router-uat
       host: console-serverless-uat.onwalk.net

@@ -19,6 +19,27 @@ UAT_GCP_SPOT_MANIFESTS = (
 
 
 class UatGcpOsLoginTest(unittest.TestCase):
+    def test_us_proxy_is_a_reachable_public_regional_entry(self):
+        path = ROOT / "resources/svc.plus/uat/gcp/agent-proxy-us.yaml"
+        spec = yaml.safe_load(path.read_text(encoding="utf-8"))["spec"]
+        ssh_tags = set(spec.get("spot_network_tags", []))
+        self.assertTrue(spec.get("spot_ssh_source_ranges"))
+        policy_path = ROOT / "resources/onwalk.net/uat/gcp/open-platform.yaml"
+        policy = yaml.safe_load(policy_path.read_text(encoding="utf-8"))["global"]
+        allowlisted = {(item["name"], item["zone"]) for item in policy["external_ip_allowed_instances"]}
+        for vm in spec["resources"]["spot_vms"]:
+            self.assertIs(vm.get("public_ip"), True)
+            self.assertIs(vm.get("enable_oslogin"), True)
+            # Deploy jobs pick the bootstrap playbook from the inventory group
+            # and use the first service domain as the node's hostname.
+            self.assertIn("agent_proxy", vm.get("inventory_groups", []))
+            self.assertTrue(vm["host_vars"]["service_domains"])
+            self.assertTrue(ssh_tags & set(vm.get("network_tags", [])))
+            self.assertIn(443, vm.get("public_tcp_ports", []))
+            self.assertNotIn(22, vm.get("public_tcp_ports", []))
+            # The project only admits external IPs for allowlisted instances.
+            self.assertIn((vm["name"], vm["zone"]), allowlisted)
+
     def test_every_routed_uat_gcp_spot_vm_enables_os_login(self):
         for relative in UAT_GCP_SPOT_MANIFESTS:
             document = yaml.safe_load((ROOT / relative).read_text(encoding="utf-8"))

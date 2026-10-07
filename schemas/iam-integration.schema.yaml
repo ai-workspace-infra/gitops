@@ -1,0 +1,109 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://gitops.svc.plus/schemas/iam-integration.schema.json
+type: object
+required:
+- apiVersion
+- kind
+- metadata
+- spec
+properties:
+  apiVersion:
+    const: identity.svc.plus/v1alpha1
+  kind:
+    const: IdentityIntegrationSet
+  metadata:
+    type: object
+    required:
+    - name
+    - project
+    - environment
+    properties:
+      name:
+        type: string
+        pattern: ^[a-z0-9-]+$
+      project:
+        type: string
+        minLength: 1
+      environment:
+        enum:
+        - sit
+        - uat
+        - prod
+    additionalProperties: false
+  spec:
+    type: object
+    required:
+    - issuer
+    - integrations
+    properties:
+      issuer:
+        type: string
+        format: uri
+        pattern: ^https://
+      integrations:
+        type: array
+        minItems: 6
+        items:
+          type: object
+          required:
+          - name
+          - provider
+          - flows
+          properties:
+            name:
+              type: string
+              pattern: ^[a-z0-9-]+$
+            provider:
+              enum:
+              - gcp
+              - aws
+              - linode
+              - vultr
+              - ucloud-global
+              - grafana
+            flows:
+              type: array
+              minItems: 1
+              items:
+                type: object
+                required:
+                - purpose
+                - protocol
+                - oidc_supported
+                - capability_evidence_url
+                - vault_ref
+                properties:
+                  purpose:
+                    enum:
+                    - workforce
+                    - workload
+                    - application
+                  protocol:
+                    enum:
+                    - oidc
+                    - saml
+                    - vault-api-token
+                  oidc_supported:
+                    type: boolean
+                  selection_reason:
+                    type: string
+                  capability_evidence_url:
+                    type: string
+                    format: uri
+                    pattern: ^https://
+                  vault_ref:
+                    type: string
+                    pattern: ^kv/(iam|CICD)/
+                  redirect_uris:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                      pattern: ^https://
+                  role_claim:
+                    type: string
+                    minLength: 1
+                additionalProperties: false
+          additionalProperties: false
+    additionalProperties: false
+additionalProperties: false

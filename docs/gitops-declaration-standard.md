@@ -70,7 +70,7 @@ The renderer must fail closed when a declaration is missing, ambiguous, or has a
 
 Resource descriptions, topology declarations, and GitOps service configuration are YAML. Existing files in those categories are migrated from `.json` to `.yaml` in the same change, and every consumer/reference is updated atomically. The YAML conversion must preserve keys, scalar types, arrays, and values; it must not introduce secrets or change lifecycle intent.
 
-JSON remains allowed only for an intentional machine/API boundary, for example a GitHub API ruleset request/fixture under `skills/**/references/`. Such a file must be documented as a payload or fixture and must not be treated as the authoritative resource declaration. Generated `cmdb.json` and `inventory.ini` are pipeline artifacts, not GitOps source files.
+The repository must not track any `.json` file, including API ruleset templates and schemas. Store every source as YAML and render JSON only in memory/stdin for an API boundary. Generated `cmdb.json` and execution receipts are IaC/control-plane artifacts outside GitOps source. CI rejects tracked JSON files across the entire repository, without directory exceptions.
 
 ## 5. Markdown documentation contract
 
@@ -91,7 +91,7 @@ Before merging a GitOps change:
 
 1. Run a YAML parser over changed declarations and `git diff --check`.
 2. Run the repository topology/resource contract scripts.
-3. Search for stale `.json` paths and verify every remaining JSON file is an intentional machine payload.
+3. Confirm no tracked `.json` files remain; update source paths and YAML readers together. API JSON is generated only at runtime.
 4. Confirm provider, concrete account/project, region, namespace/state key, and lifecycle against the requested matrix.
 5. Confirm `existing` rows cannot reach Terraform create/destroy code paths.
 6. Review the generated plan and inventory separately; do not infer real cloud changes from static validation.

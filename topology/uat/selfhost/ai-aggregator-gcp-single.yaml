@@ -1,0 +1,239 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: PersonalAIAggregator
+metadata:
+  name: ai-aggregator
+  project: ai-workspace
+  environment: uat
+  mode: selfhost
+  topology: single-node
+spec:
+  enabled: false
+  delivery:
+    runtime: systemd
+    playbook: deploy-ai-aggregator-v1.yml
+    cpa_desktop_playbook: deploy_ai_desktop.yml
+    deployment_controller: platform-ops-toolkit
+    rollback_upstream: litellm
+    deployment_mode: embedded
+  infrastructure:
+    provider: gcp
+    provisioner: terraform
+    resource_contract:
+      repository: ai-workspace-infra/gitops
+      path: resources/xworktech.com/uat/gcp/ai-aggregator-gcp-single.yaml
+      workdir_repository: ai-workspace-infra/iac_modules
+      workdir: terraform-hcl-standard/gcp-cloud/envs/ai-aggregator-gcp-uat
+      ref: main
+      renderer: terraform-hcl-standard/gcp-cloud/scripts/generate.py
+    lifecycle: ephemeral
+    spot_instance: true
+    max_runtime_minutes: 60
+    state_strategy: pipeline-local
+    outputs:
+      cmdb: terraform-output:platform_runtime
+      inventory: generated:inventory.ini
+    destroy_policy: always_after_pipeline
+  entrypoint:
+    component: caddy
+    domain: ai.onwalk.net
+    tls: automatic
+    public_port: 443
+    source_cidrs:
+      - 35.79.83.48/32
+  gateway:
+    entry_mode: gateway
+    adapter: apisix
+    client_token_source: new-api
+    mode: standalone
+    runtime_config_backend: gitops-file
+    etcd: false
+    routes:
+      new_api:
+        path: /
+        upstream: new-api
+  apisix:
+    node: gateway-01
+    bind_address: 127.0.0.1
+    proxy_port: 9080
+    auth_mode: new-api-token-pass-through
+    runtime_secret_refs: {}
+    model_allowlist_source: new_api.public_models
+    activation_validated: false
+  testing_environment:
+    provider: gcp
+    instance_type: e2-standard-4
+    architecture: amd64
+    os_name: "Debian 12 (bookworm)"
+    spot_instance: true
+    max_runtime_minutes: 60
+    auto_terminate: true
+  nodes:
+    - id: gateway-01
+      inventory_host: ai-aggregator-gcp-single-01
+      resource_ref: gcp://ai-aggregator-uat/hosts/ai-aggregator-gcp-single-01
+      role: gateway
+      roles: [gateway, cpa]
+      provider: gcp
+      lifecycle: ephemeral
+      spot_instance: true
+      max_runtime_minutes: 60
+      caddy_mode: reuse-existing
+  resources:
+    minimum_resources:
+      cpu: 4
+      memory: 8Gi
+      disk: 80Gi
+    recommended_resources:
+      cpu: 4
+      memory: 16Gi
+      disk: 100Gi
+  artifacts:
+    new_api:
+      repository: ai-workspace-lab/new-api
+      revision: ""
+      sha256: ""
+      arch: amd64
+    cliproxyapi:
+      repository: ai-workspace-lab/CLIProxyAPI
+      revision: ""
+      sha256: ""
+      arch: amd64
+  new_api:
+    node: gateway-01
+    bind_address: 127.0.0.1
+    port: 3000
+    public_models:
+      - claude-opus-4-5-20251101
+      - claude-opus-4-6
+      - claude-opus-4-7
+      - claude-opus-4-8
+      - claude-opus-5
+      - claude-sonnet-4-5-20250929
+      - claude-sonnet-4-6
+      - claude-sonnet-5
+      - claude-sonnet-5-5
+      - codex-auto-review
+      - gemini-3-flash
+      - gemini-3.1-flash-lite
+      - gemini-3.5-flash-lite
+      - gemini-pro-agent
+      - gpt-5.5
+      - gpt-5.6-luna
+      - gpt-5.6-sol
+      - gpt-5.6-terra
+      - gpt-6-astra
+      - gpt-6-luna
+      - gpt-6-sol
+      - gpt-6.1-sol
+    start_command: /opt/ai-aggregator/new-api/new-api
+    persistence:
+      driver: postgresql
+      database: new_api
+      secret_ref: vault://kv/uat/ai-aggregator/database/new-api#dsn
+    session_secret_ref: vault://kv/uat/ai-aggregator/gateway/new-api#session_secret
+    crypto_secret_ref: vault://kv/uat/ai-aggregator/gateway/new-api#crypto_secret
+    jwt_private_key_ref: vault://kv/uat/ai-aggregator/gateway/new-api#jwt_private_key
+    jwt_issuer_ref: vault://kv/uat/ai-aggregator/gateway/new-api#jwt_issuer
+    jwt_audience: ai-aggregator-cpa
+  litellm:
+    node: gateway-01
+    bind_address: 127.0.0.1
+    port: 4000
+    persistence:
+      driver: postgresql
+      database: litellm
+      secret_ref: vault://kv/uat/ai-aggregator/database/litellm#dsn
+    master_key_ref: vault://kv/uat/ai-aggregator/gateway/litellm#master_key
+    provider_secret_refs:
+      openai:
+        endpoint: vault://kv/uat/ai-aggregator/litellm/providers/openai#endpoint
+        api_key: vault://kv/uat/ai-aggregator/litellm/providers/openai#api_key
+      anthropic:
+        endpoint: vault://kv/uat/ai-aggregator/litellm/providers/anthropic#endpoint
+        api_key: vault://kv/uat/ai-aggregator/litellm/providers/anthropic#api_key
+      xai:
+        endpoint: vault://kv/uat/ai-aggregator/litellm/providers/xai#endpoint
+        api_key: vault://kv/uat/ai-aggregator/litellm/providers/xai#api_key
+    legacy_upstream: true
+  client_profiles:
+    - id: claude-code
+      chain: new-api-cpa
+      base_url: https://ai.onwalk.net
+      protocol: anthropic-messages
+      model_alias: claude-main
+      token_source: new-api
+    - id: android-studio
+      chain: new-api-litellm
+      base_url: https://ai.onwalk.net/v1
+      protocol: openai-chat
+      model_alias: anthropic-api
+      token_source: new-api
+    - id: openai-compatible
+      chain: new-api-cpa
+      base_url: https://ai.onwalk.net/v1
+      protocol: openai-chat-or-responses
+      model_alias: codex-main
+      token_source: new-api
+  tenants:
+    - id: personal
+      status: disabled
+      applications: [claude-code, android-studio, openai-compatible]
+      allowed_entrypoints: [new-api, litellm]
+      rate_limit_per_minute: 60
+  cpa_instances:
+    - id: cpa-codex-01
+      node: gateway-01
+      provider: openai
+      cli: codex
+      account_email: manbuzhe2009@qq.com
+      account_alias: cpa-codex-01
+      bind_address: private_ip
+      port: 8317
+      network_endpoint: cmdb://nodes/ai-aggregator-gcp-single-01/private_ip:8317
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-01/auth
+      jwt: {issuer: ai-aggregator, audience: cpa:cpa-codex-01, public_key_file: /etc/ai-aggregator/cpa/cpa-codex-01/jwt-public.pem, ttl_seconds: 300}
+      new_api_channel: {name: cpa-codex-01, protocol: openai-responses, public_models: [codex-auto-review, gpt-5.5, gpt-5.6-luna, gpt-5.6-sol, gpt-5.6-terra, gpt-6-astra, gpt-6-luna, gpt-6-sol, gpt-6.1-sol], model_mapping: {codex-main: gpt-5.6-luna}, enabled: false}
+    - id: cpa-codex-02
+      node: gateway-01
+      provider: openai
+      cli: codex
+      account_email: manbuzhe2008@gmail.com
+      account_alias: cpa-codex-02
+      bind_address: private_ip
+      port: 8320
+      network_endpoint: cmdb://nodes/ai-aggregator-gcp-single-01/private_ip:8320
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-02/auth
+      jwt: {issuer: ai-aggregator, audience: cpa:cpa-codex-02, public_key_file: /etc/ai-aggregator/cpa/cpa-codex-02/jwt-public.pem, ttl_seconds: 300}
+      new_api_channel: {name: cpa-codex-02, protocol: openai-responses, public_models: [codex-auto-review, gpt-5.5, gpt-5.6-luna, gpt-5.6-sol, gpt-5.6-terra, gpt-6-astra, gpt-6-luna, gpt-6-sol, gpt-6.1-sol], model_mapping: {codex-main: gpt-5.6-luna}, enabled: false}
+    - id: cpa-claude-01
+      node: gateway-01
+      provider: anthropic
+      cli: claude-code
+      account_email: haitaopanhq@gmail.com
+      account_alias: cpa-claude-01
+      bind_address: private_ip
+      port: 8318
+      network_endpoint: cmdb://nodes/ai-aggregator-gcp-single-01/private_ip:8318
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-claude-01/auth
+      jwt: {issuer: ai-aggregator, audience: cpa:cpa-claude-01, public_key_file: /etc/ai-aggregator/cpa/cpa-claude-01/jwt-public.pem, ttl_seconds: 300}
+      new_api_channel: {name: cpa-claude-01, protocol: anthropic-messages, public_models: [claude-opus-4-5-20251101, claude-opus-4-6, claude-opus-4-7, claude-opus-4-8, claude-opus-5, claude-sonnet-4-5-20250929, claude-sonnet-4-6, claude-sonnet-5, claude-sonnet-5-5], model_mapping: {claude-main: claude-sonnet-5}, enabled: false}
+    - id: cpa-antigravity-01
+      node: gateway-01
+      provider: google
+      cli: antigravity
+      account_email: haitaopanhq@gmail.com
+      account_alias: cpa-antigravity-01
+      bind_address: private_ip
+      port: 8319
+      network_endpoint: cmdb://nodes/ai-aggregator-gcp-single-01/private_ip:8319
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-antigravity-01/auth
+      jwt: {issuer: ai-aggregator, audience: cpa:cpa-antigravity-01, public_key_file: /etc/ai-aggregator/cpa/cpa-antigravity-01/jwt-public.pem, ttl_seconds: 300}
+      new_api_channel: {name: cpa-antigravity-01, protocol: openai-chat, public_models: [gemini-3-flash, gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemini-pro-agent], model_mapping: {gemini-main: gemini-3-flash}, enabled: false}
+  observability:
+    log_request_bodies: false
+    log_authorization_headers: false
+    health_paths: {new_api: /api/status, cpa: /health}
+  migration:
+    phase: parallel
+    default_upstream: litellm
+    cutover_requires: [caddy_tls_healthy, new_api_local_only, every_cpa_local_only, token_validation, provider_smoke_tests]

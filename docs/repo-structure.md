@@ -39,3 +39,26 @@ inline, and declarations carry no fallback defaults for them. See the scope note
 - Ansible playbooks, roles, and hand-maintained inventories.
 - Secrets. Credentials are distributed at runtime via Vault. SSH **public** keys inside a
   topology declaration are fine; nothing private is committed.
+
+## Declaration and cross-repository contract
+
+GitOps is a data repository, not a script repository. New resource, topology, service, and
+environment descriptions use YAML; repository and operational guidance uses Markdown.
+Existing JSON declarations are converted to YAML when they are touched by a migration, and
+consumers must be updated in the same PR. Do not add shell, Python, Ruby, Terraform, or
+Ansible automation under the declaration directories.
+
+The consumers are deliberately separate:
+
+- [`iac_modules/scripts/pipeline/`](https://github.com/ai-workspace-infra/iac_modules/tree/main/scripts/pipeline)
+  renders and applies Terraform resources.
+- [`playbooks/scripts/pipeline/`](https://github.com/ai-workspace-infra/playbooks/tree/main/scripts/pipeline)
+  runs the Ansible phase from the resulting CMDB/inventory.
+- [`platform-ops-toolkit/.github/scripts/`](https://github.com/ai-workspace-infra/platform-ops-toolkit/tree/main/.github/scripts)
+  orchestrates, dispatches, waits, snapshots, performs API DNS operations, and reads this data.
+
+Cross-repository delivery merges IaC/playbooks implementation first and then the dependent
+toolkit call-site change. Consumers pin a GitOps ref and must fail when the selected
+declaration is missing; they must not silently fall back to another file. Branches are
+changed through PRs using the existing repository prefixes, with only `main` and the
+repository's established `release/*`/`stable/*` lines long-lived.

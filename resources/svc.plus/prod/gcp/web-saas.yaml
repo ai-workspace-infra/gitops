@@ -1,0 +1,74 @@
+# Canonical PROD Selfhost declaration consumed by selfhost-orchestrator.yml.
+# Runtime addresses and database credentials are resolved by IaC and Vault.
+apiVersion: gitops.svc.plus/v1alpha1
+kind: GCPWorkloadNamespace
+metadata:
+  name: web-saas
+  environment: prod
+  provider: gcp
+spec:
+  gcp_account_id: xworktech
+  bootstrap_project_id: crypto-will-508602-m0
+  project_id: open-platform-prod
+  organization_id: "744119519286"
+  region: asia-east1
+  workspace: web-saas
+  state_namespace: web-saas
+  state_project: svc.plus
+  state:
+    # Same existing Vault backend as PROD identity bootstrap; no state move.
+    bucket: ai-workspace-tfstate
+    endpoint: https://s3.us-east-1.amazonaws.com
+    region: us-east-1
+    key: terraform/prod/svc.plus/gcp-cloud/xworktech/web-saas/terraform.tfstate
+  network_name: web-saas-prod-gcp
+  subnet_cidr: 10.73.0.0/24
+  enable_cloud_nat: false
+  enable_oslogin: true
+  # Adopt the existing V2 policy in the SAME state. Its imported parent uses
+  # the numeric project identity; a project-ID alias would force replacement.
+  external_ip_policy_parent_identity: project_number
+  # Preserve the preexisting 2026-09-29 allowance. Retirement is separate from
+  # adding the new Selfhost VM and must not remove another instance's permit.
+  external_ip_allowed_instances:
+    - name: open-platform-prod
+      zone: asia-east1-a
+    - name: web-saas-prod
+      zone: asia-east1-a
+  # Permanent SSH access is private to this subnet. CI access is granted and
+  # revoked by the IaC temporary-access owner for the current runner /32 only.
+  # Two /25 halves equal the declared /24. Google provider 7.46.1 suppresses
+  # removal of its default 0.0.0.0/0 during a one-element -> one-element set
+  # change; a two-element target lets the audited plan remove that default.
+  spot_ssh_source_ranges: [10.73.0.0/25, 10.73.0.128/25]
+  spot_network_tags: [web-saas-ssh]
+  ssh_username: github-actions
+  resource:
+    name: web-saas-prod
+    type: workload_namespace
+    lifecycle: persistent
+  resources:
+    service_vms:
+      - name: web-saas-prod
+        zone: asia-east1-a
+        machine_type: e2-medium
+        image: projects/debian-cloud/global/images/family/debian-12
+        provisioning_model: STANDARD
+        deletion_protection: true
+        enable_oslogin: true
+        public_ip: true
+        network_tags: [web-saas-ssh]
+        public_tcp_ports: [80, 443]
+        inventory_groups: [web_saas]
+        tags: [web-saas, prod, database]
+        data_disk:
+          name: web-saas-prod-data
+          device_name: web-saas-prod-data
+          size_gb: 50
+          type: pd-balanced
+          mount_path: /data
+        labels:
+          owner: platform-ops-toolkit
+          workload: web-saas
+          environment: prod
+          lifecycle: persistent

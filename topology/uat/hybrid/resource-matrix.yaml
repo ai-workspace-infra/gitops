@@ -40,7 +40,7 @@ spec:
     target_domain: web-saas
     release_scope: business
     management_mode: terraform+serverless
-    lifecycle: ephemeral
+    lifecycle: persistent
     provider: gcp-cloud
     account_ref: gcp_account
     profile: 2C4G
@@ -52,6 +52,7 @@ spec:
     namespace: ai-workspace
     target_domain: ai-workspace
     release_scope: business
+    deploy_on_all: false
     management_mode: terraform
     lifecycle: ephemeral
     provider: gcp-cloud

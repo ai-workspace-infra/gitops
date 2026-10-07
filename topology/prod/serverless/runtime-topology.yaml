@@ -12,6 +12,14 @@ spec:
       dns:
         control_plane: cloudflare-dns
         ttl_seconds: 60
+        api_alias_mode: worker-routes-cname
+        api_cname_records:
+          accounts.svc.plus:
+            serverless: accounts-serverless-prod.svc.plus
+            selfhost: accounts-selfhost-prod.svc.plus
+          billing.svc.plus:
+            serverless: billing-serverless-prod.svc.plus
+            selfhost: billing-selfhost-prod.svc.plus
         canonical_records:
           accounts.svc.plus: accounts-serverless-prod.svc.plus
           www.svc.plus: console-serverless-prod.svc.plus
@@ -59,15 +67,18 @@ spec:
     accounts.svc.plus:
       selfhost: accounts-selfhost-prod.svc.plus
       serverless: accounts-serverless-prod.svc.plus
+    billing.svc.plus:
+      selfhost: billing-selfhost-prod.svc.plus
+      serverless: billing-serverless-prod.svc.plus
   public_endpoints:
     console:
       host: console-serverless-prod.svc.plus
       access: public
     accounts:
-      host: accounts-serverless-prod.svc.plus
+      host: accounts.svc.plus
       access: authenticated
     billing:
-      host: billing-serverless-prod.svc.plus
+      host: billing.svc.plus
       access: authenticated
     postgresql:
       host: postgresql-serverless-prod.svc.plus
@@ -105,7 +116,10 @@ spec:
       - console.xworkmate.com
       - www.svc.plus
     accounts_host: accounts-serverless-prod.svc.plus
-    billing_host: billing-serverless-prod.svc.plus
+    billing_host: billing.svc.plus
+    billing_serverless_host: billing-serverless-prod.svc.plus
+    billing_aliases:
+      - billing-serverless-prod.svc.plus
     frontend_router:
       worker_name: frontend-router-prod
       worker_url: https://frontend-router-prod.manbuzhe2008.workers.dev
@@ -188,6 +202,8 @@ spec:
         primary_upstream: https://accounts-selfhost-prod.svc.plus
         fallback_upstream: https://prod-accounts-b7wzzanztq-de.a.run.app
         jwt_issuer: https://accounts-serverless-prod.svc.plus
+        billing_primary_upstream: https://billing-selfhost-prod.svc.plus
+        billing_fallback_upstream: https://prod-billing-service-b7wzzanztq-de.a.run.app
         timeout_ms: '2500'
       boundaries:
         - id: auth

@@ -7,6 +7,8 @@ Consumers reference it by URL and ref rather than vendoring copies — for examp
 and `gitops_repo_ref` as inputs. Declarations live here; the pipelines that act on them
 live in their own repositories and pin the ref they consume.
 
+The [execution ownership migration standard](https://github.com/ai-workspace-lab/xworkspace-core-skills/blob/main/skills/engineering-standards/execution-ownership-migration/SKILL.md) governs cross-repository cutovers. GitOps remains declaration-only: do not migrate imperative execution scripts into this repository.
+
 ## Scope
 
 **In scope — declarative state:**
@@ -33,9 +35,9 @@ automation, and does not conflict with the exclusion above. The line is:
 | | Belongs here | Belongs to the pipeline repo |
 |---|---|---|
 | Host list, plan, groups, service domains | ✅ declaration | |
-| The renderer that turns it into HCL | | ✅ |
-| The generated `cmdb.json` / `inventory.ini` | | ✅ (build artifact) |
-| Playbooks and roles that configure the hosts | | ✅ |
+| The renderer that turns it into HCL | | ✅ `iac_modules` |
+| The generated `cmdb.json` / `inventory.ini` | | ✅ derived by IaC/Playbooks; build artifact |
+| Playbooks and roles that configure the hosts | | ✅ `playbooks` |
 
 Generated inventories remain out of scope. The *declaration they are generated from* is in
 scope.
