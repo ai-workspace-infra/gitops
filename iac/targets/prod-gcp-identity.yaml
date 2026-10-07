@@ -1,0 +1,53 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: prod-gcp-identity
+  environment: prod
+  project: xworktech.com
+  provider: gcp-cloud
+  account: xworktech
+  workspace: bootstrap-identity
+  auth:
+    expected_identity: open-platform-prod
+    vault_role: github-actions-platform-ops-toolkit-prod-gcp-oidc-xworktech
+    record: kv/data/prod/platform/oidc/xworktech
+    forbidden_project: open-platform-prod
+    bootstrap_vault_role: github-actions-platform-ops-toolkit-prod-gcp-bootstrap-xworktech
+    bootstrap_record: kv/data/CICD/prod/gcp-bootstrap/xworktech
+    workload_identity_provider: projects/986070475391/locations/global/workloadIdentityPools/github-actions/providers/github
+    service_account: github-actions-prod@open-platform-prod.iam.gserviceaccount.com
+  stages:
+    bootstrap:
+      mode: terraform
+      manifest: resources/xworktech.com/prod/gcp/github-actions-oidc.yaml
+      state:
+        key: platform-ops-toolkit/prod/xworktech/gcp-oidc-bootstrap/terraform.tfstate
+        cli_workspace: default
+      ownership_reviewed: true
+      requires_existing_state: true
+      management_identity: true
+      destroy_allowed: false
+      owners:
+      - google_project_service.iam
+      - google_service_account.bootstrap
+      - google_project_iam_member.bootstrap
+      - google_project_service.iam_credentials
+      - google_project_service.sts
+      - google_project_service.platform
+      - google_iam_workload_identity_pool.github
+      - google_iam_workload_identity_pool_provider.github
+      - google_service_account.github_actions
+      - google_project_iam_member.deploy
+      - google_service_account_iam_member.federation
+      protected:
+      - google_service_account.github_actions
+      - google_iam_workload_identity_pool.github
+      - google_iam_workload_identity_pool_provider.github
+    account:
+      mode: unsupported
+      reason: The legacy platform state still combines shared network/IAM with workloads;
+        state split requires maintenance.
+    resources:
+      mode: unsupported
+      reason: Use an explicitly reviewed workload target; bootstrap does not own workload
+        state.
