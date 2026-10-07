@@ -25,6 +25,14 @@ spec:
       dns:
         control_plane: cloudflare-dns
         ttl_seconds: 60
+        api_alias_mode: worker-routes-cname
+        api_cname_records:
+          accounts.svc.plus:
+            serverless: accounts-serverless-prod.svc.plus
+            selfhost: accounts-selfhost-prod.svc.plus
+          billing.svc.plus:
+            serverless: billing-serverless-prod.svc.plus
+            selfhost: billing-selfhost-prod.svc.plus
         # Hybrid serves the public canonical names from the same Cloudflare edge
         # entry as serverless mode. Failing the whole environment back to the
         # selfhost full stack is a manual operation: repoint these two records at
@@ -96,7 +104,7 @@ spec:
   # edge presence at all and are reached on the VPS directly.
     billing.svc.plus:
       selfhost: billing-selfhost-prod.svc.plus
-      serverless: billing.svc.plus
+      serverless: billing-serverless-prod.svc.plus
   public_endpoints:
     console:
       host: console-serverless-prod.svc.plus
@@ -150,6 +158,9 @@ spec:
       - console.xworkmate.com
     accounts_host: accounts-serverless-prod.svc.plus
     billing_host: billing.svc.plus
+    billing_serverless_host: billing-serverless-prod.svc.plus
+    billing_aliases:
+      - billing-serverless-prod.svc.plus
     # Deployed and owned by serverless-orchestrator. Declared here because the
     # hybrid contract asserts that the frontend is the identical, unmodified
     # edge chain: a mode flip must never redeploy or reconfigure the frontend.
@@ -232,6 +243,8 @@ spec:
         primary_upstream: https://accounts-selfhost-prod.svc.plus
         fallback_upstream: https://prod-accounts-b7wzzanztq-de.a.run.app
         jwt_issuer: https://accounts-serverless-prod.svc.plus
+        billing_primary_upstream: https://billing-selfhost-prod.svc.plus
+        billing_fallback_upstream: https://prod-billing-service-b7wzzanztq-de.a.run.app
         timeout_ms: '2500'
         # The failover leg crosses a database boundary: the primary writes to the
         # VPS PostgreSQL, the fallback writes to Supabase. Only methods that
