@@ -1,0 +1,158 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: XConnectLabTopology
+metadata:
+  name: xconnect-lab
+  environment: uat
+spec:
+  iac_module: vpn-overlay/xconnect-lab
+  environment_reuse: uat-control-plane-vault-account-and-network
+  created_resource_scope:
+  - gateway-spot-instance
+  - controlled-client-spot-instance
+  - ephemeral-security-groups
+  gateway_provider: aws-spot
+  gateway_execution_model: independent-linux-node
+  compute_policy: all-cloud-compute-is-aws-spot-by-default
+  ttl_minutes: 60
+  node_observation:
+    mode: until-expiry
+    release_on_failure: true
+  zero:
+    control_plane_ref: vpn-overlay/uat/xconnect-zero.yaml
+    accounts_api_url: https://accounts-uat.onwalk.net
+    portal_url: https://console-serverless-uat.onwalk.net/panel/xconnect-zero
+    source_of_truth: formal-accounts-api-and-portal
+    config_contract: devices-networks-policy-signed-config
+    lab_controller:
+      enabled: false
+      purpose: retired-formal-accounts-api-is-authoritative
+      is_formal_config_source: false
+  artifacts:
+    gateway:
+      repository: ai-workspace-xstream/XConnect-Gateway
+      release_tag: v0.1.8
+      asset: xconnect-gateway-linux-arm64
+    one:
+      repository: ai-workspace-xstream/XConnect-One
+      release_tag: v0.1.14
+      asset: xconnect-linux-arm64
+    xray:
+      repository: XTLS/Xray-core
+      release_tag: v26.3.27
+      asset: Xray-linux-arm64-v8a.zip
+  nodes:
+    gateway:
+      product: XConnect One Gateway
+      role: relay
+      service_role: relay/service
+      baseline: independent-linux-node-external-wireguard-xray
+      architecture: arm64
+      instance_type: t4g.small
+      vcpu: 2
+      memory_gib: 2
+      purchase_model: spot
+      max_runtime_minutes: 60
+      services:
+      - xconnect-gateway
+      - wireguard
+      - xray
+    one:
+      product: XConnect One Linux client CLI
+      role: controlled-client
+      baseline: independent-linux-node-managed-xray-wireguard
+      architecture: arm64
+      instance_type: t4g.micro
+      vcpu: 2
+      memory_gib: 1
+      purchase_model: spot
+      max_runtime_minutes: 60
+      services:
+      - xconnect-one-cli
+      - wireguard
+      - xray
+  desktop_validation:
+    enabled: false
+    ingress_cidrs: []
+    platforms:
+    - darwin
+    - windows
+    max_join_window_minutes: 20
+    transport: vless-xhttp
+    transport_profile:
+      kind: vless-xhttp
+      port: 443
+      path: /xconnect
+      mode: auto
+      host: tw-xconnect.svc.plus
+    public_wireguard_ingress: false
+    acceptance:
+    - formal-invite
+    - signed-sync-ack
+    - owned-runtime
+    - exact-peer-handshake
+    - private-ping
+    - exact-run-http-marker
+  aws:
+    region: ap-northeast-1
+    reuse_default_vpc: true
+    reuse_default_subnet: true
+    ami_ssm_parameter: /aws/service/canonical/ubuntu/server/24.04/stable/current/arm64/hvm/ebs-gp3/ami-id
+    role_arn: arn:aws:iam::950604983695:role/GithubAction_IAC_Deploy_Role
+    account_id: '950604983695'
+    audience: sts.amazonaws.com
+    spot:
+      market: spot
+      type: one-time
+      interruption_behavior: terminate
+  overlay:
+    network_id: net_uat
+    cidr: 10.77.0.0/24
+    gateway_address: 10.77.0.1/32
+    device_address: 10.77.0.2/32
+    transport: vless-xhttp
+    transport_profile:
+      kind: vless-xhttp
+      port: 443
+      path: /xconnect
+      mode: auto
+      host: tw-xconnect.svc.plus
+    gateway_tls_port: 443
+    zero_port: 8443
+    wireguard_port: 51820
+    public_wireguard_ingress: false
+    private_checks:
+    - ping
+    - http
+    - wireguard-handshake
+    - config-sync
+  gateway_transport:
+    enabled: true
+    exposure: public-restricted
+    transport: vless-xhttp
+    port: 443
+    profile:
+      kind: vless-xhttp
+      path: /xconnect
+      mode: auto
+      host: tw-xconnect.svc.plus
+    ingress_cidrs: []
+    public_wireguard_ingress: false
+    allowlist_source: workflow-dispatch-runtime-only
+  observability:
+    enabled: true
+    endpoint: https://observability.svc.plus
+    metrics_query_path: /vmetrics/api/v1/query
+    environment: uat
+    collection:
+    - node_exporter
+    - xconnect_textfile_metrics
+    - vector_remote_write
+    metric_prefix: xconnect_
+    credential_source: vault:kv/data/CICD/observability
+  vault:
+    address: https://vault.svc.plus
+    role: github-actions-platform-ops-toolkit-uat-xconnect-cloud-lab
+    audience: vault
+    infrastructure_path: kv/data/CICD/uat
+    runtime_path: kv/data/uat/xconnect-one
+    github_app_path: kv/data/CICD/github-app/daily-snapshot

@@ -71,6 +71,8 @@ The IaC declaration migration and provider/environment mapping are documented in
 [`docs/iac-resource-layout.md`](docs/iac-resource-layout.md) and
 [`docs/iac-resource-layout.zh.md`](docs/iac-resource-layout.zh.md).
 The environment-scoped Vault contract is documented in [`docs/vault-kv-paths.md`](docs/vault-kv-paths.md).
+The YAML declaration and Markdown documentation standard is documented in
+[`docs/gitops-declaration-standard.md`](docs/gitops-declaration-standard.md).
 
 For a directory-level overview, see [docs/repo-structure.md](docs/repo-structure.md).
 
@@ -101,7 +103,7 @@ The serverless `EdgeRoutingConfig` described below is an explicit environment-sc
 configuration backend: its selected environment domains and routing targets are intentional
 desired state, not renderer fallback defaults.
 
-`resources/svc.plus/prod/aws/github-actions-oidc.json` is the non-secret production
+`resources/svc.plus/prod/aws/github-actions-oidc.yaml` is the non-secret production
 declaration for the AWS GitHub Actions OIDC provider, role ARN, and the permitted
 `platform-ops-toolkit` branch/tag subjects. Both the Terraform bootstrap identity module and
 the selfhost orchestrator consume this file. Do not put AWS keys, GitHub App keys, or Vault

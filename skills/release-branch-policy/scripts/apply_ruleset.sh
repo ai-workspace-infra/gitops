@@ -9,9 +9,9 @@ Usage:
   apply_ruleset.sh <owner/repo> [<owner/repo> ...]
 
 Notes:
-  - Requires: gh (authenticated), jq
+  - Requires: gh (authenticated), ruby with YAML/JSON standard libraries
   - Does NOT create/push branches or tags.
-  - Ruleset payload is in: skills/release-branch-policy/references/ruleset.release-branches.json
+  - Ruleset payload is in: skills/release-branch-policy/references/ruleset.release-branches.yaml
 EOF
 }
 
@@ -24,20 +24,21 @@ if ! command -v gh >/dev/null 2>&1; then
   echo "missing: gh" >&2
   exit 1
 fi
-if ! command -v jq >/dev/null 2>&1; then
-  echo "missing: jq" >&2
+if ! command -v ruby >/dev/null 2>&1; then
+  echo "missing: ruby" >&2
   exit 1
 fi
 
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PAYLOAD_FILE="${SKILL_DIR}/references/ruleset.release-branches.json"
+PAYLOAD_FILE="${SKILL_DIR}/references/ruleset.release-branches.yaml"
 
 if [[ ! -f "${PAYLOAD_FILE}" ]]; then
   echo "payload not found: ${PAYLOAD_FILE}" >&2
   exit 1
 fi
 
-NAME="$(jq -r '.name' < "${PAYLOAD_FILE}")"
+PAYLOAD="$(ruby -ryaml -rjson -e 'print JSON.generate(YAML.safe_load(File.read(ARGV.fetch(0)), aliases: false))' "${PAYLOAD_FILE}")"
+NAME="$(ruby -rjson -e 'puts JSON.parse(STDIN.read).fetch("name")' <<<"${PAYLOAD}")"
 
 for OWNER_REPO in "$@"; do
   echo ">>> ${OWNER_REPO}"
@@ -49,9 +50,9 @@ for OWNER_REPO in "$@"; do
 
   if [[ -n "${existing_id}" ]]; then
     echo "Updating ruleset id=${existing_id}"
-    gh api -X PUT "repos/${OWNER_REPO}/rulesets/${existing_id}" --input "${PAYLOAD_FILE}" >/dev/null
+    gh api -X PUT "repos/${OWNER_REPO}/rulesets/${existing_id}" --input - <<<"${PAYLOAD}" >/dev/null
   else
     echo "Creating ruleset"
-    gh api -H "Accept: application/vnd.github+json" -X POST "repos/${OWNER_REPO}/rulesets" --input "${PAYLOAD_FILE}" >/dev/null
+    gh api -H "Accept: application/vnd.github+json" -X POST "repos/${OWNER_REPO}/rulesets" --input - <<<"${PAYLOAD}" >/dev/null
   fi
 done

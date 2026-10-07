@@ -1,10 +1,10 @@
 name: IAM declaration validation
 on:
   pull_request:
-    paths: ['resources/**/iam/**', 'schemas/iam-integration.schema.json', 'scripts/validate-iam-integrations.sh', 'tests/test_iam_integrations.rb', '.github/workflows/iam-tests.yml']
+    paths: ['resources/**/iam/**', 'schemas/iam-integration.schema.yaml', 'scripts/validate-iam-integrations.sh', 'tests/test_iam_integrations.rb', '.github/workflows/iam-tests.yml']
   push:
     branches: [main]
-    paths: ['resources/**/iam/**', 'schemas/iam-integration.schema.json', 'scripts/validate-iam-integrations.sh', 'tests/test_iam_integrations.rb', '.github/workflows/iam-tests.yml']
+    paths: ['resources/**/iam/**', 'schemas/iam-integration.schema.yaml', 'scripts/validate-iam-integrations.sh', 'tests/test_iam_integrations.rb', '.github/workflows/iam-tests.yml']
 permissions:
   contents: read
 jobs:

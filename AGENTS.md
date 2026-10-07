@@ -1,5 +1,13 @@
 # gitops Agent 约束：声明式目标状态
 
+## 仓库格式限定（强制）
+
+- 所有受 Git 跟踪的 JSON 文件必须转换为 YAML；禁止新增或保留 `.json` 文件，包括资源矩阵、拓扑、配置、schema 和规则模板。
+- `topology/uat/hybrid/resource-matrix.yaml` 是 UAT 资源矩阵唯一声明源；禁止使用 `.json` 作为第二份资源描述。
+- 转换保留键、值、标量类型、数组顺序和当前 main 的最新资源事实；同步更新消费者路径和解析器。
+- 外部 API 所需 JSON 只能由 YAML 在运行时生成，不得回写或提交到 GitOps。CMDB 和执行回执由 IaC/控制面保存为运行产物。
+- PR 的格式检查必须拒绝任何受跟踪的 `.json` 文件；不得通过改名后继续使用 JSON 专用读取器绕过 YAML 消费契约。
+
 四边界完整判定见
 [`execution-ownership-migration`](https://github.com/ai-workspace-lab/xworkspace-core-skills/blob/main/skills/engineering-standards/execution-ownership-migration/SKILL.md)。
 
