@@ -28,6 +28,10 @@ spec:
       container: web-saas-postgresql
       mount_path: /data/postgresql
       database: account
+      application_role: account_user
+      # Native backend APIs enforce user/tenant authorization themselves.
+      # Preserve imported table RLS policies; do not use the postgres superuser.
+      trusted_backend_rls_bypass: true
       schema_management: external
       runtime_role: primary
       background_writers: false
