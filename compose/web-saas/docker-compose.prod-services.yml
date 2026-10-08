@@ -1,0 +1,55 @@
+# Application-only reconciliation against the existing PROD database and
+# system Caddy. The database container is deliberately outside this model.
+services:
+  stunnel-server:
+    extends:
+      file: docker-compose.yml
+      service: stunnel-server
+    depends_on: !reset []
+    ports: !override
+      - "127.0.0.1:15433:15433"
+  stunnel-client:
+    extends:
+      file: docker-compose.yml
+      service: stunnel-client
+  accounts:
+    extends:
+      file: docker-compose.yml
+      service: accounts
+    env_file: !override
+      - path: /etc/xcontrol/web-saas/services.env
+        format: raw
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      OTEL_SDK_DISABLED: "true"
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1:8080/readyz"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+  billing:
+    extends:
+      file: docker-compose.yml
+      service: billing
+    env_file: !override
+      - path: /etc/xcontrol/web-saas/services.env
+        format: raw
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      OTEL_SDK_DISABLED: "true"
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1:8081/readyz"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+networks:
+  web_saas_network:
+    name: docker_shared_network
+    external: true
+  postgres_net:
+    name: docker_web_saas_postgres_network
+    external: true

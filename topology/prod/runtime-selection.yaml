@@ -1,0 +1,46 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: RuntimeSelection
+metadata:
+  name: web-saas
+  environment: prod
+spec:
+  runtimes:
+    selfhost:
+      enabled: true
+      topology_ref: topology/prod/selfhost/runtime-topology.yaml
+      resource_ref: resources/svc.plus/prod/gcp/web-saas.yaml
+      target_host: web-saas-prod
+      doco_target: prod-services
+    serverless:
+      enabled: true
+      topology_ref: topology/prod/serverless/runtime-topology.yaml
+  traffic:
+    desired_active: serverless
+    standby: selfhost
+    activation: after_verification
+  data:
+    authority_ref: topology/prod/serverless/runtime-topology.yaml#/spec/runtime/data
+    cutover: disabled
+    initialization: disabled
+    migration: disabled
+    selfhost:
+      container: web-saas-postgresql
+      mount_path: /data/postgresql
+      database: account
+      schema_management: external
+      runtime_role: primary
+      background_writers: false
+  jobs:
+    active_runtime: selfhost
+    activation: after_data_authority_verification
+  ingress:
+    owner: system-caddy
+    domains:
+      accounts:
+        - accounts-selfhost-prod.svc.plus
+        - accounts.svc.plus
+      billing:
+        - billing-selfhost-prod.svc.plus
+        - billing.svc.plus
+    billing_allowed_cidrs: [127.0.0.1/32, "::1/128"]
+    tls_vault_ref: kv/CICD/domains/svc.plus
