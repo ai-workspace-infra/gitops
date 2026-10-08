@@ -1,0 +1,13 @@
+# Additive override for the existing Console project. Its image, assets, ports,
+# credentials and system-Caddy sites are preserved by the Console owner.
+services:
+  dashboard:
+    environment:
+      ACCOUNT_SERVICE_URL: http://accounts:8080
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: https://accounts-selfhost-prod.svc.plus
+    networks:
+      - web_saas_network
+networks:
+  web_saas_network:
+    name: docker_shared_network
+    external: true

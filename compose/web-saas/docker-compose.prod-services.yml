@@ -17,8 +17,7 @@ services:
       file: docker-compose.yml
       service: accounts
     env_file: !override
-      - path: /etc/xcontrol/web-saas/services.env
-        format: raw
+      - /etc/xcontrol/web-saas/services.env
     ports:
       - "127.0.0.1:8080:8080"
     environment:
@@ -34,8 +33,7 @@ services:
       file: docker-compose.yml
       service: billing
     env_file: !override
-      - path: /etc/xcontrol/web-saas/services.env
-        format: raw
+      - /etc/xcontrol/web-saas/services.env
     ports:
       - "127.0.0.1:8081:8081"
     environment:
