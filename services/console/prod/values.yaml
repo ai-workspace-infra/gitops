@@ -2,8 +2,8 @@ service:
   replicaCount: 2
   global:
     imagePullPolicy: IfNotPresent
-    # Production consumes an explicitly published release tag or version.
-    tag: release
+    # Production consumes the current immutable Portal release tag.
+    tag: daily-build-2026.10.06-r6
     env:
       APP_ENV: production
       ACCOUNTS_BASE_URL: https://accounts.svc.plus

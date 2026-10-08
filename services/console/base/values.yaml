@@ -5,9 +5,9 @@ service:
     port: 80
   global:
     existingSecretName: console-env
-    repository: ghcr.io/x-evor/console
-    # Preview tracks consume the rolling `latest` image from the repo-local GHCR build workflow.
-    tag: latest
+    repository: ghcr.io/ai-workspace-services/console
+    # Keep the selfhost/serverless Console on the immutable Portal release image.
+    tag: daily-build-2026.10.06-r6
     env:
       PORT: "3000"
       SERVICE_NAME: console
