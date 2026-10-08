@@ -80,10 +80,10 @@ spec:
       host: console-selfhost-prod.svc.plus
       access: public
     accounts:
-      host: accounts-selfhost-prod.svc.plus
+      host: accounts.svc.plus
       access: authenticated
     billing:
-      host: billing-selfhost-prod.svc.plus
+      host: billing.svc.plus
       access: authenticated
     postgresql:
       host: postgresql-selfhost-prod.svc.plus
