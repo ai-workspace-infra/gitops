@@ -1,0 +1,39 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: prod-gcp-web-saas
+  environment: prod
+  project: svc.plus
+  provider: gcp-cloud
+  account: xworktech
+  workspace: web-saas
+  auth:
+    expected_identity: open-platform-prod
+    vault_role: github-actions-platform-ops-toolkit-prod-gcp-oidc-xworktech
+    record: kv/data/prod/platform/oidc/xworktech
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Use the existing PROD runtime workload identity; application deployment does not rebuild identity.
+    account:
+      mode: verify
+      manifest: resources/svc.plus/prod/gcp/web-saas.yaml
+      checks:
+      - kind: gcp-project
+        name: open-platform-prod
+      reason: The existing GCP project and network remain the owner of the persistent web-saas host.
+    resources:
+      mode: terraform
+      manifest: resources/svc.plus/prod/gcp/web-saas.yaml
+      state:
+        key: terraform/prod/svc.plus/gcp-cloud/xworktech/web-saas/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - module.web_saas
+      protected:
+      - google_compute_instance.web_saas_prod
+      - google_compute_disk.web_saas_prod_data
+      ownership_reviewed: true
+      requires_existing_state: true
+      destroy_allowed: false
+      reason: Reconcile the existing persistent web-saas-prod host only; database data and destruction remain outside this emergency release.
