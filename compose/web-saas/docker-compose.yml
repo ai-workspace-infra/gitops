@@ -105,6 +105,7 @@ services:
     env_file:
       - /etc/xcontrol/web-saas/secrets.env
     environment:
+      IMAGE: "${ACCOUNTS_IMAGE:?set in .env.<env>}"
       PORT: "8080"
       CONFIG_PATH: "/tmp/account.yaml"
       CONFIG_TEMPLATE: "/app/config/account.yaml"
