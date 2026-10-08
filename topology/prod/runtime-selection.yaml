@@ -11,6 +11,7 @@ spec:
       resource_ref: resources/svc.plus/prod/gcp/web-saas.yaml
       target_host: web-saas-prod
       doco_target: prod-services
+      console_connection_ref: compose/web-saas/docker-compose.prod-console-link.yml
     serverless:
       enabled: true
       topology_ref: topology/prod/serverless/runtime-topology.yaml
