@@ -1,0 +1,10 @@
+name: web-saas-services
+version: doco.v1
+working_dir: compose/web-saas
+compose_files:
+  - docker-compose.prod-services.yml
+env_files:
+  - .env.prod
+force_image_pull: true
+remove_orphans: false
+timeout: 300
