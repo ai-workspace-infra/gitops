@@ -23,6 +23,8 @@ spec:
         canonical_records:
           console.svc.plus: console-selfhost-prod.svc.plus
           accounts.svc.plus: accounts-selfhost-prod.svc.plus
+          billing.svc.plus: billing-selfhost-prod.svc.plus
+          postgresql.svc.plus: postgresql-selfhost-prod.svc.plus
       load-balancer:
         strategy: dns-only
       weight:
@@ -70,15 +72,18 @@ spec:
     billing.svc.plus:
       selfhost: billing-selfhost-prod.svc.plus
       serverless: billing-serverless-prod.svc.plus
+    postgresql.svc.plus:
+      selfhost: postgresql-selfhost-prod.svc.plus
+      serverless: postgresql-serverless-prod.svc.plus
   public_endpoints:
     console:
       host: console-selfhost-prod.svc.plus
       access: public
     accounts:
-      host: accounts.svc.plus
+      host: accounts-selfhost-prod.svc.plus
       access: authenticated
     billing:
-      host: billing.svc.plus
+      host: billing-selfhost-prod.svc.plus
       access: authenticated
     postgresql:
       host: postgresql-selfhost-prod.svc.plus
