@@ -1,10 +1,21 @@
 # Selected only by .doco-cd.prod.yml after Playbooks verifies/mounts the
 # IaC-declared web-saas-prod-data disk. Never relocate an existing Docker volume.
 services:
+  # PostgreSQL is already running on the PROD host from the native standby
+  # deployment. Keep it in the shared Compose model for network/config
+  # compatibility, but do not let Doco-CD recreate or stop the existing DB
+  # container as part of an application convergence.
   postgres:
+    profiles:
+      - database-managed-externally
     volumes:
       - type: bind
         source: /data/postgresql
         target: /var/lib/postgresql/data
         bind:
           create_host_path: false
+
+  # The existing PostgreSQL container remains the dependency on the external
+  # postgres network; Doco-CD must not wait for the profiled postgres service.
+  stunnel-server:
+    depends_on: !reset []
