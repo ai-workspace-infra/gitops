@@ -15,6 +15,18 @@ spec:
     serverless:
       enabled: true
       topology_ref: topology/prod/serverless/runtime-topology.yaml
+  runtime_secrets:
+    accounts:
+      smtp:
+        provider: vault-kv-v2
+        path: vault://kv/prod/platform/smtp/google
+        username_ref: vault://kv/prod/platform/smtp/google#username
+        password_ref: vault://kv/prod/platform/smtp/google#password
+        transport:
+          host: smtp.gmail.com
+          port: 587
+          tls_mode: auto
+          from: XWorkmate <no-reply@xworktech.com>
   traffic:
     desired_active: serverless
     standby: selfhost
