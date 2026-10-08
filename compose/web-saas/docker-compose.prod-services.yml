@@ -23,7 +23,8 @@ services:
     environment:
       OTEL_SDK_DISABLED: "true"
     healthcheck:
-      test: [CMD, wget, -q, -O, /dev/null, "http://127.0.0.1:8080/readyz"]
+      # Accounts is Ubuntu-based and provides curl, not wget.
+      test: [CMD, curl, --fail, --silent, --show-error, --max-time, "3", "http://127.0.0.1:8080/readyz"]
       interval: 15s
       timeout: 5s
       retries: 6
