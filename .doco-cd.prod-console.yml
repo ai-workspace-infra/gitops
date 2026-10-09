@@ -1,0 +1,11 @@
+name: console-svc-plus
+version: doco.v1
+working_dir: compose/web-saas
+compose_files:
+  - docker-compose.prod-console.yml
+env_files:
+  - .env.prod
+force_image_pull: true
+remove_orphans: false
+prune_images: false
+timeout: 300
