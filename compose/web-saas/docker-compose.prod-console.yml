@@ -1,0 +1,52 @@
+# Adopt the existing PROD Console project without including backend or DB services.
+# Runtime credentials remain in a host-only file outside Git.
+services:
+  frontend-assets:
+    image: ${CONSOLE_IMAGE:?set in .env.prod}
+    restart: "no"
+    command:
+      - /bin/sh
+      - -c
+      - |
+        set -eu
+        rm -rf /assets/_next /assets/chunks /assets/public
+        mkdir -p /assets /assets/public
+        cp -R /app/dashboard/static/. /assets/
+        cp -R /app/dashboard/public/. /assets/public
+    volumes:
+      - frontend_static:/assets
+
+  dashboard:
+    image: ${CONSOLE_IMAGE:?set in .env.prod}
+    container_name: portal-dashboard
+    restart: unless-stopped
+    env_file:
+      - /etc/xcontrol/web-saas/console.env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      ACCOUNT_SERVICE_URL: http://accounts:8080
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: https://accounts-selfhost-prod.svc.plus
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - frontend_static:/app/dashboard/.next/static:ro
+    networks:
+      - frontend
+      - web_saas_network
+    depends_on:
+      frontend-assets:
+        condition: service_completed_successfully
+
+networks:
+  frontend:
+    name: console-svc-plus_frontend
+    external: true
+  web_saas_network:
+    name: docker_shared_network
+    external: true
+
+volumes:
+  frontend_static:
+    name: console-svc-plus_frontend_static
+    external: true
