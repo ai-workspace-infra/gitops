@@ -25,6 +25,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
+      FRONTEND_IMAGE: ${CONSOLE_IMAGE:?set in .env.prod}
       ACCOUNT_SERVICE_URL: http://accounts:8080
       NEXT_PUBLIC_ACCOUNT_SERVICE_URL: https://accounts-selfhost-prod.svc.plus
     ports:
