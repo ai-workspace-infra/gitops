@@ -1,0 +1,88 @@
+apiVersion: inventory.svc.plus/v1
+kind: CMDBCollectionScope
+metadata:
+  name: observability-cmdb-uat
+spec:
+  runtime:
+    environment: uat
+    project: open-platform-shared
+    zone: asia-east1-a
+    host: observability-shared-0
+    database: cmdb
+    datasource_uid: cmdb_postgres_uat
+    schedule_enabled: false
+    interval_seconds: 300
+    freshness_seconds: 900
+    identity_status: pending-readonly-authorization
+    bootstrap_enabled: false
+  database_secret_refs:
+    migrator: kv/uat/svc.plus/services/observability/database/cmdb/migrator
+    writer: kv/uat/svc.plus/services/observability/database/cmdb/writer
+    reader: kv/uat/svc.plus/services/observability/database/cmdb/reader
+    auditor: kv/uat/svc.plus/services/observability/database/cmdb/auditor
+    backup: kv/uat/svc.plus/services/observability/database/cmdb/backup
+  collectors:
+    - name: shared-compute
+      enabled: true
+      provider: gcp
+      kind: compute
+      project: open-platform-shared
+      scope: shared
+      identity_ref: kv/shared/svc.plus/cloud/gcp/open-platform-shared/federation/cmdb-readonly
+    - name: shared-510113-compute
+      enabled: true
+      provider: gcp
+      kind: compute
+      project: open-platform-shared-510113
+      scope: shared
+      identity_ref: kv/shared/svc.plus/cloud/gcp/open-platform-shared-510113/federation/cmdb-readonly
+    - name: prod-compute
+      enabled: true
+      provider: gcp
+      kind: compute
+      project: open-platform-prod
+      scope: prod
+      identity_ref: kv/prod/svc.plus/cloud/gcp/open-platform-prod/federation/cmdb-readonly
+    - name: prod-cloudrun-asia-east1
+      enabled: true
+      provider: gcp
+      kind: cloudrun
+      project: open-platform-prod
+      scope: prod
+      region: asia-east1
+      identity_ref: kv/prod/svc.plus/cloud/gcp/open-platform-prod/federation/cmdb-readonly
+    - name: shared-cloudrun-asia-east1
+      enabled: true
+      provider: gcp
+      kind: cloudrun
+      project: open-platform-shared
+      scope: shared
+      region: asia-east1
+      identity_ref: kv/shared/svc.plus/cloud/gcp/open-platform-shared/federation/cmdb-readonly
+    - name: shared-510113-cloudrun-asia-east1
+      enabled: true
+      provider: gcp
+      kind: cloudrun
+      project: open-platform-shared-510113
+      scope: shared
+      region: asia-east1
+      identity_ref: kv/shared/svc.plus/cloud/gcp/open-platform-shared-510113/federation/cmdb-readonly
+  pending_providers:
+    - provider: aws
+      enabled: false
+      reason: account-region-and-readonly-identity-pending
+    - provider: linode
+      enabled: false
+      reason: account-and-readonly-identity-pending
+    - provider: ucloud
+      enabled: false
+      products: [light-server]
+      locations: [TW, PH]
+      reason: native-account-region-product-api-and-readonly-identity-pending
+    - provider: cloudflare
+      enabled: false
+      products: [workers, pages]
+      reason: account-and-readonly-identity-pending
+    - provider: supabase
+      enabled: false
+      reason: organization-project-and-management-readonly-identity-pending
