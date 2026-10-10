@@ -5,6 +5,33 @@ metadata:
   project: svc.plus
   environment: uat
 spec:
+  node_maintenance:
+    vector:
+      internal_metrics_scrape_interval_secs: 30
+      reverse_proxy_drop_substring: http.handlers.reverse_proxy
+      log_message_max_bytes: 4096
+      sink_batch_max_bytes: 1048576
+      sink_batch_timeout_secs: 5
+      sink_buffer_max_events: 500
+      threads: 1
+      memory_high: 150M
+      memory_max: 250M
+      tls_verify: true
+    journald:
+      compress: true
+      system_max_use: 300M
+      system_keep_free: 1G
+      system_max_file_size: 50M
+      max_retention: 14day
+      runtime_max_use: 64M
+      rate_limit_interval: 30s
+      rate_limit_burst: 2000
+    rotated_logs:
+      keep_days: 14
+      patterns:
+        - "*.gz"
+        - "*.[0-9]"
+        - "*.old"
   # GitOps owns the public regional contract. Terraform only creates the
   # Akamai Cloud instances and emits CMDB facts; playbooks install the edge
   # agent. TW and PH remain existing Ulighthost nodes.
