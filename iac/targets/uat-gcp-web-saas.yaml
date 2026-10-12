@@ -1,0 +1,57 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: uat-gcp-web-saas
+  environment: uat
+  project: svc.plus
+  provider: gcp-cloud
+  account: xworktech
+  workspace: web-saas
+  auth:
+    expected_identity: open-platform-uat
+    vault_role: github-actions-platform-ops-toolkit-uat-gcp-oidc-xworktech
+    record: kv/data/uat/platform/oidc/xworktech
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Use the existing UAT runtime workload identity; application deployment does not rebuild identity.
+    account:
+      mode: verify
+      manifest: resources/onwalk.net/uat/gcp/web-saas.yaml
+      checks:
+      - kind: gcp-project
+        name: open-platform-uat
+      reason: The existing GCP project and network remain the owner of the persistent web-saas host.
+    resources:
+      mode: terraform
+      manifest: resources/onwalk.net/uat/gcp/web-saas.yaml
+      state:
+        key: terraform/uat/svc.plus/gcp-cloud/xworktech/web-saas/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - module.spot_web_saas_uat
+      - module.retained_data_disk_web_saas_uat_data
+      - module.retained_data_disk_web_saas_uat_upgrade_data
+      - module.web_saas
+      - module.network
+      - module.project
+      - google_compute_attached_disk.retained_data_disk_web_saas_uat_data
+      - google_compute_attached_disk.retained_data_disk_web_saas_uat_upgrade_data
+      - google_compute_instance_iam_member.spot_os_admin_login_web_saas_uat
+      - google_compute_firewall.spot_public_tcp_web_saas_uat
+      - google_compute_firewall.spot_ssh
+      - google_compute_firewall.spot_public_services
+      - google_compute_instance.web_saas_uat
+      - google_compute_disk.web_saas_uat_data
+      - google_compute_disk.web_saas_uat_upgrade_data
+      protected:
+      - module.spot_web_saas_uat
+      - module.retained_data_disk_web_saas_uat_data
+      - module.retained_data_disk_web_saas_uat_upgrade_data
+      - google_compute_instance.web_saas_uat
+      - google_compute_disk.web_saas_uat_data
+      - google_compute_disk.web_saas_uat_upgrade_data
+      ownership_reviewed: true
+      requires_existing_state: true
+      destroy_allowed: false
+      reason: Reconcile the existing persistent web-saas-uat host only; database data and destruction remain outside this emergency release.
