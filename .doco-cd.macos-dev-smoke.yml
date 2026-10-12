@@ -1,0 +1,13 @@
+name: macos-dev-smoke
+version: doco.v1
+working_dir: compose/macos-dev-smoke
+compose_files:
+  - docker-compose.yml
+env_files:
+  - .env.dev
+
+# This profile is intentionally separate from the repository default. The
+# macOS bootstrap selects it only with target=macos-dev-smoke.
+force_image_pull: true
+remove_orphans: true
+timeout: 120

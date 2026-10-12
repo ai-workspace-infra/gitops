@@ -1,0 +1,19 @@
+# Explicitly isolated macOS development smoke stack.
+#
+# This is a workload declaration only. Doco-CD is the reconciler, while the
+# macOS Playbook owns controller setup and health evidence. There are no host
+# bind mounts, secrets, external networks, or production/UAT ports here.
+services:
+  owner:
+    image: ${OWNER_IMAGE:?OWNER_IMAGE must be pinned to an immutable digest}
+    container_name: macos-dev-smoke-owner
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:${OWNER_PORT:?OWNER_PORT is required}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
