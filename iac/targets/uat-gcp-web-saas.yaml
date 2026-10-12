@@ -11,6 +11,7 @@ targets:
     expected_identity: open-platform-uat
     vault_role: github-actions-platform-ops-toolkit-uat-gcp-oidc-xworktech
     record: kv/data/uat/platform/oidc/xworktech
+    forbidden_project: open-platform-prod
   stages:
     bootstrap:
       mode: verify
