@@ -15,6 +15,8 @@ spec:
         canonical_records:
           console-uat.onwalk.net: console-selfhost-uat.onwalk.net
           accounts-uat.onwalk.net: accounts-selfhost-uat.onwalk.net
+          billing-uat.onwalk.net: billing-selfhost-uat.onwalk.net
+          postgresql-uat.onwalk.net: postgresql-selfhost-uat.onwalk.net
       load-balancer:
         strategy: dns-only
       weight:
@@ -62,6 +64,9 @@ spec:
     billing-uat.onwalk.net:
       selfhost: billing-selfhost-uat.onwalk.net
       serverless: billing-uat.onwalk.net
+    postgresql-uat.onwalk.net:
+      selfhost: postgresql-selfhost-uat.onwalk.net
+      serverless: postgresql-serverless-uat.onwalk.net
   public_endpoints:
     console:
       host: console-selfhost-uat.onwalk.net
