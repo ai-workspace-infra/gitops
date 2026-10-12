@@ -9,7 +9,7 @@ targets:
   workspace: web-saas
   auth:
     expected_identity: open-platform-uat
-    vault_role: github-actions-platform-ops-toolkit-uat-gcp-oidc-xworktech
+    vault_role: github-actions-platform-ops-toolkit-uat
     record: kv/data/uat/platform/oidc/xworktech
   stages:
     bootstrap:
