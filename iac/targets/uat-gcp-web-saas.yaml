@@ -53,6 +53,5 @@ targets:
       - google_compute_disk.web_saas_uat_data
       - google_compute_disk.web_saas_uat_upgrade_data
       ownership_reviewed: true
-      requires_existing_state: true
       destroy_allowed: false
       reason: Reconcile the existing persistent web-saas-uat host only; database data and destruction remain outside this emergency release.
