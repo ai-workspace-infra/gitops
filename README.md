@@ -56,6 +56,20 @@ file to the portal and edge-gateway deployers; those repositories do not own env
 hostnames or Worker names. Keep tokens, passwords, JWT secrets, and database connection strings
 in Vault. The declarations may describe public origins and the primary/fallback routing policy.
 
+### Proxy Server deployment profiles
+
+Proxy Server supports these deployment profiles:
+
+1. **Fully self-hosted single node** — one node runs the Proxy Server and its local control
+   components.
+2. **Shared Proxy Server** — one Proxy Server node connects to the shared Full control plane.
+3. **Team or shared Proxy Server** — one dedicated Proxy Server node connects to the Full control
+   plane, with access limited by the configured team or shared tenant.
+
+The Proxy Server node and Full control plane are separate deployment targets. The control-plane
+endpoint, tenant/team scope, region and pool are supplied by the selected environment declaration;
+credentials remain runtime-injected through Vault.
+
 ## Layout
 
 - `environments/`: cluster-level overlays and entrypoints (`clusters/<env>/`)
