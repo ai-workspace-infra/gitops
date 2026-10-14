@@ -13,6 +13,7 @@ metadata:
 #   2. routing.load-balancer                  -> request-failover instead of dns-only
 #   3. runtime.data                           -> selfhost is the single writer
 #   4. edge_gateway.defaults.failover_methods -> only safe methods may fail over
+#   5. Serverless Billing uses its explicit mode-qualified hostname.
 #
 # Everything else — Pages project, frontend router, the five SSR boundaries, the
 # three edge-gateway boundaries, Cloud Run URLs, canonical DNS records — is byte
@@ -97,16 +98,16 @@ spec:
   # edge presence at all and are reached on the VPS directly.
     billing-uat.onwalk.net:
       selfhost: billing-selfhost-uat.onwalk.net
-      serverless: billing-uat.onwalk.net
+      serverless: billing-serverless-uat.onwalk.net
   public_endpoints:
     console:
       host: console-serverless-uat.onwalk.net
       access: public
     accounts:
-      host: accounts-uat.onwalk.net
+      host: accounts-serverless-uat.onwalk.net
       access: authenticated
     billing:
-      host: billing-uat.onwalk.net
+      host: billing-serverless-uat.onwalk.net
       access: authenticated
     postgresql:
       host: postgresql-selfhost-uat.onwalk.net
@@ -130,7 +131,7 @@ spec:
   serverless:
     console_host: console-serverless-uat.onwalk.net
     accounts_host: accounts-serverless-uat.onwalk.net
-    billing_host: billing-uat.onwalk.net
+    billing_host: billing-serverless-uat.onwalk.net
     # Deployed and owned by serverless-orchestrator. Declared here because the
     # hybrid contract asserts that the frontend is the identical, unmodified
     # edge chain: a mode flip must never redeploy or reconfigure the frontend.

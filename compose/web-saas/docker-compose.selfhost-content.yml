@@ -1,0 +1,40 @@
+# UAT-only full-stack extension; PROD keeps using docker-compose.yml alone.
+services:
+  content:
+    image: ${CONTENT_IMAGE:?set in .env.uat}
+    container_name: web-saas-content
+    restart: unless-stopped
+    env_file:
+      - /etc/xcontrol/web-saas/secrets.env
+    environment:
+      KNOWLEDGE_REPO_PATH: /tmp/knowledge
+      KNOWLEDGE_REPO_URL: ${KNOWLEDGE_REPO_URL:-https://github.com/haitaopanhq/knowledge.git}
+      KNOWLEDGE_REPO_REF: ${KNOWLEDGE_REPO_REF:-main}
+      DOCS_SERVICE_PORT: "8084"
+      DOCS_RELOAD_INTERVAL: ${DOCS_RELOAD_INTERVAL:-5m}
+      OTEL_SERVICE_NAME: web-saas-content
+      OTEL_SERVICE_INSTANCE_ID: web-saas-content
+      OTEL_ENVIRONMENT: ${DEPLOY_ENV:?set in .env.uat}
+    expose:
+      - "8084"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:8084/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - web_saas_network
+
+  console:
+    environment:
+      RUNTIME_HOSTNAME: ${RUNTIME_HOSTNAME:?set in .env.uat}
+      DOCS_SERVICE_URL: ${DOCS_SERVICE_URL:?set in .env.uat}
+    depends_on:
+      content:
+        condition: service_healthy
+
+networks:
+  web_saas_network:
+    name: docker_shared_network
+    external: true
