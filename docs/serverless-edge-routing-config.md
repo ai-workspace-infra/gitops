@@ -69,6 +69,8 @@ runtime profile declares five mode-qualified public service entrances using the 
 | --- | --- | --- |
 | `console-uat.onwalk.net` | `console-selfhost-uat.onwalk.net` | `console-serverless-uat.onwalk.net` |
 | `accounts-uat.onwalk.net` | `accounts-selfhost-uat.onwalk.net` | `accounts-serverless-uat.onwalk.net` |
+| `billing-uat.onwalk.net` | `billing-selfhost-uat.onwalk.net` | `billing-serverless-uat.onwalk.net` |
+| `postgresql-uat.onwalk.net` | `postgresql-selfhost-uat.onwalk.net` | `postgresql-serverless-uat.onwalk.net` |
 
 | Service | Access contract | Serverless UAT entrance |
 | --- | --- | --- |

@@ -72,10 +72,10 @@ spec:
       host: console-selfhost-uat.onwalk.net
       access: public
     accounts:
-      host: accounts-uat.onwalk.net
+      host: accounts-selfhost-uat.onwalk.net
       access: authenticated
     billing:
-      host: billing-uat.onwalk.net
+      host: billing-selfhost-uat.onwalk.net
       access: authenticated
     postgresql:
       host: postgresql-selfhost-uat.onwalk.net
@@ -105,6 +105,13 @@ spec:
       - content
       - billing
     database: self-managed-postgresql
+    internal_endpoints:
+      console: http://console:3000
+      accounts: http://accounts:8080
+      billing: http://billing:8081
+      content: http://content:8084
+      database_client: stunnel-client:15432
+    failure_policy: fail-closed
   serverless:
     console_host: console-serverless-uat.onwalk.net
     accounts_host: accounts-serverless-uat.onwalk.net
