@@ -39,6 +39,8 @@ spec:
     id: projects/open-platform-uat/zones/asia-east1-a/disks/web-saas-uat-upgrade-data
   - to: module.retained_data_disk_web_saas_uat_data.google_compute_disk.this
     id: projects/open-platform-uat/zones/asia-east1-a/disks/web-saas-uat-data
+  - to: google_compute_attached_disk.retained_data_disk_web_saas_uat_upgrade_data
+    id: projects/open-platform-uat/zones/asia-east1-a/instances/web-saas-uat/web-saas-uat-upgrade-data
   resources:
     persistent_data_disks:
     - name: web-saas-uat-upgrade-data
