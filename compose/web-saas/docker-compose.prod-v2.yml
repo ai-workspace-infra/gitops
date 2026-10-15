@@ -9,3 +9,7 @@ services:
   caddy:
     ports:
       - "443:443/udp"
+  billing:
+    environment:
+      IMAGE: "${BILLING_IMAGE:?set in .env.prod-v2}"
+      DEFAULT_REGION: jp
