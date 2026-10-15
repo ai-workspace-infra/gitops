@@ -8,7 +8,11 @@ spec:
   source_repository: https://github.com/ai-workspace-xstream/apisix.git
   source_revision: PENDING_REVISION
   image: PENDING_IMAGE
-  deployment_config: .doco-cd.apisix-uat.yml
+  deployment_controller: ansible-systemd
+  playbook: deploy_apisix_pg_gateway.yml
+  service_manager: systemd
+  edge_runtime: true
+  doco_cd: forbidden
   traffic_mode: loopback-validation
   etcd: forbidden
   ingress:

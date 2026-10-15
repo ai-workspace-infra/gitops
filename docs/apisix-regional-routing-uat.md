@@ -4,6 +4,10 @@
 它不执行 DNS、EIP、数据库或主机操作；对应动作分别由 IaC、DNS 管理和
 Playbooks 负责。
 
+APISIX、配置 API 和 JSONB 同步器部署在区域边缘节点，由 Playbook 安装并由
+systemd 直接管理。DocoD/Compose 不参与该网关的安装、升级、启动或回滚；
+web-saas 主机只提供远程 PostgreSQL 数据库。
+
 ## 入口和部署边界
 
 每个区域部署一个 APISIX Standalone 入口。JP UAT 的固定用户连接域名是
