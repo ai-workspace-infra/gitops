@@ -42,6 +42,12 @@ spec:
       repository: git@github.com:ai-workspace-xstream/xconnect-edge-agent.git
       deploy_when: multi-node
     strategy: health-aware-weighted
+    # Health only removes an unavailable node from its own declared pool.
+    # Entitlement selection is issued by Accounts and applied at the regional
+    # APISIX gateway; this scheduler must never merge free/plus/team pools.
+    gateway_ref: topology/uat/selfhost/apisix-gateway.yaml#/spec/ingress
+    entitlement_selector: accounts-issued-binding
+    pool_merge_on_health_failure: false
     failover_scope: region
     health_check:
       path: /healthz

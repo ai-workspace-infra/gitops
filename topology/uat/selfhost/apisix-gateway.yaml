@@ -1,0 +1,110 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: APISIXStandaloneGateway
+metadata:
+  name: xconnect-gateway-uat
+  environment: uat
+spec:
+  target_node: web-saas-uat
+  source_repository: https://github.com/ai-workspace-xstream/apisix.git
+  source_revision: PENDING_REVISION
+  image: PENDING_IMAGE
+  deployment_controller: ansible-systemd
+  playbook: deploy_apisix_pg_gateway.yml
+  service_manager: systemd
+  edge_runtime: true
+  doco_cd: forbidden
+  traffic_mode: loopback-validation
+  etcd: forbidden
+  ingress:
+    # One regional public name terminates at the APISIX instance for that
+    # region.  The EIP is provisioned and resolved by IaC/CMDB; GitOps only
+    # keeps the stable reference and never stores a runtime address.
+    provider: cloudflare-dns
+    fqdn: jp-xconnect.onwalk.net
+    address_ref: cmdb://network/uat/jp-xconnect-apisix/eip
+    tls_certificate_ref: vault://kv/uat/domains/onwalk.net
+    protocol: https-xhttp
+    route_binding: accounts-issued-opaque-path
+    session_affinity: binding
+  database:
+    # The gateway configuration store lives in the web-saas PostgreSQL.  It
+    # is a remote dependency of the APISIX host, not a second database.
+    provider: postgresql
+    owner: web-saas-uat
+    topology_ref: topology/uat/selfhost/runtime-topology.yaml#/spec/vps/internal_endpoints/database_client
+    database: account
+    schema: gateway_config
+    connection_secret_ref: vault://kv/uat/web-saas/postgresql#gateway_config_dsn
+    config_store: jsonb
+    runtime_role: gateway_config_api
+  config_sync:
+    mode: pg-jsonb-to-apisix-yaml
+    publication: immutable-revision
+    delivery: https-node-token
+    file_update: atomic-replace
+    reload: apisix-standalone-file-watch
+    status_store: gateway_config.node_status
+    etcd: forbidden
+  bootstrap:
+    apisix:
+      node_listen:
+        - ip: 127.0.0.1
+          port: 19080
+      enable_admin: false
+      enable_control: false
+    nginx_config:
+      worker_processes: 1
+    deployment:
+      role: data_plane
+      role_data_plane:
+        config_provider: yaml
+    plugins: [forward-auth, proxy-rewrite, response-rewrite, limit-count, ip-restriction]
+    stream_plugins: []
+  regional_pools:
+    # APISIX selects a previously issued binding.  It does not infer an
+    # entitlement from an untrusted request header and it does not act as a
+    # quota meter.  Accounts owns entitlement and Agent/Xray owns bandwidth.
+    - id: jp
+      region: jp
+      entrypoint: jp-xconnect.onwalk.net
+      selection: effective_entitlement_binding
+      pools:
+        - id: jp-free
+          resource_class: free
+          monthly_quota_bytes: 3221225472
+          upstream_ref: pg://gateway_config/upstreams/jp-free
+          nodes:
+            - id: jp-xconnect-t4g-small-01
+              endpoint: jp-xconnect-t4g-small-01.svc.plus
+              endpoint_ref: cmdb://nodes/jp-xconnect-t4g-small-01
+            - id: jp-xconnect-t4g-micro-01
+              endpoint: jp-xconnect-t4g-micro-01.svc.plus
+              endpoint_ref: cmdb://nodes/jp-xconnect-t4g-micro-01
+        - id: jp-plus
+          resource_class: plus
+          monthly_quota_bytes: 21474836480
+          upstream_ref: pg://gateway_config/upstreams/jp-plus
+          nodes:
+            - id: jp-xconnect-c6g-medium-01
+              endpoint: jp-xconnect-c6g-medium-01.svc.plus
+              endpoint_ref: cmdb://nodes/jp-xconnect-c6g-medium-01
+        - id: jp-team
+          resource_class: team
+          tenant_selector: accounts.team_id
+          isolation: tenant
+          upstream_ref: pg://gateway_config/upstreams/jp-team
+          nodes:
+            - id: jp-xconnect-team-01
+              endpoint_ref: cmdb://nodes/jp-xconnect-team-01
+      one_public_node_policy: free_plus_share_with_individual_limits
+      multiple_public_node_policy: select_by_effective_entitlement
+      health_failure_policy: retain_tier_isolation
+      team_nodes_never_shared_with_personal: true
+  scheduling_contract:
+    single_public_node: shared_by_personal_entitlements
+    multiple_public_nodes: select_by_effective_entitlement
+    health_failure_does_not_merge_tiers: true
+    dedicated_nodes: tenant_isolated
+    free_monthly_quota_bytes: 3221225472
+    quota_authority: accounts
+    bandwidth_authority: agent-xray
