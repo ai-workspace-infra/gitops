@@ -1,0 +1,11 @@
+services:
+  postgres:
+    volumes:
+      - type: bind
+        source: /data/postgresql
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
+  caddy:
+    ports:
+      - "443:443/udp"
