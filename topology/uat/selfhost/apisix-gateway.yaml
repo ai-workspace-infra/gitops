@@ -4,16 +4,21 @@ metadata:
   name: xconnect-gateway-uat
   environment: uat
 spec:
-  target_node: web-saas-uat
+  target_node: agent-server-plus-uat
   source_repository: https://github.com/ai-workspace-xstream/apisix.git
-  source_revision: PENDING_REVISION
-  image: PENDING_IMAGE
+  source_revision: 297b9d21b5cfda37b930c32fc8eeadb2d1634d6c
+  image: apisix_3.18.0-0_amd64.deb@sha256:16251cb5e51a289c852df42bf9ca580ad14bd3de40cfbb58da0c75447f9af614
+  artifact:
+    kind: deb
+    architecture: amd64
+    url: https://repos.apiseven.com/packages/debian/pool/debian12/main/a/apisix/apisix_3.18.0-0_amd64.deb
+    sha256: 16251cb5e51a289c852df42bf9ca580ad14bd3de40cfbb58da0c75447f9af614
   deployment_controller: ansible-systemd
   playbook: deploy_apisix_pg_gateway.yml
   service_manager: systemd
   edge_runtime: true
   doco_cd: forbidden
-  traffic_mode: loopback-validation
+  traffic_mode: regional-entrypoint
   etcd: forbidden
   ingress:
     # One regional public name terminates at the APISIX instance for that
@@ -74,28 +79,23 @@ spec:
           monthly_quota_bytes: 3221225472
           upstream_ref: pg://gateway_config/upstreams/jp-free
           nodes:
-            - id: jp-xconnect-t4g-small-01
-              endpoint: jp-xconnect-t4g-small-01.svc.plus
-              endpoint_ref: cmdb://nodes/jp-xconnect-t4g-small-01
-            - id: jp-xconnect-t4g-micro-01
-              endpoint: jp-xconnect-t4g-micro-01.svc.plus
-              endpoint_ref: cmdb://nodes/jp-xconnect-t4g-micro-01
+            - id: agent-server-shared-uat
+              endpoint_ref: cmdb://nodes/agent-server-shared-uat
         - id: jp-plus
           resource_class: plus
           monthly_quota_bytes: 21474836480
           upstream_ref: pg://gateway_config/upstreams/jp-plus
           nodes:
-            - id: jp-xconnect-c6g-medium-01
-              endpoint: jp-xconnect-c6g-medium-01.svc.plus
-              endpoint_ref: cmdb://nodes/jp-xconnect-c6g-medium-01
+            - id: agent-server-plus-uat
+              endpoint_ref: cmdb://nodes/agent-server-plus-uat
         - id: jp-team
           resource_class: team
           tenant_selector: accounts.team_id
           isolation: tenant
           upstream_ref: pg://gateway_config/upstreams/jp-team
           nodes:
-            - id: jp-xconnect-team-01
-              endpoint_ref: cmdb://nodes/jp-xconnect-team-01
+            - id: agent-server-team-uat
+              endpoint_ref: cmdb://nodes/agent-server-team-uat
       one_public_node_policy: free_plus_share_with_individual_limits
       multiple_public_node_policy: select_by_effective_entitlement
       health_failure_policy: retain_tier_isolation
