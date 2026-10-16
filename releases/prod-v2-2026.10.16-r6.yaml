@@ -1,0 +1,38 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v2-2026.10.16-r6
+spec:
+  environment: prod
+  stack: prod-v2
+  promoted_from: selfhost-uat
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  existing_production_dns_cutover: false
+  public_domain_aliases:
+    console: console-selfhost-prod.svc.plus
+    accounts: accounts-selfhost-prod.svc.plus
+    billing: billing-selfhost-prod.svc.plus
+  dns_cutover: explicit-after-private-acceptance
+  accounts_image: ghcr.io/ai-workspace-services/accounts:sha-0dec88dd6d079af4f0a598ad47986142f8ea7bed@sha256:adc3be06788f5e720966e8cddd72ea31867ec698061e49c2bc6d5b0d13a7c428
+  console_image: ghcr.io/ai-workspace-services/console:sha-81055e1d1308b11bbe8fb91df17d2eeb8abf0148@sha256:4c44df0d9568e2d6c2e5177c1c3307a955ce482e48951b3c06ce8deb6a1e5a5e
+  version_env_file: compose/web-saas/.env.prod-v2
+  topology: resources/svc.plus/prod/gcp/web-saas-prod-v2.yaml
+  edge_transport: caddy-xray-unix-socket
+  billing_image: ghcr.io/ai-workspace-services/billing-service:sha-30fa98e4c6e4ebd0ff52126cee98ac1209303d87@sha256:723d9bd320eadb4a067870d9c09e35103ad6e779839f75fe309bd9080720b78c
+  playbooks_commit: 3889ee9f0a9ee20e2d47aa3ba514535734666464
+  iac_commit: b9215251e468060946c89cad81004fc94114363a
+  edge_artifacts:
+    - file: xconnect-edge-agent-linux-amd64
+      sha256: cbe50a26c5bbeb1a7aeeb612cb293d39c53e1f11f2c4cac06b43075fe8b5ffe9
+    - file: caddy-linux-amd64
+      sha256: 6bea532668f886298e7eca515fc9024263ab0a6233be4b2ada7270c95bf7795c
+    - file: xray/xray
+      sha256: 4fcea8c167ad9172041343fdbde83b6e1488c5b43e1267f60c168aef1f4b1201
+    - file: xray-exporter-linux-amd64
+      sha256: 77aa7147183d373cc34651e8fd21bc5db00f7ceef8e4d9a3d2dabc15d5ae6d54
+  edge_agent_release: uat-daily-build-2026.10.15
+  xray_release: v26.3.27-uat-r3
+  exporter_release: daily-build-2026.10.15
+  proxy_tcp_port: 1443
+  exporter_counter_identity: agent-id-and-transport
