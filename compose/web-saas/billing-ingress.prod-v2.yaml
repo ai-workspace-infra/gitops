@@ -1,0 +1,17 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: BillingIngressPolicy
+metadata:
+  name: web-saas-prod-v2
+  environment: prod
+spec:
+  allowed_cidrs:
+    - 127.0.0.1/32
+    - ::1/128
+    - 10.74.0.0/24
+    - 172.237.3.205/32
+    - 13.113.178.215/32
+    - 34.146.72.6/32
+    - 35.194.209.112/32
+    - 34.80.180.109/32
+    - 35.234.3.118/32
+    - 18.183.166.215/32
