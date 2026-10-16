@@ -1,0 +1,25 @@
+services:
+  postgres:
+    volumes:
+      - type: bind
+        source: /data/postgresql
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
+  caddy:
+    ports:
+      - "443:443/udp"
+  billing:
+    environment:
+      IMAGE: "${BILLING_IMAGE:?set in .env.prod-v2}"
+      DEFAULT_REGION: jp
+  console:
+    environment:
+      # Keep the original Selfhost public aliases as the browser identity for
+      # this new V2 host. The prod-v2 names remain the private verification
+      # and rollback endpoints; DNS is switched only after acceptance.
+      RUNTIME_API_BASE_URL: https://${PUBLIC_ACCOUNTS_DOMAIN:?set in .env.prod-v2}/api
+      RUNTIME_AUTH_URL: https://${PUBLIC_ACCOUNTS_DOMAIN:?set in .env.prod-v2}
+      RUNTIME_DASHBOARD_URL: https://${PUBLIC_CONSOLE_DOMAIN:?set in .env.prod-v2}
+      RUNTIME_DOCS_SERVICE_URL: http://content:8084
+      RUNTIME_XCONNECT_ZERO_URL: http://accounts:8080

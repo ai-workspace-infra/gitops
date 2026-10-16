@@ -1,0 +1,17 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v2-2026.10.15-r3
+spec:
+  environment: prod
+  stack: prod-v2
+  promoted_from: selfhost-uat
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  existing_production_dns_cutover: false
+  accounts_image: ghcr.io/ai-workspace-services/accounts:sha-0dec88dd6d079af4f0a598ad47986142f8ea7bed@sha256:adc3be06788f5e720966e8cddd72ea31867ec698061e49c2bc6d5b0d13a7c428
+  console_image: ghcr.io/ai-workspace-services/console:sha-a221c9dc64214b3e3560b5a83e2c572d897acc4a@sha256:a1d6761dd4b8a7c5de1755b9a3e6816fd01e13ae98e4812f5ca108c5018e219a
+  version_env_file: compose/web-saas/.env.prod-v2
+  topology: resources/svc.plus/prod/gcp/web-saas-prod-v2.yaml
+  edge_transport: caddy-xray-unix-socket
+  billing_image: ghcr.io/ai-workspace-services/billing-service:sha-30fa98e4c6e4ebd0ff52126cee98ac1209303d87@sha256:723d9bd320eadb4a067870d9c09e35103ad6e779839f75fe309bd9080720b78c

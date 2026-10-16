@@ -1,0 +1,49 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IsolatedSelfhostStack
+metadata:
+  name: web-saas-prod-v2
+  environment: prod
+spec:
+  project_id: open-platform-prod
+  region: asia-east1
+  zone: asia-east1-a
+  network: web-saas-prod-v2
+  subnet: web-saas-prod-v2
+  subnet_cidr: 10.74.0.0/24
+  existing_production_mutation: false
+  dns_cutover: false
+  domains:
+    console: console-selfhost-prod-v2.svc.plus
+    accounts: accounts-selfhost-prod-v2.svc.plus
+    billing: billing-selfhost-prod-v2.svc.plus
+    database: postgresql-selfhost-prod-v2.svc.plus
+    free: agent-shared-selfhost-prod-v2.svc.plus
+    plus: jp-xconnect-prod-v2.svc.plus
+    team: agent-team-selfhost-prod-v2.svc.plus
+  instances:
+    - name: web-saas-prod-v2
+      machine_type: e2-medium
+      role: control
+      boot_disk_gb: 30
+      data_disk_gb: 100
+    - name: agent-server-free-prod-v2
+      machine_type: e2-small
+      role: free
+      boot_disk_gb: 20
+    - name: agent-server-plus-prod-v2
+      machine_type: e2-medium
+      role: plus
+      boot_disk_gb: 20
+    - name: agent-server-team-prod-v2
+      machine_type: e2-small
+      role: team
+      boot_disk_gb: 20
+  migration:
+    source: existing-production-accounts
+    direction: source-to-target-only
+    source_read_only: true
+    target_initialize_empty: true
+    include_sessions: false
+    preserve_password_hash: true
+    preserve_proxy_uuid: true
+    subscription_key: email
