@@ -1,0 +1,14 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v2-2026.10.16-r11
+spec:
+  environment: prod
+  stack: prod-v2
+  previous_release: prod-v2-2026.10.16-r10
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  accounts_commit: 0c99820fc52576ae02897c45bfe802250c26d6a7
+  accounts_image: ghcr.io/ai-workspace-services/accounts:sha-0c99820fc52576ae02897c45bfe802250c26d6a7@sha256:cef1cc997d597d6a2a57751d2480b3f225a4dfc6a19ebd639ba988afdb47e43a
+  version_env_file: compose/web-saas/.env.prod-v2
+  billing_ingress_policy: compose/web-saas/billing-ingress.prod-v2.yaml
