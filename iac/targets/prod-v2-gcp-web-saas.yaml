@@ -1,0 +1,48 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: prod-v2-gcp-web-saas
+  environment: prod
+  project: prod-v2.svc.plus
+  provider: gcp-cloud
+  account: xworktech
+  workspace: web-saas-prod-v2
+  auth:
+    expected_identity: open-platform-prod
+    vault_role: github-actions-platform-ops-toolkit-prod-gcp-oidc-xworktech
+    record: kv/data/prod/platform/oidc/xworktech
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Use the existing PROD runtime workload identity; application deployment does not rebuild identity.
+    account:
+      mode: verify
+      manifest: resources/prod-v2.svc.plus/prod/gcp/web-saas-prod-v2.yaml
+      checks:
+      - kind: gcp-project
+        name: open-platform-prod
+      reason: The existing GCP project and network remain the owner of the persistent web-saas-prod-v2 host.
+    resources:
+      mode: terraform
+      manifest: resources/prod-v2.svc.plus/prod/gcp/web-saas-prod-v2.yaml
+      state:
+        key: terraform/prod/prod-v2.svc.plus/gcp-cloud/xworktech/web-saas-prod-v2/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - google_compute_address
+      - google_compute_attached_disk
+      - google_compute_firewall
+      - google_compute_instance_iam_member
+      - module.network
+      - module.project
+      - module.retained_data_disk_web_saas_prod_v2_data
+      - module.spot_web_saas_prod_v2
+      protected:
+      - module.spot_web_saas_prod_v2
+      - module.retained_data_disk_web_saas_prod_v2_data
+      - module.network
+      - google_compute_address.spot_ip_web_saas_prod_v2
+      ownership_reviewed: true
+      requires_existing_state: true
+      destroy_allowed: false
+      reason: Reconcile the existing persistent web-saas-prod-v2 host only; database data and destruction remain outside this emergency release.

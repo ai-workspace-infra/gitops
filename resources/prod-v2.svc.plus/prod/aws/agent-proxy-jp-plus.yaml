@@ -1,0 +1,52 @@
+global:
+  provider: aws-cloud
+  environment: prod
+  project: prod-v2.svc.plus
+  account: "950604983695"
+  workspace: agent-proxy-jp-plus
+  state_namespace: agent-proxy-jp-plus
+  region: nrt
+  aws_region: ap-northeast-1
+  name_prefix: ""
+  user_data_file: cloud-init.yaml
+
+ssh_keys:
+  - name: ai-workspace-admin
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+hosts:
+  - name: jp-plus
+    os_name: "Debian 12 ARM64"
+    ami_id: ami-0f3f8081a20023c18
+    plan: c8gd.medium
+    billing_mode: on_demand
+    elastic_ip: true
+    deletion_protection: true
+    backups: false
+    enable_ipv6: false
+    ansible_user: admin
+    pool: plus
+    arch: arm64
+    resource_class: dedicated-c8gd-on-demand
+    location: jp
+    node_label: jp-plus
+    groups: [edges, plus, aws_cloud, prod_v2]
+    tags: [prod-v2, plus, ap-northeast-1, aws-cloud, arm64]
+    cloud_provider: aws-cloud
+    cloud_region: ap-northeast-1
+    security_group_ingress:
+      - port: 1443
+        protocol: tcp
+        cidr: 0.0.0.0/0
+      - port: 443
+        protocol: udp
+        cidr: 0.0.0.0/0
+    host_vars:
+      role: edge
+      pool: plus
+      arch: arm64
+      resource_class: dedicated-c8gd-on-demand
+      logical_region: jp
+      provider_region: ap-northeast-1
+      service_domains:
+        - jp-xconnect-prod-v2.svc.plus
