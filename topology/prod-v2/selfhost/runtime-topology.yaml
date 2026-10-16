@@ -1,0 +1,110 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: EdgeRoutingConfig
+metadata:
+  name: web-saas
+  project: svc.plus
+  environment: prod-v2
+  mode: selfhost
+spec:
+  runtime:
+    mode: selfhost
+    routing:
+      dns:
+        control_plane: cloudflare-dns
+        ttl_seconds: 60
+        canonical_records:
+          console-prod-v2.svc.plus: console-selfhost-prod-v2.svc.plus
+          accounts-prod-v2.svc.plus: accounts-selfhost-prod-v2.svc.plus
+          billing-prod-v2.svc.plus: billing-selfhost-prod-v2.svc.plus
+          postgresql-prod-v2.svc.plus: postgresql-selfhost-prod-v2.svc.plus
+      load-balancer:
+        strategy: dns-only
+      weight:
+        selfhost: 100
+        serverless: 0
+    services:
+      console:
+        selfhost: vps-full-stack
+        serverless: cloudflare-pages
+      accounts:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+      content:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+      billing:
+        selfhost: vps-full-stack
+        serverless: cloud-run
+    data:
+      primary: selfhost
+      replica: serverless
+      providers:
+        selfhost: self-managed-postgresql
+        serverless: supabase
+      migration:
+        strategy: async
+        single_writer: true
+        max_lag_seconds: 60
+        require_quiesce_for_cutover: true
+        checkpoint_vault_ref: kv/prod/serverless/dts
+        directions:
+          selfhost_to_serverless:
+            source: selfhost
+            target: serverless
+          serverless_to_selfhost:
+            source: serverless
+            target: selfhost
+  domains:
+    console-prod-v2.svc.plus:
+      selfhost: console-selfhost-prod-v2.svc.plus
+    accounts-prod-v2.svc.plus:
+      selfhost: accounts-selfhost-prod-v2.svc.plus
+    billing-prod-v2.svc.plus:
+      selfhost: billing-selfhost-prod-v2.svc.plus
+    postgresql-prod-v2.svc.plus:
+      selfhost: postgresql-selfhost-prod-v2.svc.plus
+  public_endpoints:
+    console:
+      host: console-selfhost-prod-v2.svc.plus
+      access: public
+    accounts:
+      host: accounts-selfhost-prod-v2.svc.plus
+      access: authenticated
+    billing:
+      host: billing-selfhost-prod-v2.svc.plus
+      access: authenticated
+    postgresql:
+      host: postgresql-selfhost-prod-v2.svc.plus
+      access: authenticated
+    agent-proxy:
+      host: agent-proxy-selfhost-prod-v2.svc.plus
+      access: public_uuid
+      regional_pools:
+        - region: jp-free
+          entrypoint: agent-shared-selfhost-prod-v2.svc.plus
+          pool: free
+        - region: jp-plus
+          entrypoint: jp-xconnect-prod-v2.svc.plus
+          pool: plus
+        - region: jp-team
+          entrypoint: agent-team-selfhost-prod-v2.svc.plus
+          pool: team
+  cloudflare:
+    zone_name: svc.plus
+    pages_project: ai-workspace-portal-prod-v2
+    pages_branch: prod-v2
+  vps:
+    stack: full-stack
+    services:
+      - console
+      - accounts
+      - content
+      - billing
+    database: self-managed-postgresql
+    internal_endpoints:
+      console: http://console:3000
+      accounts: http://accounts:8080
+      billing: http://billing:8081
+      content: http://content:8084
+      database_client: stunnel-client:15432
+    failure_policy: fail-closed
