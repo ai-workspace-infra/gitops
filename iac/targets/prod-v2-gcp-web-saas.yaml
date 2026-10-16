@@ -29,10 +29,19 @@ targets:
         key: terraform/prod/prod-v2.svc.plus/gcp-cloud/xworktech/web-saas-prod-v2/terraform.tfstate
         cli_workspace: default
       owners:
-      - module.web_saas
+      - google_compute_address
+      - google_compute_attached_disk
+      - google_compute_firewall
+      - google_compute_instance_iam_member
+      - module.network
+      - module.project
+      - module.retained_data_disk_web_saas_prod_v2_data
+      - module.spot_web_saas_prod_v2
       protected:
-      - google_compute_instance.web_saas_prod
-      - google_compute_disk.web_saas_prod_data
+      - module.spot_web_saas_prod_v2
+      - module.retained_data_disk_web_saas_prod_v2_data
+      - module.network
+      - google_compute_address.spot_ip_web_saas_prod_v2
       ownership_reviewed: true
       requires_existing_state: true
       destroy_allowed: false
