@@ -1,0 +1,15 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v2-2026.10.16-r13
+spec:
+  environment: prod
+  stack: prod-v2
+  previous_release: prod-v2-2026.10.16-r12
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  accounts_commit: 53621987b4afe9233822f3931e139c4a21449998
+  accounts_image: ghcr.io/ai-workspace-services/accounts:sha-53621987b4afe9233822f3931e139c4a21449998@sha256:05422b73dfdc663ecd606a6a785247097b0ea7641351452f10fd9e7898c36311
+  version_env_file: compose/web-saas/.env.prod-v2
+  billing_ingress_policy: compose/web-saas/billing-ingress.prod-v2.yaml
+  purpose: Shared pools visible to Free and Plus account node discovery
