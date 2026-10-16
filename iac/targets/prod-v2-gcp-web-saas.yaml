@@ -2,7 +2,7 @@ apiVersion: gitops.svc.plus/v1alpha1
 kind: IaCPipelineTargets
 targets:
 - id: prod-v2-gcp-web-saas
-  environment: prod-v2
+  environment: prod
   project: prod-v2.svc.plus
   provider: gcp-cloud
   account: xworktech
