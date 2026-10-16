@@ -15,8 +15,13 @@ services:
       DEFAULT_REGION: jp
   console:
     environment:
-      RUNTIME_API_BASE_URL: https://accounts-selfhost-prod-v2.svc.plus/api
-      RUNTIME_AUTH_URL: https://accounts-selfhost-prod-v2.svc.plus
-      RUNTIME_DASHBOARD_URL: https://console-selfhost-prod-v2.svc.plus
+      # The V2 host is deployed before the public DNS switch. Keep the public
+      # aliases explicit in the release env so the browser, OAuth redirects,
+      # and Accounts CORS contract move together when the old Serverless
+      # records are pointed at this host. Do not derive these from the private
+      # selfhost names: the public Host header is preserved by Caddy.
+      RUNTIME_API_BASE_URL: https://${PUBLIC_ACCOUNTS_DOMAIN:?set in .env.prod-v2}/api
+      RUNTIME_AUTH_URL: https://${PUBLIC_ACCOUNTS_DOMAIN:?set in .env.prod-v2}
+      RUNTIME_DASHBOARD_URL: https://${PUBLIC_CONSOLE_DOMAIN:?set in .env.prod-v2}
       RUNTIME_DOCS_SERVICE_URL: http://content:8084
       RUNTIME_XCONNECT_ZERO_URL: http://accounts:8080
