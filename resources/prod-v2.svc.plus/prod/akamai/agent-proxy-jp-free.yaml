@@ -1,0 +1,56 @@
+global:
+  provider: akamai-cloud
+  environment: prod
+  project: prod-v2.svc.plus
+  account: manbuzhe2026
+  workspace: agent-proxy-jp-free
+  state_namespace: agent-proxy-jp-free
+  region: jp-tyo-3
+  image: linode/debian12
+  type: g6-standard-1
+  name_prefix: ""
+  user_data_file: cloud-init.yaml
+  manage_account_ssh_keys: false
+  prevent_destroy: true
+
+ssh_keys:
+  - name: vault-platform-ops-deploy
+    public: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDEsuS135lzjVvlH2iNrKz23lDFr7b686xs4d2HINP2glFPmgkgx1D6Dqwisb1UbhWHZmUUzRxXeNlE8fiaO0TXN/C0dsdUxgopnQRyakcA+gfJqqb38Syx8eqdC7mQy9ygOf763dWm6d/SYZ8WgNWLldk4QF9DiZOW9K22DMtY4/1Cqe/YE/WGpOMVr9T9BwvmOjarjWp2OPbx6RVlSOd735Mze5X+cJ9QqdLaisCiSoJ3j9S6dulcxm+7ghPfATvxlJyZWSrRrVqnmV45lPbeuUHlIEyuK1PK2MS6NtUP03ZhdRYJQKZLECpR5xAO/BliOtDdRornvHV1gutYD8/n3IS8sRVzYPvN9DuOhzBnBQUgciu2++R8zMfdVoH7mSbsE8u++vMcBk3UJ1Op0Ct+trl2bsnue96cAnoiII08JKwAaczD5uZIGhdkGV8zKnChNCjzCxP0i4PV/MYW04eWmH+E8G81zq4ZsvrvPYmilBbRrkwHvvbPba3SSb2F2As= shenlan@shenlandeMacBook-Air-2.local"
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+hosts:
+  - name: jp-free
+    region: jp-tyo-3
+    type: g6-standard-1
+    image: linode/debian12
+    private_ip: true
+    ansible_user: root
+    pool: free
+    arch: amd64
+    resource_class: shared-cpu
+    location: jp
+    node_label: jp-free
+    groups: [edges, free, akamai_cloud, prod_v2]
+    tags: [prod-v2, free, jp-tyo-3, akamai-cloud, amd64]
+    firewall:
+      ssh_cidrs:
+        - 54.199.179.163/32
+        - 54.178.56.237/32
+      ssh_ipv6_cidrs:
+        - ::/0
+      allow_http: true
+      allow_https: true
+      additional_tcp_ports:
+        - 1443
+      additional_udp_ports:
+        - 443
+    host_vars:
+      role: edge
+      pool: free
+      arch: amd64
+      resource_class: shared-cpu
+      logical_region: jp
+      provider_region: jp-tyo-3
+      service_domains:
+        - agent-shared-selfhost-prod-v2.svc.plus

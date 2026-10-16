@@ -1,0 +1,83 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: ResourceMatrix
+metadata:
+  name: prod-v2-hybrid
+  project: prod-v2.svc.plus
+  environment: prod
+spec:
+  target_domains: all
+  routing_mode: selfhost-v2-isolated
+  frontend: cloudflare-dns
+  resources:
+  - order: 1
+    namespace: web-saas-prod-v2
+    target_domain: web-saas-prod-v2
+    release_scope: control-plane
+    management_mode: terraform
+    lifecycle: persistent
+    provider: gcp-cloud
+    account_ref: xworktech
+    project_id: open-platform-prod
+    profile: 2C4G
+    region: asia-east1
+    zone: asia-east1-a
+    state_project: prod-v2.svc.plus
+    domain: console-selfhost-prod-v2.svc.plus
+    service_domains:
+      - console-selfhost-prod-v2.svc.plus
+      - accounts-selfhost-prod-v2.svc.plus
+      - billing-selfhost-prod-v2.svc.plus
+      - postgresql-selfhost-prod-v2.svc.plus
+  - order: 2
+    namespace: agent-proxy-jp-free
+    target_domain: agent-proxy-jp-free
+    role: free
+    pool: free
+    arch: amd64
+    release_scope: edge
+    management_mode: terraform
+    lifecycle: persistent
+    provider: akamai-cloud
+    account_ref: manbuzhe2026
+    profile: 1C2G
+    agent_profile: 1C2G
+    resource_class: shared-cpu
+    region: jp-tyo-3
+    state_project: prod-v2.svc.plus
+    domain: agent-shared-selfhost-prod-v2.svc.plus
+  - order: 3
+    namespace: agent-proxy-jp-plus
+    target_domain: agent-proxy-jp-plus
+    role: plus
+    pool: plus
+    arch: arm64
+    release_scope: edge
+    management_mode: terraform
+    lifecycle: persistent
+    provider: aws-cloud
+    account_ref: "950604983695"
+    profile: 1C2G
+    agent_profile: 1C2G
+    resource_class: dedicated-c8gd-on-demand
+    region: ap-northeast-1
+    state_project: prod-v2.svc.plus
+    domain: jp-xconnect-prod-v2.svc.plus
+  - order: 4
+    namespace: agent-proxy-jp-team
+    target_domain: agent-proxy-jp-team
+    role: team
+    pool: team
+    arch: amd64
+    release_scope: edge
+    management_mode: terraform
+    lifecycle: persistent
+    provider: gcp-cloud
+    account_ref: xworktech
+    project_id: open-platform-prod
+    profile: 2C2G
+    agent_profile: 2C2G
+    resource_class: standard-n2-custom
+    region: asia-northeast1
+    zone: asia-northeast1-a
+    state_project: prod-v2.svc.plus
+    domain: agent-team-selfhost-prod-v2.svc.plus
