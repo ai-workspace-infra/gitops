@@ -1,4 +1,8 @@
 services:
+  accounts:
+    # Append after the shared env file: SMTP rotation must only recreate Accounts.
+    env_file:
+      - /etc/xcontrol/web-saas/accounts-smtp.env
   postgres:
     volumes:
       - type: bind
