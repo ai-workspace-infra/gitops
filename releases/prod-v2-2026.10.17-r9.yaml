@@ -1,0 +1,12 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v2-2026.10.17-r9
+spec:
+  environment: prod
+  stack: prod-v2
+  previous_release: prod-v2-2026.10.17-r8
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  version_env_file: compose/web-saas/.env.prod-v2
+  purpose: Remove the AI Workspace Bridge service from the Web SaaS PROD V2 host

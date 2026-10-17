@@ -1,4 +1,6 @@
 services:
+  # AI Workspace owns this entrypoint; the Web SaaS host does not run it.
+  bridge: !reset null
   accounts:
     # Append after the shared env file: SMTP rotation must only recreate Accounts.
     env_file:
@@ -11,6 +13,11 @@ services:
         bind:
           create_host_path: false
   caddy:
+    depends_on: !override
+      - accounts
+      - billing
+      - console
+      - otel-collector
     ports:
       - "443:443/udp"
   billing:
