@@ -1,0 +1,12 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v2-2026.10.17-r11
+spec:
+  environment: prod
+  stack: prod-v2
+  previous_release: prod-v2-2026.10.17-r9
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  version_env_file: compose/web-saas/.env.prod-v2
+  purpose: Publish the Root email and notifications management workspace in Console
