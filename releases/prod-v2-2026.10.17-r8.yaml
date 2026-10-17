@@ -1,0 +1,13 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v2-2026.10.17-r8
+spec:
+  environment: prod
+  stack: prod-v2
+  previous_release: prod-v2-2026.10.17-r6
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  version_env_file: compose/web-saas/.env.prod-v2
+  billing_ingress_policy: compose/web-saas/billing-ingress.prod-v2.yaml
+  purpose: Promote the reviewed October 17 PROD V2 GitOps state through SSH, Playbook and Doco-CD
