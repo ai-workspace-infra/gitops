@@ -1,0 +1,16 @@
+apiVersion: xconnect/v1
+kind: SmtpProfile
+spec:
+  provider: gcp_secret_manager
+  project: open-platform-prod
+  username:
+    secret: smtp-username
+    version: '1'
+  password:
+    secret: smtp-password
+    version: '1'
+  transport:
+    host: smtp.gmail.com
+    port: 587
+    from: 'XWorkmate <no-reply@xworktech.com>'
+    tls_mode: starttls
