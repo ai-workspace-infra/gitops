@@ -1,0 +1,31 @@
+apiVersion: web-saas/v1
+kind: StripeSandboxQualification
+target:
+  generation: prod-v3
+  resource_name: web-saas-prod-v3
+  console_domain: console-selfhost-prod-v3.svc.plus
+  accounts_domain: accounts-selfhost-prod-v3.svc.plus
+  billing_domain: billing-selfhost-prod-v3.svc.plus
+  postgresql_domain: postgresql-selfhost-prod-v3.svc.plus
+  doco_target: prod-v3-stripe-sandbox
+database:
+  name: account
+  expected_schema_version: 2026101703
+  background_writers: false
+  preserve_existing_accounts: true
+stripe:
+  mode: test
+  api_version: 2026-01-28.clover
+  vault_path: kv/prod/billing-service
+  secret_key: SANDBOX_STRIPE_SECRET_KEY
+  webhook_secret_key: SANDBOX_STRIPE_WEBHOOK_SECRET
+  webhook_path: /api/billing/stripe/webhook
+  webhook_environment: prod-v3
+  webhook_registry_ref: compose/web-saas/billing/stripe-webhooks.yaml
+  allowed_test_account_domain: example.invalid
+isolation:
+  source_generation: prod-v2
+  source_access: none
+  public_dns_cutover: false
+  postgres_public_port: false
+  smtp_enabled: false

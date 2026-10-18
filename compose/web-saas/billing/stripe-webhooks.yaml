@@ -1,0 +1,11 @@
+apiVersion: web-saas/v1
+kind: StripeWebhookRegistry
+domain_base: svc.plus
+webhook_path: /api/billing/stripe/webhook
+environments:
+  prod-v1:
+    webhook_url: https://accounts-selfhost-prod-v1.svc.plus/api/billing/stripe/webhook
+  prod-v2:
+    webhook_url: https://accounts-selfhost-prod-v2.svc.plus/api/billing/stripe/webhook
+  prod-v3:
+    webhook_url: https://accounts-selfhost-prod-v3.svc.plus/api/billing/stripe/webhook
