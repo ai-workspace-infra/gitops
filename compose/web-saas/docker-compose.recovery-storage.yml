@@ -1,0 +1,26 @@
+# New-generation recovery only. No production volume or published DB port.
+services:
+  postgres:
+    image: ${POSTGRESQL_IMAGE:?fixed digest required}
+    container_name: web-saas-postgresql
+    restart: unless-stopped
+    env_file:
+      - /etc/xcontrol/web-saas-recovery/secrets.env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - type: bind
+        source: /data/postgresql
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: [CMD, pg_isready, -U, postgres, -d, postgres]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    networks: [recovery]
+networks:
+  recovery:
+    name: web_saas_recovery
+    internal: true

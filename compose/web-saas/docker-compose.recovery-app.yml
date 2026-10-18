@@ -1,0 +1,77 @@
+# Application probes run against the restored V3 DB with outbound access blocked.
+services:
+  accounts:
+    image: ${ACCOUNTS_IMAGE:?fixed digest required}
+    container_name: web-saas-accounts
+    restart: unless-stopped
+    env_file: [/etc/xcontrol/web-saas-recovery/secrets.env]
+    environment:
+      IMAGE: ${ACCOUNTS_IMAGE}
+      PORT: "8080"
+      CONFIG_PATH: /tmp/account.yaml
+      CONFIG_TEMPLATE: /app/config/account.yaml
+      DATABASE_RUNTIME_ROLE: primary
+      DATABASE_BACKGROUND_WRITERS: "false"
+    volumes:
+      - /etc/xcontrol/web-saas-recovery/account.yaml:/app/config/account.yaml:ro
+    depends_on:
+      postgres: {condition: service_healthy}
+    networks: [recovery]
+  billing:
+    image: ${BILLING_IMAGE:?fixed digest required}
+    container_name: web-saas-billing
+    restart: unless-stopped
+    env_file: [/etc/xcontrol/web-saas-recovery/secrets.env]
+    environment:
+      IMAGE: ${BILLING_IMAGE}
+      DATABASE_RUNTIME_ROLE: primary
+      DATABASE_BACKGROUND_WRITERS: "false"
+      BILLING_INGEST_MODE: push
+      LISTEN_ADDR: ":8081"
+      DEFAULT_REGION: jp
+    depends_on:
+      postgres: {condition: service_healthy}
+    networks: [recovery]
+  console-assets:
+    extends:
+      file: docker-compose.yml
+      service: console-assets
+  console:
+    image: ${CONSOLE_IMAGE:?fixed digest required}
+    container_name: web-saas-console
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      FRONTEND_IMAGE: ${CONSOLE_IMAGE}
+      RUNTIME_ENV: ${DEPLOY_ENV}
+      RUNTIME_HOSTNAME: ${PUBLIC_CONSOLE_DOMAIN}
+      ACCOUNT_SERVICE_URL: http://accounts:8080
+      SERVER_SERVICE_URL: http://accounts:8080/api
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: https://${PUBLIC_ACCOUNTS_DOMAIN}:8443
+      NEXT_PUBLIC_SERVER_SERVICE_URL: https://${PUBLIC_CONSOLE_DOMAIN}:8443/api
+      RUNTIME_API_BASE_URL: https://${PUBLIC_ACCOUNTS_DOMAIN}:8443/api
+      RUNTIME_AUTH_URL: https://${PUBLIC_ACCOUNTS_DOMAIN}:8443
+      RUNTIME_DASHBOARD_URL: https://${PUBLIC_CONSOLE_DOMAIN}:8443
+    volumes:
+      - console_static:/app/dashboard/.next/static:ro
+    depends_on:
+      console-assets: {condition: service_completed_successfully}
+    networks: [recovery]
+  caddy:
+    image: ${CADDY_IMAGE:?fixed digest required}
+    container_name: web-saas-caddy
+    restart: unless-stopped
+    ports: ["127.0.0.1:8443:443", "127.0.0.1:8088:80"]
+    volumes:
+      - /etc/xcontrol/web-saas-recovery/Caddyfile:/etc/caddy/Caddyfile:ro
+      - recovery_caddy_data:/data
+      - recovery_caddy_config:/config
+    depends_on: [accounts, billing, console]
+    networks: [recovery, recovery_edge]
+networks:
+  recovery_edge: {}
+volumes:
+  console_static: {}
+  recovery_caddy_data: {}
+  recovery_caddy_config: {}
