@@ -21,13 +21,13 @@ target:
   http_port: 8088
 release:
   repository: https://github.com/ai-workspace-infra/gitops.git
-  tag: prod-v3-recovery-2026.10.18-r2
+  tag: prod-v3-recovery-2026.10.18-r3
   storage_target: prod-v3-storage
   application_target: prod-v3
   controller_image: ghcr.io/kimdre/doco-cd@sha256:46f3e44106fd0f4f30bc450682038509484d9aa28916edd6039b0af45bdc1cec
 isolation:
   database_background_writers: false
-  application_database_read_only: true
+  application_database_read_only: false
   public_dns_cutover: false
   external_mail_payment_agent_access: false
   vault_raft_restore: false
