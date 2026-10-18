@@ -1,0 +1,29 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v3-billing-catalog-2026.10.19-r2
+spec:
+  environment: prod
+  stack: prod-v3
+  phase: catalog-checkpoint-revalidation
+  previous_release: prod-v3-billing-catalog-2026.10.19-r1
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  expected_schema_version: 2026101902
+  version_env_file: compose/web-saas/.env.prod-v3
+  doco_target: prod-v3-stripe-sandbox
+  accounts_commit: 883e18216e1170e1fbab6932af320a402eafe082
+  billing_commit: 22cbfc06d3fe030c2d32fa076335853fa6aa2865
+  console_commit: 121569cda404c6a9a9bc6e1784f2f8c37f0c82b8
+  stripe_mode: test
+  billing_catalog_ref:
+    repository: ai-workspace-services/accounts
+    revision: 883e18216e1170e1fbab6932af320a402eafe082
+    path: scripts/billing-plans.json
+  stripe_catalog_ref: scripts/stripe-catalog.yaml
+  public_dns_cutover: false
+  source_generation_access: none
+  rollback:
+    minimum_compatible_release: prod-v3-billing-catalog-2026.10.19-r1
+    retain_catalog_and_financial_history: true
+    destructive_down: false
