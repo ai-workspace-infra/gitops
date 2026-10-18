@@ -84,6 +84,7 @@ spec:
         deletion_protection: true
         enable_oslogin: true
         public_ip: true
+        reserve_static_public_ip: true
         network_tags: [web-saas-ssh]
         public_tcp_ports: [80, 443]
         inventory_groups: [web_saas, web_saas_recovery]
