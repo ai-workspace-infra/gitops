@@ -35,6 +35,8 @@ spec:
       zone: asia-east1-a
     - name: web-saas-prod
       zone: asia-east1-a
+    - name: web-saas-prod-v3
+      zone: asia-east1-a
   # Permanent SSH access is private to this subnet. CI access is granted and
   # revoked by the IaC temporary-access owner for the current runner /32 only.
   # Two /25 halves equal the declared /24. Google provider 7.46.1 suppresses
@@ -72,3 +74,35 @@ spec:
           workload: web-saas
           environment: prod
           lifecycle: persistent
+      # Isolated recovery generation. Keep the existing web-saas-prod host and
+      # its stable public domains unchanged; this host only serves V3 aliases.
+      - name: web-saas-prod-v3
+        zone: asia-east1-a
+        machine_type: e2-medium
+        image: projects/debian-cloud/global/images/family/debian-12
+        provisioning_model: STANDARD
+        deletion_protection: true
+        enable_oslogin: true
+        public_ip: true
+        network_tags: [web-saas-ssh]
+        public_tcp_ports: [80, 443]
+        inventory_groups: [web_saas, web_saas_recovery]
+        host_vars:
+          service_domains:
+            - console-selfhost-prod-v3.svc.plus
+            - accounts-selfhost-prod-v3.svc.plus
+            - billing-selfhost-prod-v3.svc.plus
+            - postgresql-selfhost-prod-v3.svc.plus
+        tags: [web-saas, prod, recovery, v3]
+        data_disk:
+          name: web-saas-prod-v3-data
+          device_name: web-saas-prod-v3-data
+          size_gb: 50
+          type: pd-balanced
+          mount_path: /data
+        labels:
+          owner: platform-ops-toolkit
+          workload: web-saas
+          environment: prod
+          lifecycle: persistent
+          recovery_generation: v3

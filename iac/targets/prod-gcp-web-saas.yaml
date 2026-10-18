@@ -30,10 +30,22 @@ targets:
         cli_workspace: default
       owners:
       - module.web_saas
+      - module.spot_web_saas_prod
+      - module.data_disk_web_saas_prod
+      - module.spot_web_saas_prod_v3
+      - module.data_disk_web_saas_prod_v3
+      - google_compute_firewall.spot_public_tcp_web_saas_prod
+      - google_compute_instance_iam_member.spot_os_admin_login_web_saas_prod
+      - google_compute_firewall.spot_public_tcp_web_saas_prod_v3
+      - google_compute_instance_iam_member.spot_os_admin_login_web_saas_prod_v3
       protected:
       - google_compute_instance.web_saas_prod
       - google_compute_disk.web_saas_prod_data
+      - module.spot_web_saas_prod.google_compute_instance.this
+      - module.data_disk_web_saas_prod.google_compute_disk.this
+      - module.spot_web_saas_prod_v3.google_compute_instance.this
+      - module.data_disk_web_saas_prod_v3.google_compute_disk.this
       ownership_reviewed: true
       requires_existing_state: true
       destroy_allowed: false
-      reason: Reconcile the existing persistent web-saas-prod host only; database data and destruction remain outside this emergency release.
+      reason: Add only the deletion-protected V3 recovery host and retained /data disk; preserve the existing host, disks, databases, DNS aliases, and public routing.
