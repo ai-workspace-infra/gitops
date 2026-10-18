@@ -3,6 +3,8 @@ services:
   accounts:
     image: ${ACCOUNTS_IMAGE:?fixed digest required}
     container_name: web-saas-accounts
+    labels:
+      svc.plus.database-checkpoint: '${DATABASE_CHECKPOINT:-2026101703}'
     restart: unless-stopped
     env_file: [/etc/xcontrol/web-saas-recovery/secrets.env]
     environment:
@@ -20,6 +22,8 @@ services:
   billing:
     image: ${BILLING_IMAGE:?fixed digest required}
     container_name: web-saas-billing
+    labels:
+      svc.plus.database-checkpoint: '${DATABASE_CHECKPOINT:-2026101703}'
     restart: unless-stopped
     env_file: [/etc/xcontrol/web-saas-recovery/secrets.env]
     environment:
