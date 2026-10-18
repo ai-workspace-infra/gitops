@@ -28,13 +28,25 @@ spec:
   # Adopt the existing V2 policy in the SAME state. Its imported parent uses
   # the numeric project identity; a project-ID alias would force replacement.
   external_ip_policy_parent_identity: project_number
-  # Preserve the preexisting 2026-09-29 allowance. Retirement is separate from
-  # adding the new Selfhost VM and must not remove another instance's permit.
+  # Preserve every currently observed PROD allowance. This recovery only adds
+  # V3; retiring unrelated instance permits requires a separate reviewed change.
   external_ip_allowed_instances:
+    - name: agent-server-free-prod-v2
+      zone: asia-east1-a
+    - name: agent-server-plus-prod-v2
+      zone: asia-east1-a
+    - name: agent-server-team-prod-v2
+      zone: asia-east1-a
     - name: open-platform-prod
       zone: asia-east1-a
     - name: web-saas-prod
       zone: asia-east1-a
+    - name: web-saas-prod-v2
+      zone: asia-east1-a
+    - name: instance-20261008-045410
+      zone: southamerica-east1-c
+    - name: agent-proxy-jp-team
+      zone: asia-northeast1-a
     - name: web-saas-prod-v3
       zone: asia-east1-a
   # Permanent SSH access is private to this subnet. CI access is granted and
