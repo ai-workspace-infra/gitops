@@ -10,7 +10,7 @@ target:
   doco_target: prod-v3-stripe-sandbox
 database:
   name: account
-  expected_schema_version: 2026101703
+  expected_schema_version: 2026101902
   background_writers: false
   preserve_existing_accounts: true
 stripe:
