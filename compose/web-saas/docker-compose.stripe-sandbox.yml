@@ -1,0 +1,17 @@
+# Explicit Sandbox qualification overlay for a recovered generation.
+# PostgreSQL stays on the internal network with its original credentials.
+services:
+  accounts:
+    env_file: !override [/etc/xcontrol/web-saas-recovery/stripe-sandbox.env]
+    networks: [recovery, sandbox_egress]
+  console:
+    environment:
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: https://${PUBLIC_ACCOUNTS_DOMAIN}
+      NEXT_PUBLIC_SERVER_SERVICE_URL: https://${PUBLIC_CONSOLE_DOMAIN}/api
+      RUNTIME_API_BASE_URL: https://${PUBLIC_ACCOUNTS_DOMAIN}/api
+      RUNTIME_AUTH_URL: https://${PUBLIC_ACCOUNTS_DOMAIN}
+      RUNTIME_DASHBOARD_URL: https://${PUBLIC_CONSOLE_DOMAIN}
+  caddy:
+    ports: !override ["80:80", "443:443"]
+networks:
+  sandbox_egress: {}
