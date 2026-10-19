@@ -69,7 +69,7 @@ services:
     ports: ["127.0.0.1:8443:443", "127.0.0.1:8088:80"]
     volumes:
       - /etc/xcontrol/web-saas-recovery/Caddyfile:/etc/caddy/Caddyfile:ro
-      - /etc/xcontrol/tls/svc.plus:/etc/caddy/tls/svc.plus:ro
+      - /etc/xcontrol/tls:/etc/xcontrol/tls:ro
       - recovery_caddy_data:/data
       - recovery_caddy_config:/config
     depends_on: [accounts, billing, console]

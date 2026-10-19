@@ -1,0 +1,19 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: SelfhostRelease
+metadata:
+  name: prod-v3-public-sni-2026.10.19-r1
+spec:
+  environment: prod
+  stack: prod-v3
+  phase: public-sni-certificate-repair
+  previous_release: prod-v3-billing-catalog-2026.10.19-r2
+  deployment: ssh-playbook-gitops-doco-cd
+  pipelines: disabled
+  expected_schema_version: 2026101902
+  version_env_file: compose/web-saas/.env.prod-v3
+  doco_target: prod-v3-stripe-sandbox
+  public_ingress_ref: compose/web-saas/ingress/prod.yaml
+  public_dns_cutover: false
+  source_generation_access: none
+  database_changes: false
+  application_images_changed: false

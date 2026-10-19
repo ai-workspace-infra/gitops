@@ -1,0 +1,21 @@
+apiVersion: web-saas/v1
+kind: WebSaasPublicIngress
+domains:
+  console: console.svc.plus
+  accounts: accounts.svc.plus
+  billing: billing.svc.plus
+tls:
+  source: vault
+  vault_ref: kv/CICD/domains/svc.plus
+  directory: /etc/xcontrol/tls/svc.plus
+  fields:
+    fullchain: tls_fullchain_pem_b64
+    cert: tls_cert_pem_b64
+    key: tls_key_pem_b64
+    ca: tls_ca_pem_b64
+    trust_bundle: tls_trust_bundle_pem_b64
+  cloudflare_plugin_required: false
+  mount: /etc/xcontrol/tls:/etc/xcontrol/tls:ro
+postgresql:
+  purpose: reserved-tunnel-tls
+  public_database_listener: false
