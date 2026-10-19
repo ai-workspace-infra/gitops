@@ -64,36 +64,19 @@ spec:
       network_tag: web-saas-prod-v3-ssh
   ssh_username: github-actions
   resource:
-    name: web-saas-prod
+    name: web-saas-prod-v3
     type: workload_namespace
     lifecycle: persistent
   resources:
-    service_vms:
+    # Keep this existing shared ingress managed without recreating its absent
+    # historical VM or disk. The V2 generation belongs to a separate network.
+    retained_public_tcp_rules:
       - name: web-saas-prod
-        zone: asia-east1-a
-        machine_type: e2-medium
-        image: projects/debian-cloud/global/images/family/debian-12
-        provisioning_model: STANDARD
-        deletion_protection: true
-        enable_oslogin: true
-        public_ip: true
         network_tags: [web-saas-ssh]
         public_tcp_ports: [80, 443]
-        inventory_groups: [web_saas]
-        tags: [web-saas, prod, database]
-        data_disk:
-          name: web-saas-prod-data
-          device_name: web-saas-prod-data
-          size_gb: 50
-          type: pd-balanced
-          mount_path: /data
-        labels:
-          owner: platform-ops-toolkit
-          workload: web-saas
-          environment: prod
-          lifecycle: persistent
-      # Isolated recovery generation. Keep the existing web-saas-prod host and
-      # its stable public domains unchanged; this host only serves V3 aliases.
+    service_vms:
+      # V3 is the only VM owned by this state. Preserve the separately managed
+      # V2 host, its disks, and stable public domains.
       - name: web-saas-prod-v3
         zone: asia-east1-a
         machine_type: e2-medium
