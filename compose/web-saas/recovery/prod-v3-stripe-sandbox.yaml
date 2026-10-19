@@ -7,6 +7,12 @@ target:
   accounts_domain: accounts-selfhost-prod-v3.svc.plus
   billing_domain: billing-selfhost-prod-v3.svc.plus
   postgresql_domain: postgresql-selfhost-prod-v3.svc.plus
+  # Shared, version-independent public SNI names; DNS cutover is a separate
+  # IaC change and is deliberately not part of this recovery declaration.
+  public_domains:
+    console: console.svc.plus
+    accounts: accounts.svc.plus
+    billing: billing.svc.plus
   doco_target: prod-v3-stripe-sandbox
 database:
   name: account
