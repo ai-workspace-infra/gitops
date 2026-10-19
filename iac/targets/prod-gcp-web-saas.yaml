@@ -38,6 +38,7 @@ targets:
       - module.data_disk_web_saas_prod_v3
       - google_compute_firewall.spot_public_tcp_web_saas_prod
       - google_compute_firewall.spot_ssh
+      - google_compute_firewall.spot_ssh_iap
       - google_compute_instance_iam_member.spot_os_admin_login_web_saas_prod
       - google_compute_firewall.spot_public_tcp_web_saas_prod_v3
       - google_compute_instance_iam_member.spot_os_admin_login_web_saas_prod_v3

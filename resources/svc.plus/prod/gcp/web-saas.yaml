@@ -56,6 +56,12 @@ spec:
   # change; a two-element target lets the audited plan remove that default.
   spot_ssh_source_ranges: [10.73.0.0/25, 10.73.0.128/25]
   spot_network_tags: [web-saas-ssh]
+  # IAP SSH is restricted to the isolated V3 recovery host; it does not add
+  # the IAP range to the shared V2/V3 SSH firewall target.
+  iap_ssh_targets:
+    - name: web-saas-prod-v3
+      zone: asia-east1-a
+      network_tag: web-saas-prod-v3-ssh
   ssh_username: github-actions
   resource:
     name: web-saas-prod
@@ -97,7 +103,7 @@ spec:
         enable_oslogin: true
         public_ip: true
         reserve_static_public_ip: true
-        network_tags: [web-saas-ssh]
+        network_tags: [web-saas-ssh, web-saas-prod-v3-ssh]
         public_tcp_ports: [80, 443]
         inventory_groups: [web_saas, web_saas_recovery]
         host_vars:
