@@ -2,7 +2,7 @@
 # PostgreSQL stays on the internal network with its original credentials.
 services:
   accounts:
-    env_file: !override [/etc/xcontrol/web-saas-recovery/stripe-sandbox.env]
+    env_file: !override [/etc/xcontrol/web-saas-recovery/stripe-sandbox.env, /etc/xcontrol/web-saas-recovery/internal-service.env]
     networks: [recovery, sandbox_egress]
   console:
     environment:

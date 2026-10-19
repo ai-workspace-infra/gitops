@@ -1,0 +1,4 @@
+# Stable across prod-vN generations; values remain runtime-only in Vault.
+internal_service_token:
+  vault_path: kv/prod/accounts/runtime
+  key: INTERNAL_SERVICE_TOKEN
