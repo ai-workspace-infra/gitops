@@ -87,6 +87,7 @@ spec:
         provisioning_model: STANDARD
         deletion_protection: true
         enable_oslogin: true
+        enable_guest_attributes: true
         public_ip: true
         reserve_static_public_ip: true
         network_tags: [web-saas-ssh, web-saas-prod-v4-ssh]
