@@ -4,10 +4,8 @@ services:
     env_file: !override
       - /etc/xcontrol/web-saas-recovery/secrets.env
       - /etc/xcontrol/web-saas-recovery/internal-service.env
-      - path: /etc/xcontrol/web-saas-recovery/business-database.env
-        format: raw
-      - path: /etc/xcontrol/web-saas-recovery/primary-runtime.env
-        format: raw
+      - /etc/xcontrol/web-saas-recovery/business-database.env
+      - /etc/xcontrol/web-saas-recovery/primary-runtime.env
     environment:
       DATABASE_BACKGROUND_WRITERS: "true"
     volumes: !override
