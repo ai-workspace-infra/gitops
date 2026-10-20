@@ -33,6 +33,10 @@ targets:
       - module.network
       - module.spot_web_saas_prod_v3
       - module.data_disk_web_saas_prod_v3
+      - module.spot_web_saas_prod_v4
+      - module.data_disk_web_saas_prod_v4
+      - google_compute_firewall.spot_public_tcp_web_saas_prod_v4
+      - google_compute_instance_iam_member.spot_os_admin_login_web_saas_prod_v4
       - google_compute_firewall.spot_public_tcp_web_saas_prod
       - google_compute_firewall.spot_ssh
       - google_compute_firewall.spot_ssh_iap
@@ -47,6 +51,9 @@ targets:
       - module.spot_web_saas_prod_v3.google_compute_instance.this
       - module.spot_web_saas_prod_v3.google_compute_address.public
       - module.data_disk_web_saas_prod_v3.google_compute_disk.this
+      - module.spot_web_saas_prod_v4.google_compute_instance.this
+      - module.spot_web_saas_prod_v4.google_compute_address.public
+      - module.data_disk_web_saas_prod_v4.google_compute_disk.this
       ownership_reviewed: true
       requires_existing_state: true
       destroy_allowed: false

@@ -49,6 +49,8 @@ spec:
       zone: asia-northeast1-a
     - name: web-saas-prod-v3
       zone: asia-east1-a
+    - name: web-saas-prod-v4
+      zone: asia-east1-a
   # Permanent SSH access is private to this subnet. CI access is granted and
   # revoked by the IaC temporary-access owner for the current runner /32 only.
   # Two /25 halves equal the declared /24. Google provider 7.46.1 suppresses
@@ -62,6 +64,9 @@ spec:
     - name: web-saas-prod-v3
       zone: asia-east1-a
       network_tag: web-saas-prod-v3-ssh
+    - name: web-saas-prod-v4
+      zone: asia-east1-a
+      network_tag: web-saas-prod-v4-ssh
   ssh_username: github-actions
   resource:
     name: web-saas-prod-v3
@@ -75,6 +80,37 @@ spec:
         network_tags: [web-saas-ssh]
         public_tcp_ports: [80, 443]
     service_vms:
+      - name: web-saas-prod-v4
+        zone: asia-east1-a
+        machine_type: e2-medium
+        image: projects/debian-cloud/global/images/family/debian-12
+        provisioning_model: STANDARD
+        deletion_protection: true
+        enable_oslogin: true
+        public_ip: true
+        reserve_static_public_ip: true
+        network_tags: [web-saas-ssh, web-saas-prod-v4-ssh]
+        public_tcp_ports: [80, 443]
+        inventory_groups: [web_saas, web_saas_recovery]
+        host_vars:
+          service_domains:
+            - console-selfhost-prod-v4.svc.plus
+            - accounts-selfhost-prod-v4.svc.plus
+            - billing-selfhost-prod-v4.svc.plus
+            - postgresql-selfhost-prod-v4.svc.plus
+        tags: [web-saas, prod, recovery, v4]
+        data_disk:
+          name: web-saas-prod-v4-data
+          device_name: web-saas-prod-v4-data
+          size_gb: 50
+          type: pd-balanced
+          mount_path: /data
+        labels:
+          owner: platform-ops-toolkit
+          workload: web-saas
+          environment: prod
+          lifecycle: persistent
+          recovery_generation: v4
       # V3 is the only VM owned by this state. Preserve the separately managed
       # V2 host, its disks, and stable public domains.
       - name: web-saas-prod-v3
