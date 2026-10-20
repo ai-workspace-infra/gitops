@@ -1,0 +1,33 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: WebSaaSGenerationRecovery
+source:
+  generation: prod-v3
+  snapshot: full-snapshot-20261020/20261020T051728Z
+  archive_sha256: ecfd150113a1565b892f4e61e70614aee5c7b49f33c99a14437fc863d42b4603
+  schema_version: 2026101902
+  counts:
+    users: 33
+    subscription_records: 13
+    billing_ledger: 33513
+target:
+  generation: prod-v4
+  resource_name: web-saas-prod-v4
+  inventory_host: console-selfhost-prod-v4.svc.plus
+  resource_ref: resources/svc.plus/prod/gcp/web-saas.yaml
+  domain_base: svc.plus
+  application_role: recovery_app
+  publish_address: 127.0.0.1
+  https_port: 8443
+  http_port: 8088
+release:
+  repository: https://github.com/ai-workspace-infra/gitops.git
+  tag: prod-v4-recovery-2026.10.20-r1
+  storage_target: prod-v4-storage
+  application_target: prod-v4
+  controller_image: ghcr.io/kimdre/doco-cd@sha256:46f3e44106fd0f4f30bc450682038509484d9aa28916edd6039b0af45bdc1cec
+isolation:
+  database_background_writers: false
+  application_database_read_only: true
+  public_dns_cutover: false
+  external_mail_payment_agent_access: false
+  vault_raft_restore: false
