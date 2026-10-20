@@ -9,6 +9,7 @@ target:
   resource_ref: resources/svc.plus/prod/gcp/web-saas.yaml
   database: account
   strategy: fresh-native
+  candidate_auth_sessions: true
   schema_version: 2026102002
   native_schema_sha256: f45db2423f11d9dcc7f3cc58c72b52228a27d7b6ccfc717faf2bbb56fa0498b1
   billing_schema_sha256: a7133f3ef2ea9013a055cfd1442a7488d2b837f289e0f5d9b61624d4fde9bc53

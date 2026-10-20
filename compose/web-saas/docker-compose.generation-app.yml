@@ -8,6 +8,7 @@ services:
       - /etc/xcontrol/web-saas-recovery/secrets.env
       - /etc/xcontrol/web-saas-recovery/internal-service.env
       - /etc/xcontrol/web-saas-recovery/generation-app.env
+      - /etc/xcontrol/web-saas-recovery/generation-auth.env
     environment:
       IMAGE: ${ACCOUNTS_IMAGE}
       PORT: "8080"
