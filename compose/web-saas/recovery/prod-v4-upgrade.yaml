@@ -1,0 +1,49 @@
+apiVersion: web-saas/v1
+kind: WebSaaSGenerationUpgrade
+source:
+  generation: prod-v3
+  access: read-only
+target:
+  generation: prod-v4
+  resource_name: web-saas-prod-v4
+  resource_ref: resources/svc.plus/prod/gcp/web-saas.yaml
+  database: account
+  strategy: fresh-native
+  schema_version: 2026102002
+  native_schema_sha256: f45db2423f11d9dcc7f3cc58c72b52228a27d7b6ccfc717faf2bbb56fa0498b1
+  billing_schema_sha256: a7133f3ef2ea9013a055cfd1442a7488d2b837f289e0f5d9b61624d4fde9bc53
+tool:
+  owner: accounts/cmd/migratectl
+  source_sha: 6565297116c502c1b89557b201234f9d6e8f5e08
+  binary_sha256: 00b276dba8008900e84a1fb1f5231789643a4ab0a84726793a4eb32b3b2433b1
+dns:
+  aliases:
+    - console-selfhost-prod-v4.svc.plus
+    - accounts-selfhost-prod-v4.svc.plus
+    - billing-selfhost-prod-v4.svc.plus
+    - postgresql-selfhost-prod-v4.svc.plus
+  type: A
+  proxied: false
+  ttl: 60
+ingress:
+  manifest_ref: compose/web-saas/ingress/prod.yaml
+  public_sni_tests:
+    - console.svc.plus
+    - accounts.svc.plus
+    - billing.svc.plus
+    - xworktech.com
+    - www.xworktech.com
+  postgresql: reserved-tunnel-tls
+stages:
+  - fresh-deploy
+  - target-backup-and-isolated-restore
+  - readonly-core-data-preview
+  - transactional-core-data-alignment
+  - historical-regression
+  - acceptance-readiness
+  - stable-observation
+cutover:
+  automatic: false
+  current_writer: prod-v3
+  public_dns_changes: false
+  requires_manual_confirmation: true
