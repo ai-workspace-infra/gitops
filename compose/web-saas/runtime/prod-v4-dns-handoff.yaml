@@ -1,0 +1,40 @@
+apiVersion: web-saas/v1
+kind: WebSaaSPublicDnsHandoff
+provider: cloudflare
+environment: prod
+source_generation: prod-v3
+target_generation: prod-v4
+requires_single_writer: true
+requires_manual_confirmation: true
+records:
+  - zone: svc.plus
+    name: console.svc.plus
+    type: CNAME
+    expected_content: console-selfhost-prod-v3.svc.plus
+    content: console-selfhost-prod-v4.svc.plus
+  - zone: svc.plus
+    name: accounts.svc.plus
+    type: CNAME
+    expected_content: accounts-selfhost-prod-v3.svc.plus
+    content: accounts-selfhost-prod-v4.svc.plus
+  - zone: svc.plus
+    name: billing.svc.plus
+    type: CNAME
+    expected_content: billing-selfhost-prod-v3.svc.plus
+    content: billing-selfhost-prod-v4.svc.plus
+  - zone: svc.plus
+    name: postgresql.svc.plus
+    type: CNAME
+    # Reserved DNS only: correct the retained legacy alias without exposing DB.
+    expected_content: postgresql-selfhost-prod-v2.svc.plus
+    content: postgresql-selfhost-prod-v4.svc.plus
+  - zone: xworktech.com
+    name: xworktech.com
+    type: A
+    expected_content_ref: source.external_ipv4
+    content_ref: target.external_ipv4
+  - zone: xworktech.com
+    name: www.xworktech.com
+    type: A
+    expected_content_ref: source.external_ipv4
+    content_ref: target.external_ipv4
