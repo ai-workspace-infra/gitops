@@ -3,7 +3,7 @@ kind: WebSaaSBusinessRuntime
 source_generation: prod-v3
 target_generation: prod-v4
 runtime_mode: primary
-database_role: generation_app
+database_role: account_user
 background_writers: true
 doco_target: prod-v4-primary
 public_dns_change: separate-explicit-operation

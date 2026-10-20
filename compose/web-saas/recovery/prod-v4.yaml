@@ -15,7 +15,7 @@ target:
   inventory_host: console-selfhost-prod-v4.svc.plus
   resource_ref: resources/svc.plus/prod/gcp/web-saas.yaml
   domain_base: svc.plus
-  application_role: recovery_app
+  application_role: account_user
   publish_address: 127.0.0.1
   https_port: 8443
   http_port: 8088
@@ -27,7 +27,7 @@ release:
   controller_image: ghcr.io/kimdre/doco-cd@sha256:46f3e44106fd0f4f30bc450682038509484d9aa28916edd6039b0af45bdc1cec
 isolation:
   database_background_writers: false
-  application_database_read_only: true
+  application_ingress_read_only: true
   public_dns_cutover: false
   external_mail_payment_agent_access: false
   vault_raft_restore: false
