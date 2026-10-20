@@ -5,8 +5,7 @@ services:
     env_file: !override
       - /etc/xcontrol/web-saas-recovery/stripe-sandbox.env
       - /etc/xcontrol/web-saas-recovery/internal-service.env
-      - path: /etc/xcontrol/web-saas-recovery/business-database.env
-        format: raw
+      - /etc/xcontrol/web-saas-recovery/business-database.env
     networks: [recovery, sandbox_egress]
   console:
     environment:

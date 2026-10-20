@@ -7,8 +7,7 @@ services:
     env_file:
       - /etc/xcontrol/web-saas-recovery/secrets.env
       - /etc/xcontrol/web-saas-recovery/internal-service.env
-      - path: /etc/xcontrol/web-saas-recovery/business-database.env
-        format: raw
+      - /etc/xcontrol/web-saas-recovery/business-database.env
     environment:
       IMAGE: ${ACCOUNTS_IMAGE}
       PORT: "8080"
@@ -29,8 +28,7 @@ services:
     restart: unless-stopped
     env_file:
       - /etc/xcontrol/web-saas-recovery/internal-service.env
-      - path: /etc/xcontrol/web-saas-recovery/business-database.env
-        format: raw
+      - /etc/xcontrol/web-saas-recovery/business-database.env
     environment:
       IMAGE: ${BILLING_IMAGE}
       DATABASE_RUNTIME_ROLE: primary
