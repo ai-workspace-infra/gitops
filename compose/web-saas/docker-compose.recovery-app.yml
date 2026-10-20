@@ -6,7 +6,11 @@ services:
     labels:
       svc.plus.database-checkpoint: '${DATABASE_CHECKPOINT:-2026101703}'
     restart: unless-stopped
-    env_file: [/etc/xcontrol/web-saas-recovery/secrets.env, /etc/xcontrol/web-saas-recovery/internal-service.env]
+    env_file:
+      - /etc/xcontrol/web-saas-recovery/secrets.env
+      - /etc/xcontrol/web-saas-recovery/internal-service.env
+      - path: /etc/xcontrol/web-saas-recovery/business-database.env
+        format: raw
     environment:
       IMAGE: ${ACCOUNTS_IMAGE}
       PORT: "8080"
@@ -25,7 +29,11 @@ services:
     labels:
       svc.plus.database-checkpoint: '${DATABASE_CHECKPOINT:-2026101703}'
     restart: unless-stopped
-    env_file: [/etc/xcontrol/web-saas-recovery/secrets.env, /etc/xcontrol/web-saas-recovery/internal-service.env]
+    env_file:
+      - /etc/xcontrol/web-saas-recovery/secrets.env
+      - /etc/xcontrol/web-saas-recovery/internal-service.env
+      - path: /etc/xcontrol/web-saas-recovery/business-database.env
+        format: raw
     environment:
       IMAGE: ${BILLING_IMAGE}
       DATABASE_RUNTIME_ROLE: primary
