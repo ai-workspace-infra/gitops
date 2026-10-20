@@ -1,0 +1,26 @@
+apiVersion: web-saas/v1
+kind: WebSaaSBusinessRuntime
+source_generation: prod-v3
+target_generation: prod-v4
+runtime_mode: primary
+database_role: generation_app
+background_writers: true
+doco_target: prod-v4-primary
+public_dns_change: separate-explicit-operation
+smtp:
+  vault_path: kv/prod/platform/smtp/google
+  host: smtp.gmail.com
+  port: 587
+  tls_mode: starttls
+oauth:
+  google:
+    vault_path: kv/prod/accounts/oauth/google
+  github:
+    enabled: false
+stripe:
+  # Preserve the serving generation's current test-key mode during handoff.
+  # A live-payment promotion is a separate change.
+  mode: sandbox
+  vault_path: kv/prod/billing-service
+  secret_key: SANDBOX_STRIPE_SECRET_KEY
+  webhook_key: SANDBOX_STRIPE_WEBHOOK_SECRET

@@ -1,0 +1,16 @@
+# Explicit primary profile. Select only after the source writer has been fenced.
+services:
+  accounts:
+    env_file: !override
+      - /etc/xcontrol/web-saas-recovery/secrets.env
+      - /etc/xcontrol/web-saas-recovery/internal-service.env
+      - /etc/xcontrol/web-saas-recovery/generation-app.env
+      - path: /etc/xcontrol/web-saas-recovery/primary-runtime.env
+        format: raw
+    environment:
+      DATABASE_BACKGROUND_WRITERS: "true"
+    volumes: !override
+      - /etc/xcontrol/web-saas-recovery/account-primary.yaml:/app/config/account.yaml:ro
+  billing:
+    environment:
+      DATABASE_BACKGROUND_WRITERS: "true"
