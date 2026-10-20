@@ -4,6 +4,13 @@ domains:
   console: console.svc.plus
   accounts: accounts.svc.plus
   billing: billing.svc.plus
+brand_domains:
+  root: xworktech.com
+  www: www.xworktech.com
+brand_tls:
+  source: vault
+  vault_ref: kv/CICD/domains/xworktech.com
+  directory: /etc/xcontrol/tls/xworktech.com
 tls:
   source: vault
   vault_ref: kv/CICD/domains/svc.plus

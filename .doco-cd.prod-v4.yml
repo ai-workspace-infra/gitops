@@ -3,7 +3,7 @@ version: doco.v1
 working_dir: compose/web-saas
 compose_files:
   - docker-compose.recovery-storage.yml
-  - docker-compose.recovery-app.yml
+  - docker-compose.generation-app.yml
 env_files:
   - .env.prod-v4
 force_image_pull: true
