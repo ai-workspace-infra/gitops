@@ -14,6 +14,21 @@ Loader.add_constructor('!override',lambda loader,node:loader.construct_sequence(
 
 
 class WebSaaSBusinessEnvTests(unittest.TestCase):
+    def test_sandbox_payment_profile_limits_egress_to_accounts(self):
+        profile=yaml.safe_load((ROOT/'.doco-cd.prod-v4-stripe-sandbox.yml').read_text())
+        self.assertEqual(profile['compose_files'],[
+            'docker-compose.recovery-storage.yml','docker-compose.generation-app.yml',
+            'docker-compose.sandbox-payment-egress.yml'])
+        overlay=yaml.safe_load((ROOT/'compose/web-saas/docker-compose.sandbox-payment-egress.yml').read_text())
+        self.assertEqual(overlay['services'],{
+            'accounts':{'networks':['recovery','sandbox_payment_egress']}})
+        self.assertFalse(overlay['networks']['sandbox_payment_egress']['internal'])
+        storage=yaml.safe_load((ROOT/'compose/web-saas/docker-compose.recovery-storage.yml').read_text())
+        self.assertTrue(storage['networks']['recovery']['internal'])
+        for filename in ('.doco-cd.prod-v4.yml','.doco-cd.prod-v4-primary.yml'):
+            existing=yaml.safe_load((ROOT/filename).read_text())
+            self.assertNotIn('docker-compose.sandbox-payment-egress.yml',existing['compose_files'])
+
     def test_pinned_controller_never_receives_raw_env_format(self):
         for name in ('generation-app','generation-primary','recovery-app','stripe-sandbox'):
             data=yaml.load((ROOT/f'compose/web-saas/docker-compose.{name}.yml').read_text(),Loader=Loader)

@@ -1,0 +1,8 @@
+# Opt-in payment qualification only. Verify sk_test_ and the selected endpoint's
+# signing secret before selecting this profile. Database isolation is retained.
+services:
+  accounts:
+    networks: [recovery, sandbox_payment_egress]
+networks:
+  sandbox_payment_egress:
+    internal: false
