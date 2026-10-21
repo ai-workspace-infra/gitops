@@ -5,6 +5,7 @@ compose_files:
   - docker-compose.recovery-storage.yml
   - docker-compose.generation-app.yml
   - docker-compose.generation-primary.yml
+  - docker-compose.generation-content.yml
 env_files:
   - .env.prod-v4
 force_image_pull: true
