@@ -1,0 +1,24 @@
+global:
+  region: nrt
+  name_prefix: xconnect-acceptance-20261021
+  user_data_file: cloud-init.yaml
+ssh_keys:
+  - name: xconnect-acceptance-20261021
+    public: {{ env['XCONNECT_ACCEPTANCE_SSH_PUBLIC_KEY'] | tojson }}
+hosts:
+  - name: node-01
+    region: nrt
+    os_name: "Debian 12 x64 (bookworm)"
+    plan: vc2-2c-2gb
+    backups: false
+    enable_ipv6: false
+    ansible_user: root
+    groups: [agent_proxy, xray_exporter, xconnect_acceptance, debian]
+    tags: [acceptance-only, owner-platform, temporary, created-20261021]
+    data_disk:
+      size_gb: 25
+      block_type: high_perf
+    host_vars:
+      acceptance_only: true
+      xconnect_open_to_users: false
+      production_ingest_enabled: false
