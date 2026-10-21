@@ -1,0 +1,14 @@
+# Explicit alternative to the recovery profile, not an additional concurrent
+# controller. Select only after test-mode and endpoint-signature preflight.
+name: web-saas-prod-v4
+version: doco.v1
+working_dir: compose/web-saas
+compose_files:
+  - docker-compose.recovery-storage.yml
+  - docker-compose.generation-app.yml
+  - docker-compose.sandbox-payment-egress.yml
+env_files:
+  - .env.prod-v4
+force_image_pull: true
+remove_orphans: false
+timeout: 600
