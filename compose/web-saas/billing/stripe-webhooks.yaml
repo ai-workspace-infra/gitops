@@ -2,6 +2,22 @@ apiVersion: web-saas/v1
 kind: StripeWebhookRegistry
 domain_base: svc.plus
 webhook_path: /api/billing/stripe/webhook
+canonical:
+  mode: test
+  webhook_url: https://accounts.svc.plus/api/billing/stripe/webhook
+  vault_path: kv/prod/billing-service
+  secret_key: SANDBOX_STRIPE_SECRET_KEY
+  webhook_secret_key: SANDBOX_STRIPE_WEBHOOK_SECRET
+  enabled_events:
+    - checkout.session.completed
+    - checkout.session.async_payment_succeeded
+    - checkout.session.async_payment_failed
+    - checkout.session.expired
+    - invoice.paid
+    - invoice.payment_failed
+    - customer.subscription.created
+    - customer.subscription.updated
+    - customer.subscription.deleted
 environments:
   prod-v2:
     webhook_url: https://accounts-selfhost-prod-v2.svc.plus/api/billing/stripe/webhook
