@@ -22,7 +22,7 @@ class WebSaaSBusinessEnvTests(unittest.TestCase):
         self.assertNotIn(content_file,yaml.safe_load((ROOT/'.doco-cd.prod-v4-stripe-sandbox.yml').read_text())['compose_files'])
 
         env=dict(line.split('=',1) for line in (ROOT/'compose/web-saas/.env.prod-v4').read_text().splitlines() if '=' in line)
-        self.assertEqual(env['CONTENT_IMAGE'], 'ghcr.io/ai-workspace-services/docs:daily-build-2026.10.17-r2@sha256:42079743e3b6cd8297142cff84af85668342aa638aed30fef7090beeecff21ed')
+        self.assertEqual(env['CONTENT_IMAGE'], 'ghcr.io/ai-workspace-services/docs:v2026.10.21@sha256:dd3cf79d591cdff6d93f7e3b01c02c5a40e427be8516ee02f94c3ccf2006379d')
         self.assertRegex(env['CONTENT_IMAGE'], r'^ghcr\.io/[^@]+@sha256:[0-9a-f]{64}$')
 
         overlay=yaml.safe_load((ROOT/'compose/web-saas/docker-compose.generation-content.yml').read_text())
