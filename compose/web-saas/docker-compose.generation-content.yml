@@ -1,0 +1,41 @@
+# Production Selfhost Content extension. This file is selected only by the
+# explicit primary profile; isolated recovery keeps outbound access blocked.
+services:
+  content:
+    image: ${CONTENT_IMAGE:?fixed digest required}
+    container_name: web-saas-content
+    restart: unless-stopped
+    env_file:
+      - /etc/xcontrol/web-saas-recovery/internal-service.env
+    environment:
+      KNOWLEDGE_REPO_PATH: /tmp/knowledge
+      KNOWLEDGE_REPO_URL: ${KNOWLEDGE_REPO_URL:-https://github.com/haitaopanhq/knowledge.git}
+      KNOWLEDGE_REPO_REF: ${KNOWLEDGE_REPO_REF:-main}
+      DOCS_SERVICE_PORT: "8084"
+      DOCS_RELOAD_INTERVAL: ${DOCS_RELOAD_INTERVAL:-5m}
+      OTEL_SERVICE_NAME: web-saas-content
+      OTEL_SERVICE_INSTANCE_ID: web-saas-content
+      OTEL_ENVIRONMENT: ${DEPLOY_ENV:?deployment environment required}
+    expose:
+      - "8084"
+    healthcheck:
+      test: [CMD-SHELL, "wget -q --spider http://127.0.0.1:8084/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks: [recovery, content_egress]
+
+  console:
+    environment:
+      DOCS_SERVICE_URL: http://content:8084
+      RUNTIME_DOCS_SERVICE_URL: http://content:8084
+    depends_on:
+      content:
+        condition: service_healthy
+
+networks:
+  # Shared with the generation application network; only Content gets egress.
+  recovery: {}
+  content_egress:
+    name: web_saas_content_egress

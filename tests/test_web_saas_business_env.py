@@ -14,6 +14,28 @@ Loader.add_constructor('!override',lambda loader,node:loader.construct_sequence(
 
 
 class WebSaaSBusinessEnvTests(unittest.TestCase):
+    def test_v4_primary_uses_selfhost_content_and_keeps_recovery_isolated(self):
+        profile=yaml.safe_load((ROOT/'.doco-cd.prod-v4-primary.yml').read_text())
+        content_file='docker-compose.generation-content.yml'
+        self.assertIn(content_file,profile['compose_files'])
+        self.assertNotIn(content_file,yaml.safe_load((ROOT/'.doco-cd.prod-v4.yml').read_text())['compose_files'])
+        self.assertNotIn(content_file,yaml.safe_load((ROOT/'.doco-cd.prod-v4-stripe-sandbox.yml').read_text())['compose_files'])
+
+        env=dict(line.split('=',1) for line in (ROOT/'compose/web-saas/.env.prod-v4').read_text().splitlines() if '=' in line)
+        self.assertEqual(env['CONTENT_IMAGE'], 'ghcr.io/ai-workspace-services/docs:v2026.10.21@sha256:dd3cf79d591cdff6d93f7e3b01c02c5a40e427be8516ee02f94c3ccf2006379d')
+        self.assertRegex(env['CONTENT_IMAGE'], r'^ghcr\.io/[^@]+@sha256:[0-9a-f]{64}$')
+
+        overlay=yaml.safe_load((ROOT/'compose/web-saas/docker-compose.generation-content.yml').read_text())
+        content=overlay['services']['content']
+        self.assertEqual(content['image'], '${CONTENT_IMAGE:?fixed digest required}')
+        self.assertEqual(content['env_file'], ['/etc/xcontrol/web-saas-recovery/internal-service.env'])
+        self.assertEqual(content['networks'], ['recovery','content_egress'])
+        self.assertEqual(overlay['services']['console']['environment']['DOCS_SERVICE_URL'], 'http://content:8084')
+        self.assertEqual(overlay['services']['console']['environment']['RUNTIME_DOCS_SERVICE_URL'], 'http://content:8084')
+        self.assertEqual(overlay['services']['console']['depends_on']['content']['condition'], 'service_healthy')
+        self.assertTrue(yaml.safe_load((ROOT/'compose/web-saas/docker-compose.recovery-storage.yml').read_text())['networks']['recovery']['internal'])
+        self.assertNotIn('internal', overlay['networks']['content_egress'])
+
     def test_sandbox_payment_profile_limits_egress_to_accounts(self):
         profile=yaml.safe_load((ROOT/'.doco-cd.prod-v4-stripe-sandbox.yml').read_text())
         self.assertEqual(profile['compose_files'],[
