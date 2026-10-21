@@ -1,0 +1,50 @@
+# Profile contracts for the isolated acceptance environment.
+# These are not deployment receipts. No profile may be promoted until the
+# remaining owner/dependency gates have runtime evidence.
+schema_version: 1
+control_plane_generation: v4
+domain_pattern: "<service>-<ENV>-v4.<DOMAIN_BASE>"
+defaults:
+  ENV: sit
+  DEPLOYMENT_ID: v4
+  node_open_to_users: false
+  billing_ingest_mode: vector_push
+  production_ingest_enabled: false
+  deployment_ready: false
+artifacts:
+  agent:
+    tag: daily-build-2026.10.20
+    source_commit: 1e3785ed84a2b6e4fedb1a4679c6f631cbd5b452
+    amd64_asset: xconnect-edge-agent-linux-amd64
+    sha256: c0f3efb8eeb0f0985786a5da410a62c6631d31212b7cc805d3d1cd0b8790be56
+  caddy:
+    tag: daily-build-2026.10.20
+    amd64_asset: caddy-linux-amd64
+    sha256: 4c7be63117018e7616226351aa35ab536ed0642a5dfd95f2c027a06ea7a95109
+profiles:
+  standalone:
+    controller: false
+    credential: none
+    readiness: pending_native_owner_and_runtime_acceptance
+  shared:
+    controller: isolated_accounts
+    credential: canonical_service_key
+    readiness: pending_isolated_controller_and_credential_binding
+  plus:
+    controller: isolated_accounts
+    credential: canonical_service_key
+    resource_class: plus
+    readiness: pending_isolated_controller_and_entitlement_acceptance
+  team:
+    controller: isolated_accounts
+    credential: dedicated_team_node
+    required_fields: [node_id, team_id, resource_class, token]
+    shared_fallback: false
+    readiness: pending_isolated_controller_enrollment_and_team_scope_acceptance
+gates:
+  - verify_each_asset_checksum_in_owner_role
+  - native_owner_must_not_download_mutable_sources
+  - team_credential_must_match_controller_scope
+  - no_production_status_or_billing_posts_from_acceptance
+  - isolated_fresh_deployment_and_repeat_run
+  - two_complete_collection_cycles_and_user_attribution

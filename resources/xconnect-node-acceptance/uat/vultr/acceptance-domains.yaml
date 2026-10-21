@@ -1,0 +1,12 @@
+# Non-sensitive desired naming; render with explicit ENV/DEPLOYMENT_ID/DOMAIN_BASE.
+# DNS creation is an IaC phase, separate from this declaration.
+environment: {{ env['ENV'] | tojson }}
+deployment_id: {{ env['DEPLOYMENT_ID'] | tojson }}
+domain_base: {{ env['DOMAIN_BASE'] | tojson }}
+domains:
+  console: console-{{ env['ENV'] }}-{{ env['DEPLOYMENT_ID'] }}.{{ env['DOMAIN_BASE'] }}
+  accounts: accounts-{{ env['ENV'] }}-{{ env['DEPLOYMENT_ID'] }}.{{ env['DOMAIN_BASE'] }}
+  billing: billing-{{ env['ENV'] }}-{{ env['DEPLOYMENT_ID'] }}.{{ env['DOMAIN_BASE'] }}
+  postgresql: postgresql-{{ env['ENV'] }}-{{ env['DEPLOYMENT_ID'] }}.{{ env['DOMAIN_BASE'] }}
+postgresql_access: tunnel_only
+existing_public_dns_switch: false
