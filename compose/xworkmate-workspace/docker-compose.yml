@@ -1,6 +1,21 @@
 # ==============================================================================
-# XWorkmate Workspace (xworkmate-bridge + QMD + PostgreSQL + pgvector + AI Gateway)
-# GitOps 单一事实源编排声明 (Doco-CD / Docker Compose 标准拓扑)
+# XWorkmate Workspace All-in-One Full Stack (目标态 v2.1 架构规范)
+#
+# 架构拓扑：
+#   [xworkmate-app] (Flutter UI 任务状态/审批)
+#          │ HTTP / ACP :8787
+#          ▼
+#   [xworkmate-bridge] (:8787) ── 连接与事件转发层 (薄控制面)
+#          │ 内部事件转发 (替代旧 openclaw gateway)
+#          ▼
+#   [DS-Bot (:3080/13080) + DSH Harness (:3000)] ── 角色选择与任务编排层
+#          │                                    │
+#          │ (共享记忆 MCP :8181)                │ (统一模型网关调用)
+#          ▼                                    ▼
+#   [QMD Server (QMD_BACKEND=pg)] (:8181)    [AI Aggregator (LiteLLM :4000 + New API :3000)]
+#          │ (SQL TCP :5432)
+#          ▼
+#   [PostgreSQL + pgvector] (:15432)
 # ==============================================================================
 
 services:
@@ -62,33 +77,6 @@ services:
     networks:
       - workspace_net
 
-  xworkmate-bridge:
-    image: ${BRIDGE_IMAGE:-ghcr.io/ai-workspace-lab/xworkmate-bridge:v1.0-beta2}
-    pull_policy: ${PULL_POLICY_BRIDGE:-if_not_present}
-    container_name: workspace-bridge
-    restart: unless-stopped
-    environment:
-      AI_WORKSPACE_AUTH_TOKEN: ${AI_WORKSPACE_AUTH_TOKEN:?AI_WORKSPACE_AUTH_TOKEN is required}
-      BRIDGE_AUTH_TOKEN: ${AI_WORKSPACE_AUTH_TOKEN}
-      BRIDGE_QMD_INGEST_API_URL: ${BRIDGE_QMD_INGEST_API_URL:-http://qmd:8181/api/v1/agent/ingest}
-      BRIDGE_QMD_INGEST_TOKEN: ${QMD_INGEST_TOKEN}
-      BRIDGE_QMD_MCP_TOKEN: ${QMD_MCP_TOKEN}
-    expose:
-      - "8787"
-    ports:
-      - "${LISTEN_IP:-127.0.0.1}:${BRIDGE_PORT:-8787}:8787"
-    depends_on:
-      qmd:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f -H \"Authorization: Bearer ${AI_WORKSPACE_AUTH_TOKEN}\" http://127.0.0.1:8787/api/v1/agent/catalog || bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/8787' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-    networks:
-      - workspace_net
-
   # AI Gateway: New API (用户配额/模型分发)
   new-api:
     image: ${NEW_API_IMAGE:-calciumion/new-api:v0.4.10}
@@ -123,6 +111,82 @@ services:
       - workspace_net
     ports:
       - "${LISTEN_IP:-127.0.0.1}:${LITELLM_PORT:-4000}:4000"
+
+  # DSH Harness: DeepSeek-Harness 编排核心 (调度器 / stdio worker)
+  dsh-harness:
+    image: ${DSH_IMAGE:-ghcr.io/deepseek-ai/deepseek-harness:latest}
+    pull_policy: ${PULL_POLICY_DSH:-if_not_present}
+    container_name: workspace-dsh-harness
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DSH_HOME: /app/.dsh
+      DSH_MCP_ENDPOINT: "http://qmd:8181/mcp"
+      DSH_MCP_TOKEN: ${QMD_MCP_TOKEN}
+      DEEPSEEK_BASE_URL: "http://litellm:4000/v1"
+      DEEPSEEK_API_KEY: ${LITELLM_MASTER_KEY:-sk-litellm-master-key}
+    volumes:
+      - ${DATA_DIR:-/var/lib/xworkmate/data}/dsh_home:/app/.dsh
+    depends_on:
+      qmd:
+        condition: service_healthy
+      litellm:
+        condition: service_started
+    networks:
+      - workspace_net
+
+  # DS-Bot: DeepSeek-Bot 角色选择与任务编排插件
+  ds-bot:
+    image: ${DS_BOT_IMAGE:-ghcr.io/fei2411/deepseek-bot:latest}
+    pull_policy: ${PULL_POLICY_DS_BOT:-if_not_present}
+    container_name: workspace-ds-bot
+    restart: unless-stopped
+    environment:
+      DSH_HOST: "0.0.0.0"
+      DSH_LISTEN_PORT: "3080"
+      DSH_TRUSTED_HOST: "localhost,127.0.0.1,xworkmate-bridge,dsh-harness"
+      DEEPSEEK_BASE_URL: "http://litellm:4000/v1"
+      DEEPSEEK_API_KEY: ${LITELLM_MASTER_KEY:-sk-litellm-master-key}
+    volumes:
+      - ${DATA_DIR:-/var/lib/xworkmate/data}/ds_bot_data:/data
+      - ${DATA_DIR:-/var/lib/xworkmate/data}/ds_bot_workspace:/workspace
+    ports:
+      - "${LISTEN_IP:-127.0.0.1}:${DS_BOT_PORT:-13080}:3080"
+    depends_on:
+      - dsh-harness
+    networks:
+      - workspace_net
+
+  # xworkmate-bridge: 连接与事件转发层 (替代原有 openclaw-gateway 依赖，直连 DSH + DS-Bot)
+  xworkmate-bridge:
+    image: ${BRIDGE_IMAGE:-ghcr.io/ai-workspace-lab/xworkmate-bridge:v1.0-beta2}
+    pull_policy: ${PULL_POLICY_BRIDGE:-if_not_present}
+    container_name: workspace-bridge
+    restart: unless-stopped
+    environment:
+      AI_WORKSPACE_AUTH_TOKEN: ${AI_WORKSPACE_AUTH_TOKEN:?AI_WORKSPACE_AUTH_TOKEN is required}
+      BRIDGE_AUTH_TOKEN: ${AI_WORKSPACE_AUTH_TOKEN}
+      BRIDGE_ROUTER_TYPE: "dsh"
+      BRIDGE_DSH_HARNESS_URL: "http://dsh-harness:3000"
+      BRIDGE_DS_BOT_URL: "http://ds-bot:3080"
+      BRIDGE_QMD_INGEST_API_URL: ${BRIDGE_QMD_INGEST_API_URL:-http://qmd:8181/api/v1/agent/ingest}
+      BRIDGE_QMD_INGEST_TOKEN: ${QMD_INGEST_TOKEN}
+      BRIDGE_QMD_MCP_TOKEN: ${QMD_MCP_TOKEN}
+    expose:
+      - "8787"
+    ports:
+      - "${LISTEN_IP:-127.0.0.1}:${BRIDGE_PORT:-8787}:8787"
+    depends_on:
+      qmd:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -H \"Authorization: Bearer ${AI_WORKSPACE_AUTH_TOKEN}\" http://127.0.0.1:8787/api/v1/agent/catalog || bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/8787' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - workspace_net
 
 networks:
   workspace_net:
