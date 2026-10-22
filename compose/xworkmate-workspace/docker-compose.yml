@@ -127,7 +127,6 @@ services:
       - workspace_net
     ports:
       - "${LISTEN_IP:-127.0.0.1}:${CPA_PORT:-8317}:8317"
-
   # DSH Harness: DeepSeek-Harness 编排核心 (调度器 / stdio worker)
   dsh-harness:
     image: ${DSH_IMAGE:-ghcr.io/deepseek-ai/deepseek-harness:latest}
