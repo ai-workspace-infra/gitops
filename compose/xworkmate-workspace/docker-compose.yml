@@ -1,5 +1,5 @@
 # ==============================================================================
-# XWorkmate Workspace (xworkmate-bridge + QMD + PostgreSQL + pgvector)
+# XWorkmate Workspace (xworkmate-bridge + QMD + PostgreSQL + pgvector + AI Gateway)
 # GitOps 单一事实源编排声明 (Doco-CD / Docker Compose 标准拓扑)
 # ==============================================================================
 
@@ -88,6 +88,41 @@ services:
       start_period: 5s
     networks:
       - workspace_net
+
+  # AI Gateway: New API (用户配额/模型分发)
+  new-api:
+    image: ${NEW_API_IMAGE:-calciumion/new-api:v0.4.10}
+    pull_policy: ${PULL_POLICY_NEW_API:-if_not_present}
+    container_name: workspace-new-api
+    restart: unless-stopped
+    environment:
+      PORT: "3000"
+      SQL_DSN: /data/new-api.db
+      GLOBAL_WEB_REDIRECT_URL: ""
+      INITIAL_ROOT_TOKEN: ${NEW_API_ROOT_TOKEN:-root}
+    volumes:
+      - ${DATA_DIR:-/var/lib/xworkmate/data}/new-api:/data
+    networks:
+      - workspace_net
+    ports:
+      - "${LISTEN_IP:-127.0.0.1}:${NEW_API_PORT:-3000}:3000"
+
+  # AI Gateway: LiteLLM Proxy (OpenAI 协议统一聚合路由)
+  litellm:
+    image: ${LITELLM_IMAGE:-ghcr.io/berriai/litellm:v1.51.0}
+    pull_policy: ${PULL_POLICY_LITELLM:-if_not_present}
+    container_name: workspace-litellm
+    restart: unless-stopped
+    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    environment:
+      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-litellm-master-key}
+      UPSTREAM_API_KEY: ${UPSTREAM_API_KEY:-}
+    volumes:
+      - ${DATA_DIR:-/var/lib/xworkmate/data}/litellm_config.yaml:/app/config.yaml:ro
+    networks:
+      - workspace_net
+    ports:
+      - "${LISTEN_IP:-127.0.0.1}:${LITELLM_PORT:-4000}:4000"
 
 networks:
   workspace_net:

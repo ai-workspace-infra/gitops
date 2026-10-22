@@ -1,0 +1,17 @@
+# ==============================================================================
+# Doco-CD Continuous Deployment Manifest: AI Gateway
+# ==============================================================================
+version: "1"
+name: ai-gateway
+stack:
+  compose_file: compose/ai-gateway/docker-compose.yml
+  target_directory: /opt/ai-gateway
+  env_file_template: compose/ai-gateway/Caddyfile.template
+  healthcheck:
+    endpoints:
+      - name: new-api
+        url: http://127.0.0.1:3000/
+        expected_status: [200, 302]
+      - name: litellm
+        url: http://127.0.0.1:4000/health/liveliness
+        expected_status: 200
