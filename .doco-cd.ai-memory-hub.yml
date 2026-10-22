@@ -1,0 +1,10 @@
+name: ai-memory-hub
+version: doco.v1
+working_dir: compose/ai-memory-hub
+compose_files:
+  - docker-compose.yml
+
+# 镜像版本与部署约束
+force_image_pull: false
+remove_orphans: true
+timeout: 180
