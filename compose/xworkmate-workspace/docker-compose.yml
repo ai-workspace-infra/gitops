@@ -6,16 +6,16 @@
 #          │ HTTP / ACP :8787
 #          ▼
 #   [xworkmate-bridge] (:8787) ── 连接与事件转发层 (薄控制面)
-#          │ 内部事件转发 (替代旧 openclaw gateway)
-#          ▼
-#   [DS-Bot (:3080/13080) + DSH Harness (:3000)] ── 角色选择与任务编排层
-#          │                                    │
-#          │ (共享记忆 MCP :8181)                │ (统一模型网关调用)
-#          ▼                                    ▼
-#   [QMD Server (QMD_BACKEND=pg)] (:8181)    [AI Aggregator (LiteLLM :4000 + New API :3000)]
-#          │ (SQL TCP :5432)
-#          ▼
-#   [PostgreSQL + pgvector] (:15432)
+#          │
+#          ├─── 在线即时任务直通 ──► [DSH Harness (:3000)] (调度各类 Agent CLI / 执行体)
+#          └─── 离线后台任务编排 ──► [DS-Bot (:3080/13080)] (角色规划与任务编排层)
+#                                         │
+#          ┌──────────────────────────────┴──────────────────────────────┐
+#          ▼                                                             ▼
+#   [AI Gateway 聚合接入平面]                                     [记忆与持久化平面]
+#   New API (:3000) ── 统一入口/配额/分发                          X-Memory-Hub / PAXM 上下文
+#       ├── LiteLLM (:4000) ── OpenAI 协议统一聚合路由              QMD Server (:8181) ── 语义检索/MCP
+#       └── CPA (:8317-8319) ── CLIProxyAPI 订阅账号池适配器        PostgreSQL 17 + pgvector (:15432)
 # ==============================================================================
 
 services:
@@ -112,6 +112,21 @@ services:
     ports:
       - "${LISTEN_IP:-127.0.0.1}:${LITELLM_PORT:-4000}:4000"
 
+  # AI Gateway: CPA (CLIProxyAPI 订阅账号池适配器，支持 Codex/Claude/Grok 账号会话直通)
+  cpa:
+    image: ${CPA_IMAGE:-ghcr.io/ai-workspace-infra/cliproxyapi:latest}
+    pull_policy: ${PULL_POLICY_CPA:-if_not_present}
+    container_name: workspace-cpa
+    restart: unless-stopped
+    environment:
+      PORT: "8317"
+      CPA_CONFIG_DIR: /etc/cpa
+    volumes:
+      - ${DATA_DIR:-/var/lib/xworkmate/data}/cpa:/etc/cpa:ro
+    networks:
+      - workspace_net
+    ports:
+      - "${LISTEN_IP:-127.0.0.1}:${CPA_PORT:-8317}:8317"
   # DSH Harness: DeepSeek-Harness 编排核心 (调度器 / stdio worker)
   dsh-harness:
     image: ${DSH_IMAGE:-ghcr.io/deepseek-ai/deepseek-harness:latest}
