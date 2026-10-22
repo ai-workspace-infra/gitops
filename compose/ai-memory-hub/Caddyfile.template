@@ -1,0 +1,9 @@
+# Caddyfile Template for AI-Memory-Hub HTTPS Termination
+{$DOMAIN} {
+    tls {$ACME_EMAIL:ops@example.com}
+    reverse_proxy memory-hub-qmd:8181 {
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+}
