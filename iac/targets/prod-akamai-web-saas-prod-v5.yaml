@@ -1,0 +1,41 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: prod-akamai-web-saas-prod-v5
+  environment: prod
+  project: svc.plus
+  provider: akamai-cloud
+  account: manbuzhe2026
+  workspace: web-saas-prod-v5
+  auth:
+    expected_identity: manbuzhe2026
+    vault_role: github-actions-platform-ops-toolkit-prod-akamai-oidc-bootstrap-manbuzhe2026
+    record: kv/data/CICD/prod/akamai-cloud/manbuzhe2026
+  validation:
+    mode: cleanroom
+    source_manifest: iac/targets/prod-gcp-web-saas.yaml
+    source_target: prod-gcp-web-saas
+    destroy_owners:
+    - module.compute_web_saas_prod_v5
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Use the existing provider identity; never revoke or replace it.
+    account:
+      mode: not_applicable
+      reason: The candidate owns no independent account resources.
+    resources:
+      mode: terraform
+      manifest: resources/svc.plus/prod/akamai/web-saas-prod-v5.yaml
+      state:
+        key: terraform/prod/svc.plus/akamai-cloud/manbuzhe2026/web-saas-prod-v5/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - module.compute_web_saas_prod_v5
+      - linode_firewall.fw_web_saas_prod_v5
+      protected:
+      - linode_firewall.fw_web_saas_prod_v5
+      ownership_reviewed: true
+      requires_existing_state: true
+      destroy_allowed: true
+      reason: Cleanroom validation may remove only the isolated candidate compute instance after live state isolation and saved-plan checks; retain firewall, source, backend and recovery objects.
