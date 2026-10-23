@@ -1,4 +1,4 @@
-name: web-saas-prod-v5-storage
+name: web-saas-prod-v5
 version: doco.v1
 working_dir: compose/web-saas
 compose_files:
