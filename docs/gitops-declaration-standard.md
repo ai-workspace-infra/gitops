@@ -41,6 +41,14 @@ Rules:
 
 ## 3. State, lifecycle, and safety
 
+Versioned service input contracts may define their own envelope without creating
+a second resource matrix. The Selfhost Control Plane and Accounts migration
+contracts use `schema_version: 1` and `kind`; see
+[the consumer contract](selfhost-control-plane-contract.md). Their intentionally
+invalid `example_only: true` templates live under `examples/control-plane/`,
+outside active resource/topology paths, and must be rejected at runtime.
+This exception does not change the resource/topology envelope above.
+
 Terraform state keys are derived from the declaration's environment, project, provider/account, and namespace. A resource declaration must not silently share a state with another namespace. Permanent services and protected production nodes require an explicit lifecycle guard such as `prevent_destroy` in the IaC consumer; the GitOps declaration must identify the scope and exception.
 
 Use these fields when applicable:

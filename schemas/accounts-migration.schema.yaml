@@ -1,0 +1,117 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+title: Accounts URL migration peer declaration v1
+description: >-
+  Declarative policy for the initially isolated URL/API lane. Authentication
+  values and runtime plans are external. The consumer must verify reciprocal
+  peers, database identity, distinct credentials and expiration at runtime.
+type: object
+additionalProperties: false
+required: [schema_version, kind, environment, source, target]
+properties:
+  example_only:
+    const: false
+    description: Examples set true and must be rejected before any runtime action.
+  schema_version:
+    type: integer
+    const: 1
+  kind:
+    const: accounts-migration
+  environment:
+    enum: [sit, uat, prod]
+  source:
+    type: object
+    additionalProperties: false
+    required: [url, allowed_target_urls, auth]
+    properties:
+      url:
+        $ref: '#/$defs/accounts_url'
+      allowed_target_urls:
+        $ref: '#/$defs/peer_urls'
+      auth:
+        allOf:
+          - $ref: '#/$defs/auth_reference'
+          - properties:
+              scopes:
+                const: [source.read]
+  target:
+    type: object
+    additionalProperties: false
+    required: [url, allowed_source_urls, auth]
+    properties:
+      url:
+        $ref: '#/$defs/accounts_url'
+      allowed_source_urls:
+        $ref: '#/$defs/peer_urls'
+      auth:
+        allOf:
+          - $ref: '#/$defs/auth_reference'
+          - properties:
+              scopes:
+                type: array
+                minItems: 1
+                uniqueItems: true
+                items:
+                  enum: [target.plan, target.apply]
+                contains:
+                  const: target.plan
+  generation:
+    type: object
+    additionalProperties: false
+    minProperties: 1
+    properties:
+      source:
+        type: string
+        minLength: 1
+      target:
+        type: string
+        minLength: 1
+    description: Optional audit labels only; never used to select endpoints or databases.
+$defs:
+  accounts_url:
+    type: string
+    format: uri
+    pattern: '^https://[a-z][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)+(?::[0-9]{1,5})?$'
+    description: >-
+      Canonical HTTPS Accounts origin, without credentials, path, query,
+      fragment, trailing slash or IP literal. API routes are appended by the
+      consumer; redirects and arbitrary peer discovery are forbidden.
+  peer_urls:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      $ref: '#/$defs/accounts_url'
+    description: Exact approved opposite Accounts origins, not patterns or redirects.
+  auth_reference:
+    type: object
+    additionalProperties: false
+    required: [scopes, expires_at]
+    properties:
+      kv_ref:
+        type: string
+        pattern: '^kv/(sit|uat|prod)/[A-Za-z0-9_-]+(?:/[A-Za-z0-9_-]+)+$'
+        description: Environment-scoped Vault reference only; never its value.
+      token_env:
+        type: string
+        pattern: '^[A-Z][A-Z0-9_]*$'
+        not:
+          const: INTERNAL_SERVICE_TOKEN
+        description: Name of a dedicated runtime variable, never a token value.
+      scopes:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items:
+          type: string
+      expires_at:
+        type: string
+        format: date-time
+        pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+        description: UTC expiry bound to the issued credential; must still be in the future.
+    oneOf:
+      - required: [kv_ref]
+        not:
+          required: [token_env]
+      - required: [token_env]
+        not:
+          required: [kv_ref]

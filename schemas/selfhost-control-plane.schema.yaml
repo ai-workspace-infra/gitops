@@ -1,0 +1,148 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+title: Selfhost Control Plane candidate declaration v1
+description: >-
+  Desired state only. Schema validity does not verify artifact provenance or
+  authorize deployment, migration, writer handoff, or DNS cutover.
+type: object
+additionalProperties: false
+required: [schema_version, kind, environment, target, release, execution]
+properties:
+  example_only:
+    const: false
+    description: Examples set true and must be rejected before any runtime action.
+  schema_version:
+    type: integer
+    const: 1
+  kind:
+    const: selfhost-control-plane
+  environment:
+    enum: [sit, uat, prod]
+  source:
+    type: object
+    additionalProperties: false
+    properties:
+      host:
+        $ref: '#/$defs/name'
+      generation:
+        $ref: '#/$defs/name'
+    description: Optional audit metadata only; never a source execution target.
+  target:
+    type: object
+    additionalProperties: false
+    required: [host, generation, domain_base, console_domain, accounts_domain]
+    properties:
+      host:
+        $ref: '#/$defs/name'
+        description: >-
+          Logical host key resolved against the operator-supplied CMDB for this
+          environment. Never an IP address, SSH user, URL, or inventory path.
+      generation:
+        $ref: '#/$defs/name'
+      domain_base:
+        $ref: '#/$defs/name'
+      console_domain:
+        $ref: '#/$defs/name'
+      accounts_domain:
+        $ref: '#/$defs/name'
+        description: Consumer verifies accounts-selfhost-<generation>.<domain_base>.
+  release:
+    type: object
+    additionalProperties: false
+    required: [snapshot_tag, services, accounts, doco_cd]
+    properties:
+      snapshot_tag:
+        type: string
+        pattern: '^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$'
+        description: >-
+          One immutable coordinated service snapshot. The consumer must verify
+          all five source commits, builds, image digests, schema and migration
+          checksums. It must not require a same-named GitOps tag: the GitOps
+          commit is independently fixed by the caller's gitops-ref.
+      services:
+        type: object
+        additionalProperties: false
+        required: [accounts, billing-service, portal, content-service, postgresql]
+        properties:
+          accounts:
+            $ref: '#/$defs/image'
+          billing-service:
+            $ref: '#/$defs/image'
+          portal:
+            $ref: '#/$defs/image'
+          content-service:
+            $ref: '#/$defs/image'
+          postgresql:
+            $ref: '#/$defs/image'
+      accounts:
+        type: object
+        additionalProperties: false
+        required: [source_sha, schema_sha256, billing_schema_sha256, migration_version, business_tables]
+        properties:
+          source_sha:
+            $ref: '#/$defs/commit'
+          schema_sha256:
+            $ref: '#/$defs/sha256'
+          billing_schema_sha256:
+            $ref: '#/$defs/sha256'
+          migration_version:
+            type: integer
+            minimum: 1
+          business_tables:
+            type: array
+            minItems: 1
+            uniqueItems: true
+            items:
+              type: string
+              pattern: '^[a-z][a-z0-9_]*$'
+            description: Consumer verifies exact sorted native-schema manifest table list.
+      doco_cd:
+        type: object
+        additionalProperties: false
+        required: [image, repository, target, storage_target]
+        properties:
+          image:
+            $ref: '#/$defs/image'
+          repository:
+            const: https://github.com/ai-workspace-infra/gitops.git
+          target:
+            $ref: '#/$defs/name'
+          storage_target:
+            $ref: '#/$defs/name'
+        description: >-
+          Distinct application and PostgreSQL-only Doco-CD selections within
+          the pinned GitOps checkout. All dependency images must be pinned.
+  execution:
+    type: object
+    additionalProperties: false
+    required: [playbooks_sha, mode, initialize]
+    properties:
+      playbooks_sha:
+        $ref: '#/$defs/commit'
+        description: >-
+          Full reviewed Playbooks commit; never a branch or moving tag. Must
+          exactly match the installed execution owner's Git HEAD before use.
+      mode:
+        const: candidate
+        description: Candidate installation only; no cutover or source mutation.
+      initialize:
+        type: boolean
+        description: >-
+          Explicit eligibility for first initialization of an absent/empty
+          database only. Never permits reinitialization or deletion of data.
+$defs:
+  name:
+    type: string
+    pattern: '^[A-Za-z][A-Za-z0-9_.-]*$'
+  commit:
+    type: string
+    pattern: '^[a-f0-9]{40}$'
+  sha256:
+    type: string
+    pattern: '^[a-f0-9]{64}$'
+  image:
+    type: string
+    pattern: '^[a-z0-9][a-z0-9.-]*(?::[0-9]+)?/[a-z0-9][a-z0-9._/-]*(?::[A-Za-z0-9_][A-Za-z0-9_.-]*)?@sha256:[a-f0-9]{64}$'
+    description: >-
+      Registry-qualified OCI image pinned by its verified sha256 digest.
+      Syntax is necessary but does not establish that the image exists or
+      belongs to the selected snapshot.

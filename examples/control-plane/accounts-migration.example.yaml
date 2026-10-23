@@ -1,0 +1,24 @@
+# NOT DEPLOYABLE: isolated URL/API contract illustration, not a live peer policy.
+# Replace auth references/expiry from approved scoped credential evidence.
+# Reserved .invalid domains are not endpoints. V4 uses the reviewed SSH lane.
+example_only: true
+schema_version: 1
+kind: accounts-migration
+environment: uat
+source:
+  url: https://accounts-source.example.invalid
+  allowed_target_urls:
+    - https://accounts-target.example.invalid
+  auth:
+    kv_ref: '<SOURCE_ENV_SCOPED_MIGRATION_AUTH_REFERENCE>'
+    scopes: [source.read]
+    expires_at: '<SOURCE_CREDENTIAL_UTC_EXPIRY>'
+target:
+  url: https://accounts-target.example.invalid
+  allowed_source_urls:
+    - https://accounts-source.example.invalid
+  auth:
+    token_env: '<DEDICATED_TARGET_MIGRATION_TOKEN_ENV_NAME>'
+    scopes: [target.plan, target.apply]
+    expires_at: '<TARGET_CREDENTIAL_UTC_EXPIRY>'
+# generation: {source: previous, target: candidate}  # Optional audit metadata.
