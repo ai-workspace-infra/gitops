@@ -34,7 +34,8 @@ services:
       - --allowed-peer-cidr
       - '<APPROVED_SOURCE_NETWORK_CIDR>'
     network_mode: service:caddy
-    # Target-only persistent file; owner refreshes from Vault before reconciliation.
+    # Persistent target-only file outside Caddy's route-directory mount.
+    # Owner refreshes this from Vault before reconciliation.
     env_file: [/etc/xcontrol/migration-api/listener.env]
     read_only: true
     user: '0:0'
@@ -55,11 +56,12 @@ services:
     # read_only: true, bind.create_host_path: false, and the matching CLI flag.
   caddy:
     container_name: web-saas-caddy
-    # Merge with the same pinned candidate stack; retain its config/TLS mounts.
+    # Persistent directory bind keeps atomic route-file replacement visible
+    # after a Caddy restart. Merge with the same stack and retain config/TLS mounts.
     volumes:
       - type: bind
-        source: /etc/xcontrol/migration-api/route.caddy
-        target: /etc/caddy/migration-listener.caddy
+        source: /etc/xcontrol/migration-api/caddy
+        target: /etc/caddy/migration-api
         read_only: true
         bind:
           create_host_path: false

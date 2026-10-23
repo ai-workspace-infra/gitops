@@ -71,21 +71,26 @@ to `/private/target-stage`, with `create_host_path: false`. It contains protecte
 encrypted resumable data and must survive a listener restart. No credential or
 staging payload is committed to GitOps.
 
-The Caddy service is `web-saas-caddy`. Its overlay explicitly binds
-`/etc/xcontrol/migration-api/route.caddy` read-only at
-`/etc/caddy/migration-listener.caddy`, also with `create_host_path: false`.
-Playbooks renders that route and the reference-only runtime environment from
-approved external inputs. The native candidate Caddyfile imports
-`migration-listener*.caddy` before its ordinary read-only candidate rule, so the
-narrow authenticated migration routes are evaluated deliberately. Only the
-reviewed route and CIDRs may expose the loopback API; no generic proxy bypass
-or source-host modification is implied.
+The Caddy service is `web-saas-caddy`. Its overlay binds the persistent host
+directory `/etc/xcontrol/migration-api/caddy` read-only at
+`/etc/caddy/migration-api`, with `create_host_path: false`. Playbooks writes
+`route.caddy` inside the target directory and the native candidate Caddyfile
+imports `/etc/caddy/migration-api/*.caddy` before its ordinary read-only
+candidate rule. Mounting the directory keeps an atomically replaced route inode
+visible after Caddy restarts; an individual file bind could continue exposing
+the previous inode. The sidecar's
+`/etc/xcontrol/migration-api/listener.env` remains outside this Caddy-only mount.
+The owner checks the actual read-only directory bind and mounted route contents,
+then verifies the listener namespace points to the current Caddy container ID.
+Only the reviewed route and CIDRs may expose the loopback API; no generic proxy
+bypass or source-host modification is implied.
 
-Both required files are persistent, target-only owner outputs so a reboot does
-not leave Caddy with a missing required bind or leave the listener without its
-environment. Playbooks enforces root ownership, directory mode `0700` and file
-mode `0600`. No secret content or target credential file is copied into GitOps
-or a controller workspace. Every deployment re-resolves Vault with the explicitly
+The environment file and Caddy route directory are persistent, target-only owner
+outputs so a reboot does not leave Caddy with a missing bind or leave the
+listener without its environment. Playbooks enforces root ownership, mode `0700`
+on both directories and mode `0600` on their files. No secret content or target
+credential file is copied into GitOps or a controller workspace. Every deployment
+re-resolves Vault with the explicitly
 selected identity before reconciliation and verifies the actual listener process
 uses those current values afterward. Vault failure must stop the operation;
 existing files or ambient credentials are never a fallback. Persistence is not

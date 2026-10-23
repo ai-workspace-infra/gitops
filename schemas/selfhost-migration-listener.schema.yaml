@@ -4,8 +4,11 @@ description: >-
   Separate from ordinary candidate installation and from source deployment.
   Identity, images and GitOps/Playbooks pins come from control_plane_config.
   Credentials and generated recovery evidence are protected external inputs.
-  The owner keeps required listener.env and route.caddy files in persistent
-  target-only /etc/xcontrol/migration-api (directory 0700, files 0600), never Git.
+  The owner keeps listener.env at persistent target-only
+  /etc/xcontrol/migration-api/listener.env and route.caddy in
+  /etc/xcontrol/migration-api/caddy (both directories 0700, files 0600), never
+  Git. Caddy receives the persistent route directory as a read-only bind so
+  atomic route replacement remains visible across restarts.
 type: object
 additionalProperties: false
 required: [schema_version, kind, control_plane_config, doco_target, listener]
