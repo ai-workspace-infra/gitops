@@ -1,4 +1,8 @@
-# BLOCKED PROPOSAL — not eligible for install-control-plane.sh.
+# Historical initial proposal status: BLOCKED pending artifact and probe evidence.
+# Subsequent fixed deployment/migration receipts are archived in Knowledge's
+# PROD V5 runtime baseline. Clean-room replays retain the same image digests,
+# pin the current main Playbooks owner below, and still require fresh live
+# validation; this declaration does not claim business acceptance or cutover.
 # The r101 source tags resolve to these exact commits: Accounts
 # b423432dc5f993e5261423e27373703aaff48f2d, Billing
 # 77557d796a66dcd3373d7731125890bd91ebc5d3, Content
@@ -7,8 +11,8 @@
 # 253d69a3ad19558a4bd272dee0509a498e091e24.
 # All five image digests below are fixed to the supplied r101 registry
 # artifacts. The PostgreSQL OCI index and published release assets are verified;
-# the proposal remains blocked until coordinated five-artifact provenance and
-# the native Billing candidate SNI probe contract are verified. The local Docker
+# each new run must verify coordinated artifact provenance and the native Billing
+# candidate SNI probe contract against its own receipts. The local Docker
 # image ID is never used as a registry reference.
 # The four supplied r101 application image digests are recorded below.
 # Protected runtime policy and its Vault references are supplied out of band
@@ -132,7 +136,7 @@ release:
     target: prod-v5-candidate
     storage_target: prod-v5-storage
 execution:
-  playbooks_sha: 86c6a3c39c30df079e047eb77194ea670514a6c2
+  playbooks_sha: ff984bce9ebddef3e93f1dde7a98b1987245b143
   mode: candidate
   initialize: true
   # Explicit fallback intent because the supplied CMDB record has no storage
