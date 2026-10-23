@@ -1,0 +1,47 @@
+# BLOCKED PROPOSAL — not eligible for install-control-plane.sh.
+# The PostgreSQL image is intentionally absent: a local Docker image ID is not
+# a registry digest. The required release.accounts manifest fields are also
+# withheld until the coordinated r101 source/schema manifest is verified.
+# This file is expected to fail schemas/selfhost-control-plane.schema.yaml.
+# The four supplied r101 image digests are recorded below; no coordinated
+# snapshot identity is asserted until the release manifest is verified.
+# Protected runtime policy and its Vault references are supplied out of band
+# by the runtime-policy owner; no secret values or secret-store paths belong here.
+# Candidate names are console-selfhost-prod-v5.svc.plus,
+# accounts-selfhost-prod-v5.svc.plus, billing-selfhost-prod-v5.svc.plus and
+# postgresql-selfhost-prod-v5.svc.plus. Public DNS changes remain separate.
+schema_version: 1
+kind: selfhost-control-plane
+environment: prod
+source:
+  generation: prod-v4
+target:
+  # Exact logical key in the operator-supplied IaC CMDB (not an IP address).
+  host: console-selfhost-prod-v5.svc.plus
+  generation: prod-v5
+  domain_base: svc.plus
+  console_domain: console-selfhost-prod-v5.svc.plus
+  accounts_domain: accounts-selfhost-prod-v5.svc.plus
+release:
+  services:
+    accounts: ghcr.io/ai-workspace-services/accounts@sha256:39716c2941b6f8ebbc0602589a59711d846234cb8313ae21254a91ba6073def7
+    billing-service: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
+    portal: ghcr.io/ai-workspace-services/console@sha256:cc9b85339d82cefd264455c3d28c4e25dcd9e293378675855e23822730d5d0c5
+    content-service: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
+  # Required before execution: Accounts source SHA, native and Billing schema
+  # checksums, migration version and sorted native business table manifest.
+  # Required Billing source SHA is part of the same verified r101 manifest.
+  doco_cd:
+    image: ghcr.io/kimdre/doco-cd@sha256:46f3e44106fd0f4f30bc450682038509484d9aa28916edd6039b0af45bdc1cec
+    repository: https://github.com/ai-workspace-infra/gitops.git
+    target: prod-v5-candidate
+    storage_target: prod-v5-storage
+execution:
+  playbooks_sha: 1d64444d5a99d8eb45ee9c2004dd4f404be6272a
+  mode: candidate
+  initialize: true
+  # Explicit fallback intent because the supplied CMDB record has no storage
+  # profile. The Playbooks owner must verify this path is on the root FS.
+  storage:
+    profile: root
+    data_path: /data/postgresql

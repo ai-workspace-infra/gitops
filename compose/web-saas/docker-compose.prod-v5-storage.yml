@@ -1,0 +1,29 @@
+# PostgreSQL-only storage selection. The required image interpolation remains
+# unresolved until the verified registry manifest is published.
+services:
+  postgres:
+    image: ${POSTGRESQL_IMAGE:?verified registry PostgreSQL digest required}
+    container_name: web-saas-prod-v5-postgresql
+    restart: unless-stopped
+    env_file:
+      - /etc/xcontrol/web-saas/secrets.env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - type: bind
+        source: /data/postgresql
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
+      - /etc/xcontrol/web-saas/config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    expose: ["5432"]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U account_user -h 127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    networks: [web_saas_v5_storage]
+
+networks:
+  web_saas_v5_storage: {}
