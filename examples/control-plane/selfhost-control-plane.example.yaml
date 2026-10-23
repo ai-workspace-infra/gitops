@@ -1,0 +1,36 @@
+# NOT DEPLOYABLE: illustrative template, intentionally rejected by the schema.
+# Replace EVERY <...> from reviewed release/CMDB evidence before validation.
+# No digest or SHA below is a fabricated verified pin. Not a runtime topology.
+example_only: true
+schema_version: 1
+kind: selfhost-control-plane
+environment: uat
+target:
+  host: '<CMDB_LOGICAL_TARGET_HOST>'
+  generation: candidate
+  domain_base: example.invalid
+  console_domain: console-selfhost-candidate.example.invalid
+  accounts_domain: accounts-selfhost-candidate.example.invalid
+release:
+  snapshot_tag: '<VERIFIED_IMMUTABLE_SNAPSHOT_TAG>'
+  services:
+    accounts: 'registry.example.invalid/control-plane/accounts@sha256:<VERIFIED_64_HEX_DIGEST>'
+    billing-service: 'registry.example.invalid/control-plane/billing-service@sha256:<VERIFIED_64_HEX_DIGEST>'
+    portal: 'registry.example.invalid/control-plane/portal@sha256:<VERIFIED_64_HEX_DIGEST>'
+    content-service: 'registry.example.invalid/control-plane/content-service@sha256:<VERIFIED_64_HEX_DIGEST>'
+    postgresql: 'registry.example.invalid/control-plane/postgresql@sha256:<VERIFIED_64_HEX_DIGEST>'
+  accounts:
+    source_sha: '<VERIFIED_40_HEX_ACCOUNTS_COMMIT>'
+    schema_sha256: '<VERIFIED_NATIVE_SCHEMA_CHECKSUM>'
+    billing_schema_sha256: '<VERIFIED_BILLING_SCHEMA_CHECKSUM>'
+    migration_version: '<VERIFIED_NATIVE_MIGRATION_VERSION_INTEGER>'
+    business_tables: ['<SORTED_TABLE_NAMES_FROM_VERIFIED_NATIVE_MANIFEST>']
+  doco_cd:
+    image: 'registry.example.invalid/control-plane/doco-cd@sha256:<VERIFIED_64_HEX_DIGEST>'
+    repository: https://github.com/ai-workspace-infra/gitops.git
+    target: '<APPLICATION_SELECTION_IN_PINNED_GITOPS>'
+    storage_target: '<POSTGRESQL_ONLY_SELECTION_IN_PINNED_GITOPS>'
+execution:
+  playbooks_sha: '<REVIEWED_40_HEX_PLAYBOOKS_COMMIT>'
+  mode: candidate
+  initialize: true

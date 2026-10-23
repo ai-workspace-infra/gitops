@@ -8,6 +8,7 @@ This `docs/` directory now has a bilingual canonical layer for the current repos
 
 - Coverage checklist / 覆盖检查矩阵: `docs/DOC_COVERAGE.md`
 - GitOps declaration standard / GitOps 声明规范: `docs/gitops-declaration-standard.md`
+- Selfhost deployment and Accounts migration contract / 部署与迁移契约: [selfhost-control-plane-contract.md](selfhost-control-plane-contract.md)
 - English index / 英文入口: `docs/en/README.md`
 - 中文入口 / Chinese index: `docs/zh/README.md`
 
