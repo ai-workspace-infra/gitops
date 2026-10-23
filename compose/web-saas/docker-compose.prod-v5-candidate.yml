@@ -69,6 +69,7 @@ services:
       DB_PORT: "15432"
       XWORKMATE_SHARED_TENANT_DOMAIN: ${XWORKMATE_SHARED_TENANT_DOMAIN:?tenant domain required}
       XWORKMATE_SHARED_TENANT_DOMAINS: ${XWORKMATE_SHARED_TENANT_DOMAINS:?tenant domains required}
+      DATABASE_IDENTITY_SHA256: ${DATABASE_IDENTITY_SHA256:?reviewed database connection identity required}
       DATABASE_RUNTIME_ROLE: primary
       DATABASE_BACKGROUND_WRITERS: "false"
     volumes:
@@ -87,6 +88,7 @@ services:
       IMAGE: ${BILLING_IMAGE}
       DB_HOST: stunnel-client
       DB_PORT: "15432"
+      DATABASE_IDENTITY_SHA256: ${DATABASE_IDENTITY_SHA256:?reviewed database connection identity required}
       DATABASE_RUNTIME_ROLE: primary
       DATABASE_BACKGROUND_WRITERS: "false"
       BILLING_INGEST_MODE: push

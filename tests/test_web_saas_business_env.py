@@ -1,6 +1,8 @@
 """Declaration-only regression for the pinned controller's env-file loader."""
 from pathlib import Path
 import unittest
+import hashlib
+import json
 import yaml
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -14,6 +16,20 @@ Loader.add_constructor('!override',lambda loader,node:loader.construct_sequence(
 
 
 class WebSaaSBusinessEnvTests(unittest.TestCase):
+    def test_v5_managed_connection_has_reviewed_nonsecret_identity(self):
+        env = dict(line.split('=', 1) for line in (ROOT/'compose/web-saas/.env.prod-v5-candidate').read_text().splitlines() if line and not line.startswith('#'))
+        # Matches the immutable Accounts ConnectionIdentity: Port is uint16, not a string.
+        identity = {'Host': 'stunnel-client', 'Port': 15432, 'Database': 'account', 'Role': 'account_user'}
+        expected = hashlib.sha256(json.dumps(identity, separators=(',', ':')).encode()).hexdigest()
+        self.assertEqual(env['DATABASE_IDENTITY_SHA256'], expected)
+        compose = yaml.safe_load((ROOT/'compose/web-saas/docker-compose.prod-v5-candidate.yml').read_text())
+        for name in ('accounts', 'billing'):
+            settings = compose['services'][name]['environment']
+            self.assertEqual(settings['DB_HOST'], identity['Host'])
+            self.assertEqual(settings['DB_PORT'], str(identity['Port']))
+            self.assertEqual(settings['DATABASE_IDENTITY_SHA256'], '${DATABASE_IDENTITY_SHA256:?reviewed database connection identity required}')
+            self.assertEqual(settings['DATABASE_BACKGROUND_WRITERS'], 'false')
+
     def test_v5_storage_to_app_keeps_the_same_doco_compose_project(self):
         storage=yaml.safe_load((ROOT/'.doco-cd.prod-v5-storage.yml').read_text())
         app=yaml.safe_load((ROOT/'.doco-cd.prod-v5-candidate.yml').read_text())
