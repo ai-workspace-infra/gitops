@@ -1,0 +1,43 @@
+global:
+  provider: akamai-cloud
+  environment: prod
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: web-saas-prod-v5
+  region: sg-sin-2
+  image: linode/debian12
+  type: g6-standard-2
+  name_prefix: ""
+  user_data_file: cloud-init.yaml
+  prevent_destroy: true
+
+ssh_keys:
+  - name: platform-admin-ed25519
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGeMGuRKEGtIOTb9BsXMP2rD9Fpv9f3rrrABjOW7EV7s shenlan@HaitaodeMacBook-Pro.local"
+
+hosts:
+  - name: web-saas-prod-v5
+    region: sg-sin-2
+    type: g6-standard-2
+    image: linode/debian12
+    private_ip: true
+    ansible_user: root
+    groups: [web_saas, prod, akamai_cloud, generation_candidate]
+    tags: [svc-plus, prod, web-saas, prod-v5, migration-candidate]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: true
+      allow_https: true
+    host_vars:
+      service_variant: v5
+      source_generation: prod-v4
+      target_generation: prod-v5
+      deployment_mode: selfhost
+      service_domains:
+        - console-selfhost-prod-v5.svc.plus
+        - accounts-selfhost-prod-v5.svc.plus
+        - billing-selfhost-prod-v5.svc.plus
+        - postgresql-selfhost-prod-v5.svc.plus
+      database_background_writers: false
+      public_dns_cutover: false
