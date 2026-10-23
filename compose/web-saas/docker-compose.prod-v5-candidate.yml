@@ -1,0 +1,169 @@
+# Isolated candidate application selection. Bind paths match the Playbooks
+# control-plane contract; no V4 recovery paths or writer-enabled overlays.
+services:
+  postgres:
+    image: ${POSTGRESQL_IMAGE:?verified registry PostgreSQL digest required}
+    container_name: web-saas-postgresql
+    restart: unless-stopped
+    env_file:
+      - /etc/xcontrol/web-saas/secrets.env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - type: bind
+        source: /data/postgresql
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
+      - /etc/xcontrol/web-saas/config/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    expose: ["5432"]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U account_user -h 127.0.0.1"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    networks: [postgres_net]
+
+  stunnel-server:
+    image: ${STUNNEL_SERVER_IMAGE:?pinned stunnel server image required}
+    container_name: web-saas-stunnel-server
+    restart: unless-stopped
+    volumes:
+      - /etc/xcontrol/web-saas/config/stunnel-server.conf:/etc/stunnel/stunnel.conf:ro
+      - /etc/xcontrol/web-saas/certs/server-cert.pem:/etc/stunnel/certs/server-cert.pem:ro
+      - /etc/xcontrol/web-saas/certs/server-key.pem:/etc/stunnel/certs/server-key.pem:ro
+    expose: ["15433"]
+    depends_on:
+      postgres: {condition: service_healthy}
+    networks: [web_saas_v5, postgres_net]
+
+  stunnel-client:
+    image: ${STUNNEL_CLIENT_IMAGE:?pinned stunnel client image required}
+    container_name: web-saas-stunnel-client
+    restart: unless-stopped
+    environment:
+      STUNNEL_SERVICE: postgres-tls-server
+      STUNNEL_ACCEPT: "15432"
+      STUNNEL_CONNECT: stunnel-server:15433
+      STUNNEL_CRONTAB: ""
+    volumes:
+      - /etc/xcontrol/web-saas/config/stunnel-client.conf:/etc/stunnel/stunnel.conf:ro
+      - /etc/xcontrol/web-saas/certs/ca-cert.pem:/etc/stunnel/certs/ca-cert.pem:ro
+    expose: ["15432"]
+    depends_on:
+      stunnel-server: {condition: service_started}
+    networks: [web_saas_v5]
+
+  accounts:
+    image: ${ACCOUNTS_IMAGE:?verified Accounts digest required}
+    container_name: web-saas-accounts
+    restart: unless-stopped
+    env_file: [/etc/xcontrol/web-saas/secrets.env]
+    environment:
+      IMAGE: ${ACCOUNTS_IMAGE}
+      PORT: "8080"
+      CONFIG_PATH: /tmp/account.yaml
+      CONFIG_TEMPLATE: /app/config/account.yaml
+      DB_HOST: stunnel-client
+      DB_PORT: "15432"
+      XWORKMATE_SHARED_TENANT_DOMAIN: ${XWORKMATE_SHARED_TENANT_DOMAIN:?tenant domain required}
+      XWORKMATE_SHARED_TENANT_DOMAINS: ${XWORKMATE_SHARED_TENANT_DOMAINS:?tenant domains required}
+      DATABASE_RUNTIME_ROLE: primary
+      DATABASE_BACKGROUND_WRITERS: "false"
+    volumes:
+      - /etc/xcontrol/web-saas/config/account.yaml:/app/config/account.yaml:ro
+    expose: ["8080"]
+    depends_on:
+      stunnel-client: {condition: service_started}
+    networks: [web_saas_v5]
+
+  billing:
+    image: ${BILLING_IMAGE:?verified Billing digest required}
+    container_name: web-saas-billing
+    restart: unless-stopped
+    env_file: [/etc/xcontrol/web-saas/secrets.env]
+    environment:
+      IMAGE: ${BILLING_IMAGE}
+      DB_HOST: stunnel-client
+      DB_PORT: "15432"
+      DATABASE_RUNTIME_ROLE: primary
+      DATABASE_BACKGROUND_WRITERS: "false"
+      BILLING_INGEST_MODE: push
+      BILLING_SERVICE_LISTEN_ADDR: 0.0.0.0:8081
+    expose: ["8081"]
+    depends_on:
+      stunnel-client: {condition: service_started}
+    networks: [web_saas_v5]
+
+  console-assets:
+    image: ${PORTAL_IMAGE:?verified Portal digest required}
+    container_name: web-saas-console-assets
+    restart: "no"
+    command: ["/bin/sh", "-c", "set -eu; mkdir -p /assets /assets/public; cp -R /app/dashboard/static/. /assets/ || true; cp -R /app/dashboard/public/. /assets/public || true"]
+    volumes: ["console_static:/assets"]
+
+  console:
+    image: ${PORTAL_IMAGE:?verified Portal digest required}
+    container_name: web-saas-console
+    restart: unless-stopped
+    env_file: [/etc/xcontrol/web-saas/secrets.env]
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      FRONTEND_IMAGE: ${PORTAL_IMAGE}
+      RUNTIME_ENV: ${DEPLOY_ENV:?deployment environment required}
+      RUNTIME_HOSTNAME: ${PUBLIC_CONSOLE_DOMAIN:?console domain required}
+      ACCOUNT_SERVICE_URL: http://accounts:8080
+      SERVER_SERVICE_URL: http://accounts:8080/api
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: https://${PUBLIC_ACCOUNTS_DOMAIN:?Accounts domain required}
+      NEXT_PUBLIC_SERVER_SERVICE_URL: https://${PUBLIC_CONSOLE_DOMAIN}/api
+      RUNTIME_API_BASE_URL: https://${PUBLIC_ACCOUNTS_DOMAIN}/api
+      RUNTIME_AUTH_URL: https://${PUBLIC_ACCOUNTS_DOMAIN}
+      RUNTIME_DASHBOARD_URL: https://${PUBLIC_CONSOLE_DOMAIN}
+      DOCS_SERVICE_URL: http://content:8084
+      RUNTIME_DOCS_SERVICE_URL: http://content:8084
+    volumes: ["console_static:/app/dashboard/.next/static:ro"]
+    expose: ["3000"]
+    depends_on:
+      console-assets: {condition: service_completed_successfully}
+    networks: [web_saas_v5]
+
+  content:
+    image: ${CONTENT_IMAGE:?verified Content digest required}
+    container_name: web-saas-content
+    restart: unless-stopped
+    env_file: [/etc/xcontrol/web-saas/secrets.env]
+    environment:
+      KNOWLEDGE_REPO_PATH: /tmp/knowledge
+      DOCS_SERVICE_PORT: "8084"
+      OTEL_SERVICE_NAME: web-saas-content
+      OTEL_ENVIRONMENT: ${DEPLOY_ENV}
+    expose: ["8084"]
+    networks: [web_saas_v5]
+
+  caddy:
+    image: ${CADDY_IMAGE:?pinned Caddy image required}
+    container_name: web-saas-caddy
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    volumes:
+      - /etc/xcontrol/web-saas/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /etc/xcontrol/tls:/etc/xcontrol/tls:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [accounts, billing, console, content]
+    networks: [web_saas_v5]
+
+networks:
+  web_saas_v5:
+    name: docker_shared_network
+    external: true
+  postgres_net:
+    name: docker_web_saas_postgres_network
+    external: true
+
+volumes:
+  console_static: {}
+  caddy_data: {}
+  caddy_config: {}

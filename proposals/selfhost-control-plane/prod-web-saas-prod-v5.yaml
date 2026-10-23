@@ -1,0 +1,142 @@
+# BLOCKED PROPOSAL — not eligible for install-control-plane.sh.
+# The r101 source tags resolve to these exact commits: Accounts
+# b423432dc5f993e5261423e27373703aaff48f2d, Billing
+# 77557d796a66dcd3373d7731125890bd91ebc5d3, Content
+# 94e722c913a8c6e8adbb5b0bd363b20c9d3b4d08, Portal
+# 02607cf315570097606d90a8ba514fe37dcbe9e6 and PostgreSQL
+# 253d69a3ad19558a4bd272dee0509a498e091e24.
+# All five image digests below are fixed to the supplied r101 registry
+# artifacts. The PostgreSQL OCI index and published release assets are verified;
+# the proposal remains blocked until coordinated five-artifact provenance and
+# the native Billing candidate SNI probe contract are verified. The local Docker
+# image ID is never used as a registry reference.
+# The four supplied r101 application image digests are recorded below.
+# Protected runtime policy and its Vault references are supplied out of band
+# by the runtime-policy owner; no secret values or secret-store paths belong here.
+# Candidate names are console-selfhost-prod-v5.svc.plus,
+# accounts-selfhost-prod-v5.svc.plus, billing-selfhost-prod-v5.svc.plus and
+# postgresql-selfhost-prod-v5.svc.plus. Public DNS changes remain separate.
+schema_version: 1
+kind: selfhost-control-plane
+environment: prod
+source:
+  generation: prod-v4
+target:
+  # Exact logical key in the operator-supplied IaC CMDB (not an IP address).
+  host: console-selfhost-prod-v5.svc.plus
+  generation: prod-v5
+  domain_base: svc.plus
+  console_domain: console-selfhost-prod-v5.svc.plus
+  accounts_domain: accounts-selfhost-prod-v5.svc.plus
+  billing_domain: billing-selfhost-prod-v5.svc.plus
+release:
+  # The r101 source tags were checked against the exact source commits. The
+  # PostgreSQL release manifest is published; coordinated five-artifact
+  # provenance must still be verified before candidate execution.
+  snapshot_tag: daily-build-2026.10.23-r101
+  services:
+    accounts: ghcr.io/ai-workspace-services/accounts@sha256:39716c2941b6f8ebbc0602589a59711d846234cb8313ae21254a91ba6073def7
+    billing-service: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
+    portal: ghcr.io/ai-workspace-services/console@sha256:cc9b85339d82cefd264455c3d28c4e25dcd9e293378675855e23822730d5d0c5
+    content-service: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
+    postgresql: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
+  # Required before execution: Accounts source SHA, native and Billing schema
+  # checksums, migration version and sorted native business table manifest are
+  # copied from the exact pinned Accounts source manifest.
+  accounts:
+    source_sha: b423432dc5f993e5261423e27373703aaff48f2d
+    schema_sha256: f45db2423f11d9dcc7f3cc58c72b52228a27d7b6ccfc717faf2bbb56fa0498b1
+    billing_schema_sha256: 7faf46295b419102e4bbcb8cef67db14ba3beef1d46ee945fd4acfb86541c39b
+    migration_version: 2026102002
+    business_tables:
+      - account_billing_profiles
+      - account_lifecycle_events
+      - account_policy_snapshots
+      - account_quota_states
+      - admin_settings
+      - agents
+      - audit_logs
+      - billing_ledger
+      - billing_plans
+      - billing_source_sync_state
+      - bridge_credentials
+      - email_blacklist
+      - email_campaigns
+      - email_deliveries
+      - email_management_settings
+      - email_onboarding_steps
+      - email_preference_events
+      - email_preference_tokens
+      - email_preferences
+      - email_recipient_leases
+      - email_suppressions
+      - finance_invoices
+      - finance_operation_events
+      - finance_operations
+      - finance_payments
+      - finance_refunds
+      - homepage_video_settings
+      - identities
+      - mfa_recovery_codes
+      - network_team_members
+      - network_teams
+      - node_health_snapshots
+      - nodes
+      - oauth_exchange_codes
+      - overlay_config_acks
+      - overlay_device_credentials
+      - overlay_devices
+      - overlay_enrollment_sessions
+      - overlay_invites
+      - overlay_networks
+      - overlay_nodes
+      - overlay_registrations
+      - overlay_signed_config_acks
+      - password_recovery_challenges
+      - rbac_permissions
+      - rbac_role_permissions
+      - rbac_roles
+      - referral_codes
+      - referral_payment_risks
+      - referral_reward_events
+      - referral_rewards
+      - referral_settlement_items
+      - referral_settlements
+      - referrals
+      - sandbox_bindings
+      - scheduler_decisions
+      - sessions
+      - stripe_webhook_events
+      - subscription_extension_ledger
+      - subscription_lifecycle_states
+      - subscription_records
+      - subscriptions
+      - task_namespaces
+      - task_runs
+      - task_session_events
+      - task_sessions
+      - team_agent_enrollments
+      - tenant_domains
+      - tenant_memberships
+      - tenants
+      - traffic_minute_buckets
+      - traffic_stat_checkpoints
+      - users
+      - xworkmate_profiles
+  billing:
+    source_sha: 77557d796a66dcd3373d7731125890bd91ebc5d3
+    schema_file: sql/billing-service-schema.sql
+  doco_cd:
+    image: ghcr.io/kimdre/doco-cd@sha256:46f3e44106fd0f4f30bc450682038509484d9aa28916edd6039b0af45bdc1cec
+    repository: https://github.com/ai-workspace-infra/gitops.git
+    target: prod-v5-candidate
+    storage_target: prod-v5-storage
+execution:
+  playbooks_sha: 975693fb5ff8db0876d6c85dfbace0a9125dc7d2
+  mode: candidate
+  initialize: true
+  # Explicit fallback intent because the supplied CMDB record has no storage
+  # profile. The Playbooks owner must verify this path is on the root FS.
+  storage:
+    profile: root
+    data_path: /data/postgresql
