@@ -1,0 +1,123 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+title: Opt-in candidate target migration listener v1
+description: >-
+  Separate from ordinary candidate installation and from source deployment.
+  Identity, images and GitOps/Playbooks pins come from control_plane_config.
+  Credentials and generated recovery evidence are protected external inputs.
+  The owner keeps listener.env at persistent target-only
+  /etc/xcontrol/migration-api/listener.env and route.caddy in
+  /etc/xcontrol/migration-api/caddy (both directories 0700, files 0600), never
+  Git. Caddy receives the persistent route directory as a read-only bind so
+  atomic route replacement remains visible across restarts.
+type: object
+additionalProperties: false
+required: [schema_version, kind, control_plane_config, doco_target, listener]
+properties:
+  example_only:
+    const: false
+    description: Illustrative declarations set true and are rejected before runtime operations.
+  schema_version:
+    type: integer
+    const: 1
+  kind:
+    const: selfhost-migration-listener
+  control_plane_config:
+    type: string
+    pattern: '^(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-][A-Za-z0-9_.-]*\.ya?ml$'
+    description: GitOps-root-relative candidate config; no traversal, external path or symlink escape.
+  doco_target:
+    type: string
+    pattern: '^[A-Za-z][A-Za-z0-9_.-]*$'
+    description: Separate reviewed Doco-CD selection containing the pinned target stack and listener overlay.
+  listener:
+    type: object
+    additionalProperties: false
+    required:
+      - source_url
+      - source_audience
+      - target_audience
+      - job_id
+      - allowed_peer_cidrs
+      - allowed_client_cidrs
+      - apply_enabled
+      - initialize_receipts
+      - receipt_owner_role
+    properties:
+      source_url:
+        type: string
+        format: uri
+        pattern: '^https://[a-z][a-z0-9-]*(?:\.[a-z0-9][a-z0-9-]*)+$'
+        description: Exact approved source origin; never installs or changes that source.
+      source_audience:
+        $ref: '#/$defs/identity'
+      target_audience:
+        $ref: '#/$defs/identity'
+      job_id:
+        type: string
+        format: uuid
+        pattern: '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
+        not:
+          const: '00000000-0000-0000-0000-000000000000'
+        description: Approved job binding, not an execution receipt or migration plan ID.
+      allowed_peer_cidrs:
+        $ref: '#/$defs/networks'
+        description: Exact approved source networks for outbound target pulls.
+      allowed_client_cidrs:
+        $ref: '#/$defs/networks'
+        description: >-
+          Exact approved clients permitted by the private Caddy route, including
+          the local loopback CIDR required for the trust-verified SNI probe.
+      apply_enabled:
+        type: boolean
+        default: false
+        description: Eligibility only; never applies a migration plan automatically.
+      initialize_receipts:
+        type: boolean
+        default: false
+        description: Separate explicit target receipt DDL eligibility; requires apply_enabled.
+      receipt_owner_role:
+        $ref: '#/$defs/identity'
+        not:
+          enum: [postgres, account_user, readonly_release]
+        description: Dedicated target migration owner, independent of business/source roles.
+      receipt_file:
+        type: string
+        pattern: '^/(?:run|data)/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-][A-Za-z0-9_.-]*\.json$'
+        description: >-
+          Existing target-only backup receipt path, mounted at the same absolute
+          path read-only. Prefer /data for restart persistence; /run is ephemeral.
+          Its contents and full recovery proof remain external.
+    allOf:
+      - if:
+          properties:
+            apply_enabled:
+              const: true
+        then:
+          required: [receipt_file]
+        else:
+          not:
+            required: [receipt_file]
+      - if:
+          properties:
+            initialize_receipts:
+              const: true
+        then:
+          properties:
+            apply_enabled:
+              const: true
+$defs:
+  identity:
+    type: string
+    pattern: '^[a-z][a-z0-9_-]{0,62}$'
+  networks:
+    type: array
+    minItems: 1
+    uniqueItems: true
+    items:
+      type: string
+      oneOf:
+        - pattern: '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}/(?:2[4-9]|3[0-2])$'
+        - pattern: '^[0-9A-Fa-f]*:[0-9A-Fa-f:]+/(?:6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-8])$'
+    description: >-
+      Consumer additionally parses canonical strict CIDRs and rejects invalid,
+      unspecified or multicast networks. Minimum prefixes are IPv4 /24 and IPv6 /64.

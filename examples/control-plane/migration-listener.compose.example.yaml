@@ -1,0 +1,69 @@
+# NOT DEPLOYABLE: template only; no active Doco-CD selection references this file.
+# Remove the example marker only in a reviewed, fully pinned opt-in declaration.
+x-example-only: true
+services:
+  migration:
+    container_name: web-saas-migration-listener
+    # Must equal release.services.accounts exactly, including its verified digest.
+    image: 'registry.example.invalid/control-plane/accounts@sha256:<VERIFIED_64_HEX_DIGEST>'
+    entrypoint: [/usr/local/bin/migratectl]
+    command:
+      - serve
+      - --role
+      - target
+      - --audience
+      - migration-target-example
+      - --source-audience
+      - migration-source-example
+      - --target-audience
+      - migration-target-example
+      - --job-id
+      - '<APPROVED_MIGRATION_JOB_UUID>'
+      - --dsn-env
+      - TARGET_MIGRATION_DSN
+      - --auth-key-env
+      - TARGET_MIGRATION_SIGNING_KEY
+      - --staging-key-env
+      - TARGET_MIGRATION_STAGING_KEY
+      - --staging-dir
+      - /private/target-stage
+      # The pinned CLI default binds loopback port 9097 inside Caddy's namespace.
+      - --allow-loopback-http
+      - --allowed-source-url
+      - https://accounts-source.example.invalid
+      - --allowed-peer-cidr
+      - '<APPROVED_SOURCE_NETWORK_CIDR>'
+    network_mode: service:caddy
+    # Persistent target-only file outside Caddy's route-directory mount.
+    # Owner refreshes this from Vault before reconciliation.
+    env_file: [/etc/xcontrol/migration-api/listener.env]
+    read_only: true
+    user: '0:0'
+    cap_drop: [ALL]
+    security_opt: ['no-new-privileges:true']
+    restart: unless-stopped
+    depends_on:
+      caddy:
+        condition: service_started
+    volumes:
+      - type: bind
+        source: /data/migration-stage
+        target: /private/target-stage
+        bind:
+          create_host_path: false
+    # Preview has no receipt mount, receipt DDL flag or backup-receipt flag.
+    # An apply selection must add ONLY its existing target receipt, same path,
+    # read_only: true, bind.create_host_path: false, and the matching CLI flag.
+  caddy:
+    container_name: web-saas-caddy
+    # Native Caddy imports /etc/caddy/migration-api/*.caddy; no match is valid
+    # until the opt-in owner creates route.caddy. This route-only directory bind
+    # keeps atomic replacement visible after restart; listener.env is a sibling.
+    # Merge with the same stack and retain config/TLS mounts.
+    volumes:
+      - type: bind
+        source: /etc/xcontrol/migration-api/caddy
+        target: /etc/caddy/migration-api
+        read_only: true
+        bind:
+          create_host_path: false

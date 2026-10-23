@@ -1,0 +1,20 @@
+# NOT DEPLOYABLE: requires reviewed candidate pins, approved job/networks and selection.
+# Source is metadata only. This declaration never deploys a listener onto V4.
+example_only: true
+schema_version: 1
+kind: selfhost-migration-listener
+control_plane_config: examples/control-plane/selfhost-control-plane.example.yaml
+doco_target: '<OPT_IN_MIGRATION_DOCO_TARGET>'
+listener:
+  source_url: https://accounts-source.example.invalid
+  source_audience: migration-source-example
+  target_audience: migration-target-example
+  job_id: '<APPROVED_MIGRATION_JOB_UUID>'
+  allowed_peer_cidrs: ['<APPROVED_SOURCE_NETWORK_CIDR>']
+  allowed_client_cidrs: ['<REQUIRED_LOCAL_LOOPBACK_CIDR>', '<APPROVED_OPERATOR_NETWORK_CIDR>']
+  apply_enabled: false
+  initialize_receipts: false
+  receipt_owner_role: migration_owner
+  # apply_enabled: true requires receipt_file and protected external recovery proof.
+  # Prefer a persistent /data receipt when the apply-capable listener must restart.
+  # receipt_file: /data/migration-recovery/backup.json

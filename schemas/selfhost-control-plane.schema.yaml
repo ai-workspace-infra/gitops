@@ -44,7 +44,7 @@ properties:
         $ref: '#/$defs/name'
       accounts_domain:
         $ref: '#/$defs/name'
-        description: Consumer verifies accounts-selfhost-<generation>.<domain_base>.
+        description: Explicit Accounts domain; never inferred from a generation label.
   release:
     type: object
     additionalProperties: false
@@ -95,6 +95,20 @@ properties:
               type: string
               pattern: '^[a-z][a-z0-9_]*$'
             description: Consumer verifies exact sorted native-schema manifest table list.
+      billing:
+        type: object
+        additionalProperties: false
+        required: [source_sha, schema_file]
+        properties:
+          source_sha:
+            $ref: '#/$defs/commit'
+          schema_file:
+            const: sql/billing-service-schema.sql
+        description: >-
+          Optional for declaration preflight, required for execution. The owner
+          verifies the canonical clean BILLING_CHECKOUT at this commit and
+          binds SQL bytes to release.accounts.billing_schema_sha256. Applies
+          reviewed DDL only to the first empty target; never seeds a catalog.
       doco_cd:
         type: object
         additionalProperties: false
@@ -129,7 +143,41 @@ properties:
         description: >-
           Explicit eligibility for first initialization of an absent/empty
           database only. Never permits reinitialization or deletion of data.
+      storage:
+        $ref: '#/$defs/storage'
+        description: >-
+          Optional nonsecret storage intent when the external CMDB has no
+          storage profile. The consumer verifies it on the CMDB-selected host;
+          it does not create a disk or supply cloud resource facts.
 $defs:
+  storage:
+    type: object
+    additionalProperties: false
+    required: [profile, data_path]
+    properties:
+      profile:
+        enum: [root, dedicated]
+      data_path:
+        type: string
+        pattern: '^/(?:[A-Za-z0-9_-]+/)+[A-Za-z0-9_-]+$'
+        description: Absolute persistent PostgreSQL bind source, matching pinned Compose.
+      mount_path:
+        type: string
+        pattern: '^/[A-Za-z0-9_/-]+$'
+      device_path:
+        type: string
+        pattern: '^/dev/[A-Za-z0-9_./+-]+$'
+      filesystem_uuid:
+        type: string
+        minLength: 1
+        description: Optional expected filesystem identity, verified by the host owner.
+    allOf:
+      - if:
+          properties:
+            profile:
+              const: dedicated
+        then:
+          required: [mount_path, device_path]
   name:
     type: string
     pattern: '^[A-Za-z][A-Za-z0-9_.-]*$'

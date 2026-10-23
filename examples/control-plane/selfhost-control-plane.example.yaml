@@ -9,8 +9,8 @@ target:
   host: '<CMDB_LOGICAL_TARGET_HOST>'
   generation: candidate
   domain_base: example.invalid
-  console_domain: console-selfhost-candidate.example.invalid
-  accounts_domain: accounts-selfhost-candidate.example.invalid
+  console_domain: console.example.invalid
+  accounts_domain: accounts.example.invalid
 release:
   snapshot_tag: '<VERIFIED_IMMUTABLE_SNAPSHOT_TAG>'
   services:
@@ -25,6 +25,10 @@ release:
     billing_schema_sha256: '<VERIFIED_BILLING_SCHEMA_CHECKSUM>'
     migration_version: '<VERIFIED_NATIVE_MIGRATION_VERSION_INTEGER>'
     business_tables: ['<SORTED_TABLE_NAMES_FROM_VERIFIED_NATIVE_MANIFEST>']
+  # Required for execution; no Billing source is fetched or run by GitOps.
+  billing:
+    source_sha: '<VERIFIED_40_HEX_BILLING_COMMIT>'
+    schema_file: sql/billing-service-schema.sql
   doco_cd:
     image: 'registry.example.invalid/control-plane/doco-cd@sha256:<VERIFIED_64_HEX_DIGEST>'
     repository: https://github.com/ai-workspace-infra/gitops.git
@@ -34,3 +38,8 @@ execution:
   playbooks_sha: '<REVIEWED_40_HEX_PLAYBOOKS_COMMIT>'
   mode: candidate
   initialize: true
+  # Fallback intent only when the external CMDB has no storage profile.
+  # Root storage is supported; the owner verifies the actual root filesystem.
+  storage:
+    profile: root
+    data_path: /data/postgresql

@@ -11,13 +11,14 @@ data, publish a release, transfer writer ownership, or change DNS.
 | --- | --- | --- |
 | Fresh candidate deployment | [selfhost-control-plane.schema.yaml](../schemas/selfhost-control-plane.schema.yaml) | [selfhost-control-plane.example.yaml](../examples/control-plane/selfhost-control-plane.example.yaml) |
 | Accounts migration peers | [accounts-migration.schema.yaml](../schemas/accounts-migration.schema.yaml) | [accounts-migration.example.yaml](../examples/control-plane/accounts-migration.example.yaml) |
+| Opt-in target migration listener | [selfhost-migration-listener.schema.yaml](../schemas/selfhost-migration-listener.schema.yaml) | [selfhost-migration-listener.example.yaml](../examples/control-plane/selfhost-migration-listener.example.yaml) |
 
 The templates are **NOT DEPLOYABLE**. They contain `example_only: true`, reserved
 `.invalid` domains and visibly invalid `<...>` placeholders. No example image
-digest or Playbooks SHA is represented as verified. Both schemas reject
+digest or Playbooks SHA is represented as verified. All declaration schemas reject
 `example_only: true`; consumers must also reject it explicitly before obtaining
 credentials or performing any runtime action. Replacing pins alone is not enough:
-an operator must create a reviewed declaration with the flag removed or false.
+an operator must create a reviewed declaration with the example flag removed.
 Consumers must never discover examples by globbing runtime topology directories.
 
 These are versioned service input contracts, not `ResourceMatrix` declarations.
@@ -40,6 +41,8 @@ belongs to that checkout. Reading floating `main` at execution time is forbidden
 The schema requires exactly these desired-state groups:
 
 - `environment`: `sit`, `uat`, or `prod`; a value alone grants no access.
+  Fresh SIT uses the same explicit native initialization and default billing-plan
+  requirements as UAT/PROD; the consumer must support it without rerouting to UAT.
 - `target.host`: a logical key in the environment's external CMDB, never an IP,
   SSH login, provider fact or committed inventory path.
 - `release.snapshot_tag`: the immutable coordinated snapshot identity.
@@ -66,17 +69,31 @@ contract, and generations never select migration endpoints.
 `initialize: true` only permits first initialization after empty/absent database
 and no-writer checks; it never allows reset or deletion. Existing initialized
 targets require matching owner receipts, cluster identity and schema checkpoints.
-Validate the Accounts domain against the declared generation/domain base and
-verify that Doco-CD's local manifests exist in the pinned checkout. The service
+Accounts and Console domains are explicit declaration values. Do not construct
+or restrict them using generation labels or a fixed alias template. Verify that
+Doco-CD's local manifests exist in the pinned checkout. The service
 snapshot tag is independent of the selected GitOps commit: the current snapshot
 workflow tags service repositories, so do not require a same-named GitOps tag or
 compare its resolution to `--gitops-ref`. Verify service provenance against the
 coordinated release manifest and GitOps provenance against its own pinned SHA.
-Storage is
-PostgreSQL-only, all application/dependency images must be pinned, persistent data
-must use the already prepared CMDB disk, and candidate background writers and
-external payment/notification effects stay disabled. No disk formatting or
-anonymous database storage is authorized.
+Storage is PostgreSQL-only, all application/dependency images must be pinned,
+persistent data must match the verified root/dedicated storage profile, and
+candidate background writers and external payment/notification effects stay
+disabled. No disk formatting or anonymous database storage is authorized.
+
+`execution.storage` supplies optional nonsecret intent when the external CMDB
+lacks storage metadata. It requires `profile: root` or `profile: dedicated` and
+an absolute `data_path` matching the PostgreSQL bind in both pinned Doco-CD
+selections. A root profile uses the host's bundled root filesystem; a separate
+disk is not required. A dedicated profile also requires `mount_path` and
+`device_path`; `filesystem_uuid` may add an identity guard. The owner verifies
+the selected filesystem/device without formatting or clearing it.
+
+The consumer resolves storage from CMDB `storage`, then
+`host_vars.control_plane_storage`, then `execution.storage`; legacy CMDB
+`data_disk` is accepted as a dedicated profile when none of those is present.
+The fallback declares storage intent, not provider facts or permission to create
+a disk. An absent CMDB storage profile must not silently select a default disk.
 
 The external runtime inputs are supplied through environment variables:
 
@@ -85,26 +102,30 @@ The external runtime inputs are supplied through environment variables:
 | `GITOPS_CHECKOUT` | Local verified checkout containing the declaration | Caller verifies selected GitOps SHA and config containment |
 | `CONTROL_PLANE_CMDB` | Operator-provided CMDB artifact path | Playbooks resolves the target and validates environment, host, SSH identity and provenance |
 | `CONTROL_PLANE_VARS_FILE` | Operator-provided protected runtime vars path | Playbooks validates required settings and resolves scoped secret references before writing configuration |
+| `BILLING_CHECKOUT` | Canonical clean Billing source checkout, required for execution | Owner verifies `release.billing.source_sha`, canonical origin and exact schema bytes |
 
-These files and their machine-specific paths are not fields in the declaration
+These local files/checkouts and their machine-specific paths are not fields in the declaration
 and must not be committed. The caller bridges `CONTROL_PLANE_CMDB` to the existing
 inventory adapter (`AI_WORKSPACE_CMDB_JSON` / `CMDB_FILE`) explicitly; it must not
 fall back to an unrelated provider inventory. The existing `cmdb.v1` host records
 already provide logical names, addresses, environment, resource identity,
 groups and SSH users. No IaC schema or deployed resource change is required for
 this contract. A missing, mismatched or ambiguous target fails before SSH.
-`target.cmdb_file` and `vars_files` are deliberately rejected by this GitOps
-schema even if an older or broader Playbooks parser supports them: this public
-contract requires both operator paths through the environment. For a fresh
-installation, the external CMDB must additionally identify the already prepared
-data disk's stable device path and mount path; it must not be invented by the
-deployment Role.
+`target.cmdb_file` and `vars_files` are rejected by the GitOps and owning consumer
+contracts. Both operator paths must come through the environment; a repository
+file fallback must not be used for CMDB or protected runtime policy. The selected
+storage profile is verified against the CMDB-selected host. Dedicated storage
+must identify its already prepared device and mount; root storage must reside
+on the actual root filesystem. The deployment Role must not invent a disk.
 
 Domain settings, dependency configuration and environment-scoped Vault references
 are resolved from the selected GitOps declarations and protected runtime vars.
 Tokens, DSNs, keys, addresses and generated CMDB/receipts do not belong here.
 Additional runtime dependencies must be explicitly declared and pinned by their
 owner; the five mandatory service pins are not permission to install hidden ones.
+OCI repository names remain lowercase; an optional tag may contain uppercase
+letters and must still be followed by its immutable `@sha256:` digest. The owner
+and schema must accept the same image reference grammar.
 
 The release verifier checks the five source commits, successful builds,
 registry digests, schema and migration checksums against the same snapshot.
@@ -112,6 +133,19 @@ It also checks workflow availability before build dispatch. A tag can exist
 while its build is incomplete; neither a tag nor a successful subset of builds
 is a deployable snapshot. Never move a published tag; changed source requires
 a new immutable revision. Schema validation proves only syntax.
+
+`release.billing` may be omitted for declaration-only preflight, but execution
+requires its `source_sha` and `schema_file: sql/billing-service-schema.sql`.
+`BILLING_CHECKOUT` supplies a separate canonical clean Billing repository at that
+exact commit. The owner verifies SQL bytes against the existing
+`release.accounts.billing_schema_sha256`; a path or checksum alone does not prove
+that Billing DDL ran. This is first-empty-target DDL only. It must not replay
+against an initialized database or invent a default billing catalog/seed.
+
+Ordinary installation does not enable the migration API. A separate
+[listener declaration and opt-in Doco-CD selection](selfhost-migration-listener-contract.md)
+are needed for the target-side listener; they reuse the same pinned candidate
+stack and Accounts image without deploying anything onto the source.
 
 ## Accounts peer and authentication contract
 
@@ -227,8 +261,8 @@ to this process. This document does not deprecate a working lane by itself.
 
 Use a YAML parser and a Draft 2020-12 JSON Schema engine with URI/date-time format
 checking enabled. YAML is the only committed serialization, including schemas.
-Check both schemas themselves; require reviewed declarations to pass and both
-`example_only: true` templates to fail. Also test rejection of missing service
+Check the declaration schemas themselves; require reviewed declarations to pass
+and all `example_only: true` templates to fail. Also test rejection of missing service
 pins, mutable images/owner refs, additional fields, IP hosts, secret fields,
 auth-method ambiguity, wrong scopes and invalid origins/expiry syntax.
 
