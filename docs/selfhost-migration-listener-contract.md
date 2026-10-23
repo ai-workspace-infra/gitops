@@ -75,11 +75,14 @@ The Caddy service is `web-saas-caddy`. Its overlay binds the persistent host
 directory `/etc/xcontrol/migration-api/caddy` read-only at
 `/etc/caddy/migration-api`, with `create_host_path: false`. Playbooks writes
 `route.caddy` inside the target directory and the native candidate Caddyfile
-imports `/etc/caddy/migration-api/route.caddy` before its ordinary read-only
-candidate rule. Mounting the directory keeps an atomically replaced route inode
-visible after Caddy restarts; an individual file bind could continue exposing
-the previous inode. The sidecar's
-`/etc/xcontrol/migration-api/listener.env` remains outside this Caddy-only mount.
+imports `/etc/caddy/migration-api/*.caddy` before its ordinary read-only
+candidate rule. The wildcard permits initial candidate bootstrap while the
+opt-in listener has not yet produced a route file. The protected route-only
+directory contains only the owner-produced `route.caddy`; the sidecar's
+`/etc/xcontrol/migration-api/listener.env` sibling is outside the Caddy mount.
+Mounting the directory keeps an atomically replaced route inode visible after
+Caddy restarts; an individual file bind could continue exposing the previous
+inode.
 The owner checks the actual read-only directory bind and mounted route contents,
 then verifies the listener namespace points to the current Caddy container ID.
 Only the reviewed route and CIDRs may expose the loopback API; no generic proxy
