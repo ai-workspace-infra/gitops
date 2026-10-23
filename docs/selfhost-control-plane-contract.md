@@ -40,6 +40,8 @@ belongs to that checkout. Reading floating `main` at execution time is forbidden
 The schema requires exactly these desired-state groups:
 
 - `environment`: `sit`, `uat`, or `prod`; a value alone grants no access.
+  Fresh SIT uses the same explicit native initialization and default billing-plan
+  requirements as UAT/PROD; the consumer must support it without rerouting to UAT.
 - `target.host`: a logical key in the environment's external CMDB, never an IP,
   SSH login, provider fact or committed inventory path.
 - `release.snapshot_tag`: the immutable coordinated snapshot identity.
@@ -66,17 +68,31 @@ contract, and generations never select migration endpoints.
 `initialize: true` only permits first initialization after empty/absent database
 and no-writer checks; it never allows reset or deletion. Existing initialized
 targets require matching owner receipts, cluster identity and schema checkpoints.
-Validate the Accounts domain against the declared generation/domain base and
-verify that Doco-CD's local manifests exist in the pinned checkout. The service
+Accounts and Console domains are explicit declaration values. Do not construct
+or restrict them using generation labels or a fixed alias template. Verify that
+Doco-CD's local manifests exist in the pinned checkout. The service
 snapshot tag is independent of the selected GitOps commit: the current snapshot
 workflow tags service repositories, so do not require a same-named GitOps tag or
 compare its resolution to `--gitops-ref`. Verify service provenance against the
 coordinated release manifest and GitOps provenance against its own pinned SHA.
-Storage is
-PostgreSQL-only, all application/dependency images must be pinned, persistent data
-must use the already prepared CMDB disk, and candidate background writers and
-external payment/notification effects stay disabled. No disk formatting or
-anonymous database storage is authorized.
+Storage is PostgreSQL-only, all application/dependency images must be pinned,
+persistent data must match the verified root/dedicated storage profile, and
+candidate background writers and external payment/notification effects stay
+disabled. No disk formatting or anonymous database storage is authorized.
+
+`execution.storage` supplies optional nonsecret intent when the external CMDB
+lacks storage metadata. It requires `profile: root` or `profile: dedicated` and
+an absolute `data_path` matching the PostgreSQL bind in both pinned Doco-CD
+selections. A root profile uses the host's bundled root filesystem; a separate
+disk is not required. A dedicated profile also requires `mount_path` and
+`device_path`; `filesystem_uuid` may add an identity guard. The owner verifies
+the selected filesystem/device without formatting or clearing it.
+
+The consumer resolves storage from CMDB `storage`, then
+`host_vars.control_plane_storage`, then `execution.storage`; legacy CMDB
+`data_disk` is accepted as a dedicated profile when none of those is present.
+The fallback declares storage intent, not provider facts or permission to create
+a disk. An absent CMDB storage profile must not silently select a default disk.
 
 The external runtime inputs are supplied through environment variables:
 
@@ -93,18 +109,21 @@ fall back to an unrelated provider inventory. The existing `cmdb.v1` host record
 already provide logical names, addresses, environment, resource identity,
 groups and SSH users. No IaC schema or deployed resource change is required for
 this contract. A missing, mismatched or ambiguous target fails before SSH.
-`target.cmdb_file` and `vars_files` are deliberately rejected by this GitOps
-schema even if an older or broader Playbooks parser supports them: this public
-contract requires both operator paths through the environment. For a fresh
-installation, the external CMDB must additionally identify the already prepared
-data disk's stable device path and mount path; it must not be invented by the
-deployment Role.
+`target.cmdb_file` and `vars_files` are rejected by the GitOps and owning consumer
+contracts. Both operator paths must come through the environment; a repository
+file fallback must not be used for CMDB or protected runtime policy. The selected
+storage profile is verified against the CMDB-selected host. Dedicated storage
+must identify its already prepared device and mount; root storage must reside
+on the actual root filesystem. The deployment Role must not invent a disk.
 
 Domain settings, dependency configuration and environment-scoped Vault references
 are resolved from the selected GitOps declarations and protected runtime vars.
 Tokens, DSNs, keys, addresses and generated CMDB/receipts do not belong here.
 Additional runtime dependencies must be explicitly declared and pinned by their
 owner; the five mandatory service pins are not permission to install hidden ones.
+OCI repository names remain lowercase; an optional tag may contain uppercase
+letters and must still be followed by its immutable `@sha256:` digest. The owner
+and schema must accept the same image reference grammar.
 
 The release verifier checks the five source commits, successful builds,
 registry digests, schema and migration checksums against the same snapshot.

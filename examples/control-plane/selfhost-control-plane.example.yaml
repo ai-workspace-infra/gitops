@@ -9,8 +9,8 @@ target:
   host: '<CMDB_LOGICAL_TARGET_HOST>'
   generation: candidate
   domain_base: example.invalid
-  console_domain: console-selfhost-candidate.example.invalid
-  accounts_domain: accounts-selfhost-candidate.example.invalid
+  console_domain: console.example.invalid
+  accounts_domain: accounts.example.invalid
 release:
   snapshot_tag: '<VERIFIED_IMMUTABLE_SNAPSHOT_TAG>'
   services:
@@ -34,3 +34,8 @@ execution:
   playbooks_sha: '<REVIEWED_40_HEX_PLAYBOOKS_COMMIT>'
   mode: candidate
   initialize: true
+  # Fallback intent only when the external CMDB has no storage profile.
+  # Root storage is supported; the owner verifies the actual root filesystem.
+  storage:
+    profile: root
+    data_path: /data/postgresql
