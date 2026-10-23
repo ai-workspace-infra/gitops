@@ -56,8 +56,9 @@ services:
     # read_only: true, bind.create_host_path: false, and the matching CLI flag.
   caddy:
     container_name: web-saas-caddy
-    # Persistent directory bind keeps atomic route-file replacement visible
-    # after a Caddy restart. Merge with the same stack and retain config/TLS mounts.
+    # Native Caddy imports /etc/caddy/migration-api/route.caddy explicitly.
+    # Keep this directory bind so atomic replacement remains visible after restart.
+    # Merge with the same stack and retain config/TLS mounts.
     volumes:
       - type: bind
         source: /etc/xcontrol/migration-api/caddy

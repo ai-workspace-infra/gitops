@@ -75,7 +75,7 @@ The Caddy service is `web-saas-caddy`. Its overlay binds the persistent host
 directory `/etc/xcontrol/migration-api/caddy` read-only at
 `/etc/caddy/migration-api`, with `create_host_path: false`. Playbooks writes
 `route.caddy` inside the target directory and the native candidate Caddyfile
-imports `/etc/caddy/migration-api/*.caddy` before its ordinary read-only
+imports `/etc/caddy/migration-api/route.caddy` before its ordinary read-only
 candidate rule. Mounting the directory keeps an atomically replaced route inode
 visible after Caddy restarts; an individual file bind could continue exposing
 the previous inode. The sidecar's
