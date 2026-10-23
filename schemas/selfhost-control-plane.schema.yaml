@@ -46,7 +46,7 @@ properties:
         $ref: '#/$defs/name'
         description: Explicit Accounts domain; never inferred from a generation label.
       billing_domain:
-        $ref: '#/$defs/name'
+        $ref: '#/$defs/hostname'
         description: >-
           Optional candidate-only Billing hostname. The pinned Playbooks owner
           must support this field and restrict its route to read-only readiness;
@@ -187,6 +187,11 @@ $defs:
   name:
     type: string
     pattern: '^[A-Za-z][A-Za-z0-9_.-]*$'
+  hostname:
+    type: string
+    minLength: 1
+    maxLength: 253
+    pattern: '^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?))*$'
   commit:
     type: string
     pattern: '^[a-f0-9]{40}$'
