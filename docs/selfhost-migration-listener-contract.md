@@ -62,7 +62,7 @@ The pinned CLI's default listener binds loopback port 9097. The explicit
 `--allow-loopback-http` flag is only for this private local reverse-proxy hop.
 The sidecar shares `network_mode: service:caddy`, publishes no ports, declares no
 additional networks or inline environment, and loads only
-`/run/control-plane-migration/listener.env`. It runs with a read-only root,
+`/etc/xcontrol/migration-api/listener.env`. It runs with a read-only root,
 `user: '0:0'`, all capabilities dropped and `no-new-privileges:true`; the owner
 enforces this exact envelope and file permissions.
 
@@ -72,7 +72,7 @@ encrypted resumable data and must survive a listener restart. No credential or
 staging payload is committed to GitOps.
 
 The Caddy service is `web-saas-caddy`. Its overlay explicitly binds
-`/run/control-plane-migration/route.caddy` read-only at
+`/etc/xcontrol/migration-api/route.caddy` read-only at
 `/etc/caddy/migration-listener.caddy`, also with `create_host_path: false`.
 Playbooks renders that route and the reference-only runtime environment from
 approved external inputs. The native candidate Caddyfile imports
@@ -80,6 +80,16 @@ approved external inputs. The native candidate Caddyfile imports
 narrow authenticated migration routes are evaluated deliberately. Only the
 reviewed route and CIDRs may expose the loopback API; no generic proxy bypass
 or source-host modification is implied.
+
+Both required files are persistent, target-only owner outputs so a reboot does
+not leave Caddy with a missing required bind or leave the listener without its
+environment. Playbooks enforces root ownership, directory mode `0700` and file
+mode `0600`. No secret content or target credential file is copied into GitOps
+or a controller workspace. Every deployment re-resolves Vault with the explicitly
+selected identity before reconciliation and verifies the actual listener process
+uses those current values afterward. Vault failure must stop the operation;
+existing files or ambient credentials are never a fallback. Persistence is not
+permission to reuse stale credentials during a deployment.
 
 ## Runtime references, preview and apply
 
@@ -104,6 +114,9 @@ proof, independently verified isolated restore, target identity/baseline, plan a
 before enabling apply. The reviewed Compose selection adds only the existing
 receipt at the same absolute host/container path, read-only with
 `create_host_path: false`, and the matching backup-receipt CLI flag.
+Receipt references remain limited to `/run` or `/data`; prefer a protected
+persistent `/data` artifact for restart-capable apply. A `/run` receipt is
+ephemeral and must be regenerated and reverified after reboot before apply.
 
 `initialize_receipts: true` additionally requires apply eligibility and an
 explicit dedicated target receipt owner; it never initializes a source schema.
@@ -121,6 +134,8 @@ of cloud/DNS/state and CMDB.
 
 Schema/selection checks prove no live readiness. Required isolated acceptance
 includes same-image listener startup, private staging and restart/resume,
+reboot persistence of required route/environment mounts, current-value refresh
+verification and refusal when the selected Vault identity cannot resolve,
 unauthorized/illegal-peer refusal, trusted SNI routing, preview without business
 writes or receipt DDL, backed-up target apply and exact committed retry. Fixed
 source V4, DNS/writer handoff, real payments and production remain outside this

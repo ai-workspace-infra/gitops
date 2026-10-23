@@ -34,7 +34,8 @@ services:
       - --allowed-peer-cidr
       - '<APPROVED_SOURCE_NETWORK_CIDR>'
     network_mode: service:caddy
-    env_file: [/run/control-plane-migration/listener.env]
+    # Target-only persistent file; owner refreshes from Vault before reconciliation.
+    env_file: [/etc/xcontrol/migration-api/listener.env]
     read_only: true
     user: '0:0'
     cap_drop: [ALL]
@@ -57,7 +58,7 @@ services:
     # Merge with the same pinned candidate stack; retain its config/TLS mounts.
     volumes:
       - type: bind
-        source: /run/control-plane-migration/route.caddy
+        source: /etc/xcontrol/migration-api/route.caddy
         target: /etc/caddy/migration-listener.caddy
         read_only: true
         bind:

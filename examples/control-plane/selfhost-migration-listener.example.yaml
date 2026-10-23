@@ -16,4 +16,5 @@ listener:
   initialize_receipts: false
   receipt_owner_role: migration_owner
   # apply_enabled: true requires receipt_file and protected external recovery proof.
-  # receipt_file: /run/control-plane-migration/backup.json
+  # Prefer a persistent /data receipt when the apply-capable listener must restart.
+  # receipt_file: /data/migration-recovery/backup.json

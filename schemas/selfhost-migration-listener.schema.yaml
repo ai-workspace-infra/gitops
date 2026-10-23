@@ -4,6 +4,8 @@ description: >-
   Separate from ordinary candidate installation and from source deployment.
   Identity, images and GitOps/Playbooks pins come from control_plane_config.
   Credentials and generated recovery evidence are protected external inputs.
+  The owner keeps required listener.env and route.caddy files in persistent
+  target-only /etc/xcontrol/migration-api (directory 0700, files 0600), never Git.
 type: object
 additionalProperties: false
 required: [schema_version, kind, control_plane_config, doco_target, listener]
@@ -80,7 +82,8 @@ properties:
         pattern: '^/(?:run|data)/(?:[A-Za-z0-9_-]+/)*[A-Za-z0-9_-][A-Za-z0-9_.-]*\.json$'
         description: >-
           Existing target-only backup receipt path, mounted at the same absolute
-          path read-only. Its contents and full recovery proof remain external.
+          path read-only. Prefer /data for restart persistence; /run is ephemeral.
+          Its contents and full recovery proof remain external.
     allOf:
       - if:
           properties:
