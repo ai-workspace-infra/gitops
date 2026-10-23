@@ -4,7 +4,7 @@ global:
   project: svc.plus
   account: manbuzhe2026
   workspace: web-saas-prod-v5
-  region: sg-sin-2
+  region: jp-tyo-3
   image: linode/debian12
   type: g6-standard-2
   name_prefix: ""
@@ -17,7 +17,7 @@ ssh_keys:
 
 hosts:
   - name: web-saas-prod-v5
-    region: sg-sin-2
+    region: jp-tyo-3
     type: g6-standard-2
     image: linode/debian12
     private_ip: true
