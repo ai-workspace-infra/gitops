@@ -1,9 +1,9 @@
-# PostgreSQL-only storage selection. The required image interpolation remains
-# unresolved until the verified registry manifest is published.
+# PostgreSQL-only storage selection. PostgreSQL uses the native owner container
+# identity and external database network; generation remains contract metadata.
 services:
   postgres:
     image: ${POSTGRESQL_IMAGE:?verified registry PostgreSQL digest required}
-    container_name: web-saas-prod-v5-postgresql
+    container_name: web-saas-postgresql
     restart: unless-stopped
     env_file:
       - /etc/xcontrol/web-saas/secrets.env
@@ -23,7 +23,9 @@ services:
       timeout: 5s
       retries: 8
       start_period: 30s
-    networks: [web_saas_v5_storage]
+    networks: [postgres_net]
 
 networks:
-  web_saas_v5_storage: {}
+  postgres_net:
+    name: docker_web_saas_postgres_network
+    external: true

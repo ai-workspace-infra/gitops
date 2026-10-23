@@ -5,11 +5,11 @@
 # 94e722c913a8c6e8adbb5b0bd363b20c9d3b4d08, Portal
 # 02607cf315570097606d90a8ba514fe37dcbe9e6 and PostgreSQL
 # 253d69a3ad19558a4bd272dee0509a498e091e24.
-# PostgreSQL's image is intentionally absent: its local Docker image ID is not
-# a registry digest. The five-artifact snapshot is not eligible until published
-# registry artifacts and their provenance are verified. The only schema error
-# is the intentionally missing release.services.postgresql image.
-# This blocked proposal is not eligible for install-control-plane.sh.
+# All five image digests below are fixed to the supplied r101 registry
+# artifacts. The PostgreSQL OCI index and published release assets are verified;
+# the proposal remains blocked until coordinated five-artifact provenance and
+# the native Billing candidate SNI probe contract are verified. The local Docker
+# image ID is never used as a registry reference.
 # The four supplied r101 application image digests are recorded below.
 # Protected runtime policy and its Vault references are supplied out of band
 # by the runtime-policy owner; no secret values or secret-store paths belong here.
@@ -29,15 +29,16 @@ target:
   console_domain: console-selfhost-prod-v5.svc.plus
   accounts_domain: accounts-selfhost-prod-v5.svc.plus
 release:
-  # The r101 source tags were checked against the exact source commits. This
-  # proposal remains blocked until all five corresponding registry artifacts
-  # (including PostgreSQL) and provenance manifests are verified.
+  # The r101 source tags were checked against the exact source commits. The
+  # PostgreSQL release manifest is published; coordinated five-artifact
+  # provenance must still be verified before candidate execution.
   snapshot_tag: daily-build-2026.10.23-r101
   services:
     accounts: ghcr.io/ai-workspace-services/accounts@sha256:39716c2941b6f8ebbc0602589a59711d846234cb8313ae21254a91ba6073def7
     billing-service: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
     portal: ghcr.io/ai-workspace-services/console@sha256:cc9b85339d82cefd264455c3d28c4e25dcd9e293378675855e23822730d5d0c5
     content-service: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
+    postgresql: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
   # Required before execution: Accounts source SHA, native and Billing schema
   # checksums, migration version and sorted native business table manifest are
   # copied from the exact pinned Accounts source manifest.

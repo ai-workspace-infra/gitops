@@ -3,7 +3,7 @@
 services:
   postgres:
     image: ${POSTGRESQL_IMAGE:?verified registry PostgreSQL digest required}
-    container_name: web-saas-prod-v5-postgresql
+    container_name: web-saas-postgresql
     restart: unless-stopped
     env_file:
       - /etc/xcontrol/web-saas/secrets.env
@@ -23,11 +23,11 @@ services:
       timeout: 5s
       retries: 8
       start_period: 30s
-    networks: [web_saas_v5]
+    networks: [postgres_net]
 
   stunnel-server:
     image: ${STUNNEL_SERVER_IMAGE:?pinned stunnel server image required}
-    container_name: web-saas-prod-v5-stunnel-server
+    container_name: web-saas-stunnel-server
     restart: unless-stopped
     volumes:
       - /etc/xcontrol/web-saas/config/stunnel-server.conf:/etc/stunnel/stunnel.conf:ro
@@ -36,11 +36,11 @@ services:
     expose: ["15433"]
     depends_on:
       postgres: {condition: service_healthy}
-    networks: [web_saas_v5]
+    networks: [web_saas_v5, postgres_net]
 
   stunnel-client:
     image: ${STUNNEL_CLIENT_IMAGE:?pinned stunnel client image required}
-    container_name: web-saas-prod-v5-stunnel-client
+    container_name: web-saas-stunnel-client
     restart: unless-stopped
     environment:
       STUNNEL_SERVICE: postgres-tls-server
@@ -57,7 +57,7 @@ services:
 
   accounts:
     image: ${ACCOUNTS_IMAGE:?verified Accounts digest required}
-    container_name: web-saas-prod-v5-accounts
+    container_name: web-saas-accounts
     restart: unless-stopped
     env_file: [/etc/xcontrol/web-saas/secrets.env]
     environment:
@@ -80,7 +80,7 @@ services:
 
   billing:
     image: ${BILLING_IMAGE:?verified Billing digest required}
-    container_name: web-saas-prod-v5-billing
+    container_name: web-saas-billing
     restart: unless-stopped
     env_file: [/etc/xcontrol/web-saas/secrets.env]
     environment:
@@ -98,14 +98,14 @@ services:
 
   console-assets:
     image: ${PORTAL_IMAGE:?verified Portal digest required}
-    container_name: web-saas-prod-v5-console-assets
+    container_name: web-saas-console-assets
     restart: "no"
     command: ["/bin/sh", "-c", "set -eu; mkdir -p /assets /assets/public; cp -R /app/dashboard/static/. /assets/ || true; cp -R /app/dashboard/public/. /assets/public || true"]
     volumes: ["console_static:/assets"]
 
   console:
     image: ${PORTAL_IMAGE:?verified Portal digest required}
-    container_name: web-saas-prod-v5-console
+    container_name: web-saas-console
     restart: unless-stopped
     env_file: [/etc/xcontrol/web-saas/secrets.env]
     environment:
@@ -131,20 +131,20 @@ services:
 
   content:
     image: ${CONTENT_IMAGE:?verified Content digest required}
-    container_name: web-saas-prod-v5-content
+    container_name: web-saas-content
     restart: unless-stopped
     env_file: [/etc/xcontrol/web-saas/secrets.env]
     environment:
       KNOWLEDGE_REPO_PATH: /tmp/knowledge
       DOCS_SERVICE_PORT: "8084"
-      OTEL_SERVICE_NAME: web-saas-prod-v5-content
+      OTEL_SERVICE_NAME: web-saas-content
       OTEL_ENVIRONMENT: ${DEPLOY_ENV}
     expose: ["8084"]
     networks: [web_saas_v5]
 
   caddy:
     image: ${CADDY_IMAGE:?pinned Caddy image required}
-    container_name: web-saas-prod-v5-caddy
+    container_name: web-saas-caddy
     restart: unless-stopped
     ports: ["80:80", "443:443"]
     volumes:
@@ -156,7 +156,12 @@ services:
     networks: [web_saas_v5]
 
 networks:
-  web_saas_v5: {}
+  web_saas_v5:
+    name: docker_shared_network
+    external: true
+  postgres_net:
+    name: docker_web_saas_postgres_network
+    external: true
 
 volumes:
   console_static: {}
