@@ -1,0 +1,14 @@
+# NOT DEPLOYABLE: an opt-in selection template, never a live root .doco-cd file.
+# Review the complete target stack + overlay at one immutable GitOps commit.
+x-example-only: true
+name: example-candidate-migration
+version: doco.v1
+working_dir: examples/control-plane
+compose_files:
+  - '<REVIEWED_PINNED_TARGET_STACK_COMPOSE_FILE>'
+  - migration-listener.compose.example.yaml
+env_files:
+  - '<REVIEWED_DIGEST_ONLY_ENV_FILE>'
+force_image_pull: true
+remove_orphans: false
+timeout: 600

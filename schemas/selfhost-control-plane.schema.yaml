@@ -95,6 +95,20 @@ properties:
               type: string
               pattern: '^[a-z][a-z0-9_]*$'
             description: Consumer verifies exact sorted native-schema manifest table list.
+      billing:
+        type: object
+        additionalProperties: false
+        required: [source_sha, schema_file]
+        properties:
+          source_sha:
+            $ref: '#/$defs/commit'
+          schema_file:
+            const: sql/billing-service-schema.sql
+        description: >-
+          Optional for declaration preflight, required for execution. The owner
+          verifies the canonical clean BILLING_CHECKOUT at this commit and
+          binds SQL bytes to release.accounts.billing_schema_sha256. Applies
+          reviewed DDL only to the first empty target; never seeds a catalog.
       doco_cd:
         type: object
         additionalProperties: false

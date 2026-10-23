@@ -25,6 +25,10 @@ release:
     billing_schema_sha256: '<VERIFIED_BILLING_SCHEMA_CHECKSUM>'
     migration_version: '<VERIFIED_NATIVE_MIGRATION_VERSION_INTEGER>'
     business_tables: ['<SORTED_TABLE_NAMES_FROM_VERIFIED_NATIVE_MANIFEST>']
+  # Required for execution; no Billing source is fetched or run by GitOps.
+  billing:
+    source_sha: '<VERIFIED_40_HEX_BILLING_COMMIT>'
+    schema_file: sql/billing-service-schema.sql
   doco_cd:
     image: 'registry.example.invalid/control-plane/doco-cd@sha256:<VERIFIED_64_HEX_DIGEST>'
     repository: https://github.com/ai-workspace-infra/gitops.git

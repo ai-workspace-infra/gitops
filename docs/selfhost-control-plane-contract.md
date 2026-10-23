@@ -11,13 +11,14 @@ data, publish a release, transfer writer ownership, or change DNS.
 | --- | --- | --- |
 | Fresh candidate deployment | [selfhost-control-plane.schema.yaml](../schemas/selfhost-control-plane.schema.yaml) | [selfhost-control-plane.example.yaml](../examples/control-plane/selfhost-control-plane.example.yaml) |
 | Accounts migration peers | [accounts-migration.schema.yaml](../schemas/accounts-migration.schema.yaml) | [accounts-migration.example.yaml](../examples/control-plane/accounts-migration.example.yaml) |
+| Opt-in target migration listener | [selfhost-migration-listener.schema.yaml](../schemas/selfhost-migration-listener.schema.yaml) | [selfhost-migration-listener.example.yaml](../examples/control-plane/selfhost-migration-listener.example.yaml) |
 
 The templates are **NOT DEPLOYABLE**. They contain `example_only: true`, reserved
 `.invalid` domains and visibly invalid `<...>` placeholders. No example image
-digest or Playbooks SHA is represented as verified. Both schemas reject
+digest or Playbooks SHA is represented as verified. All declaration schemas reject
 `example_only: true`; consumers must also reject it explicitly before obtaining
 credentials or performing any runtime action. Replacing pins alone is not enough:
-an operator must create a reviewed declaration with the flag removed or false.
+an operator must create a reviewed declaration with the example flag removed.
 Consumers must never discover examples by globbing runtime topology directories.
 
 These are versioned service input contracts, not `ResourceMatrix` declarations.
@@ -101,8 +102,9 @@ The external runtime inputs are supplied through environment variables:
 | `GITOPS_CHECKOUT` | Local verified checkout containing the declaration | Caller verifies selected GitOps SHA and config containment |
 | `CONTROL_PLANE_CMDB` | Operator-provided CMDB artifact path | Playbooks resolves the target and validates environment, host, SSH identity and provenance |
 | `CONTROL_PLANE_VARS_FILE` | Operator-provided protected runtime vars path | Playbooks validates required settings and resolves scoped secret references before writing configuration |
+| `BILLING_CHECKOUT` | Canonical clean Billing source checkout, required for execution | Owner verifies `release.billing.source_sha`, canonical origin and exact schema bytes |
 
-These files and their machine-specific paths are not fields in the declaration
+These local files/checkouts and their machine-specific paths are not fields in the declaration
 and must not be committed. The caller bridges `CONTROL_PLANE_CMDB` to the existing
 inventory adapter (`AI_WORKSPACE_CMDB_JSON` / `CMDB_FILE`) explicitly; it must not
 fall back to an unrelated provider inventory. The existing `cmdb.v1` host records
@@ -131,6 +133,19 @@ It also checks workflow availability before build dispatch. A tag can exist
 while its build is incomplete; neither a tag nor a successful subset of builds
 is a deployable snapshot. Never move a published tag; changed source requires
 a new immutable revision. Schema validation proves only syntax.
+
+`release.billing` may be omitted for declaration-only preflight, but execution
+requires its `source_sha` and `schema_file: sql/billing-service-schema.sql`.
+`BILLING_CHECKOUT` supplies a separate canonical clean Billing repository at that
+exact commit. The owner verifies SQL bytes against the existing
+`release.accounts.billing_schema_sha256`; a path or checksum alone does not prove
+that Billing DDL ran. This is first-empty-target DDL only. It must not replay
+against an initialized database or invent a default billing catalog/seed.
+
+Ordinary installation does not enable the migration API. A separate
+[listener declaration and opt-in Doco-CD selection](selfhost-migration-listener-contract.md)
+are needed for the target-side listener; they reuse the same pinned candidate
+stack and Accounts image without deploying anything onto the source.
 
 ## Accounts peer and authentication contract
 
@@ -246,8 +261,8 @@ to this process. This document does not deprecate a working lane by itself.
 
 Use a YAML parser and a Draft 2020-12 JSON Schema engine with URI/date-time format
 checking enabled. YAML is the only committed serialization, including schemas.
-Check both schemas themselves; require reviewed declarations to pass and both
-`example_only: true` templates to fail. Also test rejection of missing service
+Check the declaration schemas themselves; require reviewed declarations to pass
+and all `example_only: true` templates to fail. Also test rejection of missing service
 pins, mutable images/owner refs, additional fields, IP hosts, secret fields,
 auth-method ambiguity, wrong scopes and invalid origins/expiry syntax.
 
