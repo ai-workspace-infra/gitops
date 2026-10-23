@@ -28,6 +28,7 @@ target:
   domain_base: svc.plus
   console_domain: console-selfhost-prod-v5.svc.plus
   accounts_domain: accounts-selfhost-prod-v5.svc.plus
+  billing_domain: billing-selfhost-prod-v5.svc.plus
 release:
   # The r101 source tags were checked against the exact source commits. The
   # PostgreSQL release manifest is published; coordinated five-artifact
