@@ -17,6 +17,7 @@ class WebSaaSBusinessEnvTests(unittest.TestCase):
     def test_v5_storage_to_app_keeps_the_same_doco_compose_project(self):
         storage=yaml.safe_load((ROOT/'.doco-cd.prod-v5-storage.yml').read_text())
         app=yaml.safe_load((ROOT/'.doco-cd.prod-v5-candidate.yml').read_text())
+        # Pinned Doco-CD v0.127.0 passes Config.Name to Compose as ProjectName.
         self.assertEqual(storage['name'], 'web-saas-prod-v5')
         self.assertEqual(storage['name'], app['name'])
         self.assertEqual(storage['compose_files'], ['docker-compose.prod-v5-storage.yml'])
