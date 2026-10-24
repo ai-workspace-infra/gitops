@@ -1,33 +1,12 @@
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: vault-raft-config
-data:
-  vault.hcl: |
-    ui = true
-    disable_mlock = true
-    api_addr = "https://vault-raft.platform-vault.svc.cluster.local:8200"
-    cluster_addr = "https://vault-raft.platform-vault.svc.cluster.local:8201"
-    storage "raft" {
-      path = "/vault/data"
-      node_id = "uat-vault-raft-0" # Retain the existing Raft node identity.
-    }
-    listener "tcp" {
-      address = "0.0.0.0:8200"
-      cluster_address = "0.0.0.0:8201"
-      tls_disable = false
-      tls_cert_file = "/vault/tls/tls.crt"
-      tls_key_file = "/vault/tls/tls.key"
-    }
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: vault-raft-data
   annotations:
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
-  accessModes: [ReadWriteOnce]
+  accessModes:
+  - ReadWriteOnce
   storageClassName: local-path
   resources:
     requests:
@@ -57,54 +36,58 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-        - name: vault
-          image: hashicorp/vault@sha256:4e33b126a59c0c333b76fb4e894722462659a6bec7c48c9ee8cea56fccfd2569
-          command: [vault, server, -config=/vault/config/vault.hcl]
-          env:
-            - name: VAULT_ADDR
-              value: https://127.0.0.1:8200
-            - name: VAULT_CACERT
-              value: /vault/tls/ca.crt
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: [ALL]
-          ports:
-            - name: api
-              containerPort: 8200
-            - name: cluster
-              containerPort: 8201
-          readinessProbe:
-            httpGet:
-              path: /v1/sys/health?standbyok=true
-              scheme: HTTPS
-              port: api
-          resources:
-            requests:
-              cpu: 50m
-              memory: 96Mi
-            limits:
-              memory: 512Mi
-          volumeMounts:
-            - name: config
-              mountPath: /vault/config
-              readOnly: true
-            - name: tls
-              mountPath: /vault/tls
-              readOnly: true
-            - name: data
-              mountPath: /vault/data
-      volumes:
+      - name: vault
+        image: hashicorp/vault@sha256:4e33b126a59c0c333b76fb4e894722462659a6bec7c48c9ee8cea56fccfd2569
+        command:
+        - vault
+        - server
+        - -config=/vault/config/vault.hcl
+        env:
+        - name: VAULT_ADDR
+          value: https://127.0.0.1:8200
+        - name: VAULT_CACERT
+          value: /vault/tls/ca.crt
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        ports:
+        - name: api
+          containerPort: 8200
+        - name: cluster
+          containerPort: 8201
+        readinessProbe:
+          httpGet:
+            path: /v1/sys/health?standbyok=true
+            scheme: HTTPS
+            port: api
+        resources:
+          requests:
+            cpu: 50m
+            memory: 96Mi
+          limits:
+            memory: 512Mi
+        volumeMounts:
         - name: config
-          configMap:
-            name: vault-raft-config
+          mountPath: /vault/config
+          readOnly: true
         - name: tls
-          secret:
-            secretName: vault-raft-tls
-            defaultMode: 0440
+          mountPath: /vault/tls
+          readOnly: true
         - name: data
-          persistentVolumeClaim:
-            claimName: vault-raft-data
+          mountPath: /vault/data
+      volumes:
+      - name: config
+        configMap:
+          name: vault-raft-config
+      - name: tls
+        secret:
+          secretName: vault-raft-tls
+          defaultMode: 288
+      - name: data
+        persistentVolumeClaim:
+          claimName: vault-raft-data
 ---
 apiVersion: v1
 kind: Service
@@ -115,14 +98,13 @@ spec:
   selector:
     app.kubernetes.io/name: vault-raft
   ports:
-    - name: api
-      port: 8200
-      targetPort: api
-    - name: cluster
-      port: 8201
-      targetPort: cluster
+  - name: api
+    port: 8200
+    targetPort: api
+  - name: cluster
+    port: 8201
+    targetPort: cluster
 ---
-# Only the dedicated ESO controller may consume this isolated Vault.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -131,38 +113,51 @@ spec:
   podSelector:
     matchLabels:
       app.kubernetes.io/name: vault-raft
-  policyTypes: [Ingress, Egress]
+  policyTypes:
+  - Ingress
+  - Egress
   ingress:
-    - from:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: platform
-          podSelector:
-            matchLabels:
-              app.kubernetes.io/name: external-secrets
-      ports:
-        - protocol: TCP
-          port: 8200
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: platform
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: external-secrets
+    ports:
+    - protocol: TCP
+      port: 8200
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: web-saas-k3s-v5
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/instance: web-saas
+          websaas.io/workload: caddy
+    ports:
+    - protocol: TCP
+      port: 8200
   egress:
-    - to:
-        - ipBlock:
-            cidr: 10.43.0.1/32
-        - ipBlock:
-            cidr: ${K3S_API_IP}/32
-      ports:
-        - protocol: TCP
-          port: 443
-        - protocol: TCP
-          port: 6443
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system
-          podSelector:
-            matchLabels:
-              k8s-app: kube-dns
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
+  - to:
+    - ipBlock:
+        cidr: 10.43.0.1/32
+    - ipBlock:
+        cidr: ${K3S_API_IP}/32
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 6443
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53

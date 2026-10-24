@@ -17,6 +17,16 @@ caddy:
     consoleSecret: web-saas-tls
     accountsSecret: web-saas-tls
     billingSecret: web-saas-tls
+  additionalHosts:
+  - name: vault
+    host: vault-k3s-v5.svc.plus
+    upstream: https://vault-raft.platform-vault.svc.cluster.local:8200
+    tlsSecret: web-saas-tls
+    upstreamCAConfigMap: vault-raft-ca
+  - name: observability
+    host: observability-k3s-v5.svc.plus
+    upstream: http://platform-observability-observability-stack.platform-observability.svc.cluster.local:3000
+    tlsSecret: web-saas-tls
 postgresql:
   enabled: true
   image: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
@@ -112,7 +122,8 @@ billing:
 content:
   enabled: true
   workload:
-    secretRefs: [content-runtime]
+    secretRefs:
+    - content-runtime
     image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
     port: 8080
     replicas: 1

@@ -6,7 +6,7 @@ spec:
   interval: 5m
   url: oci://ghcr.io/ai-workspace-infra/observability-stack
   ref:
-    digest: sha256:def0c3d75d4ceb859ca2561475ea71b34ba71074a16de4d95910fde1b4b2a04d
+    digest: sha256:7facf6bab6695e55bd472a04cf9239c120d583cce5346939dba81e9564bc3f9f
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy

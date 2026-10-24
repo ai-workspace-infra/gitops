@@ -15,7 +15,7 @@ grafana:
     tag: 11.3.0@sha256:a0f881232a6fb71a0554a47d0fe2203b6888fe77f4cefb7ea62bed7eb54e13c3
   existingSecret: grafana-admin
   adminPasswordKey: password
-  rootUrl: http://localhost:13000/
+  rootUrl: https://observability-k3s-v5.svc.plus/
   plugins:
   - victoriametrics-logs-datasource 0.33.1
   dashboardsConfigMap: platform-observability-dashboards
