@@ -4,3 +4,4 @@ namespace: platform-vault
 resources:
   - namespace.yaml
   - vault-raft.yaml
+  - identity.yaml

@@ -6,16 +6,18 @@ data:
   vault.hcl: |
     ui = true
     disable_mlock = true
-    api_addr = "http://vault-raft.platform-vault.svc.cluster.local:8200"
+    api_addr = "https://vault-raft.platform-vault.svc.cluster.local:8200"
     cluster_addr = "https://vault-raft.platform-vault.svc.cluster.local:8201"
     storage "raft" {
       path = "/vault/data"
-      node_id = "uat-vault-raft-0"
+      node_id = "uat-vault-raft-0" # Retain the existing Raft node identity.
     }
     listener "tcp" {
       address = "0.0.0.0:8200"
       cluster_address = "0.0.0.0:8201"
-      tls_disable = true
+      tls_disable = false
+      tls_cert_file = "/vault/tls/tls.crt"
+      tls_key_file = "/vault/tls/tls.key"
     }
 ---
 apiVersion: v1
@@ -46,9 +48,10 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: vault-raft
-        platform.svc.plus/environment: uat
+        platform.svc.plus/environment: prod
     spec:
-      automountServiceAccountToken: false
+      serviceAccountName: vault-raft
+      automountServiceAccountToken: true
       securityContext:
         runAsUser: 100
         runAsGroup: 1000
@@ -59,7 +62,9 @@ spec:
           command: [vault, server, -config=/vault/config/vault.hcl]
           env:
             - name: VAULT_ADDR
-              value: http://127.0.0.1:8200
+              value: https://127.0.0.1:8200
+            - name: VAULT_CACERT
+              value: /vault/tls/ca.crt
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -72,6 +77,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /v1/sys/health?standbyok=true
+              scheme: HTTPS
               port: api
           resources:
             requests:
@@ -83,12 +89,19 @@ spec:
             - name: config
               mountPath: /vault/config
               readOnly: true
+            - name: tls
+              mountPath: /vault/tls
+              readOnly: true
             - name: data
               mountPath: /vault/data
       volumes:
         - name: config
           configMap:
             name: vault-raft-config
+        - name: tls
+          secret:
+            secretName: vault-raft-tls
+            defaultMode: 0440
         - name: data
           persistentVolumeClaim:
             claimName: vault-raft-data
@@ -109,7 +122,7 @@ spec:
       port: 8201
       targetPort: cluster
 ---
-# Restore remains quarantined. ESO access is a separate reviewed change.
+# Only the dedicated ESO controller may consume this isolated Vault.
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -119,5 +132,37 @@ spec:
     matchLabels:
       app.kubernetes.io/name: vault-raft
   policyTypes: [Ingress, Egress]
-  ingress: []
-  egress: []
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: platform
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: external-secrets
+      ports:
+        - protocol: TCP
+          port: 8200
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32
+        - ipBlock:
+            cidr: ${K3S_API_IP}/32
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 6443
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

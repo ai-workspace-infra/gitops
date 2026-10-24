@@ -1,13 +1,14 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: web-saas-k3s-v5
+namespace: platform-observability
 resources:
-  - oci-repository.yaml
+  - vault-identity.yaml
   - secret-store.yaml
-  - external-secret.yaml
-  - helmrelease.yaml
+  - grafana-secret.yaml
+  - collector-identity.yaml
+  - release.yaml
 configMapGenerator:
-  - name: web-saas-fullstack-values
+  - name: platform-observability-values
     files:
       - values.yaml=values.yaml
 generatorOptions:

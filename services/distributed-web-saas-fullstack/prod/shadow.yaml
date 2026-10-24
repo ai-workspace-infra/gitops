@@ -1,0 +1,101 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: vault-backend-shadow
+  namespace: web-saas-k3s-v5
+spec:
+  provider:
+    vault:
+      server: https://vault-raft.platform-vault.svc.cluster.local:8200
+      path: kv
+      version: v2
+      caProvider:
+        type: ConfigMap
+        name: vault-raft-ca
+        key: ca.crt
+      auth:
+        kubernetes:
+          mountPath: kubernetes-web-saas-k3s-v5
+          role: web-saas-k3s-v5-prod
+          serviceAccountRef:
+            name: web-saas-vault-reader
+            audiences:
+            - vault-web-saas-k3s-v5-prod
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: web-saas-secrets-shadow
+  namespace: web-saas-k3s-v5
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: vault-backend-shadow
+    kind: SecretStore
+  target:
+    name: web-saas-secrets-shadow
+    creationPolicy: Owner
+    template:
+      engineVersion: v2
+      mergePolicy: Merge
+      data:
+        DATABASE_URL: '{{ regexReplaceAll "/[^/?]+([?].*)?$" .DATABASE_URL "/account${1}"
+          }}'
+  data:
+  - secretKey: password
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/database
+      property: password
+  - secretKey: POSTGRES_PASSWORD
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/database
+      property: POSTGRES_PASSWORD
+  - secretKey: DATABASE_URL
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/database
+      property: database_url
+  - secretKey: INTERNAL_SERVICE_TOKEN
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/database
+      property: INTERNAL_SERVICE_TOKEN
+  - secretKey: ROOT_BOOTSTRAP_PASSWORD
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/database
+      property: ROOT_BOOTSTRAP_PASSWORD
+  - secretKey: ROOT_BOOTSTRAP_EMAIL
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/database
+      property: ROOT_BOOTSTRAP_EMAIL
+  - secretKey: jwt-secret
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/jwt
+      property: secret
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: web-saas-tls-shadow
+  namespace: web-saas-k3s-v5
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: vault-backend-shadow
+    kind: SecretStore
+  target:
+    name: web-saas-tls-shadow
+    creationPolicy: Owner
+    template:
+      type: kubernetes.io/tls
+      engineVersion: v2
+      data:
+        tls.crt: '{{ .tls_cert }}'
+        tls.key: '{{ .tls_key }}'
+  data:
+  - secretKey: tls_cert
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/tls
+      property: tls_fullchain_pem
+  - secretKey: tls_key
+    remoteRef:
+      key: prod/services/web-saas-k3s-v5/tls
+      property: tls_key_pem

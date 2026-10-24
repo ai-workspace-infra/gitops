@@ -1,0 +1,44 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: observability-stack-chart
+spec:
+  interval: 5m
+  url: oci://ghcr.io/ai-workspace-infra/observability-stack
+  ref:
+    digest: sha256:4d7725152b0f9b2d263a1592af81b9b54049f514c79bccc7ed94f0296ccbd68c
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: platform-observability
+spec:
+  interval: 5m
+  releaseName: platform-observability
+  targetNamespace: platform-observability
+  chartRef:
+    kind: OCIRepository
+    name: observability-stack-chart
+  valuesFrom:
+    - kind: ConfigMap
+      name: platform-observability-values
+      valuesKey: values.yaml
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: platform-observability-observability-stack
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: platform-observability-observability-stack
+              spec:
+                template:
+                  spec:
+                    securityContext:
+                      fsGroup: 472
