@@ -45,6 +45,12 @@ properties:
       accounts_domain:
         $ref: '#/$defs/name'
         description: Explicit Accounts domain; never inferred from a generation label.
+      console_public_domain:
+        $ref: '#/$defs/hostname'
+        description: >-
+          Explicit public Console alias under domain_base, distinct from
+          Accounts and Billing. The pinned owner must serve it in both site
+          addresses and Console host matchers. This does not change DNS.
       accounts_public_domain:
         $ref: '#/$defs/hostname'
         description: >-
