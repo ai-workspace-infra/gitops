@@ -7,6 +7,7 @@ resources:
   - grafana-secret.yaml
   - collector-identity.yaml
   - release.yaml
+  - dashboards.yaml
 configMapGenerator:
   - name: platform-observability-values
     files:

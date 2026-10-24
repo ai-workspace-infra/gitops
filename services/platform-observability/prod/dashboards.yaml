@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: platform-observability-dashboards
+data:
+  web-saas-k3s-v5.json: "{\n  \"uid\": \"web-saas-k3s-v5-overview\",\n  \"title\"\
+    : \"Web-SaaS K3s V5 PROD Cluster Overview\",\n  \"schemaVersion\": 39,\n  \"version\"\
+    : 1,\n  \"editable\": false,\n  \"tags\": [\n    \"web-saas-k3s-v5\",\n    \"\
+    prod\"\n  ],\n  \"timezone\": \"Asia/Shanghai\",\n  \"time\": {\n    \"from\"\
+    : \"now-1h\",\n    \"to\": \"now\"\n  },\n  \"refresh\": \"30s\",\n  \"templating\"\
+    : {\n    \"list\": [\n      {\n        \"name\": \"DS_METRICS\",\n        \"label\"\
+    : \"Metrics\",\n        \"type\": \"datasource\",\n        \"query\": \"prometheus\"\
+    ,\n        \"refresh\": 1\n      }\n    ]\n  },\n  \"panels\": [\n    {\n    \
+    \  \"id\": 1,\n      \"type\": \"timeseries\",\n      \"title\": \"Node CPU %\"\
+    ,\n      \"gridPos\": {\n        \"x\": 0,\n        \"y\": 0,\n        \"w\":\
+    \ 12,\n        \"h\": 8\n      },\n      \"datasource\": {\n        \"type\":\
+    \ \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"targets\"\
+    : [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"100 * avg(k8s_node_cpu_utilization_ratio{cluster=\\\
+    \"web-saas-k3s-v5\\\",environment=\\\"prod\\\"})\",\n          \"legendFormat\"\
+    : \"{{service_name}} {{k8s_pod_name}}\"\n        }\n      ],\n      \"fieldConfig\"\
+    : {\n        \"defaults\": {\n          \"unit\": \"percent\"\n        },\n  \
+    \      \"overrides\": []\n      }\n    },\n    {\n      \"id\": 2,\n      \"type\"\
+    : \"timeseries\",\n      \"title\": \"Node working memory\",\n      \"gridPos\"\
+    : {\n        \"x\": 12,\n        \"y\": 0,\n        \"w\": 12,\n        \"h\"\
+    : 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n  \
+    \      \"uid\": \"${DS_METRICS}\"\n      },\n      \"targets\": [\n        {\n\
+    \          \"refId\": \"A\",\n          \"expr\": \"sum(k8s_node_memory_working_set_bytes{cluster=\\\
+    \"web-saas-k3s-v5\\\",environment=\\\"prod\\\"})\",\n          \"legendFormat\"\
+    : \"{{service_name}} {{k8s_pod_name}}\"\n        }\n      ],\n      \"fieldConfig\"\
+    : {\n        \"defaults\": {\n          \"unit\": \"bytes\"\n        },\n    \
+    \    \"overrides\": []\n      }\n    },\n    {\n      \"id\": 3,\n      \"type\"\
+    : \"timeseries\",\n      \"title\": \"Container working memory\",\n      \"gridPos\"\
+    : {\n        \"x\": 0,\n        \"y\": 8,\n        \"w\": 12,\n        \"h\":\
+    \ 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n  \
+    \      \"uid\": \"${DS_METRICS}\"\n      },\n      \"targets\": [\n        {\n\
+    \          \"refId\": \"A\",\n          \"expr\": \"sum by (k8s_pod_name) (container_memory_working_set_bytes{cluster=\\\
+    \"web-saas-k3s-v5\\\",environment=\\\"prod\\\"})\",\n          \"legendFormat\"\
+    : \"{{service_name}} {{k8s_pod_name}}\"\n        }\n      ],\n      \"fieldConfig\"\
+    : {\n        \"defaults\": {\n          \"unit\": \"bytes\"\n        },\n    \
+    \    \"overrides\": []\n      }\n    },\n    {\n      \"id\": 4,\n      \"type\"\
+    : \"timeseries\",\n      \"title\": \"Observed request spans / second\",\n   \
+    \   \"gridPos\": {\n        \"x\": 12,\n        \"y\": 8,\n        \"w\": 12,\n\
+    \        \"h\": 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\"\
+    ,\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"targets\": [\n      \
+    \  {\n          \"refId\": \"A\",\n          \"expr\": \"sum by (service_name)\
+    \ (rate(traces_span_metrics_calls_total{cluster=\\\"web-saas-k3s-v5\\\",environment=\\\
+    \"prod\\\",span_kind=\\\"SPAN_KIND_SERVER\\\"}[5m]))\",\n          \"legendFormat\"\
+    : \"{{service_name}} {{k8s_pod_name}}\"\n        }\n      ],\n      \"fieldConfig\"\
+    : {\n        \"defaults\": {\n          \"unit\": \"reqps\"\n        },\n    \
+    \    \"overrides\": []\n      }\n    },\n    {\n      \"id\": 5,\n      \"type\"\
+    : \"timeseries\",\n      \"title\": \"Request duration p95 (ms)\",\n      \"gridPos\"\
+    : {\n        \"x\": 0,\n        \"y\": 16,\n        \"w\": 12,\n        \"h\"\
+    : 8\n      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n  \
+    \      \"uid\": \"${DS_METRICS}\"\n      },\n      \"targets\": [\n        {\n\
+    \          \"refId\": \"A\",\n          \"expr\": \"histogram_quantile(0.95, sum\
+    \ by (le,service_name) (rate(traces_span_metrics_duration_milliseconds_bucket{cluster=\\\
+    \"web-saas-k3s-v5\\\",environment=\\\"prod\\\",span_kind=\\\"SPAN_KIND_SERVER\\\
+    \"}[5m])))\",\n          \"legendFormat\": \"{{service_name}} {{k8s_pod_name}}\"\
+    \n        }\n      ],\n      \"fieldConfig\": {\n        \"defaults\": {\n   \
+    \       \"unit\": \"ms\"\n        },\n        \"overrides\": []\n      }\n   \
+    \ },\n    {\n      \"id\": 6,\n      \"type\": \"timeseries\",\n      \"title\"\
+    : \"Collector accepted spans\",\n      \"gridPos\": {\n        \"x\": 12,\n  \
+    \      \"y\": 16,\n        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\"\
+    : {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n \
+    \     },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n     \
+    \     \"expr\": \"sum(rate(otelcol_receiver_accepted_spans_total{cluster=\\\"\
+    web-saas-k3s-v5\\\",environment=\\\"prod\\\"}[5m]))\",\n          \"legendFormat\"\
+    : \"{{service_name}} {{k8s_pod_name}}\"\n        }\n      ],\n      \"fieldConfig\"\
+    : {\n        \"defaults\": {\n          \"unit\": \"ops\"\n        },\n      \
+    \  \"overrides\": []\n      }\n    }\n  ]\n}"

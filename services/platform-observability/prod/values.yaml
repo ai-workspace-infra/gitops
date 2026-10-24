@@ -18,6 +18,7 @@ grafana:
   rootUrl: http://localhost:13000/
   plugins:
   - victoriametrics-logs-datasource 0.33.1
+  dashboardsConfigMap: platform-observability-dashboards
 serviceAccountName: observability-collector
 persistence:
   enabled: true
@@ -28,20 +29,5 @@ telemetry:
   environment: prod
   kubernetes:
     enabled: true
-  extraScrapeConfigs:
-  - job_name: accounts
-    static_configs:
-    - targets:
-      - web-saas-accounts.web-saas-k3s-v5.svc.cluster.local:80
-      labels:
-        cluster: web-saas-k3s-v5
-        environment: prod
-        service: accounts
-  - job_name: billing
-    static_configs:
-    - targets:
-      - web-saas-billing.web-saas-k3s-v5.svc.cluster.local:80
-      labels:
-        cluster: web-saas-k3s-v5
-        environment: prod
-        service: billing
+  extraScrapeConfigs: []
+  spanMetrics: true
