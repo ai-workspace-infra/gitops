@@ -16,15 +16,15 @@ spec:
         api_cname_records:
           accounts.svc.plus:
             serverless: accounts-serverless-prod.svc.plus
-            selfhost: accounts-selfhost-prod.svc.plus
+            selfhost: accounts-selfhost-prod-v5.svc.plus
           billing.svc.plus:
             serverless: billing-serverless-prod.svc.plus
-            selfhost: billing-selfhost-prod.svc.plus
+            selfhost: billing-selfhost-prod-v5.svc.plus
         canonical_records:
-          console.svc.plus: console-selfhost-prod.svc.plus
-          accounts.svc.plus: accounts-selfhost-prod.svc.plus
-          billing.svc.plus: billing-selfhost-prod.svc.plus
-          postgresql.svc.plus: postgresql-selfhost-prod.svc.plus
+          console.svc.plus: console-selfhost-prod-v5.svc.plus
+          accounts.svc.plus: accounts-selfhost-prod-v5.svc.plus
+          billing.svc.plus: billing-selfhost-prod-v5.svc.plus
+          postgresql.svc.plus: postgresql-selfhost-prod-v5.svc.plus
       load-balancer:
         strategy: dns-only
       weight:
@@ -64,20 +64,20 @@ spec:
             target: selfhost
   domains:
     console.svc.plus:
-      selfhost: console-selfhost-prod.svc.plus
+      selfhost: console-selfhost-prod-v5.svc.plus
       serverless: console-serverless-prod.svc.plus
     accounts.svc.plus:
-      selfhost: accounts-selfhost-prod.svc.plus
+      selfhost: accounts-selfhost-prod-v5.svc.plus
       serverless: accounts-serverless-prod.svc.plus
     billing.svc.plus:
-      selfhost: billing-selfhost-prod.svc.plus
+      selfhost: billing-selfhost-prod-v5.svc.plus
       serverless: billing-serverless-prod.svc.plus
     postgresql.svc.plus:
-      selfhost: postgresql-selfhost-prod.svc.plus
+      selfhost: postgresql-selfhost-prod-v5.svc.plus
       serverless: postgresql-serverless-prod.svc.plus
   public_endpoints:
     console:
-      host: console-selfhost-prod.svc.plus
+      host: console-selfhost-prod-v5.svc.plus
       access: public
     accounts:
       host: accounts.svc.plus
@@ -86,7 +86,7 @@ spec:
       host: billing.svc.plus
       access: authenticated
     postgresql:
-      host: postgresql-selfhost-prod.svc.plus
+      host: postgresql-selfhost-prod-v5.svc.plus
       access: authenticated
     agent-proxy:
       host: agent-proxy-selfhost-prod-jp.svc.plus
@@ -165,10 +165,10 @@ spec:
           - /_edge/workspace/*
     edge_gateway:
       defaults:
-        primary_upstream: https://accounts-selfhost-prod.svc.plus
+        primary_upstream: https://accounts-selfhost-prod-v5.svc.plus
         fallback_upstream: https://prod-accounts-b7wzzanztq-de.a.run.app
         jwt_issuer: https://accounts-serverless-prod.svc.plus
-        billing_primary_upstream: https://billing-selfhost-prod.svc.plus
+        billing_primary_upstream: https://billing-selfhost-prod-v5.svc.plus
         billing_fallback_upstream: https://prod-billing-service-b7wzzanztq-de.a.run.app
         timeout_ms: '2500'
       boundaries:

@@ -40,6 +40,30 @@ hosts:
         - billing-selfhost-prod-v5.svc.plus
         - postgresql-selfhost-prod-v5.svc.plus
         - xworktech.com
+        - console-prod-v5.svc.plus
+        - accounts-prod-v5.svc.plus
+        - billing-prod-v5.svc.plus
+        - console.svc.plus
+        - accounts.svc.plus
+        - billing.svc.plus
+        - postgresql.svc.plus
+      # These names coexist. CNAME targets do not rewrite the HTTP Host header.
+      web_saas_host_config_console_aliases:
+        - console-prod-v5.svc.plus
+        - console.svc.plus
+      web_saas_host_config_accounts_aliases:
+        - accounts-prod-v5.svc.plus
+        - accounts.svc.plus
+      web_saas_host_config_billing_aliases:
+        - billing-prod-v5.svc.plus
+        - billing.svc.plus
+      # Existing V5 release selection; never fall back to latest/default target.
+      doco_cd_image: ghcr.io/kimdre/doco-cd@sha256:46f3e44106fd0f4f30bc450682038509484d9aa28916edd6039b0af45bdc1cec
+      web_saas_doco_cd_repository: https://github.com/ai-workspace-infra/gitops.git
+      web_saas_doco_cd_target: prod-v5-candidate
+      # Last verified runtime selection in the 2026-10-24 public-route receipt.
+      # A new release must explicitly select a new immutable revision.
+      web_saas_doco_cd_reference: 01461922e2c91da946c68626d88d5ffc9472d3a7
       web_saas_host_config_brand_domain: xworktech.com
       web_saas_host_config_brand_tls_domain: xworktech.com
       database_background_writers: false

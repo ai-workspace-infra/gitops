@@ -33,9 +33,15 @@ target:
   console_domain: console-selfhost-prod-v5.svc.plus
   accounts_domain: accounts-selfhost-prod-v5.svc.plus
   console_public_domain: console.svc.plus
+  console_aliases:
+    - console-prod-v5.svc.plus
   accounts_public_domain: accounts.svc.plus
+  accounts_aliases:
+    - accounts-prod-v5.svc.plus
   billing_domain: billing-selfhost-prod-v5.svc.plus
   billing_public_domain: billing.svc.plus
+  billing_aliases:
+    - billing-prod-v5.svc.plus
 release:
   # The r101 source tags were checked against the exact source commits. The
   # PostgreSQL release manifest is published; coordinated five-artifact
