@@ -26,6 +26,9 @@ spec:
     - kind: ConfigMap
       name: platform-observability-values
       valuesKey: values.yaml
+    - kind: ConfigMap
+      name: source-grafana-values
+      valuesKey: values.yaml
   postRenderers:
     - kustomize:
         patches:
