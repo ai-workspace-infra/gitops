@@ -4,58 +4,67 @@ global:
 
 caddy:
   enabled: true
+  image: "ghcr.io/ai-workspace-infra/caddy-cloudflare:959d6c8@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf"
+  frontendService: console
+  gatewayEnabled: false
+  httpOnly: false
+  service:
+    type: ClusterIP
   routes:
     consoleHost: console-k3s-v5.svc.plus
     accountsHost: accounts-k3s-v5.svc.plus
     billingHost: billing-k3s-v5.svc.plus
-  gatewayEnabled: true
-  httpOnly: false
-  service:
-    type: ClusterIP
+  tls:
+    consoleSecret: web-saas-tls
+    accountsSecret: web-saas-tls
+    billingSecret: web-saas-tls
 
 postgresql:
   enabled: true
-  image: "ghcr.io/ai-workspace-infra/web-saas-postgresql:0.1.0"
+  image: "ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e"
   username: app
   database: app
   existingSecret: web-saas-secrets
   secretKey: password
   storage:
+    className: local-path
     size: 5Gi
 
 console:
   enabled: true
-  deploymentProfile: independent
+  deploymentProfile: single-container
   singleContainer:
-    image: "ghcr.io/ai-workspace-infra/web-saas-console:0.1.0"
+    image: "ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666"
     port: 8080
     replicas: 1
 
 accounts:
   enabled: true
-  image: "ghcr.io/ai-workspace-infra/web-saas-accounts:0.1.0"
-  port: 8080
-  replicas: 1
-  secretRefs:
-    - web-saas-secrets
+  workload:
+    image: "ghcr.io/ai-workspace-services/accounts@sha256:39716c2941b6f8ebbc0602589a59711d846234cb8313ae21254a91ba6073def7"
+    port: 8080
+    replicas: 1
+    secretRefs:
+      - web-saas-secrets
 
 billing:
   enabled: true
-  image: "ghcr.io/ai-workspace-infra/web-saas-billing:0.1.0"
-  port: 8080
-  replicas: 1
-  secretRefs:
-    - web-saas-secrets
+  workload:
+    image: "ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0"
+    port: 8080
+    replicas: 1
+    secretRefs:
+      - web-saas-secrets
 
 content:
   enabled: true
-  image: "ghcr.io/ai-workspace-infra/web-saas-content:0.1.0"
-  port: 8080
-  replicas: 1
+  workload:
+    image: "ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e"
+    port: 8080
+    replicas: 1
 
 edgeGateway:
-  enabled: true
-  deploymentProfile: independent
+  enabled: false
 
 stunnelClient:
   enabled: false
