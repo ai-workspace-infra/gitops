@@ -42,6 +42,16 @@ console:
       allowPrivilegeEscalation: true
       capabilities:
         add: ["CHOWN", "SETUID", "SETGID", "DAC_OVERRIDE"]
+    probes:
+      readinessProbe:
+        httpGet:
+          path: /
+          port: primary
+      livenessProbe:
+        httpGet:
+          path: /
+          port: primary
+        initialDelaySeconds: 20
 
 accounts:
   enabled: true
@@ -56,6 +66,8 @@ accounts:
       POSTGRES_USER: "app"
       DB_NAME: "app"
       ROOT_BOOTSTRAP_EMAIL: "admin@svc.plus"
+      XWORKMATE_SHARED_TENANT_DOMAIN: "svc.plus"
+      XWORKMATE_SHARED_TENANT_DOMAINS: "svc.plus"
     secretRefs:
       - web-saas-secrets
 
