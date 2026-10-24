@@ -23,7 +23,7 @@ postgresql:
   enabled: true
   image: "ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e"
   username: app
-  database: app
+  database: account
   existingSecret: web-saas-secrets
   secretKey: password
   storage:
@@ -65,7 +65,7 @@ accounts:
       DB_HOST: "RELEASE_NAME-postgresql"
       DB_PORT: "5432"
       POSTGRES_USER: "app"
-      DB_NAME: "app"
+      DB_NAME: "account"
       ROOT_BOOTSTRAP_EMAIL: "admin@svc.plus"
       XWORKMATE_SHARED_TENANT_DOMAIN: "svc.plus"
       XWORKMATE_SHARED_TENANT_DOMAINS: "svc.plus"
