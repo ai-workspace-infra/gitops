@@ -10,3 +10,5 @@
 79e3c64a80c1bcdc9f2fcab665ff14c7c5216f27:playbooks/roles/charts/jenkins/files/setup.sh:generic-api-key:39
 110c7d38747daca070aaffc98e88321ca136a201:services/distributed-web-saas-fullstack/uat/external-secret.yaml:kubernetes-secret-yaml:10
 f1a1f06862b7f1b57b2fe9fb4d68584f7bec09c5:services/distributed-web-saas-fullstack/uat/external-secret.yaml:kubernetes-secret-yaml:10
+# ExternalSecret reference metadata only: remoteRef is a Vault path, no value.
+29aa10501ad395a90001ece50fc38e7fc837b1d6:services/platform-observability/prod/grafana-secret.yaml:kubernetes-secret-yaml:9
