@@ -37,6 +37,9 @@ console:
     image: "ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666"
     port: 8080
     replicas: 1
+    securityContext:
+      capabilities:
+        add: ["CHOWN", "SETUID", "SETGID"]
 
 accounts:
   enabled: true
@@ -44,6 +47,12 @@ accounts:
     image: "ghcr.io/ai-workspace-services/accounts@sha256:39716c2941b6f8ebbc0602589a59711d846234cb8313ae21254a91ba6073def7"
     port: 8080
     replicas: 1
+    env:
+      CONFIG_TEMPLATE: "/app/config/account.cloudrun.yaml"
+      DB_HOST: "RELEASE_NAME-postgresql"
+      DB_PORT: "5432"
+      POSTGRES_USER: "app"
+      DB_NAME: "app"
     secretRefs:
       - web-saas-secrets
 
@@ -62,6 +71,9 @@ content:
     image: "ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e"
     port: 8080
     replicas: 1
+    env:
+      KNOWLEDGE_REPO_PATH: "/tmp/knowledge"
+      KNOWLEDGE_REPO_URL: "https://github.com/ai-workspace-services/knowledge.git"
 
 edgeGateway:
   enabled: false
