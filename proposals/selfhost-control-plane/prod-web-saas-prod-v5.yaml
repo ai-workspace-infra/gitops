@@ -32,6 +32,7 @@ target:
   domain_base: svc.plus
   console_domain: console-selfhost-prod-v5.svc.plus
   accounts_domain: accounts-selfhost-prod-v5.svc.plus
+  console_public_domain: console.svc.plus
   accounts_public_domain: accounts.svc.plus
   billing_domain: billing-selfhost-prod-v5.svc.plus
   billing_public_domain: billing.svc.plus
@@ -139,7 +140,7 @@ release:
     target: prod-v5-candidate
     storage_target: prod-v5-storage
 execution:
-  playbooks_sha: fa8458c2b5bdbd51b1d2b05cb340f1dab01f70eb
+  playbooks_sha: a675ce0bd049834c4668b36bba10fa2b80871dbc
   mode: candidate
   initialize: true
   # Explicit fallback intent because the supplied CMDB record has no storage
