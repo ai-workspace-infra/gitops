@@ -39,5 +39,8 @@ hosts:
         - accounts-selfhost-prod-v5.svc.plus
         - billing-selfhost-prod-v5.svc.plus
         - postgresql-selfhost-prod-v5.svc.plus
+        - xworktech.com
+      web_saas_host_config_brand_domain: xworktech.com
+      web_saas_host_config_brand_tls_domain: xworktech.com
       database_background_writers: false
       public_dns_cutover: false
