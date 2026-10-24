@@ -45,6 +45,12 @@ properties:
       accounts_domain:
         $ref: '#/$defs/name'
         description: Explicit Accounts domain; never inferred from a generation label.
+      accounts_public_domain:
+        $ref: '#/$defs/hostname'
+        description: >-
+          Explicit public Accounts HTTP alias under domain_base. The pinned
+          Playbooks owner must validate the alias and serve it in both site
+          addresses and host matchers. This field does not change DNS or writers.
       billing_domain:
         $ref: '#/$defs/hostname'
         description: >-
