@@ -19,3 +19,5 @@ a6bd943c5649d44f55fc9d6e335cec9359b50725:services/distributed-web-saas-fullstack
 
 # Squash-merge identity of the reviewed ExternalSecret remote references from PR545; no secret values.
 3d2c0e37a7c6821f70987f402d7125fcb6fa939c:services/platform-observability/prod/grafana-runtime-secret.yaml:kubernetes-secret-yaml:9
+# ExternalSecret refs are Vault metadata only, not credential values.
+be8d1e5:services/platform-observability/prod/grafana-runtime-secret.yaml:kubernetes-secret-yaml:9
