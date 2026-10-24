@@ -16,3 +16,5 @@ f1a1f06862b7f1b57b2fe9fb4d68584f7bec09c5:services/distributed-web-saas-fullstack
 a6bd943c5649d44f55fc9d6e335cec9359b50725:services/distributed-web-saas-fullstack/prod/external-secret.yaml:kubernetes-secret-yaml:88
 # ExternalSecret references only; no credential value is present.
 01183346058bc68eab6ccf28484d419ec5cf4ee8:services/platform-observability/prod/grafana-runtime-secret.yaml:kubernetes-secret-yaml:9
+# ExternalSecret references only; target credential stays in Vault.
+3d2c0e37a7c6821f70987f402d7125fcb6fa939c:services/platform-observability/prod/grafana-runtime-secret.yaml:kubernetes-secret-yaml:9
