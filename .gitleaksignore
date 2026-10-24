@@ -12,3 +12,5 @@
 f1a1f06862b7f1b57b2fe9fb4d68584f7bec09c5:services/distributed-web-saas-fullstack/uat/external-secret.yaml:kubernetes-secret-yaml:10
 # ExternalSecret reference metadata only: remoteRef is a Vault path, no value.
 29aa10501ad395a90001ece50fc38e7fc837b1d6:services/platform-observability/prod/grafana-secret.yaml:kubernetes-secret-yaml:9
+# Content ExternalSecret: reference path and field name only, never a token value.
+a6bd943c5649d44f55fc9d6e335cec9359b50725:services/distributed-web-saas-fullstack/prod/external-secret.yaml:kubernetes-secret-yaml:88

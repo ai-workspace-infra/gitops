@@ -38,6 +38,9 @@ spec:
               metadata:
                 name: platform-observability-observability-stack
               spec:
+                strategy:
+                  type: Recreate
+                  rollingUpdate: null
                 template:
                   spec:
                     securityContext:
