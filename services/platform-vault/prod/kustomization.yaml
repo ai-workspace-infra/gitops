@@ -2,6 +2,16 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: platform-vault
 resources:
-  - namespace.yaml
-  - vault-raft.yaml
-  - identity.yaml
+- namespace.yaml
+- vault-raft.yaml
+- identity.yaml
+configMapGenerator:
+- name: vault-raft-config
+  literals:
+  - "vault.hcl=ui = true\ndisable_mlock = true\napi_addr = \"https://vault-k3s-v5.svc.plus\"\
+    \ncluster_addr = \"https://vault-raft.platform-vault.svc.cluster.local:8201\"\n\
+    storage \"raft\" {\n  path = \"/vault/data\"\n  node_id = \"uat-vault-raft-0\"\
+    \ # Retain the existing Raft node identity.\n}\nlistener \"tcp\" {\n  address\
+    \ = \"0.0.0.0:8200\"\n  cluster_address = \"0.0.0.0:8201\"\n  tls_disable = false\n\
+    \  tls_cert_file = \"/vault/tls/tls.crt\"\n  tls_key_file = \"/vault/tls/tls.key\"\
+    \n}\n"
