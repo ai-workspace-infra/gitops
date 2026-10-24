@@ -63,7 +63,7 @@ data:
     \      \"y\": 16,\n        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\"\
     : {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n \
     \     },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n     \
-    \     \"expr\": \"sum(rate(otelcol_receiver_accepted_spans_total{cluster=\\\"\
+    \     \"expr\": \"sum(rate(otelcol_receiver_accepted_spans{cluster=\\\"\
     web-saas-k3s-v5\\\",environment=\\\"prod\\\"}[5m]))\",\n          \"legendFormat\"\
     : \"{{service_name}} {{k8s_pod_name}}\"\n        }\n      ],\n      \"fieldConfig\"\
     : {\n        \"defaults\": {\n          \"unit\": \"ops\"\n        },\n      \
