@@ -34,6 +34,7 @@ target:
   accounts_domain: accounts-selfhost-prod-v5.svc.plus
   accounts_public_domain: accounts.svc.plus
   billing_domain: billing-selfhost-prod-v5.svc.plus
+  billing_public_domain: billing.svc.plus
 release:
   # The r101 source tags were checked against the exact source commits. The
   # PostgreSQL release manifest is published; coordinated five-artifact
@@ -137,7 +138,7 @@ release:
     target: prod-v5-candidate
     storage_target: prod-v5-storage
 execution:
-  playbooks_sha: 36f12fc2c2a3962e8a5690d64be0740d986e2e1b
+  playbooks_sha: fa8458c2b5bdbd51b1d2b05cb340f1dab01f70eb
   mode: candidate
   initialize: true
   # Explicit fallback intent because the supplied CMDB record has no storage

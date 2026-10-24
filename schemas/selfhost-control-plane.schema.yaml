@@ -51,6 +51,12 @@ properties:
           Explicit public Accounts HTTP alias under domain_base. The pinned
           Playbooks owner must validate the alias and serve it in both site
           addresses and host matchers. This field does not change DNS or writers.
+      billing_public_domain:
+        $ref: '#/$defs/hostname'
+        description: >-
+          Explicit public Billing hostname under domain_base, distinct from
+          Console and Accounts. The pinned owner permits authenticated snapshot
+          POST and health probes only; it does not change DNS or writer ownership.
       billing_domain:
         $ref: '#/$defs/hostname'
         description: >-
