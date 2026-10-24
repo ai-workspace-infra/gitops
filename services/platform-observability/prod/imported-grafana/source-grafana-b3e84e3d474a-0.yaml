@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: source-grafana-b3e84e3d474a-0
+  namespace: platform-observability
+data:
+  README.txt: 'Empty source folder. No alerts or notification channels are imported.
+
+    '

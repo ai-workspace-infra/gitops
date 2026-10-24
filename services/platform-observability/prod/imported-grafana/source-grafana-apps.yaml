@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: source-grafana-apps
+  namespace: platform-observability
+data:
+  apps.yaml: "apiVersion: 1\napps:\n- type: aiworkspace-xconnectuserdiagnostics-app\n  org_id: 1\n  disabled: false\n\
+    \  pinned: true\n  jsonData:\n    accountsUrl: https://accounts-k3s-v5.svc.plus\n    tracesUrl: http://127.0.0.1:10428\n\
+    \  secureJsonData:\n    identityLookupToken: ${GRAFANA_XCONNECT_IDENTITY_TOKEN}\n"

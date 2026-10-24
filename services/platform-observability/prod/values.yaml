@@ -12,12 +12,21 @@ otelCollector:
     tag: 0.114.0@sha256:37fa87091cfaaec7234a27e4e395a40c31c2bfaea97a349a4afef6d9e9681197
 grafana:
   image:
-    tag: 11.3.0@sha256:a0f881232a6fb71a0554a47d0fe2203b6888fe77f4cefb7ea62bed7eb54e13c3
+    tag: 13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f
   existingSecret: grafana-admin
   adminPasswordKey: password
   rootUrl: https://observability-k3s-v5.svc.plus/
   plugins:
-  - victoriametrics-logs-datasource 0.33.1
+  - victoriametrics-logs-datasource@0.33.1
+  - marcusolsson-treemap-panel@2.1.1
+  runtimeSecret: grafana-runtime
+  unsignedPlugins:
+  - aiworkspace-xconnectuserdiagnostics-app
+  pluginArchives:
+  - id: aiworkspace-xconnectuserdiagnostics-app
+    version: 0.1.0
+    url: https://github.com/ai-workspace-infra/observability/releases/download/xconnect-user-diagnostics-v0.1.0/aiworkspace-xconnectuserdiagnostics-app-0.1.0.zip
+    sha256: e7486697858edf02929f57e068b2971ab23c2f183727d1c28004bfba4c42c2eb
   dashboardsConfigMap: platform-observability-dashboards
 serviceAccountName: observability-collector
 persistence:
