@@ -9,7 +9,7 @@ caddy:
   gatewayEnabled: false
   httpOnly: false
   service:
-    type: ClusterIP
+    type: LoadBalancer
   routes:
     consoleHost: console-k3s-v5.svc.plus
     accountsHost: accounts-k3s-v5.svc.plus
