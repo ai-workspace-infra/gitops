@@ -1,5 +1,5 @@
 global:
-  environment: uat
+  environment: prod
   expectedNamespace: web-saas-k3s-v5
 
 caddy:

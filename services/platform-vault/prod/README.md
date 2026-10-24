@@ -1,4 +1,4 @@
-# Isolated UAT Raft recovery
+# Isolated PROD Raft recovery
 
 This declaration adds a separate Raft Vault and retained PVC without replacing
 the existing instance. NetworkPolicy quarantines all pod ingress and egress;
@@ -13,7 +13,7 @@ Readiness intentionally fails until recovery and unseal are complete. A restart
 requires unseal again; this is not an auto-unseal deployment.
 
 Before enabling consumers, revoke copied token identities on this target, disable
-copied external authentication methods, configure independent UAT policy and
+copied external authentication methods, configure independent PROD policy and
 short-lived workload identity, and verify allowed and denied requests. Validate
 mount/object completeness and pod-recreation persistence. Local-path is not a
 host-loss backup. Existing Vault/ESO resources remain the rollback point until

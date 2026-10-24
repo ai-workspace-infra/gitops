@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: platform-vault
   labels:
-    platform.svc.plus/environment: uat
+    platform.svc.plus/environment: prod

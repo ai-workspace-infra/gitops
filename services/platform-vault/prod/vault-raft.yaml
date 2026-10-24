@@ -10,7 +10,7 @@ data:
     cluster_addr = "https://vault-raft.platform-vault.svc.cluster.local:8201"
     storage "raft" {
       path = "/vault/data"
-      node_id = "uat-vault-raft-0"
+      node_id = "prod-vault-raft-0"
     }
     listener "tcp" {
       address = "0.0.0.0:8200"
@@ -46,7 +46,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: vault-raft
-        platform.svc.plus/environment: uat
+        platform.svc.plus/environment: prod
     spec:
       automountServiceAccountToken: false
       securityContext:

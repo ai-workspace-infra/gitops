@@ -1,10 +1,10 @@
-# Kubernetes UAT Web SaaS on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
+# Kubernetes PROD Web SaaS on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
 # 2 vCPU / 4 GB, Debian 13 (linode/debian13)
 # Isolated state namespace: web-saas-k3s-v5
 # Existing V5 host, business data, and DNS remain unchanged.
 global:
   provider: akamai-cloud
-  environment: uat
+  environment: prod
   project: svc.plus
   account: manbuzhe2026
   workspace: web-saas-k3s-v5
@@ -29,8 +29,8 @@ hosts:
     image: linode/debian13
     private_ip: true
     ansible_user: root
-    groups: [web_saas, uat, debian, akamai_cloud, k3s_server]
-    tags: [svc-plus, uat, web-saas-k3s-v5, akamai-cloud]
+    groups: [web_saas, prod, debian, akamai_cloud, k3s_server]
+    tags: [svc-plus, prod, web-saas-k3s-v5, akamai-cloud]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: ["::/0"]

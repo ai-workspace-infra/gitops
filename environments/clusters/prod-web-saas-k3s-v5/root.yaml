@@ -1,0 +1,14 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: prod-web-saas-k3s-v5
+  namespace: flux-system
+spec:
+  interval: 5m0s
+  prune: true
+  wait: true
+  timeout: 10m0s
+  sourceRef:
+    kind: GitRepository
+    name: platform-config-prod
+  path: ./environments/clusters/prod-web-saas-k3s-v5
