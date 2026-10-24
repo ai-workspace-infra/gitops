@@ -36,6 +36,7 @@ console:
   singleContainer:
     image: "ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666"
     port: 8080
+    internalPort: 3000
     replicas: 1
     securityContext:
       allowPrivilegeEscalation: true
@@ -66,6 +67,16 @@ billing:
     replicas: 1
     secretRefs:
       - web-saas-secrets
+    probes:
+      readinessProbe:
+        httpGet:
+          path: /readyz
+          port: primary
+      livenessProbe:
+        httpGet:
+          path: /readyz
+          port: primary
+        initialDelaySeconds: 20
 
 content:
   enabled: true
