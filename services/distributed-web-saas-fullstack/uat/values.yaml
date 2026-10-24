@@ -38,8 +38,9 @@ console:
     port: 8080
     replicas: 1
     securityContext:
+      allowPrivilegeEscalation: true
       capabilities:
-        add: ["CHOWN", "SETUID", "SETGID"]
+        add: ["CHOWN", "SETUID", "SETGID", "DAC_OVERRIDE"]
 
 accounts:
   enabled: true
@@ -53,6 +54,7 @@ accounts:
       DB_PORT: "5432"
       POSTGRES_USER: "app"
       DB_NAME: "app"
+      ROOT_BOOTSTRAP_EMAIL: "admin@svc.plus"
     secretRefs:
       - web-saas-secrets
 
