@@ -5,7 +5,7 @@ creating or replacing the host, deleting PVCs, or switching public DNS.
 
 Before activation, back up and verify the old Terraform state and migrate its
 ownership to the declared PROD backend key. Confirm the destination is absent
-and preserve lineage/resource IDs; retire old ownership without deleting cloud
+and record lineage migration and preserve resource IDs; retire old ownership without deleting cloud
 resources. Do not run apply against an empty destination state.
 
 Publish the fixed reviewed GitOps release tag only after CI/review. Suspend old

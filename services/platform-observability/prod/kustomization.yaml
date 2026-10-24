@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: platform-observability
+resources:
+  - vault-identity.yaml
+  - secret-store.yaml
+  - grafana-secret.yaml
+  - collector-identity.yaml
+  - release.yaml
+configMapGenerator:
+  - name: platform-observability-values
+    files:
+      - values.yaml=values.yaml
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,10 +1,9 @@
 global:
   environment: prod
   expectedNamespace: web-saas-k3s-v5
-
 caddy:
   enabled: true
-  image: "ghcr.io/ai-workspace-infra/caddy-cloudflare:959d6c8@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf"
+  image: ghcr.io/ai-workspace-infra/caddy-cloudflare:959d6c8@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf
   frontendService: console
   gatewayEnabled: false
   httpOnly: false
@@ -18,10 +17,9 @@ caddy:
     consoleSecret: web-saas-tls
     accountsSecret: web-saas-tls
     billingSecret: web-saas-tls
-
 postgresql:
   enabled: true
-  image: "ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e"
+  image: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
   username: app
   database: account
   existingSecret: web-saas-secrets
@@ -29,20 +27,26 @@ postgresql:
   storage:
     className: local-path
     size: 5Gi
-
 console:
   enabled: true
   deploymentProfile: single-container
   singleContainer:
-    image: "ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666"
+    image: ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666
     port: 8080
-    command: ["/bin/bash", "-c"]
-    args: ["export PORT=3000; exec /usr/local/bin/start-all-in-one"]
+    command:
+    - /bin/bash
+    - -c
+    args:
+    - export PORT=3000; exec /usr/local/bin/start-all-in-one
     replicas: 1
     securityContext:
       allowPrivilegeEscalation: true
       capabilities:
-        add: ["CHOWN", "SETUID", "SETGID", "DAC_OVERRIDE"]
+        add:
+        - CHOWN
+        - SETUID
+        - SETGID
+        - DAC_OVERRIDE
     probes:
       readinessProbe:
         httpGet:
@@ -53,33 +57,40 @@ console:
           path: /
           port: primary
         initialDelaySeconds: 20
-
 accounts:
   enabled: true
   workload:
-    image: "ghcr.io/ai-workspace-services/accounts@sha256:39716c2941b6f8ebbc0602589a59711d846234cb8313ae21254a91ba6073def7"
+    image: ghcr.io/ai-workspace-services/accounts:sha-3ef09c82f46152096bfc16edc9ba767f128a197f@sha256:b5bf111a64ca2f2ed5e74d2ab1f87e0e164d09869a32832368fb43e577fdf37b
     port: 8080
     replicas: 1
     env:
-      CONFIG_TEMPLATE: "/app/config/account.cloudrun.yaml"
-      DB_HOST: "RELEASE_NAME-postgresql"
-      DB_PORT: "5432"
-      POSTGRES_USER: "app"
-      DB_NAME: "account"
-      ROOT_BOOTSTRAP_EMAIL: "admin@svc.plus"
-      XWORKMATE_SHARED_TENANT_DOMAIN: "svc.plus"
-      XWORKMATE_SHARED_TENANT_DOMAINS: "svc.plus"
+      CONFIG_TEMPLATE: /app/config/account.cloudrun.yaml
+      DB_HOST: RELEASE_NAME-postgresql
+      DB_PORT: '5432'
+      POSTGRES_USER: app
+      DB_NAME: account
+      ROOT_BOOTSTRAP_EMAIL: admin@svc.plus
+      XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
+      XWORKMATE_SHARED_TENANT_DOMAINS: svc.plus
+      IMAGE: ghcr.io/ai-workspace-services/accounts:sha-3ef09c82f46152096bfc16edc9ba767f128a197f@sha256:b5bf111a64ca2f2ed5e74d2ab1f87e0e164d09869a32832368fb43e577fdf37b
+      DATABASE_RUNTIME_ROLE: primary
+      DATABASE_BACKGROUND_WRITERS: 'false'
+      DATABASE_IDENTITY_SHA256: b6618223acd5f8a50897c7adb203e5e491a60f9c8f5cb1702977592f442ab758
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://platform-observability-observability-stack.platform-observability.svc.cluster.local:4318/v1/traces
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_ENVIRONMENT: prod
+      OTEL_SERVICE_NAME: accounts
+      OTEL_TRACES_SAMPLER_ARG: '1'
     secretRefs:
-      - web-saas-secrets
-
+    - web-saas-secrets
 billing:
   enabled: true
   workload:
-    image: "ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0"
+    image: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
     port: 8080
     replicas: 1
     secretRefs:
-      - web-saas-secrets
+    - web-saas-secrets
     probes:
       readinessProbe:
         httpGet:
@@ -90,22 +101,26 @@ billing:
           path: /readyz
           port: primary
         initialDelaySeconds: 20
-
+    env:
+      IMAGE: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
+      BILLING_INGEST_MODE: push
+      DEFAULT_REGION: jp
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://platform-observability-observability-stack.platform-observability.svc.cluster.local:4318/v1/traces
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_ENVIRONMENT: prod
+      OTEL_SERVICE_NAME: billing
 content:
   enabled: true
   workload:
-    image: "ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e"
+    image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
     port: 8080
     replicas: 1
     env:
-      KNOWLEDGE_REPO_PATH: "/tmp/knowledge"
-      KNOWLEDGE_REPO_URL: "https://github.com/ai-workspace-services/knowledge.git"
-
+      KNOWLEDGE_REPO_PATH: /tmp/knowledge
+      KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
 edgeGateway:
   enabled: false
-
 stunnelClient:
   enabled: false
-
 stunnelServer:
   enabled: false

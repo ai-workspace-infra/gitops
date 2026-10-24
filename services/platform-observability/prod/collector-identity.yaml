@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: observability-collector
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: web-saas-k3s-v5-node-stats
+rules:
+  - apiGroups: [""]
+    resources: [nodes/stats, nodes/metrics, nodes]
+    resourceNames: [localhost]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: web-saas-k3s-v5-node-stats
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: web-saas-k3s-v5-node-stats
+subjects:
+  - kind: ServiceAccount
+    name: observability-collector
+    namespace: platform-observability

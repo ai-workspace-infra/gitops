@@ -3,6 +3,8 @@ kind: Kustomization
 namespace: web-saas-k3s-v5
 resources:
   - oci-repository.yaml
+  - shadow.yaml
+  - vault-identity.yaml
   - secret-store.yaml
   - external-secret.yaml
   - helmrelease.yaml

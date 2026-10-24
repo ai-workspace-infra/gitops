@@ -11,6 +11,7 @@ spec:
     kind: OCIRepository
     name: web-saas-fullstack-chart
   valuesFrom:
-    - kind: ConfigMap
-      name: web-saas-fullstack-values
-      valuesKey: values.yaml
+  - kind: ConfigMap
+    name: web-saas-fullstack-values
+    valuesKey: values.yaml
+  suspend: false

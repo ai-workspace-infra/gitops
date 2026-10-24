@@ -12,3 +12,7 @@ spec:
     kind: GitRepository
     name: platform-config-prod
   path: ./services/platform-vault/prod
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: cluster-runtime
