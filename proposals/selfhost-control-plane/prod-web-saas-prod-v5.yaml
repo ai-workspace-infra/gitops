@@ -137,7 +137,7 @@ release:
     target: prod-v5-candidate
     storage_target: prod-v5-storage
 execution:
-  playbooks_sha: f26bceb4d5ca158c7cd93c30f0c804bc80d635e4
+  playbooks_sha: 36f12fc2c2a3962e8a5690d64be0740d986e2e1b
   mode: candidate
   initialize: true
   # Explicit fallback intent because the supplied CMDB record has no storage
