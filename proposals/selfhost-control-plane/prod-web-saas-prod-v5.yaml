@@ -32,6 +32,7 @@ target:
   domain_base: svc.plus
   console_domain: console-selfhost-prod-v5.svc.plus
   accounts_domain: accounts-selfhost-prod-v5.svc.plus
+  accounts_public_domain: accounts.svc.plus
   billing_domain: billing-selfhost-prod-v5.svc.plus
 release:
   # The r101 source tags were checked against the exact source commits. The
@@ -136,7 +137,7 @@ release:
     target: prod-v5-candidate
     storage_target: prod-v5-storage
 execution:
-  playbooks_sha: ff984bce9ebddef3e93f1dde7a98b1987245b143
+  playbooks_sha: 36f12fc2c2a3962e8a5690d64be0740d986e2e1b
   mode: candidate
   initialize: true
   # Explicit fallback intent because the supplied CMDB record has no storage
