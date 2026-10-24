@@ -149,12 +149,21 @@ services:
     container_name: web-saas-caddy
     restart: unless-stopped
     ports: ["80:80", "443:443"]
+    # This file is dedicated to Caddy; it contains the scoped Cloudflare DNS
+    # token and OTLP exporter settings, not the shared application secrets.
+    env_file: [/etc/xcontrol/web-saas/caddy.env]
     volumes:
       - /etc/xcontrol/web-saas/Caddyfile:/etc/caddy/Caddyfile:ro
       - /etc/xcontrol/tls:/etc/xcontrol/tls:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on: [accounts, billing, console, content]
+    healthcheck:
+      test: ["CMD", "caddy", "validate", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks: [web_saas_v5]
 
 networks:
