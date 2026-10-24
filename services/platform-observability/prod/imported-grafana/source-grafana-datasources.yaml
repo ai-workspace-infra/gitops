@@ -1,18 +1,72 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: source-grafana-datasources
   namespace: platform-observability
 data:
-  datasources.yaml: "apiVersion: 1\ndatasources:\n- access: proxy\n  basicAuth: false\n  database: ''\n  isDefault:\
-    \ false\n  jsonData:\n    derivedFields:\n    - datasourceUid: victoriatraces\n      matcherRegex: (?:trace[_-]?id|traceID)[=:\\\
-    \\s\"]+([0-9a-fA-F]{16,32})\n      name: Trace ID\n      url: $${__value.raw}\n  name: VictoriaLogs\n  type:\
-    \ victoriametrics-logs-datasource\n  uid: victorialogs\n  url: http://127.0.0.1:9428\n  user: ''\n- access:\
-    \ proxy\n  basicAuth: false\n  database: ''\n  isDefault: true\n  jsonData: {}\n  name: VictoriaMetrics\n  type:\
-    \ prometheus\n  uid: victoriametrics\n  url: http://127.0.0.1:8428\n  user: ''\n- access: proxy\n  basicAuth:\
-    \ false\n  database: ''\n  isDefault: false\n  jsonData:\n    tracesToLogs:\n      datasourceUid: victorialogs\n\
-    \      filterBySpanID: false\n      filterByTraceID: true\n      spanEndTimeShift: 1h\n      spanStartTimeShift:\
-    \ -1h\n      tags:\n      - service.name\n      - environment\n      - instance\n    tracesToMetrics:\n    \
-    \  datasourceUid: victoriametrics\n      spanEndTimeShift: 1h\n      spanStartTimeShift: -1h\n      tags:\n\
-    \      - key: service.name\n        value: job\n      - key: instance\n        value: instance\n  name: VictoriaTraces\n\
-    \  type: jaeger\n  uid: victoriatraces\n  url: http://127.0.0.1:10428/select/jaeger\n  user: ''\n"
+  datasources.yaml: |
+    ---
+    apiVersion: 1
+    deleteDatasources:
+    - name: VictoriaLogs
+      orgId: 1
+    - name: VictoriaMetrics
+      orgId: 1
+    - name: VictoriaTraces
+      orgId: 1
+    datasources:
+    - access: proxy
+      basicAuth: false
+      database: ''
+      isDefault: false
+      jsonData:
+        derivedFields:
+        - datasourceUid: victoriatraces
+          matcherRegex: (?:trace[_-]?id|traceID)[=:\\s"]+([0-9a-fA-F]{16,32})
+          name: Trace ID
+          url: "$${__value.raw}"
+      name: VictoriaLogs
+      type: victoriametrics-logs-datasource
+      uid: victorialogs
+      url: http://127.0.0.1:9428
+      user: ''
+    - access: proxy
+      basicAuth: false
+      database: ''
+      isDefault: true
+      jsonData: {}
+      name: VictoriaMetrics
+      type: prometheus
+      uid: victoriametrics
+      url: http://127.0.0.1:8428
+      user: ''
+    - access: proxy
+      basicAuth: false
+      database: ''
+      isDefault: false
+      jsonData:
+        tracesToLogs:
+          datasourceUid: victorialogs
+          filterBySpanID: false
+          filterByTraceID: true
+          spanEndTimeShift: 1h
+          spanStartTimeShift: "-1h"
+          tags:
+          - service.name
+          - environment
+          - instance
+        tracesToMetrics:
+          datasourceUid: victoriametrics
+          spanEndTimeShift: 1h
+          spanStartTimeShift: "-1h"
+          tags:
+          - key: service.name
+            value: job
+          - key: instance
+            value: instance
+      name: VictoriaTraces
+      type: jaeger
+      uid: victoriatraces
+      url: http://127.0.0.1:10428/select/jaeger
+      user: ''
