@@ -36,7 +36,8 @@ console:
   singleContainer:
     image: "ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666"
     port: 8080
-    internalPort: 3000
+    command: ["/bin/bash", "-c"]
+    args: ["export PORT=3000; exec /usr/local/bin/start-all-in-one"]
     replicas: 1
     securityContext:
       allowPrivilegeEscalation: true
