@@ -112,6 +112,7 @@ billing:
 content:
   enabled: true
   workload:
+    secretRefs: [content-runtime]
     image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
     port: 8080
     replicas: 1
