@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - namespaces.yaml
   - web-saas-fullstack-kustomization.yaml
+  - platform-vault-kustomization.yaml
