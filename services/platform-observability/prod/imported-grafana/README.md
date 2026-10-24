@@ -17,7 +17,7 @@ Owner changes: Playbooks PR760, Artifacts PR216 and PR217. Deployment declaratio
 
 ## Release gates
 
-1. Pin the published observability-stack 1.1.1 OCI digest before merging.
+1. Published observability-stack 1.1.1 digest is pinned: `sha256:6c9edd8ad04a06ec73ea0a6967e6653c4e1f1048487b88c7e5e9a43c077f7174` (publication run 40110045932 succeeded; independently pulled).
 2. Recover authorized target SSH access; current local and historical deployment identities were rejected.
 3. Reconcile dedicated target identity credentials and prove the target Accounts resolver accepts the dedicated credential without exposing it.
 4. Deploy only this target through its fixed GitOps release; preserve release/PVC identities and admin credential.
