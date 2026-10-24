@@ -43,7 +43,8 @@ release:
   services:
     accounts: ghcr.io/ai-workspace-services/accounts@sha256:39716c2941b6f8ebbc0602589a59711d846234cb8313ae21254a91ba6073def7
     billing-service: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
-    portal: ghcr.io/ai-workspace-services/console@sha256:cc9b85339d82cefd264455c3d28c4e25dcd9e293378675855e23822730d5d0c5
+    # Portal maintenance: daily-build-2026.10.24-r106, commit 691b7dcc9870d4ba14b10f4b8dadc4e6d873ca0e
+    portal: ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666
     content-service: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
     postgresql: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
   # Required before execution: Accounts source SHA, native and Billing schema
