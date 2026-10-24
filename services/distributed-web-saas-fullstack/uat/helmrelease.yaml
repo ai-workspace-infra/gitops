@@ -1,0 +1,16 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: distributed-web-saas-fullstack
+  namespace: web-saas-k3s-v5
+spec:
+  interval: 5m0s
+  releaseName: web-saas
+  targetNamespace: web-saas-k3s-v5
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  valuesFrom:
+    - kind: ConfigMap
+      name: web-saas-fullstack-values
+      valuesKey: values.yaml

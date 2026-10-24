@@ -1,0 +1,64 @@
+global:
+  environment: uat
+  expectedNamespace: web-saas-k3s-v5
+
+caddy:
+  enabled: true
+  routes:
+    consoleHost: console-k3s-v5.svc.plus
+    accountsHost: accounts-k3s-v5.svc.plus
+    billingHost: billing-k3s-v5.svc.plus
+  gatewayEnabled: true
+  httpOnly: false
+  service:
+    type: ClusterIP
+
+postgresql:
+  enabled: true
+  image: "ghcr.io/ai-workspace-infra/web-saas-postgresql:0.1.0"
+  username: app
+  database: app
+  existingSecret: web-saas-secrets
+  secretKey: password
+  storage:
+    size: 5Gi
+
+console:
+  enabled: true
+  deploymentProfile: independent
+  singleContainer:
+    image: "ghcr.io/ai-workspace-infra/web-saas-console:0.1.0"
+    port: 8080
+    replicas: 1
+
+accounts:
+  enabled: true
+  image: "ghcr.io/ai-workspace-infra/web-saas-accounts:0.1.0"
+  port: 8080
+  replicas: 1
+  secretRefs:
+    - web-saas-secrets
+
+billing:
+  enabled: true
+  image: "ghcr.io/ai-workspace-infra/web-saas-billing:0.1.0"
+  port: 8080
+  replicas: 1
+  secretRefs:
+    - web-saas-secrets
+
+content:
+  enabled: true
+  image: "ghcr.io/ai-workspace-infra/web-saas-content:0.1.0"
+  port: 8080
+  replicas: 1
+
+edgeGateway:
+  enabled: true
+  deploymentProfile: independent
+
+stunnelClient:
+  enabled: false
+
+stunnelServer:
+  enabled: false

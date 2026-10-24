@@ -17,14 +17,30 @@ ruby -ryaml -e '
     "web-saas" => { "host" => "web-saas", "domain" => "console-selfhost-uat.onwalk.net", "groups" => %w[web_saas database] }
   }
 
-  # AI Aggregator has its own independently managed Akamai states. This
-  # validator owns only the six Selfhost UAT namespaces; keep the aggregator
-  # declarations in the same provider directory without folding them into the
-  # six-namespace contract.
+  # AI Aggregator and Kubernetes UAT have their own independently managed Akamai states.
+  # This validator preserves the contract of the six base Selfhost UAT namespaces
+  # while validating Kubernetes UAT declarations against their own specification.
   files = Dir.glob(File.join(root, "*.yaml")).sort
-  files = files.reject { |path| File.basename(path, ".yaml").start_with?("ai-aggregator-") }
+  k3s_files = files.select { |path| File.basename(path, ".yaml").start_with?("web-saas-k3s-") }
+  files = files.reject { |path| File.basename(path, ".yaml").start_with?("ai-aggregator-") || File.basename(path, ".yaml").start_with?("web-saas-k3s-") }
   actual = files.map { |path| File.basename(path, ".yaml") }.sort
   abort("expected exactly these six Akamai UAT declarations: #{expected.keys.sort.join(", ")}; found #{actual.join(", ")}") unless actual == expected.keys.sort
+
+  walk = lambda do |value, trail = [], path = ""|
+    case value
+    when Hash
+      value.each do |key, child|
+        if key.to_s.match?(/(?:token|password|secret|private[_-]?key|api[_-]?key)/i)
+          abort("#{path}: secret-like field is forbidden: #{(trail + [key]).join(".")}")
+        end
+        walk.call(child, trail + [key], path)
+      end
+    when Array
+      value.each_with_index { |child, index| walk.call(child, trail + [index], path) }
+    when String
+      abort("#{path}: private key material is forbidden") if value.match?(/-----BEGIN [^-]*PRIVATE KEY-----/)
+    end
+  end
 
   namespaces = []
   files.each do |path|
@@ -76,24 +92,39 @@ ruby -ryaml -e '
 
     namespaces << global.fetch("state_namespace")
 
-    walk = lambda do |value, trail = []|
-      case value
-      when Hash
-        value.each do |key, child|
-          if key.to_s.match?(/(?:token|password|secret|private[_-]?key|api[_-]?key)/i)
-            abort("#{path}: secret-like field is forbidden: #{(trail + [key]).join(".")}")
-          end
-          walk.call(child, trail + [key])
-        end
-      when Array
-        value.each_with_index { |child, index| walk.call(child, trail + [index]) }
-      when String
-        abort("#{path}: private key material is forbidden") if value.match?(/-----BEGIN [^-]*PRIVATE KEY-----/)
-      end
-    end
-    walk.call(document)
+    walk.call(document, [], path)
   end
 
   abort("state namespaces must be unique") unless namespaces.uniq.length == 6
   puts "Validated six Akamai UAT declarations with unique state namespaces"
+
+  k3s_files.each do |path|
+    stem = File.basename(path, ".yaml")
+    document = YAML.safe_load(File.read(path), aliases: false)
+    global = document.fetch("global")
+    hosts = document.fetch("hosts")
+
+    abort("#{path}: provider must be akamai-cloud") unless global["provider"] == "akamai-cloud"
+    abort("#{path}: environment must be uat") unless global["environment"] == "uat"
+    abort("#{path}: project must be svc.plus") unless global["project"] == "svc.plus"
+    abort("#{path}: account must be manbuzhe2026") unless global["account"] == "manbuzhe2026"
+    abort("#{path}: state_namespace must match filename #{stem}") unless global["state_namespace"] == stem
+    abort("#{path}: workspace must match state_namespace #{stem}") unless global["workspace"] == stem
+    abort("#{path}: region must be jp-tyo-3") unless global["region"] == "jp-tyo-3"
+    abort("#{path}: type must be g6-standard-2") unless global["type"] == "g6-standard-2"
+    abort("#{path}: image must be linode/debian13") unless global["image"] == "linode/debian13"
+    abort("#{path}: expected exactly one host") unless hosts.is_a?(Array) && hosts.length == 1
+
+    host = hosts.fetch(0)
+    abort("#{path}: expected host #{stem}") unless host["name"] == stem
+    groups = host["groups"] || []
+    %w[web_saas k3s_server].each do |group|
+      abort("#{path}: host must belong to #{group}") unless groups.include?(group)
+    end
+    domains = host.dig("host_vars", "service_domains") || []
+    abort("#{path}: service_domains must include console-k3s-v5.svc.plus") unless domains.include?("console-k3s-v5.svc.plus")
+
+    walk.call(document, [], path)
+    puts "Validated Kubernetes UAT declaration: #{stem}"
+  end
 '
