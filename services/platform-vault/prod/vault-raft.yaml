@@ -6,7 +6,7 @@ data:
   vault.hcl: |
     ui = true
     disable_mlock = true
-    api_addr = "https://vault-raft.platform-vault.svc.cluster.local:8200"
+    api_addr = "https://vault-k3s-v5.svc.plus"
     cluster_addr = "https://vault-raft.platform-vault.svc.cluster.local:8201"
     storage "raft" {
       path = "/vault/data"
@@ -140,6 +140,17 @@ spec:
           podSelector:
             matchLabels:
               app.kubernetes.io/name: external-secrets
+      ports:
+        - protocol: TCP
+          port: 8200
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: web-saas-k3s-v5
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: web-saas
+              websaas.io/workload: caddy
       ports:
         - protocol: TCP
           port: 8200

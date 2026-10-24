@@ -53,4 +53,18 @@ hosts:
         - gateway-k3s-v5.svc.plus
         - postgresql-k3s-v5.svc.plus
         - k3s-v5.svc.plus
+        - vault-k3s-v5.svc.plus
+        - observability-k3s-v5.svc.plus
+      cloudflare_dns_zone_name: svc.plus
+      cloudflare_dns_records:
+        - type: A
+          name: vault-k3s-v5.svc.plus
+          content: "{{ ansible_host }}"
+          ttl: 300
+          proxied: false
+        - type: A
+          name: observability-k3s-v5.svc.plus
+          content: "{{ ansible_host }}"
+          ttl: 300
+          proxied: false
       public_dns_cutover: false
