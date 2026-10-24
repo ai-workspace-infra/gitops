@@ -7,7 +7,7 @@ spec:
   interval: 10m0s
   url: oci://ghcr.io/ai-workspace-infra/distributed-web-saas-fullstack
   ref:
-    semver: "0.2.0"
+    semver: ">=0.2.0"
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
