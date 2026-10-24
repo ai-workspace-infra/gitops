@@ -5,6 +5,7 @@ resources:
   - vault-identity.yaml
   - secret-store.yaml
   - grafana-secret.yaml
+  - grafana-runtime-secret.yaml
   - collector-identity.yaml
   - release.yaml
   - dashboards.yaml

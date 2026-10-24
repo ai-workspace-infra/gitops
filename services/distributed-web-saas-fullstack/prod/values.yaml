@@ -93,6 +93,8 @@ accounts:
       OTEL_TRACES_SAMPLER_ARG: '1'
     secretRefs:
     - web-saas-secrets
+  podAnnotations:
+    platform.svc.plus/observability-identity-version: '1'
 billing:
   enabled: true
   workload:
