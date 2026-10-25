@@ -1,0 +1,31 @@
+# Reviewed producer source: artifacts#225. Activation requires a published digest.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: observability-agent-chart
+spec:
+  interval: 5m
+  suspend: true
+  url: oci://ghcr.io/ai-workspace-infra/observability-agent
+  ref:
+    tag: 1.1.0
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: platform-observability-agent
+spec:
+  suspend: true
+  interval: 5m
+  releaseName: platform-observability-agent
+  targetNamespace: platform-observability
+  chartRef:
+    kind: OCIRepository
+    name: observability-agent-chart
+  valuesFrom:
+    - kind: ConfigMap
+      name: platform-observability-agent-values
+      valuesKey: values.yaml
