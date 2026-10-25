@@ -24,6 +24,8 @@ spec:
           console.svc.plus: console-k3s-v5.svc.plus
           accounts.svc.plus: accounts-k3s-v5.svc.plus
           billing.svc.plus: billing-k3s-v5.svc.plus
+          vault.svc.plus: vault-k3s-v5.svc.plus
+          observability.svc.plus: observability-k3s-v5.svc.plus
           postgresql.svc.plus: postgresql-selfhost-prod-v5.svc.plus
       load-balancer:
         strategy: dns-only
@@ -72,6 +74,10 @@ spec:
     billing.svc.plus:
       selfhost: billing-k3s-v5.svc.plus
       serverless: billing-serverless-prod.svc.plus
+    vault.svc.plus:
+      selfhost: vault-k3s-v5.svc.plus
+    observability.svc.plus:
+      selfhost: observability-k3s-v5.svc.plus
     postgresql.svc.plus:
       selfhost: postgresql-selfhost-prod-v5.svc.plus
       serverless: postgresql-serverless-prod.svc.plus

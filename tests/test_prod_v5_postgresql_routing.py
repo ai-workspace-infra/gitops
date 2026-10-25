@@ -8,6 +8,8 @@ CNAME_TARGETS = {
     'console.svc.plus': 'console-k3s-v5.svc.plus',
     'accounts.svc.plus': 'accounts-k3s-v5.svc.plus',
     'billing.svc.plus': 'billing-k3s-v5.svc.plus',
+    'vault.svc.plus': 'vault-k3s-v5.svc.plus',
+    'observability.svc.plus': 'observability-k3s-v5.svc.plus',
     'postgresql.svc.plus': TARGET,
 }
 
