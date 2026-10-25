@@ -398,9 +398,13 @@ data:
     \          \"TCP_tw\",\n                \"下载带宽*\",\n                \"上传带宽*\"\n\
     \              ]\n            }\n          }\n        }\n      ],\n      \"type\"\
     : \"table\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\"\
-    ,\n        \"uid\": \"victoriametrics\"\n      },\n      \"description\": \"-\
-    \ P99：数据集按升序排列，第99分位置大的数据。（即升序排列后排在99%位置的数据）\\n- 该表格需要在Prometheus增加记录规则（参考看板下载页）\\\
-    n- 增加记录规则1小时后才会有展示的数据。\\n- 时间范围[7d:1h]表示要查看过去 7 天内每小时的数据点。\",\n      \"fieldConfig\"\
+    ,\n        \"uid\": \"victoriametrics\"\n      },\n      \"description\": \"P99\
+    \ CPU/memory percentages are derived from raw node-exporter metrics, without recording\
+    \ rules. CPU uses the idle-rate complement; memory uses 1 - MemAvailable/MemTotal.\
+    \ The [7d:5m] subquery samples the available history within a seven-day window.\
+    \ A newly collected node may have only minutes of history: this does not prove\
+    \ seven days of coverage. Missing source metrics remain No data. Rows join by\
+    \ instance within the selected cluster/environment.\",\n      \"fieldConfig\"\
     : {\n        \"defaults\": {\n          \"color\": {\n            \"mode\": \"\
     palette-classic\"\n          },\n          \"custom\": {\n            \"align\"\
     : \"center\",\n            \"cellOptions\": {\n              \"type\": \"color-text\"\
@@ -463,41 +467,46 @@ data:
     refId\": \"A\"\n        },\n        {\n          \"datasource\": {\n         \
     \   \"type\": \"prometheus\",\n            \"uid\": \"victoriametrics\"\n    \
     \      },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
-    \          \"expr\": \"quantile_over_time(0.99, cpu:usage:rate1m{job=~\\\"$job\\\
-    \"}[7d:1h])\",\n          \"format\": \"table\",\n          \"hide\": false,\n\
-    \          \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
-    : \"CPU使用率P99\",\n          \"refId\": \"B\"\n        },\n        {\n        \
-    \  \"datasource\": {\n            \"type\": \"prometheus\",\n            \"uid\"\
-    : \"victoriametrics\"\n          },\n          \"editorMode\": \"code\",\n   \
-    \       \"exemplar\": false,\n          \"expr\": \"quantile_over_time(0.99, mem:usage:rate1m{job=~\\\
-    \"$job\\\"}[7d:1h])\",\n          \"format\": \"table\",\n          \"hide\":\
-    \ false,\n          \"instant\": true,\n          \"interval\": \"\",\n      \
-    \    \"legendFormat\": \"内存使用率P99\",\n          \"refId\": \"C\"\n        }\n\
-    \      ],\n      \"title\": \"最近7天P99资源使用率\",\n      \"transformations\": [\n\
-    \        {\n          \"id\": \"seriesToColumns\",\n          \"options\": {\n\
-    \            \"byField\": \"instance\"\n          }\n        },\n        {\n \
-    \         \"id\": \"filterFieldsByName\",\n          \"options\": {\n        \
-    \    \"include\": {\n              \"pattern\": \"/^Value #[^A]|^instance$|^nodename$/\"\
-    \n            }\n          }\n        },\n        {\n          \"id\": \"organize\"\
-    ,\n          \"options\": {\n            \"excludeByName\": {},\n            \"\
-    includeByName\": {},\n            \"indexByName\": {\n              \"Value #B\"\
-    : 2,\n              \"Value #C\": 3,\n              \"instance\": 1,\n       \
-    \       \"nodename\": 0\n            },\n            \"renameByName\": {\n   \
-    \           \"Value #B\": \"P99CPU%\",\n              \"Value #C\": \"P99内存%\"\
-    ,\n              \"instance\": \"IP\",\n              \"name\": \"\",\n      \
-    \        \"name 1\": \"\",\n              \"nodename\": \"主机名\"\n            }\n\
-    \          }\n        }\n      ],\n      \"type\": \"table\"\n    },\n    {\n\
-    \      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\":\
-    \ \"victoriametrics\"\n      },\n      \"description\": \"\",\n      \"fieldConfig\"\
-    : {\n        \"defaults\": {\n          \"color\": {\n            \"mode\": \"\
-    palette-classic\"\n          },\n          \"custom\": {\n            \"axisBorderShow\"\
-    : false,\n            \"axisCenteredZero\": false,\n            \"axisColorMode\"\
-    : \"series\",\n            \"axisLabel\": \"总5分钟负载\",\n            \"axisPlacement\"\
-    : \"auto\",\n            \"axisSoftMin\": 0,\n            \"barAlignment\": 0,\n\
-    \            \"drawStyle\": \"line\",\n            \"fillOpacity\": 0,\n     \
-    \       \"gradientMode\": \"none\",\n            \"hideFrom\": {\n           \
-    \   \"legend\": false,\n              \"tooltip\": false,\n              \"viz\"\
-    : false\n            },\n            \"insertNulls\": false,\n            \"lineInterpolation\"\
+    \          \"expr\": \"quantile_over_time(0.99,(100 * (1 - avg by(instance,cluster,environment)(rate(node_cpu_seconds_total{job=\\\
+    \"node-exporter\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",mode=\\\"idle\\\"}[3m]))))[7d:5m])\",\n          \"format\": \"table\",\n \
+    \         \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
+    : \"\",\n          \"legendFormat\": \"CPU使用率P99\",\n          \"refId\": \"B\"\
+    \n        },\n        {\n          \"datasource\": {\n            \"type\": \"\
+    prometheus\",\n            \"uid\": \"victoriametrics\"\n          },\n      \
+    \    \"editorMode\": \"code\",\n          \"exemplar\": false,\n          \"expr\"\
+    : \"quantile_over_time(0.99,(100 * (1 - avg by(instance,cluster,environment)(node_memory_MemAvailable_bytes{job=\\\
+    \"node-exporter\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \"} / node_memory_MemTotal_bytes{job=\\\"node-exporter\\\",cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\"})))[7d:5m])\",\n          \"format\"\
+    : \"table\",\n          \"hide\": false,\n          \"instant\": true,\n     \
+    \     \"interval\": \"\",\n          \"legendFormat\": \"内存使用率P99\",\n       \
+    \   \"refId\": \"C\"\n        }\n      ],\n      \"title\": \"最近7天P99资源使用率\",\n\
+    \      \"transformations\": [\n        {\n          \"id\": \"seriesToColumns\"\
+    ,\n          \"options\": {\n            \"byField\": \"instance\"\n         \
+    \ }\n        },\n        {\n          \"id\": \"filterFieldsByName\",\n      \
+    \    \"options\": {\n            \"include\": {\n              \"pattern\": \"\
+    /^Value #[^A]|^instance$|^nodename$/\"\n            }\n          }\n        },\n\
+    \        {\n          \"id\": \"organize\",\n          \"options\": {\n      \
+    \      \"excludeByName\": {},\n            \"includeByName\": {},\n          \
+    \  \"indexByName\": {\n              \"Value #B\": 2,\n              \"Value #C\"\
+    : 3,\n              \"instance\": 1,\n              \"nodename\": 0\n        \
+    \    },\n            \"renameByName\": {\n              \"Value #B\": \"P99CPU%\"\
+    ,\n              \"Value #C\": \"P99内存%\",\n              \"instance\": \"IP\"\
+    ,\n              \"name\": \"\",\n              \"name 1\": \"\",\n          \
+    \    \"nodename\": \"主机名\"\n            }\n          }\n        }\n      ],\n\
+    \      \"type\": \"table\"\n    },\n    {\n      \"datasource\": {\n        \"\
+    type\": \"prometheus\",\n        \"uid\": \"victoriametrics\"\n      },\n    \
+    \  \"description\": \"\",\n      \"fieldConfig\": {\n        \"defaults\": {\n\
+    \          \"color\": {\n            \"mode\": \"palette-classic\"\n         \
+    \ },\n          \"custom\": {\n            \"axisBorderShow\": false,\n      \
+    \      \"axisCenteredZero\": false,\n            \"axisColorMode\": \"series\"\
+    ,\n            \"axisLabel\": \"总5分钟负载\",\n            \"axisPlacement\": \"auto\"\
+    ,\n            \"axisSoftMin\": 0,\n            \"barAlignment\": 0,\n       \
+    \     \"drawStyle\": \"line\",\n            \"fillOpacity\": 0,\n            \"\
+    gradientMode\": \"none\",\n            \"hideFrom\": {\n              \"legend\"\
+    : false,\n              \"tooltip\": false,\n              \"viz\": false\n  \
+    \          },\n            \"insertNulls\": false,\n            \"lineInterpolation\"\
     : \"linear\",\n            \"lineWidth\": 2,\n            \"pointSize\": 5,\n\
     \            \"scaleDistribution\": {\n              \"type\": \"linear\"\n  \
     \          },\n            \"showPoints\": \"never\",\n            \"spanNulls\"\
