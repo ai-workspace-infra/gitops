@@ -7,6 +7,7 @@ resources:
   - grafana-secret.yaml
   - grafana-runtime-secret.yaml
   - collector-identity.yaml
+  - agent-release.yaml
   - release.yaml
   - dashboards.yaml
   - imported-grafana
@@ -14,5 +15,8 @@ configMapGenerator:
   - name: platform-observability-values
     files:
       - values.yaml=values.yaml
+  - name: platform-observability-agent-values
+    files:
+      - values.yaml=agent-values.yaml
 generatorOptions:
   disableNameSuffixHash: true
