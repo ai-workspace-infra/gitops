@@ -1,0 +1,30 @@
+# Configuration-only Grafana migration record
+
+Updated: 2026-10-25, Asia/Shanghai. The source configuration inventory was captured on 2026-10-24 when the former Grafana endpoint was available; the source host has since been deleted. Its former public address (`35.221.181.68`) is not a rollback endpoint, and no live source comparison is available. Use the archived inventory and snapshots in controlled encrypted evidence as the source of truth.
+
+Target: `https://observability-k3s-v5.svc.plus` / `web-saas-k3s-v5`, PROD.
+Read-only target checks on 2026-10-25: `/api/health` returned HTTP 200 and reported Grafana `13.2.4`; `/login` returned HTTP 200; the Observability HelmRelease was Ready and its five-container Pod was Running with zero restarts; its 20Gi PVC was Bound. These checks establish endpoint and process health only. Authenticated Grafana login and datasource/dashboard/plugin behavior have not yet been accepted.
+
+- Archived source inventory: 16 dashboards, 1 folder, 3 canonical datasource UIDs.
+- Retain target Platform overview: expected 17 dashboards after deployment.
+- Bundle SHA256: `2c794b9563d6399705b813f9b1c41877c611c3288d53b51fe3429a53324a8c53`.
+- Three identical source-input render replays: zero changed files.
+- Target endpoints replace source datasource and application endpoints; credentials use dedicated target environment references.
+- Target Grafana database backup is encrypted in controlled local evidence. No source historical metrics, logs or traces are included.
+- No source users, alert rules, contact points or production notification channels are imported or enabled.
+
+Owner changes: Playbooks PR760, Artifacts PR216 and PR217. Deployment declaration: GitOps PR546. Original snapshots remain in controlled encrypted evidence, not this repository.
+
+## Acceptance gates
+
+1. Published observability-stack 1.1.1 digest is pinned: `sha256:6c9edd8ad04a06ec73ea0a6967e6653c4e1f1048487b88c7e5e9a43c077f7174` (publication run 40110045932 succeeded; independently pulled).
+2. Complete authenticated login to the target Grafana and reconcile dedicated target identity credentials; prove the target Accounts resolver accepts the dedicated credential without exposing it.
+3. Verify all three datasource UIDs and run representative queries; verify the folder, all 16 imported dashboards, variables, required plugin behavior and the retained Platform overview.
+4. Repeat Flux reconciliation and verify no configuration drift, unexpected restarts, or production notification-channel activation.
+5. Keep historical metrics, logs and traces out of scope. Do not claim migration of historical data.
+
+## DNS and recovery boundary
+
+The former Observability host was deleted. The existing `observability.svc.plus` A record pointing at `35.221.181.68` does not provide a usable rollback target. Before any public DNS cutover, provide and verify a target-side maintenance/repair procedure or an independent healthy fallback endpoint. Until then, DNS cutover is BLOCKED by rollback risk. If a cutover is later approved, rollback must not point to the deleted host.
+
+Status: archived inventory available; target endpoint/process health PASSED; authenticated login, datasource queries, dashboard/folder/variable/plugin runtime verification and Flux idempotence NOT_RUN; source writes and historical-data migration NOT_RUN; DNS and traffic cutover NOT_RUN. DNS cutover remains BLOCKED until the target-side recovery gate above is satisfied.

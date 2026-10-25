@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: source-grafana-inventory
+  namespace: platform-observability
+data:
+  inventory.yaml: "format: 1\nsource_version: 13.2.3\ndashboards:\n  StarsL-JOB-node:\n    title: Node Exporter\
+    \ Dashboard 20240520 通用JOB分组版\n    folder_uid: ''\n    sha256: 8f7c8f50f14bba86b74215128100c7ce6b9d927f0cc47e09f2996f4f9661c339\n\
+    \    panels_sha256: 3b30bb6287b35fd6626bb2c3f0d7e3f5f4677af5c49a8316f5e7f3b235ea8771\n    variables_sha256:\
+    \ 537b5fc0fb100899464b11c05682569cfd6aca89d73203a9bb5bdcf319c2e7a7\n    links_sha256: 5388ad0ddbdf5332867eff7f2df2ebe2ff5b6dcb0e70b53eea4392d375090dfc\n\
+    \  agent-ai-observability:\n    title: Agent / AI Application Observability\n    folder_uid: ''\n    sha256:\
+    \ d955762f197db96640fb8df57a72f28e28483148492c9ac25e3d0a51a351697e\n    panels_sha256: 959aec6ff261d0df390008e6c056288d1fc8d8f16c1db8fa9e0bd2459f470238\n\
+    \    variables_sha256: 147bd2c0ff65b13f98a568c421d651408cc4b740f0d58b4bb737392bca93934f\n    links_sha256: 2407c60a763be86e76c8701ea7d2be558303bb5e72e3509acb2354c245a866d8\n\
+    \  ai-aggregator-overview:\n    title: AI Aggregator Overview\n    folder_uid: ''\n    sha256: 0773b370504afd4878d3045b7eb4c83e251cca45ef6212b7f22be612e24af12a\n\
+    \    panels_sha256: f58643dd40b23f1f8f56a90f5999a14969f686e24c9650b2d08af23661040772\n    variables_sha256:\
+    \ a65c462c8e83a776018407f075415aa2307fa822773c23d08f139dcd855cc0b3\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  begqoward2epsf:\n    title: Xray Dashboard\n    folder_uid: ''\n    sha256: 9b345a1f244600ccf60f461775f3972ec04d2db1520372c3f79e52f312f8e6e9\n\
+    \    panels_sha256: 5699bffdd2f423c36e2a8a71d23f84e46695200b4191f9d5f7b168b74461654e\n    variables_sha256:\
+    \ c0f74f6b9c3e2ea497fc7a9f8ea45932ef14f64e9ff66c05c0e21c01af59ec2a\n    links_sha256: 1818075eb1f1bc1e6bc97127c057f7d1be4c0b43a7ac2dd7f0d956427c7b739c\n\
+    \  blackbox-exporter-overview:\n    title: Blackbox Exporter & SSL Probe Overview\n    folder_uid: ''\n    sha256:\
+    \ e92828da782efe0d755c8b2f59742084ce42c2f4e0eb4b4132f71f1fb65bcbc0\n    panels_sha256: bf7779f49fe341d6d6103df14e6997ccdbc9eef51cc38590ffd5ce42e6cb6be1\n\
+    \    variables_sha256: d64c568ea3a419432a39c2e7e5fab626b42e662b3f146a58aa6e23926426cd3f\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  cmdb-resource-overview:\n    title: CMDB · 多云资源总览\n    folder_uid: ''\n    sha256: cdaf4a1e0a169874813166fa28ce1396e78bb613507aaf0bffb98f60ce92b521\n\
+    \    panels_sha256: 2117a5c12ea8be5c0f0e34c8e9f1172ea4a8c846cd939deb09e29dfce8338aec\n    variables_sha256:\
+    \ 6d355a642ffed28c2afbda550638c33deb10c7f463ea5f2ce79a5ee5a8e15a4c\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  homepage-navigation:\n    title: 平台导航与总览 (Navigation Homepage)\n    folder_uid: ''\n    sha256: 489f696f5edfbacea474e5fd924738a0dafc484ef55c4ef8783ad3e3a9fc906f\n\
+    \    panels_sha256: 3b9884227719816cab8ba551c6ff7a4d218677c8fa202f1dd2baaf166054e079\n    variables_sha256:\
+    \ dc4eab5adf20cc1255912981b1c235e0c11e493ca74fff87bd804be61b7f3ca1\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  k6-performance-capacity-overview:\n    title: k6 Performance & Capacity Stress Test Dashboard\n    folder_uid:\
+    \ ''\n    sha256: 47ad61cf3dd276d77691222930861103f769bd644f24ba311917078de54801c3\n    panels_sha256: c8034655ee2d2c00cc61301b9ebd5e35be48f0bedaf544b6c1ce751bef560ae0\n\
+    \    variables_sha256: b29790adb6ad6e780a590f4087947e7d81f0273e45483bcb2abc8ae7b70eb286\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  postgres-exporter-overview:\n    title: PostgreSQL Database Overview\n    folder_uid: ''\n    sha256: b8a785e2b28a36fdc44740ff98e8b6af758f9cca271a938860e51ce3cccc269a\n\
+    \    panels_sha256: 952f552cbb396a598042567e8fd55e813b950dc0e96d3bea23fa1faca0d93e9c\n    variables_sha256:\
+    \ 2e87885c8658d8504392306a211c6676098510910bb30d46b2c4f75791c4cc1b\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  process-exporter-with-tree:\n    title: process exporter dashboard with treemap\n    folder_uid: ''\n   \
+    \ sha256: 89503ac9674ca993cc728d219b544e747b0d2f93ff62b3da5ecdc4e492fe5967\n    panels_sha256: a601f8b57758362029bc75eb93d1e268a1528cb0c88c2bab97878545b7712ce2\n\
+    \    variables_sha256: 75a38f4b694922966665c644360e931622f971e981b2f4af64682d857997542b\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  serverless-fullstack-architecture:\n    title: 全栈无服务器与边缘架构总览 (Serverless & Edge Full-Stack Topology)\n  \
+    \  folder_uid: ''\n    sha256: cd69f5a1bd10dc9cbe76350ee57135383db1094d6fb5b921b62d14e4042cf347\n    panels_sha256:\
+    \ 1db2bb6d126f5e80cd96a5b05e455cd8fd0d9cff769746ee4ccea4c0b85ee03d\n    variables_sha256: f7b48234bc4a990bc957232c3aec67b21d4dcaaab12161d1bd0aa3bfaecf40f6\n\
+    \    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n  victoria-logs-overview:\n\
+    \    title: Victoria Logs Overview\n    folder_uid: ''\n    sha256: 0f4114f0723932fe85f88410c5ea6e2d2848e33f4d21525e326c48c54466f038\n\
+    \    panels_sha256: b2d042aa2374dcbf00bb0425813f8addf8ffa2a82f198d497fe50d0d284c34d0\n    variables_sha256:\
+    \ 1e9c8335b128318d28deeb8067e1d9cb895fb6fc865db3c3aa71dfadd708520d\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  victoria-traces-overview:\n    title: VictoriaTraces Distributed Tracing APM\n    folder_uid: ''\n    sha256:\
+    \ d74ad6149d8ec23c5d84a935e729589394e68a7e0835c5741879e488e5592dae\n    panels_sha256: 6c9ec98028db43a3315954a586a2e7176c79ddd1861b6679db3bc73466c4364d\n\
+    \    variables_sha256: ec05effdac38f2dfc9ab33e9f10e2758a67cd6186c2695ef8701420c3549683f\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  xconnect-comprehensive:\n    title: XConnect 综合监控\n    folder_uid: ''\n    sha256: edf6468e6dea58e29f9843a2fc21114cd21c3a79f189211a009be81b4b192b87\n\
+    \    panels_sha256: 90d213c37e41a4e99fb7b7d4930db497ecba1b0daf4a60e4732f50ff49597217\n    variables_sha256:\
+    \ a1bfeed3db3407a26f792423f360ce5ca989ad506ab1b57671ec749d147b75ad\n    links_sha256: 905e3f31cad1d9261882c4cd01aa9101db86f12e2e7c4f74fcea132b70656b00\n\
+    \  xconnect-user-connection-diagnostics:\n    title: XConnect 用户慢连接诊断\n    folder_uid: ''\n    sha256: b76e901ef107da84efd9017ac2b89b476615bce6eb2155362298ed6d6bc1d533\n\
+    \    panels_sha256: e8b2300475c1d80ff1ff6b7b9abfdfbb1267d77dd6a6a86e7f06d495f6decc22\n    variables_sha256:\
+    \ 6d355a642ffed28c2afbda550638c33deb10c7f463ea5f2ce79a5ee5a8e15a4c\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    \  xhttp-edge-reliability:\n    title: XHTTP Edge Reliability\n    folder_uid: ''\n    sha256: 5cbad887498346a8caa100e5c77286f620fea1454450117520668ef2e3ea5558\n\
+    \    panels_sha256: 5b830849535929bafb14bddb9f94c44f0e1a59a94436b6c7940050d238a31f99\n    variables_sha256:\
+    \ b07c24d1c72d9c18f7f4b133ce4ed225252c6fd59385902fa9af3640bebe7565\n    links_sha256: 4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\n\
+    folders:\n  dfzrqnab9cpa8e: Observability Alerts\ndatasources:\n  victorialogs:\n    name: VictoriaLogs\n  \
+    \  type: victoriametrics-logs-datasource\n  victoriametrics:\n    name: VictoriaMetrics\n    type: prometheus\n\
+    \  victoriatraces:\n    name: VictoriaTraces\n    type: jaeger\nhistorical_data_migration: NOT_RUN\nproduction_alert_channels:\
+    \ NOT_IMPORTED\n"

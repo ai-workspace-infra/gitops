@@ -9,6 +9,7 @@ resources:
   - collector-identity.yaml
   - release.yaml
   - dashboards.yaml
+  - imported-grafana
 configMapGenerator:
   - name: platform-observability-values
     files:

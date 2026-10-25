@@ -5,9 +5,11 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 TARGET = 'postgresql-selfhost-prod-v5.svc.plus'
 CNAME_TARGETS = {
-    'console.svc.plus': 'console-selfhost-prod-v5.svc.plus',
-    'accounts.svc.plus': 'accounts-selfhost-prod-v5.svc.plus',
-    'billing.svc.plus': 'billing-selfhost-prod-v5.svc.plus',
+    'console.svc.plus': 'console-k3s-v5.svc.plus',
+    'accounts.svc.plus': 'accounts-k3s-v5.svc.plus',
+    'billing.svc.plus': 'billing-k3s-v5.svc.plus',
+    'vault.svc.plus': 'vault-k3s-v5.svc.plus',
+    'observability.svc.plus': 'observability-k3s-v5.svc.plus',
     'postgresql.svc.plus': TARGET,
 }
 
@@ -26,8 +28,8 @@ class ProdV5PostgresqlRoutingTests(unittest.TestCase):
     def test_prod_hybrid_endpoint_does_not_fall_back_to_generic_generation(self):
         config = yaml.safe_load((ROOT / 'topology/prod/hybrid/runtime-topology.yaml').read_text())
         self.assertEqual(config['spec']['public_endpoints']['postgresql']['host'], TARGET)
-        self.assertEqual(config['spec']['public_endpoints']['accounts']['host'], CNAME_TARGETS['accounts.svc.plus'])
-        self.assertEqual(config['spec']['public_endpoints']['billing']['host'], CNAME_TARGETS['billing.svc.plus'])
+        self.assertEqual(config['spec']['public_endpoints']['accounts']['host'], 'accounts-selfhost-prod-v5.svc.plus')
+        self.assertEqual(config['spec']['public_endpoints']['billing']['host'], 'billing-selfhost-prod-v5.svc.plus')
 
     def test_v5_resource_declares_service_name_and_generation_alias(self):
         config = yaml.safe_load((ROOT / 'resources/svc.plus/prod/akamai/web-saas-prod-v5.yaml').read_text())
