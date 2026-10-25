@@ -2,19 +2,26 @@
 
 Parent: GitOps #564. Producer: Artifacts #225. This consumer uses the existing reusable `observability-agent` chart as **one separate HelmRelease**, not three separate exporter charts and not a new server stack.
 
-## Current declaration state
+## Prepared activation state
 
-`agent-release.yaml` stages chart version 1.1.0 with both OCIRepository and HelmRelease suspended. This version is a candidate until the producer PR is reviewed, published and independently pulled. The tag is not a fake digest and is not activation permission. Replace the tag with the verified published OCI digest, then explicitly remove suspension in the reviewed activation change. The parent Observability server chart pin is unchanged.
+This declaration now pins independently pulled published charts:
 
-`agent-values.yaml` selects Node host metrics, kube-state-metrics and process exporter, with Vector off. The KSM/process components default off in the generic chart and are opted in here. The Node image, process image and KSM image are immutable. `agent-scrape-values.yaml` is an **inactive activation patch**, deliberately not consumed by the current server HelmRelease while producers are suspended. In the activation PR, merge its `telemetry.extraScrapeConfigs` into the canonical `values.yaml` or add an explicitly generated ConfigMap via the server's `valuesFrom`. Do not apply ad-hoc cluster changes or enable references to missing producers.
+- agent **1.1.0**: `sha256:e75aebf0aaff448a9d387eb2da1af0695d87752d339dda9c3d982367fe7580af`; publication run 40206544544, source `2dcca6aefb054878f58161b209e651d5bfc4f50c`.
+- server stack **1.1.4**: `sha256:cbc00eaa3798542b6445a785a24556d24f828c9949a4fb7359778de2932ee871`; publication run 40206795144, source `8d1d4124bcdd576a3618ad4c7af702c80395fd18`.
 
-The actual cluster GitRepository currently follows a release tag, not main. A main merge and a five-minute interval do not establish runtime application. Promotion must record the exact new GitOps release tag/revision, reconciliation result, chart digest and running workload identity.
+The OCIRepository and independent agent HelmRelease are unsuspended in the desired state. The five scrape jobs are attached directly to canonical `values.yaml`; the inactive staging patch has been removed, so there is no second scrape source or manual values merge step. `agent-values.yaml` selects the three producers and leaves Vector off.
+
+The server retains kubeletstats for `[node,pod,volume]`, preserving the existing `k8s_node_*` overview source while raw cAdvisor owns the container metrics. This prevents the old receiver's byte-normalized container memory series from being summed a second time.
+
+The actual cluster GitRepository follows a **release tag**, not main. A main merge and a five-minute interval do not establish runtime application. Root/operator must promote the reviewed GitOps release tag/revision and verify reconciliation and running workload identity. This PR is desired-state activation, not a claim of completed deployment or data acceptance.
+
+Operator's pre-activation baseline independently verified the exact provider resource, SSH identity and node, healthy existing stack/PVC, and absence of exporter DaemonSets/port-9100 listener. It used the authorized management identity and therefore does not establish independent audit-role isolation. Direct kubelet TLS/RBAC and new producer metric freshness remain rollout gates.
 
 ## Source and label contract
 
 The existing VictoriaMetrics instance is the sole local scraper: KSM Service; Node/process Pod discovery restricted to this namespace/release; direct kubelet and cAdvisor endpoints. All jobs carry cluster/environment. Node/process `instance` and `node` are actual Kubernetes node names. Node `nodename` is relabeled to that same identity so the existing Node dashboard variables remain usable. cAdvisor preserves namespace/pod/container dimensions for the imported StarsL K8s dashboard. No recording rules are required.
 
-The existing process dashboard filters `namedprocess_namegroup_cpu_seconds_total` by `instance`; verify that independently. Process default non-root collection cannot guarantee ownership-protected I/O/fd metrics, so the activation patch drops those families instead of treating unreadable zeroes as truth. Preserve the three `namedprocess_scrape_*` error counters and investigate coverage gaps.
+The existing process dashboard filters `namedprocess_namegroup_cpu_seconds_total` by `instance`; verify that independently. Process default non-root collection cannot guarantee ownership-protected I/O/fd metrics, so the canonical scrape config drops those families instead of treating unreadable zeroes as truth. Preserve the three `namedprocess_scrape_*` error counters and investigate coverage gaps.
 
 ## Required preflight
 
@@ -50,4 +57,4 @@ The generic agent supports `vector.enabled=true`, `vector.mode=relay`: scoped so
 
 ## Upgrade and rollback
 
-Reviewed producer → immutable agent publication/digest → activation PR with source tag, agent pin and canonical scrape config → authorized reconciliation → runtime checks. Keep prior GitOps/chart refs and restore only this release and scrape selection on regression. Do not delete backend data, transfer writers, rebuild nodes or change DNS. Pending rollout and runtime checks keep parent #564 open.
+Reviewed producer → immutable agent/stack publication and independently pulled digests (completed) → this activation PR with canonical scrape config → authorized GitOps source tag/revision promotion → runtime checks. Keep prior GitOps/chart refs and restore only this release and scrape selection on regression. Do not delete backend data, transfer writers, rebuild nodes or change DNS. Pending rollout and runtime checks keep parent #564 open.
