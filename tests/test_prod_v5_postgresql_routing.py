@@ -39,6 +39,8 @@ class ProdV5PostgresqlRoutingTests(unittest.TestCase):
         self.assertNotIn('web_saas_doco_cd_target', host)
         self.assertNotIn('web_saas', host_record['groups'])
         self.assertNotIn('generation_candidate', host_record['groups'])
+        self.assertFalse(host_record['firewall']['allow_http'])
+        self.assertFalse(host_record['firewall']['allow_https'])
         dev = yaml.safe_load((ROOT / 'topology/dev/k3s-v5/existing-host.yaml').read_text())
         self.assertEqual(dev['metadata']['environment'], 'dev')
         self.assertEqual(dev['spec']['existing_node'], 'web-saas-dev-v5')
