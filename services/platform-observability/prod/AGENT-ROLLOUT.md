@@ -6,7 +6,7 @@ Parent: GitOps #564. Producer: Artifacts #225. This consumer uses the existing r
 
 This declaration now pins independently pulled published charts:
 
-- agent **1.1.0**: `sha256:e75aebf0aaff448a9d387eb2da1af0695d87752d339dda9c3d982367fe7580af`; publication run 40206544544, source `2dcca6aefb054878f58161b209e651d5bfc4f50c`.
+- agent **1.1.1**: `sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12`; publication run 40209012117, source `b8972db` (lightweight process health probe fix, Artifacts #233).
 - server stack **1.1.4**: `sha256:cbc00eaa3798542b6445a785a24556d24f828c9949a4fb7359778de2932ee871`; publication run 40206795144, source `8d1d4124bcdd576a3618ad4c7af702c80395fd18`.
 
 The OCIRepository and independent agent HelmRelease are unsuspended in the desired state. The five scrape jobs are attached directly to canonical `values.yaml`; the inactive staging patch has been removed, so there is no second scrape source or manual values merge step. `agent-values.yaml` selects the three producers and leaves Vector off.
@@ -87,3 +87,10 @@ count by (cluster,environment,node,namespace,pod,container) (
 ```
 
 Also inspect **all jobs** for the same metric and real workload identity; an OTel-derived series may carry `k8s_namespace_name`/`k8s_pod_name`/`container_name` instead of raw namespace/pod/container. Query those separately and require no fresh OTel container-group series after the receiver update; do not infer uniqueness merely from differing labels. Historical samples may remain in the selected time window and are not evidence of current double collection. Query freshness by original sample timestamp. Never sum cgroup root, pod sandbox and application hierarchy together as though they were separate application containers.
+
+
+## Process health probe correction (agent 1.1.1)
+
+The published agent digest advances only the existing process health behavior: startup/readiness/liveness use the fixed lightweight landing `/` or configurable TCP, not synchronous `/metrics` collection. Startup has a 300-second convergence budget. The pinned process image, non-root permissions, CPU/memory limits and all server/scrape settings remain unchanged. The production status-only comparison of landing 0.002775s versus metrics 1.045892s explained the old implicit one-second timeout; it did not indicate a NetworkPolicy block or a need for broader privileges.
+
+The operator promotes this pin on the Agent-only maintenance line before the server/Dashboard phase. This canonical main change does not imply that the full main target has been deployed. Verify stable restart counts and independently measured real metrics after the authorized source-tag promotion; lightweight readiness alone does not establish telemetry correctness.
