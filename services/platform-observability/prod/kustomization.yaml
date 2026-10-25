@@ -2,17 +2,21 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: platform-observability
 resources:
-  - vault-identity.yaml
-  - secret-store.yaml
-  - grafana-secret.yaml
-  - grafana-runtime-secret.yaml
-  - collector-identity.yaml
-  - release.yaml
-  - dashboards.yaml
-  - imported-grafana
+- vault-identity.yaml
+- secret-store.yaml
+- grafana-secret.yaml
+- grafana-runtime-secret.yaml
+- collector-identity.yaml
+- agent-release.yaml
+- release.yaml
+- dashboards.yaml
+- imported-grafana
 configMapGenerator:
-  - name: platform-observability-values
-    files:
-      - values.yaml=values.yaml
+- name: platform-observability-values
+  files:
+  - values.yaml=values.yaml
+- name: platform-observability-agent-values
+  files:
+  - values.yaml=agent-values.yaml
 generatorOptions:
   disableNameSuffixHash: true
