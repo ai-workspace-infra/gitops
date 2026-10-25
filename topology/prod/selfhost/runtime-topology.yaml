@@ -16,14 +16,14 @@ spec:
         api_cname_records:
           accounts.svc.plus:
             serverless: accounts-serverless-prod.svc.plus
-            selfhost: accounts-selfhost-prod-v5.svc.plus
+            selfhost: accounts-k3s-v5.svc.plus
           billing.svc.plus:
             serverless: billing-serverless-prod.svc.plus
-            selfhost: billing-selfhost-prod-v5.svc.plus
+            selfhost: billing-k3s-v5.svc.plus
         canonical_records:
-          console.svc.plus: console-selfhost-prod-v5.svc.plus
-          accounts.svc.plus: accounts-selfhost-prod-v5.svc.plus
-          billing.svc.plus: billing-selfhost-prod-v5.svc.plus
+          console.svc.plus: console-k3s-v5.svc.plus
+          accounts.svc.plus: accounts-k3s-v5.svc.plus
+          billing.svc.plus: billing-k3s-v5.svc.plus
           postgresql.svc.plus: postgresql-selfhost-prod-v5.svc.plus
       load-balancer:
         strategy: dns-only
@@ -64,20 +64,20 @@ spec:
             target: selfhost
   domains:
     console.svc.plus:
-      selfhost: console-selfhost-prod-v5.svc.plus
+      selfhost: console-k3s-v5.svc.plus
       serverless: console-serverless-prod.svc.plus
     accounts.svc.plus:
-      selfhost: accounts-selfhost-prod-v5.svc.plus
+      selfhost: accounts-k3s-v5.svc.plus
       serverless: accounts-serverless-prod.svc.plus
     billing.svc.plus:
-      selfhost: billing-selfhost-prod-v5.svc.plus
+      selfhost: billing-k3s-v5.svc.plus
       serverless: billing-serverless-prod.svc.plus
     postgresql.svc.plus:
       selfhost: postgresql-selfhost-prod-v5.svc.plus
       serverless: postgresql-serverless-prod.svc.plus
   public_endpoints:
     console:
-      host: console-selfhost-prod-v5.svc.plus
+      host: console.svc.plus
       access: public
     accounts:
       host: accounts.svc.plus
