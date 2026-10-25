@@ -20,7 +20,7 @@ data:
     : \"object:2302\",\n      \"asDropdown\": true,\n      \"icon\": \"external link\",\n      \"tags\": [],\n \
     \     \"targetBlank\": true,\n      \"title\": \"\",\n      \"type\": \"dashboards\"\n    }\n  ],\n  \"liveNow\"\
     : false,\n  \"panels\": [\n    {\n      \"collapsed\": false,\n      \"datasource\": {\n        \"type\": \"\
-    prometheus\",\n        \"uid\": \"WAYOn0FGz\"\n      },\n      \"gridPos\": {\n        \"h\": 1,\n        \"\
+    prometheus\",\n        \"uid\": \"victoriametrics\"\n      },\n      \"gridPos\": {\n        \"h\": 1,\n        \"\
     w\": 24,\n        \"x\": 0,\n        \"y\": 0\n      },\n      \"id\": 187,\n      \"panels\": [],\n      \"\
     title\": \"\U0001F3E1资源总览：当前JOB【$job】当前选中主机【$show_name】实例：$instance\",\n      \"type\": \"row\"\n    },\n  \
     \  {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"victoriametrics\"\n   \
@@ -509,7 +509,7 @@ data:
     ,\n          \"format\": \"time_series\",\n          \"instant\": false,\n          \"interval\": \"\",\n  \
     \        \"intervalFactor\": 1,\n          \"legendFormat\": \"平均%\",\n          \"refId\": \"A\"\n        }\n\
     \      ],\n      \"title\": \"整体总磁盘与整体平均磁盘使用率\",\n      \"type\": \"timeseries\"\n    },\n    {\n      \"collapsed\"\
-    : true,\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"WAYOn0FGz\"\n      },\n\
+    : true,\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"victoriametrics\"\n      },\n\
     \      \"gridPos\": {\n        \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\": 19\n      },\n\
     \      \"id\": 189,\n      \"panels\": [\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"victoriametrics\"\n          },\n          \"description\": \"本看板中的：磁盘总量、使用量、可用量、使用率保持和df命令的Size、Used、Avail、Use%\
@@ -2951,14 +2951,14 @@ data:
     \   \"refId\": \"A\"\n        },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\": \"code\",\n          \"expr\"\
     : \"min(max_over_time(probe_success{workload=\\\"serverless\\\",name=~\\\".*-cloudflare-.*\\\",env=~\\\"$environment\\\
-    \"}[5m])) or vector(0)\",\n          \"instant\": true,\n          \"legendFormat\": \"Cloudflare Pages\",\n\
+    \"}[5m]))\",\n          \"instant\": true,\n          \"legendFormat\": \"Cloudflare Pages\",\n\
     \          \"range\": false,\n          \"refId\": \"B\"\n        },\n        {\n          \"datasource\": {\n\
     \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
     : \"code\",\n          \"expr\": \"(count(cloudflare_worker_requests_count{env=~\\\"$environment\\\"}) > bool\
-    \ 0) or vector(0)\",\n          \"instant\": true,\n          \"legendFormat\": \"Cloudflare Workers\",\n  \
+    \ 0)\",\n          \"instant\": true,\n          \"legendFormat\": \"Cloudflare Workers\",\n  \
     \        \"range\": false,\n          \"refId\": \"C\"\n        },\n        {\n          \"datasource\": {\n\
     \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"expr\": \"max(pg_up{env=~\\\"$environment\\\",supabase_project!=\\\"\\\"}) or vector(0)\"\
+    : \"code\",\n          \"expr\": \"max(pg_up{env=~\\\"$environment\\\",supabase_project!=\\\"\\\"})\"\
     ,\n          \"instant\": true,\n          \"legendFormat\": \"Supabase Project\",\n          \"range\": false,\n\
     \          \"refId\": \"D\"\n        }\n      ],\n      \"title\": \"运行资源\",\n      \"type\": \"stat\"\n   \
     \ },\n    {\n      \"description\": \"\",\n      \"fieldConfig\": {\n        \"defaults\": {},\n        \"overrides\"\
@@ -3211,7 +3211,7 @@ data:
     ,\n            \"wideLayout\": true\n          },\n          \"targets\": [\n            {\n              \"\
     datasource\": {\n                \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n   \
     \           },\n              \"expr\": \"(1 - (sum(rate(k6_http_reqs_total{status=~\\\"[45]..\\\",environment=~\\\
-    \"$environment\\\"}[5m])) or vector(0)) / clamp_min(sum(rate(k6_http_reqs_total{environment=~\\\"$environment\\\
+    \"$environment\\\"}[5m]))) / clamp_min(sum(rate(k6_http_reqs_total{environment=~\\\"$environment\\\
     \"}[5m])), 1e-9)) * 100\",\n              \"hide\": false,\n              \"legendFormat\": \"Success %\",\n\
     \              \"refId\": \"A\"\n            }\n          ],\n          \"title\": \"Load Success Rate\",\n\
     \          \"type\": \"stat\"\n        },\n        {\n          \"datasource\": {\n            \"type\": \"\
@@ -3525,7 +3525,7 @@ data:
     \         ]\n        }\n      },\n      \"targets\": [\n        {\n          \"datasource\": {\n           \
     \ \"type\": \"prometheus\",\n            \"uid\": \"$DS_METRICS\"\n          },\n          \"expr\": \"(1 -\
     \ (sum(rate(k6_http_reqs_total{status=~\\\"[45]..\\\",environment=~\\\"$environment\\\",testid=~\\\"$testid\\\
-    \"}[1m])) or vector(0)) / sum(rate(k6_http_reqs_total{environment=~\\\"$environment\\\",testid=~\\\"$testid\\\
+    \"}[1m]))) / sum(rate(k6_http_reqs_total{environment=~\\\"$environment\\\",testid=~\\\"$testid\\\
     \"}[1m]))) * 100\",\n          \"legendFormat\": \"Success %\",\n          \"refId\": \"A\"\n        }\n   \
     \   ],\n      \"title\": \"Availability / Success Rate\",\n      \"type\": \"stat\"\n    },\n    {\n      \"\
     datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"$DS_METRICS\"\n      },\n      \"fieldConfig\"\
@@ -4292,7 +4292,7 @@ data:
     \          ],\n          \"values\": false\n        }\n      },\n      \"targets\": [\n        {\n         \
     \ \"datasource\": {\n            \"type\": \"prometheus\",\n            \"uid\": \"$DS_METRICS\"\n         \
     \ },\n          \"expr\": \"sum(rate(edge_gateway_upstream_requests_total{env=~\\\"$env\\\", upstream=\\\"fallback\\\
-    \"}[5m])) / sum(rate(edge_gateway_upstream_requests_total{env=~\\\"$env\\\"}[5m])) * 100 or vector(0)\",\n \
+    \"}[5m])) / sum(rate(edge_gateway_upstream_requests_total{env=~\\\"$env\\\"}[5m])) * 100\",\n \
     \         \"legendFormat\": \"Value\",\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
     Gateway 回退比例 (Failover)\",\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n        \"type\"\
     : \"prometheus\",\n        \"uid\": \"$DS_METRICS\"\n      },\n      \"fieldConfig\": {\n        \"defaults\"\
@@ -4306,7 +4306,7 @@ data:
     \   \"values\": false\n        }\n      },\n      \"targets\": [\n        {\n          \"datasource\": {\n \
     \           \"type\": \"prometheus\",\n            \"uid\": \"$DS_METRICS\"\n          },\n          \"expr\"\
     : \"sum(cloud_run_container_instance_count{env=~\\\"$env\\\", service_name=~\\\"$cloudrun_service\\\"}) or count(count\
-    \ by (service_name) (probe_success{target=~\\\"(?i).*run.app.*\\\", env=~\\\"$env\\\"})) or vector(3)\",\n \
+    \ by (service_name) (probe_success{target=~\\\"(?i).*run.app.*\\\", env=~\\\"$env\\\"}))\",\n \
     \         \"legendFormat\": \"Value\",\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
     Cloud Run 活跃实例\",\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\"\
     ,\n        \"uid\": \"$DS_METRICS\"\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n         \
@@ -4322,7 +4322,7 @@ data:
     \  }\n      },\n      \"targets\": [\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"$DS_METRICS\"\n          },\n          \"expr\": \"(sum(pg_stat_activity_count{env=~\\\
     \"$env\\\", datname=~\\\"$database\\\"}) / sum(pg_settings_max_connections{env=~\\\"$env\\\"})) * 100 or sum(pg_stat_database_numbackends{env=~\\\
-    \"$env\\\", datname=~\\\"$database\\\"}) / 100 * 100 or vector(18.5)\",\n          \"legendFormat\": \"Value\"\
+    \"$env\\\", datname=~\\\"$database\\\"}) / 100 * 100\",\n          \"legendFormat\": \"Value\"\
     ,\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Supabase 连接池饱和度\",\n      \"type\": \"\
     stat\"\n    },\n    {\n      \"collapsed\": false,\n      \"gridPos\": {\n        \"h\": 1,\n        \"w\":\
     \ 24,\n        \"x\": 0,\n        \"y\": 10\n      },\n      \"id\": 9,\n      \"title\": \"02 · DNS 流量与边缘接入采集\
@@ -5154,7 +5154,7 @@ data:
     \      \"x\": 0,\n        \"y\": 42\n      },\n      \"id\": 4,\n      \"targets\": [\n        {\n         \
     \ \"datasource\": {\n            \"type\": \"prometheus\",\n            \"uid\": \"$DS_METRICS\"\n         \
     \ },\n          \"expr\": \"sum(rate(vt_rows_ingested_total{job=\\\"victoria-traces\\\",type=\\\"opentelemetry_traces_protobuf\\\
-    \"}[5m])) or vector(0)\",\n          \"legendFormat\": \"Spans Inserted/s\",\n          \"refId\": \"A\"\n \
+    \"}[5m]))\",\n          \"legendFormat\": \"Spans Inserted/s\",\n          \"refId\": \"A\"\n \
     \       }\n      ],\n      \"title\": \"Trace Spans Ingestion Rate\",\n      \"type\": \"timeseries\"\n    },\n\
     \    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"$DS_METRICS\"\n     \
     \ },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"custom\": {\n            \"drawStyle\"\
@@ -5162,7 +5162,7 @@ data:
     \          \"unit\": \"bytes\"\n        }\n      },\n      \"gridPos\": {\n        \"h\": 8,\n        \"w\"\
     : 12,\n        \"x\": 12,\n        \"y\": 42\n      },\n      \"id\": 5,\n      \"targets\": [\n        {\n\
     \          \"datasource\": {\n            \"type\": \"prometheus\",\n            \"uid\": \"$DS_METRICS\"\n\
-    \          },\n          \"expr\": \"sum(vt_data_size_bytes{job=\\\"victoria-traces\\\"}) or vector(0)\",\n\
+    \          },\n          \"expr\": \"sum(vt_data_size_bytes{job=\\\"victoria-traces\\\"})\",\n\
     \          \"legendFormat\": \"Storage Bytes\",\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\"\
     : \"VictoriaTraces Storage & Ingestion Footprint\",\n      \"type\": \"timeseries\"\n    }\n  ],\n  \"schemaVersion\"\
     : 38,\n  \"tags\": [\n    \"victoriatraces\",\n    \"jaeger\",\n    \"otlp\",\n    \"tracing\",\n    \"apm\"\
@@ -5585,7 +5585,7 @@ data:
     mode\": \"markdown\"\n      },\n      \"title\": \"Interpretation and limits\",\n      \"type\": \"text\"\n\
     \    },\n    {\n      \"gridPos\": {\n        \"h\": 16,\n        \"w\": 24,\n        \"x\": 0,\n        \"\
     y\": 76\n      },\n      \"id\": 1,\n      \"options\": {\n        \"content\": \"## 输入 Email 或 Proxy UUID，查看关联\
-    \ Trace\\n\\n[打开 XConnect 用户诊断查询页](/grafana/a/aiworkspace-xconnectuserdiagnostics-app)\\n\\n查询页仅向服务端发送一次 POST；身份查询由\
+    \ Trace\\n\\n[打开 XConnect 用户诊断查询页](/a/aiworkspace-xconnectuserdiagnostics-app)\\n\\n查询页仅向服务端发送一次 POST；身份查询由\
     \ Accounts 解析成匿名引用，原始身份不会放入 URL、Dashboard 变量、查询结果或浏览器持久存储。当前入口仅开放给 Grafana 管理员。\\n\\n### 第一阶段可见信息\\n\\n- 以认证后的\
     \ VLESS 会话身份引用匹配同一条分布式 Trace。\\n- 查看 Trace 中实际采集到的阶段 Span 名称、起始时间和持续时间。\\n- 未进入同一 Trace 的客户端 DNS/TCP/TLS、Caddy\
     \ `/split`、Agent 重启、Xray 出口建立及首响应证据会明确缺失；页面不会补零，也不会把同时间的其他连接拼进来。\\n\\n### 瓶颈判读\\n\\n| 观测证据 | 可支持的判断 |\\n| ---\
@@ -5623,7 +5623,7 @@ data:
   xconnect-user-connection-diagnostics.json: "{\n  \"annotations\": {\n    \"list\": []\n  },\n  \"editable\": false,\n\
     \  \"links\": [],\n  \"panels\": [\n    {\n      \"gridPos\": {\n        \"h\": 8,\n        \"w\": 24,\n   \
     \     \"x\": 0,\n        \"y\": 0\n      },\n      \"id\": 1,\n      \"options\": {\n        \"content\": \"\
-    ## 输入 Email 或 Proxy UUID，查看关联 Trace\\n\\n[打开 XConnect 用户诊断查询页](/grafana/a/aiworkspace-xconnectuserdiagnostics-app)\\\
+    ## 输入 Email 或 Proxy UUID，查看关联 Trace\\n\\n[打开 XConnect 用户诊断查询页](/a/aiworkspace-xconnectuserdiagnostics-app)\\\
     n\\n查询页仅向服务端发送一次 POST；身份查询由 Accounts 解析成匿名引用，原始身份不会放入 URL、Dashboard 变量、查询结果或浏览器持久存储。当前入口仅开放给 Grafana 管理员。\\\
     n\\n### 第一阶段可见信息\\n\\n- 以认证后的 VLESS 会话身份引用匹配同一条分布式 Trace。\\n- 查看 Trace 中实际采集到的阶段 Span 名称、起始时间和持续时间。\\n- 未进入同一\
     \ Trace 的客户端 DNS/TCP/TLS、Caddy `/split`、Agent 重启、Xray 出口建立及首响应证据会明确缺失；页面不会补零，也不会把同时间的其他连接拼进来。\\n\\n### 瓶颈判读\\\
