@@ -116,7 +116,7 @@ spec:
       host: billing-selfhost-prod-v5.svc.plus
       access: authenticated
     postgresql:
-      host: postgresql-selfhost-prod-v5.svc.plus
+      host: postgresql-k3s-v5.svc.plus
       access: authenticated
     agent-proxy:
       host: agent-proxy-selfhost-prod-jp.svc.plus

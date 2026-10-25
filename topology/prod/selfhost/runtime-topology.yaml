@@ -26,7 +26,7 @@ spec:
           billing.svc.plus: billing-k3s-v5.svc.plus
           vault.svc.plus: vault-k3s-v5.svc.plus
           observability.svc.plus: observability-k3s-v5.svc.plus
-          postgresql.svc.plus: postgresql-selfhost-prod-v5.svc.plus
+          postgresql.svc.plus: postgresql-k3s-v5.svc.plus
       load-balancer:
         strategy: dns-only
       weight:
@@ -79,7 +79,7 @@ spec:
     observability.svc.plus:
       selfhost: observability-k3s-v5.svc.plus
     postgresql.svc.plus:
-      selfhost: postgresql-selfhost-prod-v5.svc.plus
+      selfhost: postgresql-k3s-v5.svc.plus
       serverless: postgresql-serverless-prod.svc.plus
   public_endpoints:
     console:
@@ -92,7 +92,7 @@ spec:
       host: billing.svc.plus
       access: authenticated
     postgresql:
-      host: postgresql-selfhost-prod-v5.svc.plus
+      host: postgresql-k3s-v5.svc.plus
       access: authenticated
     agent-proxy:
       host: agent-proxy-selfhost-prod-jp.svc.plus

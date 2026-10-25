@@ -3,7 +3,7 @@ import unittest
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-TARGET = 'postgresql-selfhost-prod-v5.svc.plus'
+TARGET = 'postgresql-k3s-v5.svc.plus'
 CNAME_TARGETS = {
     'console.svc.plus': 'console-k3s-v5.svc.plus',
     'accounts.svc.plus': 'accounts-k3s-v5.svc.plus',
@@ -35,7 +35,7 @@ class ProdV5PostgresqlRoutingTests(unittest.TestCase):
         config = yaml.safe_load((ROOT / 'resources/svc.plus/prod/akamai/web-saas-prod-v5.yaml').read_text())
         host = config['hosts'][0]['host_vars']
         self.assertIn('postgresql.svc.plus', host['service_domains'])
-        self.assertIn(TARGET, host['service_domains'])
+        self.assertIn('postgresql-selfhost-prod-v5.svc.plus', host['service_domains'])
 
     def test_active_prod_topologies_have_no_generic_selfhost_generation_target(self):
         root = ROOT / 'topology/prod'
