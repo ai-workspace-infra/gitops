@@ -1,0 +1,22 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: ExistingHostDeclaration
+metadata:
+  name: dev-k3s-v5
+  project: svc.plus
+  environment: dev
+spec:
+  management_mode: existing
+  fact_source: explicit-target
+  existing_node: web-saas-dev-v5
+  provider: akamai-cloud
+  region: jp-tyo-3
+  cluster_name: dev-k3s-v5
+  inventory_host: dev-k3s-v5.svc.plus
+  ansible_user: root
+  groups: [dev, k3s_server, akamai_cloud]
+  service_domains: [dev-k3s-v5.svc.plus]
+  host_vars:
+    deployment_mode: kubernetes
+    k8s_cluster_name: dev-k3s-v5
+    k3s_platform_write_kubeconfig_mode: "0600"
+    public_dns_cutover: false

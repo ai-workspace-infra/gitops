@@ -54,10 +54,10 @@ spec:
     owner: system-caddy
     domains:
       accounts:
-        - accounts-selfhost-prod-v5.svc.plus
+        - accounts-k3s-v5.svc.plus
         - accounts.svc.plus
       billing:
-        - billing-selfhost-prod-v5.svc.plus
+        - billing-k3s-v5.svc.plus
         - billing.svc.plus
     billing_allowed_cidrs: [127.0.0.1/32, "::1/128"]
     tls_vault_ref: kv/CICD/domains/svc.plus

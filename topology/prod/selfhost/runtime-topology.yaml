@@ -171,10 +171,10 @@ spec:
           - /_edge/workspace/*
     edge_gateway:
       defaults:
-        primary_upstream: https://accounts-selfhost-prod-v5.svc.plus
+        primary_upstream: https://accounts-k3s-v5.svc.plus
         fallback_upstream: https://prod-accounts-b7wzzanztq-de.a.run.app
         jwt_issuer: https://accounts-serverless-prod.svc.plus
-        billing_primary_upstream: https://billing-selfhost-prod-v5.svc.plus
+        billing_primary_upstream: https://billing-k3s-v5.svc.plus
         billing_fallback_upstream: https://prod-billing-service-b7wzzanztq-de.a.run.app
         timeout_ms: '2500'
       boundaries:

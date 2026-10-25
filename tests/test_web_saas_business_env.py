@@ -30,23 +30,12 @@ class WebSaaSBusinessEnvTests(unittest.TestCase):
             self.assertEqual(settings['DATABASE_IDENTITY_SHA256'], '${DATABASE_IDENTITY_SHA256:?reviewed database connection identity required}')
             self.assertEqual(settings['DATABASE_BACKGROUND_WRITERS'], 'false')
 
-    def test_v5_storage_to_app_keeps_the_same_doco_compose_project(self):
-        storage=yaml.safe_load((ROOT/'.doco-cd.prod-v5-storage.yml').read_text())
-        app=yaml.safe_load((ROOT/'.doco-cd.prod-v5-candidate.yml').read_text())
-        # Pinned Doco-CD v0.127.0 passes Config.Name to Compose as ProjectName.
-        self.assertEqual(storage['name'], 'web-saas-prod-v5')
-        self.assertEqual(storage['name'], app['name'])
-        self.assertEqual(storage['compose_files'], ['docker-compose.prod-v5-storage.yml'])
-        self.assertEqual(app['compose_files'], ['docker-compose.prod-v5-candidate.yml'])
-
-        storage_compose=yaml.safe_load((ROOT/'compose/web-saas/docker-compose.prod-v5-storage.yml').read_text())
-        app_compose=yaml.safe_load((ROOT/'compose/web-saas/docker-compose.prod-v5-candidate.yml').read_text())
-        self.assertEqual(storage_compose['services']['postgres']['container_name'], 'web-saas-postgresql')
-        self.assertEqual(app_compose['services']['postgres']['container_name'], 'web-saas-postgresql')
-        self.assertEqual(
-            storage_compose['services']['postgres']['volumes'],
-            app_compose['services']['postgres']['volumes'],
-        )
+    def test_v5_candidate_is_no_longer_a_doco_cd_deployment_target(self):
+        self.assertFalse((ROOT/'.doco-cd.prod-v5-candidate.yml').exists())
+        self.assertFalse((ROOT/'.doco-cd.prod-v5-storage.yml').exists())
+        env = dict(line.split('=', 1) for line in (ROOT/'compose/web-saas/.env.prod-v5-candidate').read_text().splitlines() if line and not line.startswith('#'))
+        self.assertNotIn('PUBLIC_CONSOLE_DOMAIN', env)
+        self.assertNotIn('PUBLIC_ACCOUNTS_DOMAIN', env)
 
     def test_v4_primary_uses_selfhost_content_and_keeps_recovery_isolated(self):
         profile=yaml.safe_load((ROOT/'.doco-cd.prod-v4-primary.yml').read_text())
