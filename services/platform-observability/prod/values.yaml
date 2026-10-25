@@ -29,6 +29,9 @@ grafana:
     sha256: e7486697858edf02929f57e068b2971ab23c2f183727d1c28004bfba4c42c2eb
   dashboardsConfigMap: platform-observability-dashboards
 serviceAccountName: observability-collector
+# External collector-identity is the sole RBAC owner for this target.
+rbac:
+  create: false
 persistence:
   enabled: true
   size: 20Gi

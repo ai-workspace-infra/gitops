@@ -94,3 +94,14 @@ Also inspect **all jobs** for the same metric and real workload identity; an OTe
 The published agent digest advances only the existing process health behavior: startup/readiness/liveness use the fixed lightweight landing `/` or configurable TCP, not synchronous `/metrics` collection. Startup has a 300-second convergence budget. The pinned process image, non-root permissions, CPU/memory limits and all server/scrape settings remain unchanged. The production status-only comparison of landing 0.002775s versus metrics 1.045892s explained the old implicit one-second timeout; it did not indicate a NetworkPolicy block or a need for broader privileges.
 
 The operator promotes this pin on the Agent-only maintenance line before the server/Dashboard phase. This canonical main change does not imply that the full main target has been deployed. Verify stable restart counts and independently measured real metrics after the authorized source-tag promotion; lightweight readiness alone does not establish telemetry correctness.
+
+
+## Direct kubelet collector permission boundary
+
+This target's collector ServiceAccount is explicitly created by `collector-identity.yaml`. Its external ClusterRole is the sole collector RBAC owner: target `rbac.create=false` suppresses the server chart's broader default Role/Binding, avoiding an effective-permissions union that would retain unused `nodes/proxy` access. Other targets and the chart default are unchanged; the agent's separate KSM ServiceAccount is unchanged.
+
+The collector may get/list/watch nodes, pods and namespaces for service discovery; `nodes/stats` and `nodes/metrics` are get-only. It has no `nodes/proxy` grant. The existing non-resource metrics GET entries remain unchanged. This is a narrow target correction, not a platform-wide identity redesign.
+
+Consumer proof uses the independently published stack 1.1.4 package: `templates/configmap.yaml` configures kubeletstats at `https://${env:K8S_NODE_IP}:10250` with ServiceAccount authentication; canonical Node/Pod discovery and the two HTTPS `/metrics` and `/metrics/cadvisor` jobs also use direct kubelet addresses. None uses `/api/v1/nodes/.../proxy`. In that package `templates/rbac.yaml` only generates a collector Role/Binding when `rbac.create` is not false, and `serviceAccount.create` defaults false; disabling its RBAC does not remove this externally declared account.
+
+Render assertions prove only the declared boundary. After authorized deployment, verify intended get/discovery operations and `nodes/proxy` denial with the actual collector identity or clearly identified authorization checks. Never invoke proxy with the audit identity, print a minted token, or treat administrator impersonation/configuration alone as an actual identity-denial PASS. No live RBAC or audit-role acceptance is claimed by this source change.
