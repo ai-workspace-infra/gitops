@@ -55,6 +55,14 @@ hosts:
         - k3s-v5.svc.plus
         - vault-k3s-v5.svc.plus
         - observability-k3s-v5.svc.plus
+      # These are reserved Host/CNAME targets only. DNS remains unchanged until
+      # the dedicated IaC/provider change is reviewed and explicitly applied.
+      reserved_dns_aliases:
+        console.svc.plus: console-k3s-v5.svc.plus
+        accounts.svc.plus: accounts-k3s-v5.svc.plus
+        billing.svc.plus: billing-k3s-v5.svc.plus
+        vault.svc.plus: vault-k3s-v5.svc.plus
+        observability.svc.plus: observability-k3s-v5.svc.plus
       cloudflare_dns_zone_name: svc.plus
       cloudflare_dns_records:
         - type: A
