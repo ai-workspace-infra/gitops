@@ -29,6 +29,9 @@ grafana:
     sha256: e7486697858edf02929f57e068b2971ab23c2f183727d1c28004bfba4c42c2eb
   dashboardsConfigMap: platform-observability-dashboards
 serviceAccountName: observability-collector
+# External collector-identity is the sole RBAC owner for this target.
+rbac:
+  create: false
 persistence:
   enabled: true
   size: 20Gi
@@ -38,5 +41,150 @@ telemetry:
   environment: prod
   kubernetes:
     enabled: true
-  extraScrapeConfigs: []
+    metricGroups:
+    - node
+    - pod
+    - volume
+  extraScrapeConfigs:
+  - job_name: node-exporter
+    scrape_interval: 15s
+    kubernetes_sd_configs:
+    - role: pod
+      namespaces:
+        names:
+        - platform-observability
+    relabel_configs:
+    - source_labels:
+      - __meta_kubernetes_pod_label_app_kubernetes_io_name
+      regex: observability-agent
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_pod_label_app_kubernetes_io_instance
+      regex: platform-observability-agent
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_pod_container_port_name
+      regex: metrics
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_pod_phase
+      regex: Running
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_pod_node_name
+      target_label: node
+    - source_labels:
+      - __meta_kubernetes_pod_node_name
+      target_label: instance
+    - target_label: cluster
+      replacement: web-saas-k3s-v5
+    - target_label: environment
+      replacement: prod
+    metric_relabel_configs:
+    - source_labels:
+      - node
+      target_label: nodename
+  - job_name: process-exporter
+    scrape_interval: 15s
+    kubernetes_sd_configs:
+    - role: pod
+      namespaces:
+        names:
+        - platform-observability
+    relabel_configs:
+    - source_labels:
+      - __meta_kubernetes_pod_label_app_kubernetes_io_name
+      regex: process-exporter
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_pod_label_app_kubernetes_io_instance
+      regex: platform-observability-agent
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_pod_container_port_name
+      regex: metrics
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_pod_phase
+      regex: Running
+      action: keep
+    - source_labels:
+      - __meta_kubernetes_pod_node_name
+      target_label: node
+    - source_labels:
+      - __meta_kubernetes_pod_node_name
+      target_label: instance
+    - target_label: cluster
+      replacement: web-saas-k3s-v5
+    - target_label: environment
+      replacement: prod
+    metric_relabel_configs:
+    - source_labels:
+      - __name__
+      regex: namedprocess_namegroup_(read_bytes_total|write_bytes_total|open_filedesc|worst_fd_ratio)
+      action: drop
+  - job_name: kube-state-metrics
+    scrape_interval: 15s
+    static_configs:
+    - targets:
+      - platform-observability-agent-state.platform-observability.svc:8080
+      labels:
+        cluster: web-saas-k3s-v5
+        environment: prod
+  - job_name: kubelet
+    scrape_interval: 15s
+    scheme: https
+    metrics_path: /metrics
+    authorization:
+      type: Bearer
+      credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+    tls_config:
+      ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      insecure_skip_verify: false
+    kubernetes_sd_configs:
+    - role: node
+    relabel_configs:
+    - source_labels:
+      - __meta_kubernetes_node_name
+      target_label: node
+    - source_labels:
+      - __meta_kubernetes_node_name
+      target_label: instance
+    - source_labels:
+      - __address__
+      regex: (.+):[0-9]+
+      replacement: $1:10250
+      target_label: __address__
+    - target_label: cluster
+      replacement: web-saas-k3s-v5
+    - target_label: environment
+      replacement: prod
+  - job_name: cadvisor
+    scrape_interval: 15s
+    scheme: https
+    metrics_path: /metrics/cadvisor
+    authorization:
+      type: Bearer
+      credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+    tls_config:
+      ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      insecure_skip_verify: false
+    kubernetes_sd_configs:
+    - role: node
+    relabel_configs:
+    - source_labels:
+      - __meta_kubernetes_node_name
+      target_label: node
+    - source_labels:
+      - __meta_kubernetes_node_name
+      target_label: instance
+    - source_labels:
+      - __address__
+      regex: (.+):[0-9]+
+      replacement: $1:10250
+      target_label: __address__
+    - target_label: cluster
+      replacement: web-saas-k3s-v5
+    - target_label: environment
+      replacement: prod
   spanMetrics: true

@@ -7,3 +7,4 @@ resources:
 - source-grafana-general-0.yaml
 - source-grafana-inventory.yaml
 - source-grafana-values.yaml
+- starsl-k8s-dashboard.yaml

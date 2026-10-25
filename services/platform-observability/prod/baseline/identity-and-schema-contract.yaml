@@ -1,0 +1,504 @@
+apiVersion: observability.svc.plus/v1alpha1
+kind: ObservabilityBaselineContract
+metadata:
+  name: platform-observability-prod-baseline-contract
+  environment: prod
+  owner_task: OBS-00
+  parent_issue: https://github.com/ai-workspace-infra/gitops/issues/557
+  task_issue: https://github.com/ai-workspace-infra/gitops/issues/558
+  captured_at: "2026-10-25T19:05:06+08:00"
+  timezone: Asia/Shanghai
+spec:
+  baseline_repositories:
+    gitops: 95a2c6f3112ba1cfe29c23b32253957484cafb97
+    playbooks: a7a01ac734968aa6e5f7baec0e172ae06a0b461d
+    iac_modules: 3f049e5eae7cdd0358188dd318599a17176df04b
+    artifacts: a7ba34f38973d0777c1231200f8b85fcf52f5a9c
+    platform_ops_toolkit: 78407c5cfede2a6eff9b693c143323599b63c19f
+
+  live_readonly_verification:
+    verified_window_cst: "2026-10-25 19:05:06 CST (+0800) to 2026-10-25 19:06:20 CST (+0800)"
+    endpoints:
+      canonical_domain:
+        url: https://observability.svc.plus/
+        dns_records:
+          - type: CNAME
+            name: observability.svc.plus.
+            ttl_seconds: 60
+            value: observability-k3s-v5.svc.plus.
+          - type: A
+            name: observability-k3s-v5.svc.plus.
+            ttl_seconds: 60
+            value: 104.105.141.213
+        http_health:
+          path: /api/health
+          status_code: 200
+          protocol: HTTP/2
+          via: "1.1 Caddy"
+          observed_at_utc: "2026-10-25T11:05:40Z"
+          response_body:
+            database: ok
+            version: "13.2.4"
+            commit: 0e79aef9d91abf3bdadae9af15763029072fb45b
+        http_datasources_unauthenticated:
+          path: /api/datasources
+          status_code: 401
+          note: "Authenticated Grafana query execution requires runtime admin session or token; unverified live queries are strictly marked NOT_RUN."
+      target_k3s_domain:
+        url: https://observability-k3s-v5.svc.plus/
+        dns_records:
+          - type: A
+            name: observability-k3s-v5.svc.plus.
+            ttl_seconds: 300
+            value: 104.105.141.213
+        http_health:
+          path: /api/health
+          status_code: 200
+          protocol: HTTP/2
+          via: "1.1 Caddy"
+          observed_at_utc: "2026-10-25T11:05:45Z"
+          response_body:
+            database: ok
+            version: "13.2.4"
+            commit: 0e79aef9d91abf3bdadae9af15763029072fb45b
+        http_login:
+          path: /login
+          status_code: 200
+          protocol: HTTP/2
+          observed_at_utc: "2026-10-25T11:05:53Z"
+      former_source_host:
+        host_name: observability-shared-0
+        legacy_ipv4: 35.221.181.68
+        status: deleted_on_2026_10_24
+        note: "Source inventory was captured on 2026-10-24 from Grafana 13.2.3 before host deletion; 35.221.181.68 is not a valid rollback endpoint. GitOps declarations in resources/svc.plus/shared/gcp/open-platform-shared-observability.yaml and topology/shared/cmdb/observability-uat.yaml require reconciliation under OBS-01."
+
+  flux_and_chart_baseline:
+    cluster: web-saas-k3s-v5
+    namespace: platform-observability
+    flux_kustomization: environments/clusters/prod-web-saas-k3s-v5/platform-observability-kustomization.yaml
+    helm_release_manifest: services/platform-observability/prod/release.yaml
+    helm_release_name: platform-observability
+    oci_repository_url: oci://ghcr.io/ai-workspace-infra/observability-stack
+    chart_digest: "sha256:6c9edd8ad04a06ec73ea0a6967e6653c4e1f1048487b88c7e5e9a43c077f7174"
+    artifacts_chart_source_path: oci/charts/open-platform/charts/observability-stack
+    imported_bundle_sha256: 2c794b9563d6399705b813f9b1c41877c611c3288d53b51fe3429a53324a8c53
+    components:
+      grafana:
+        version: "13.2.4"
+        image_digest: "sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f"
+        root_url: https://observability-k3s-v5.svc.plus/
+      otel_collector:
+        version: "0.114.0"
+        image_digest: "sha256:37fa87091cfaaec7234a27e4e395a40c31c2bfaea97a349a4afef6d9e9681197"
+      victoria_metrics:
+        version: "v1.101.0"
+        image_digest: "sha256:91d0456cc064e195869175074ced2a6849d72531613b320492698e5fe935d10a"
+      victoria_logs:
+        version: "v1.52.0"
+        image_digest: "sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+      victoria_traces:
+        version: "v0.1.0"
+        image_digest: "sha256:b3204fd598b023b4726f38689791c707803b9f34733822dd053f22d64721b3d2"
+      plugins:
+        - id: victoriametrics-logs-datasource
+          version: "0.33.1"
+        - id: marcusolsson-treemap-panel
+          version: "2.1.1"
+        - id: aiworkspace-xconnectuserdiagnostics-app
+          version: "0.1.0"
+          sha256: e7486697858edf02929f57e068b2971ab23c2f183727d1c28004bfba4c42c2eb
+          unsigned_allowed: true
+
+  datasources:
+    canonical_provisioned:
+      - uid: victoriametrics
+        name: VictoriaMetrics
+        type: prometheus
+        url: http://127.0.0.1:8428
+        is_default: true
+        declared_in: services/platform-observability/prod/imported-grafana/source-grafana-datasources.yaml
+      - uid: victorialogs
+        name: VictoriaLogs
+        type: victoriametrics-logs-datasource
+        url: http://127.0.0.1:9428
+        is_default: false
+        derived_fields:
+          - name: Trace ID
+            target_datasource_uid: victoriatraces
+            matcher_regex: '(?:trace[_-]?id|traceID)[=:\s"]+([0-9a-fA-F]{16,32})'
+        declared_in: services/platform-observability/prod/imported-grafana/source-grafana-datasources.yaml
+      - uid: victoriatraces
+        name: VictoriaTraces
+        type: jaeger
+        url: http://127.0.0.1:10428/select/jaeger
+        is_default: false
+        correlations:
+          traces_to_logs_uid: victorialogs
+          traces_to_metrics_uid: victoriametrics
+        declared_in: services/platform-observability/prod/imported-grafana/source-grafana-datasources.yaml
+    non_canonical_or_missing:
+      - uid: cmdb_postgres
+        type: postgres
+        referenced_by_dashboards:
+          - cmdb-resource-overview
+        referenced_panel_count: 6
+        status: FAIL
+        owner_task: OBS-01
+        defect: "Not provisioned in services/platform-observability/prod/imported-grafana/source-grafana-datasources.yaml; topology/shared/cmdb/observability-uat.yaml declares cmdb_postgres_uat while cmdb-resource-overview queries cmdb_postgres."
+      - uid: WAYOn0FGz
+        type: prometheus
+        referenced_by_dashboards:
+          - StarsL-JOB-node
+        referenced_panel_ids: [187, 189]
+        status: FAIL
+        owner_task: OBS-04
+        defect: "Legacy community dashboard datasource UID left in row panels 187 and 189; must be normalized to victoriametrics or removed from row layout panels."
+
+  dashboard_inventory:
+    total_dashboards: 17
+    imported_dashboards_count: 16
+    retained_platform_dashboards_count: 1
+    total_top_level_panels: 240
+    total_expanded_panels: 256
+    status_summary:
+      PASS: 0
+      FAIL: 92
+      NOT_RUN: 124
+      N_A: 40
+    folders:
+      - folder_uid: ""
+        title: General
+        configmap: source-grafana-general-0
+        dashboard_count: 16
+      - folder_uid: dfzrqnab9cpa8e
+        title: Observability Alerts
+        configmap: source-grafana-b3e84e3d474a-0
+        dashboard_count: 0
+        note: "Empty source folder; no alert rules or notification channels imported."
+      - folder_uid: platform
+        title: Platform
+        configmap: platform-observability-dashboards
+        dashboard_count: 1
+    dashboards:
+      - uid: StarsL-JOB-node
+        title: "Node Exporter Dashboard 20240520 通用JOB分组版"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 7
+        expanded_panels: 23
+        variables: [job, name, instance, interval, total, device, maxmount, show_name]
+        owner_tasks: [OBS-02, OBS-04]
+      - uid: agent-ai-observability
+        title: "Agent / AI Application Observability"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 19
+        expanded_panels: 19
+        variables: [DS_METRICS, DS_LOGS, env, service, agent]
+        owner_tasks: [OBS-03, OBS-04]
+      - uid: ai-aggregator-overview
+        title: "AI Aggregator Overview"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 10
+        expanded_panels: 10
+        variables: [environment, instance]
+        owner_tasks: [OBS-02, OBS-04]
+      - uid: begqoward2epsf
+        title: "Xray Dashboard"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 15
+        expanded_panels: 15
+        variables: [job, instance, user]
+        owner_tasks: [OBS-02, OBS-04]
+      - uid: blackbox-exporter-overview
+        title: "Blackbox Exporter & SSL Probe Overview"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 9
+        expanded_panels: 9
+        variables: [DS_METRICS, target]
+        owner_tasks: [OBS-02, OBS-04]
+      - uid: cmdb-resource-overview
+        title: "CMDB · 多云资源总览"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 6
+        expanded_panels: 6
+        variables: []
+        owner_tasks: [OBS-01, OBS-04]
+      - uid: homepage-navigation
+        title: "平台导航与总览 (Navigation Homepage)"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 25
+        expanded_panels: 29
+        variables: [version, environment, DS_METRICS, DS_LOGS, DS_TRACES, alert_state, target_instance]
+        owner_tasks: [OBS-01, OBS-02, OBS-04]
+      - uid: k6-performance-capacity-overview
+        title: "k6 Performance & Capacity Stress Test Dashboard"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 23
+        expanded_panels: 23
+        variables: [environment, DS_METRICS, DS_LOGS, DS_TRACES, testid, target_instance]
+        owner_tasks: [OBS-04]
+      - uid: postgres-exporter-overview
+        title: "PostgreSQL Database Overview"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 8
+        expanded_panels: 8
+        variables: [DS_METRICS, instance, datname]
+        owner_tasks: [OBS-02, OBS-04]
+      - uid: process-exporter-with-tree
+        title: "process exporter dashboard with treemap"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 15
+        expanded_panels: 15
+        variables: [DS_METRICS, instance]
+        owner_tasks: [OBS-02]
+      - uid: serverless-fullstack-architecture
+        title: "全栈无服务器与边缘架构总览 (Serverless & Edge Full-Stack Topology)"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 38
+        expanded_panels: 38
+        variables: [env, DS_METRICS, DS_LOGS, ssr_worker, gateway_worker, cloudrun_service, database]
+        owner_tasks: [OBS-01, OBS-02, OBS-04]
+      - uid: victoria-logs-overview
+        title: "Victoria Logs Overview"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 13
+        expanded_panels: 13
+        variables: [environment, source_type, host, stream, level]
+        owner_tasks: [OBS-02, OBS-03, OBS-04]
+      - uid: victoria-traces-overview
+        title: "VictoriaTraces Distributed Tracing APM"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 11
+        expanded_panels: 11
+        variables: [DS_TRACES, DS_METRICS, SERVICE]
+        owner_tasks: [OBS-03, OBS-04]
+      - uid: xconnect-comprehensive
+        title: "XConnect 综合监控"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 24
+        expanded_panels: 24
+        variables: [job, instance, user]
+        owner_tasks: [OBS-02, OBS-04]
+      - uid: xconnect-user-connection-diagnostics
+        title: "XConnect 用户慢连接诊断"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 1
+        expanded_panels: 1
+        variables: []
+        owner_tasks: [OBS-04]
+      - uid: xhttp-edge-reliability
+        title: "XHTTP Edge Reliability"
+        folder_uid: ""
+        configmap: source-grafana-general-0
+        top_panels: 6
+        expanded_panels: 6
+        variables: [instance]
+        owner_tasks: [OBS-02, OBS-04]
+      - uid: web-saas-k3s-v5-overview
+        title: "Web-SaaS K3s V5 PROD Cluster Overview"
+        folder_uid: platform
+        configmap: platform-observability-dashboards
+        top_panels: 6
+        expanded_panels: 6
+        variables: [DS_METRICS]
+        owner_tasks: [OBS-03]
+
+  unified_resource_identity_contract:
+    canonical_resource_key_format: "{provider}:{account_or_project}:{region}:{resource_id}"
+    cmdb_canonical_uri_format: "cmdb://{provider}/{account_ref}/{project_ref}/{resource_kind}/{native_resource_id}"
+    examples:
+      k3s_cluster_node: "akamai-cloud:manbuzhe2026:jp-tyo-3:web-saas-k3s-v5"
+      gcp_compute_vm: "gcp-cloud:open-platform-prod:asia-east1-a:projects/open-platform-prod/zones/asia-east1-a/instances/web-saas-prod-v4"
+      gcp_cloud_run: "gcp-cloud:open-platform-prod:asia-east1:projects/open-platform-prod/locations/asia-east1/services/prod-accounts"
+      cloudflare_worker: "cloudflare:svc.plus:global:frontend-router-prod"
+      supabase_database: "supabase:svc.plus:ap-northeast-1:iqkxspmhcfqmhkbjdoms"
+    required_dimensions:
+      provider: "Normalized provider identifier (gcp-cloud | akamai-cloud | aws-cloud | ucloud-ulighthost | surfercloud-ulighthost | cloudflare | supabase)"
+      account_or_project: "Cloud account alias/ID or GCP project_id (e.g. open-platform-prod, open-platform-shared-510113, open-platform-uat, manbuzhe2026, 081434641398)"
+      region: "Provider region or zone (e.g. asia-east1, jp-tyo-3, ap-northeast-1, sg-sin-2, us-lax, global)"
+      resource_id: "Immutable provider native resource ID or canonical workload name when native ID is resolved at runtime"
+      environment: "Canonical environment value: prod | uat | sit | shared (canonical label name is 'environment'; 'env' is legacy and must be mapped/aligned)"
+      service: "Logical service or workload name (e.g. web-saas-accounts, web-saas-console, web-saas-billing, xconnect, ai-aggregator)"
+      cluster: "Cluster or deployment pool identifier (e.g. web-saas-k3s-v5, selfhost, xconnect-jp)"
+      namespace: "Kubernetes namespace or GitOps state_namespace (e.g. platform-observability, web-saas-k3s-v5)"
+      node: "Host nodename, inventory hostname, or Kubernetes node name (e.g. web-saas-k3s-v5, jp-xconnect.svc.plus)"
+
+  schema_and_field_mappings:
+    iac_deploy_cmdb:
+      schema_version: cmdb.v1
+      implementation: iac_modules/terraform-hcl-standard/scripts/cmdb_v1.py
+      consumer: playbooks/inventory/terraform_cmdb.py
+      fields:
+        environment: "document.environment (dev | sit | uat | prod | shared)"
+        provider: "document.cloud_provider"
+        account_or_project: "document.project_id"
+        source_resources: "document.source_resources[]"
+        resource_id: "document.hosts.<host>.resource_id"
+        public_ip: "document.hosts.<host>.ip"
+        private_ip: "document.hosts.<host>.private_ip"
+      invariants:
+        - "Serverless resources without SSH/IP must not fabricate dummy host entries in hosts."
+        - "Secret-bearing keys (password, token, secret, private_key, credential) are strictly rejected."
+
+    cloud_observations_envelope:
+      schema_version: cmdb.observations.v1
+      implementation: iac_modules/terraform-hcl-standard/scripts/cmdb_observations_v1.py
+      collectors:
+        - iac_modules/terraform-hcl-standard/scripts/cmdb_collect_scope.py
+        - iac_modules/terraform-hcl-standard/scripts/cmdb_collect_gcp.py
+      run_fields:
+        run_id: "Unique collection execution identifier"
+        collector: "Collector adapter name (e.g. gcp-compute, gcp-cloudrun)"
+        owner_sha: "Immutable Git commit SHA of collector contract"
+        scope: "shared | sit | uat | prod | unknown"
+        account_ref: "Provider account reference"
+        project_ref: "Provider project reference"
+        region_ref: "Region scope when regional"
+        started_at: "ISO-8601 UTC timestamp with timezone"
+        completed_at: "ISO-8601 UTC timestamp with timezone"
+        outcome: "success | partial | failed"
+        scope_complete: "boolean (true only when entire declared scope succeeded)"
+      observation_fields:
+        canonical_id: "cmdb://{provider}/{account_ref}/{project_ref}/{resource_kind}/{native_resource_id}"
+        provider: "Normalized provider string"
+        resource_kind: "compute | serverless_service | serverless_revision | managed_database"
+        native_resource_id: "Provider native immutable ID"
+        region: "Provider region/zone"
+        scope: "Environment scope"
+        name: "Display/resource name"
+        provider_state: "Normalized state (running | stopped | ready | unknown)"
+        provider_state_raw: "Raw provider status string"
+        source: "provider_api | external_inventory"
+        observed_at: "ISO-8601 UTC timestamp"
+      invariants:
+        - "Partial or failed runs (scope_complete=false) must never mark absent resources as deleted."
+        - "External inventory (e.g. ULightHost manual edges) must use source=external_inventory, never provider_api."
+
+    cmdb_postgresql_persistence:
+      schema_version: cmdb-postgresql-v1 (migrations 001, 002)
+      implementation: playbooks/contracts/cmdb-postgresql-v1/
+      views_consumed_by_grafana:
+        - cmdb.v_resource_current
+        - cmdb.v_provider_summary
+        - cmdb.v_collection_health
+        - cmdb.v_monitoring_coverage
+        - cmdb.v_serverless_current
+        - cmdb.v_resource_history
+      timestamps:
+        collection_runs: [started_at, completed_at]
+        resources: [first_seen_at, last_seen_at]
+        resource_observations: [observed_at, received_at]
+        monitoring_status: [last_metrics_at, last_logs_at, last_verified_at, updated_at]
+
+    telemetry_signals:
+      metrics_victoriametrics:
+        datasource_uid: victoriametrics
+        endpoint_internal: http://127.0.0.1:8428
+        canonical_labels:
+          environment: "prod | uat | sit | shared (canonical; legacy 'env' must be migrated/relabeled)"
+          cluster: "web-saas-k3s-v5 | selfhost | pool name"
+          job: "Exporter/scrape job (e.g. node_exporter, victoriametrics, xhttp-caddy, postgres_exporter)"
+          instance: "Target host:port or canonical node identifier"
+          nodename: "OS hostname / node_uname_info nodename"
+          service_name: "OTel service.name promoted to Prometheus label"
+          k8s_node_name: "Kubernetes node name"
+          k8s_namespace_name: "Kubernetes namespace name"
+          k8s_pod_name: "Kubernetes pod name"
+      logs_victorialogs:
+        datasource_uid: victorialogs
+        endpoint_internal: http://127.0.0.1:9428
+        ingestion_paths:
+          otlp_http: /insert/opentelemetry/v1/logs
+          vector_elasticsearch: /insert/elasticsearch/
+        canonical_fields:
+          _time: "Log event timestamp"
+          _msg: "Log message body"
+          environment: "prod | uat | sit | shared"
+          cluster: "Cluster identifier (e.g. web-saas-k3s-v5)"
+          host: "Originating hostname or node name"
+          source_type: "system_logs | docker_logs | k8s_pod_logs | cloud_run | cloudflare | supabase"
+          service_name: "Application/service identifier"
+          container_name: "Container or unit name"
+          k8s_namespace_name: "Kubernetes namespace (when source_type=k8s_pod_logs)"
+          k8s_pod_name: "Kubernetes pod name (when source_type=k8s_pod_logs)"
+          stream: "stdout | stderr"
+          level: "debug | info | warn | warning | err | error | crit | alert | emerg"
+          trace_id: "Hex trace identifier (16-32 chars) linked to victoriatraces"
+      traces_victoriatraces:
+        datasource_uid: victoriatraces
+        endpoint_internal: http://127.0.0.1:10428/select/jaeger
+        ingestion_paths:
+          otlp_http: http://127.0.0.1:10428/insert/opentelemetry/v1/traces
+          otel_collector_grpc: 0.0.0.0:4317
+          otel_collector_http: 0.0.0.0:4318
+        canonical_resource_attributes:
+          - service.name
+          - environment
+          - cluster
+          - instance
+          - k8s.namespace.name
+          - k8s.pod.name
+          - k8s.node.name
+
+  freshness_and_quality_gates:
+    metrics_freshness_limit: "<= 3 scrape intervals (<= 45s for 15s scrape, <= 60s for 20s kubeletstats, <= 90s for 30s host scrape)"
+    logs_freshness_limit: "<= 5 minutes (300 seconds)"
+    cmdb_freshness_limit: "<= 1 configured sync/freshness cycle (interval_seconds=300, freshness_seconds=900 / 15 minutes in cmdb.v_resource_current)"
+    prohibited_masking_patterns:
+      - "or vector(0)"
+      - "or vector(3)"
+      - "or vector(12.5)"
+      - "clamp_min(sum(rate(probe_duration_seconds...)) * 10, 1.2)"
+      - "Static constant PromQL queries (e.g. '1') used to fake healthy status"
+    on_demand_workload_policy: "Stress test (k6) and batch panels must display explicit Idle / N/A state and last execution timestamp when no test is active, never synthetic 0/100% values."
+    unauthenticated_or_unverified_policy: "Any panel or resource that cannot be verified due to missing credentials or unapproved target access must be marked NOT_RUN, never PASS."
+
+  task_ownership_boundaries:
+    OBS-00:
+      issue: https://github.com/ai-workspace-infra/gitops/issues/558
+      repository: ai-workspace-infra/gitops
+      branch: bugfix/558-obs-baseline
+      deliverables:
+        - services/platform-observability/prod/baseline/dashboard-coverage.csv
+        - services/platform-observability/prod/baseline/resource-coverage.csv
+        - services/platform-observability/prod/baseline/identity-and-schema-contract.yaml
+        - services/platform-observability/prod/baseline/README.md
+    OBS-01:
+      issue: https://github.com/ai-workspace-infra/iac_modules/issues/471
+      repository: ai-workspace-infra/iac_modules
+      branch: bugfix/471-obs-cmdb-serverless
+      scope: "Reconcile multi-cloud & serverless CMDB facts (GCP/Akamai/AWS/UCloud/Cloudflare/Supabase), retire deleted observability-shared-0, prevent partial API failures from marking deletions, and align cmdb_postgres datasource & Serverless telemetry producers."
+    OBS-02:
+      issue: https://github.com/ai-workspace-infra/playbooks/issues/766
+      repository: ai-workspace-infra/playbooks
+      branch: bugfix/766-obs-host-agent
+      scope: "Verify and align host agents (node_exporter, process_exporter, postgres_exporter, xray, caddy, vector, blackbox) across active CMDB hosts to write to the target observability endpoint with canonical environment/instance labels without altering billing pipelines."
+    OBS-03:
+      issue: https://github.com/ai-workspace-infra/artifacts/issues/221
+      repository: ai-workspace-infra/artifacts
+      branch: bugfix/221-obs-k3s-agent
+      scope: "Fix K3s/containerd collector chart & RBAC (remove localhost-only node stats restriction in collector-identity.yaml, align kubelet/cAdvisor node & container metrics, add containerd Pod/journald log collection and K8s resource attributes)."
+    OBS-04:
+      issue: https://github.com/ai-workspace-infra/gitops/issues/559
+      repository: ai-workspace-infra/gitops
+      branch: bugfix/559-obs-dashboard-coverage
+      scope: "Fix all 17 dashboards at their generator/source: remove WAYOn0FGz, remove prohibited 'or vector(...)' and fake fallback formulas, unify env/environment labels, fix victoria-traces job selector, update victoria-logs host variable & environment filter, and fix /grafana/a/... plugin link paths."
+    OBS-05:
+      issue: https://github.com/ai-workspace-infra/playbooks/issues/767
+      repository: ai-workspace-infra/playbooks
+      branch: bugfix/767-obs-acceptance
+      scope: "Provide read-only end-to-end acceptance probes verifying metrics (<=3 intervals), logs (<=5m), and CMDB freshness, and compile redacted release & rollback evidence."
