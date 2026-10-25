@@ -1128,22 +1128,23 @@ data:
     \              \"datasource\": {\n                \"type\": \"prometheus\",\n\
     \                \"uid\": \"victoriametrics\"\n              },\n            \
     \  \"editorMode\": \"code\",\n              \"exemplar\": false,\n           \
-    \   \"expr\": \"process_max_fds{job=\\\"node_exporter\\\",instance=~\\\"$instance\\\
-    \"}\",\n              \"hide\": false,\n              \"instant\": true,\n   \
-    \           \"interval\": \"\",\n              \"legendFormat\": \"最大打开文件\",\n\
-    \              \"metrics\": [\n                {\n                  \"id\": \"\
-    1\",\n                  \"type\": \"count\"\n                }\n             \
-    \ ],\n              \"query\": \"\",\n              \"refId\": \"F\",\n      \
-    \        \"timeField\": \"@timestamp\"\n            }\n          ],\n        \
-    \  \"type\": \"stat\"\n        },\n        {\n          \"datasource\": {\n  \
-    \          \"type\": \"prometheus\",\n            \"uid\": \"victoriametrics\"\
-    \n          },\n          \"fieldConfig\": {\n            \"defaults\": {\n  \
-    \            \"color\": {\n                \"mode\": \"palette-classic\"\n   \
-    \           },\n              \"custom\": {\n                \"axisBorderShow\"\
-    : false,\n                \"axisCenteredZero\": false,\n                \"axisColorMode\"\
-    : \"text\",\n                \"axisLabel\": \"\",\n                \"axisPlacement\"\
-    : \"auto\",\n                \"barAlignment\": 0,\n                \"drawStyle\"\
-    : \"bars\",\n                \"fillOpacity\": 60,\n                \"gradientMode\"\
+    \   \"expr\": \"process_max_fds{job=\\\"node-exporter\\\",cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",instance=~\\\"$instance\\\"}\",\n\
+    \              \"hide\": false,\n              \"instant\": true,\n          \
+    \    \"interval\": \"\",\n              \"legendFormat\": \"最大打开文件\",\n      \
+    \        \"metrics\": [\n                {\n                  \"id\": \"1\",\n\
+    \                  \"type\": \"count\"\n                }\n              ],\n\
+    \              \"query\": \"\",\n              \"refId\": \"F\",\n           \
+    \   \"timeField\": \"@timestamp\"\n            }\n          ],\n          \"type\"\
+    : \"stat\"\n        },\n        {\n          \"datasource\": {\n            \"\
+    type\": \"prometheus\",\n            \"uid\": \"victoriametrics\"\n          },\n\
+    \          \"fieldConfig\": {\n            \"defaults\": {\n              \"color\"\
+    : {\n                \"mode\": \"palette-classic\"\n              },\n       \
+    \       \"custom\": {\n                \"axisBorderShow\": false,\n          \
+    \      \"axisCenteredZero\": false,\n                \"axisColorMode\": \"text\"\
+    ,\n                \"axisLabel\": \"\",\n                \"axisPlacement\": \"\
+    auto\",\n                \"barAlignment\": 0,\n                \"drawStyle\":\
+    \ \"bars\",\n                \"fillOpacity\": 60,\n                \"gradientMode\"\
     : \"opacity\",\n                \"hideFrom\": {\n                  \"legend\"\
     : false,\n                  \"tooltip\": false,\n                  \"viz\": false\n\
     \                },\n                \"insertNulls\": false,\n               \
@@ -1799,80 +1800,83 @@ data:
     \              \"datasource\": {\n                \"type\": \"prometheus\",\n\
     \                \"uid\": \"victoriametrics\"\n              },\n            \
     \  \"editorMode\": \"code\",\n              \"exemplar\": true,\n            \
-    \  \"expr\": \"(process_open_fds{instance=~\\\"$instance\\\"}/process_max_fds{instance=~\\\
-    \"$instance\\\"}) *100\",\n              \"format\": \"time_series\",\n      \
-    \        \"hide\": false,\n              \"instant\": false,\n              \"\
-    interval\": \"\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
-    : \"进程使用FD占比\",\n              \"refId\": \"D\"\n            }\n          ],\n\
-    \          \"title\": \"文件描述符(FD)/每秒上下文切换\",\n          \"type\": \"timeseries\"\
-    \n        },\n        {\n          \"datasource\": {\n            \"type\": \"\
-    prometheus\",\n            \"uid\": \"victoriametrics\"\n          },\n      \
-    \    \"description\": \"Read time seconds 每个磁盘分区读操作花费的秒数\\n\\nWrite time seconds\
-    \ 每个磁盘分区写操作花费的秒数\\n\\nIO time seconds 每个磁盘分区输入/输出操作花费的秒数\\n\\nIO time weighted\
-    \ seconds每个磁盘分区输入/输出操作花费的加权秒数\",\n          \"fieldConfig\": {\n            \"\
-    defaults\": {\n              \"color\": {\n                \"mode\": \"palette-classic\"\
-    \n              },\n              \"custom\": {\n                \"axisBorderShow\"\
-    : false,\n                \"axisCenteredZero\": false,\n                \"axisColorMode\"\
-    : \"text\",\n                \"axisLabel\": \"读取（-）/写入（+）\",\n               \
-    \ \"axisPlacement\": \"auto\",\n                \"barAlignment\": 0,\n       \
-    \         \"drawStyle\": \"line\",\n                \"fillOpacity\": 10,\n   \
-    \             \"gradientMode\": \"opacity\",\n                \"hideFrom\": {\n\
-    \                  \"legend\": false,\n                  \"tooltip\": false,\n\
-    \                  \"viz\": false\n                },\n                \"insertNulls\"\
-    : false,\n                \"lineInterpolation\": \"linear\",\n               \
-    \ \"lineWidth\": 1,\n                \"pointSize\": 5,\n                \"scaleDistribution\"\
-    : {\n                  \"type\": \"linear\"\n                },\n            \
-    \    \"showPoints\": \"never\",\n                \"spanNulls\": false,\n     \
-    \           \"stacking\": {\n                  \"group\": \"A\",\n           \
-    \       \"mode\": \"none\"\n                },\n                \"thresholdsStyle\"\
-    : {\n                  \"mode\": \"off\"\n                }\n              },\n\
-    \              \"links\": [],\n              \"mappings\": [],\n             \
-    \ \"thresholds\": {\n                \"mode\": \"absolute\",\n               \
-    \ \"steps\": [\n                  {\n                    \"color\": \"green\"\n\
-    \                  },\n                  {\n                    \"color\": \"\
-    red\",\n                    \"value\": 80\n                  }\n             \
-    \   ]\n              },\n              \"unit\": \"s\"\n            },\n     \
-    \       \"overrides\": [\n              {\n                \"matcher\": {\n  \
-    \                \"id\": \"byName\",\n                  \"options\": \"vda\"\n\
-    \                },\n                \"properties\": [\n                  {\n\
-    \                    \"id\": \"color\",\n                    \"value\": {\n  \
-    \                    \"fixedColor\": \"#6ED0E0\",\n                      \"mode\"\
-    : \"fixed\"\n                    }\n                  }\n                ]\n \
-    \             },\n              {\n                \"matcher\": {\n          \
-    \        \"id\": \"byRegexp\",\n                  \"options\": \"/,*_读取$/\"\n\
-    \                },\n                \"properties\": [\n                  {\n\
-    \                    \"id\": \"custom.transform\",\n                    \"value\"\
-    : \"negative-Y\"\n                  }\n                ]\n              },\n \
-    \             {\n                \"matcher\": {\n                  \"id\": \"\
-    byValue\",\n                  \"options\": {\n                    \"op\": \"gte\"\
-    ,\n                    \"reducer\": \"allIsZero\",\n                    \"value\"\
-    : 0\n                  }\n                },\n                \"properties\":\
-    \ [\n                  {\n                    \"id\": \"custom.hideFrom\",\n \
-    \                   \"value\": {\n                      \"legend\": true,\n  \
-    \                    \"tooltip\": true,\n                      \"viz\": false\n\
-    \                    }\n                  }\n                ]\n             \
-    \ },\n              {\n                \"matcher\": {\n                  \"id\"\
-    : \"byValue\",\n                  \"options\": {\n                    \"op\":\
-    \ \"gte\",\n                    \"reducer\": \"allIsNull\",\n                \
-    \    \"value\": 0\n                  }\n                },\n                \"\
-    properties\": [\n                  {\n                    \"id\": \"custom.hideFrom\"\
-    ,\n                    \"value\": {\n                      \"legend\": true,\n\
-    \                      \"tooltip\": true,\n                      \"viz\": false\n\
-    \                    }\n                  }\n                ]\n             \
-    \ }\n            ]\n          },\n          \"gridPos\": {\n            \"h\"\
-    : 8,\n            \"w\": 6,\n            \"x\": 0,\n            \"y\": 42\n  \
-    \        },\n          \"id\": 160,\n          \"options\": {\n            \"\
-    legend\": {\n              \"calcs\": [\n                \"mean\",\n         \
-    \       \"lastNotNull\",\n                \"max\"\n              ],\n        \
-    \      \"displayMode\": \"table\",\n              \"placement\": \"bottom\",\n\
-    \              \"showLegend\": true\n            },\n            \"tooltip\":\
-    \ {\n              \"maxHeight\": 600,\n              \"mode\": \"multi\",\n \
-    \             \"sort\": \"desc\"\n            }\n          },\n          \"pluginVersion\"\
-    : \"10.4.1\",\n          \"targets\": [\n            {\n              \"datasource\"\
-    : {\n                \"type\": \"prometheus\",\n                \"uid\": \"victoriametrics\"\
-    \n              },\n              \"expr\": \"irate(node_disk_read_time_seconds_total{job=\\\
+    \  \"expr\": \"(process_open_fds{job=\\\"node-exporter\\\",cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",instance=~\\\"$instance\\\"}/process_max_fds{job=\\\
     \"node-exporter\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
-    \",instance=~\\\"$instance\\\"}[$interval]) / irate(node_disk_reads_completed_total{job=\\\
+    \",instance=~\\\"$instance\\\"}) *100\",\n              \"format\": \"time_series\"\
+    ,\n              \"hide\": false,\n              \"instant\": false,\n       \
+    \       \"interval\": \"\",\n              \"intervalFactor\": 1,\n          \
+    \    \"legendFormat\": \"进程使用FD占比\",\n              \"refId\": \"D\"\n       \
+    \     }\n          ],\n          \"title\": \"文件描述符(FD)/每秒上下文切换\",\n         \
+    \ \"type\": \"timeseries\"\n        },\n        {\n          \"datasource\": {\n\
+    \            \"type\": \"prometheus\",\n            \"uid\": \"victoriametrics\"\
+    \n          },\n          \"description\": \"Read time seconds 每个磁盘分区读操作花费的秒数\\\
+    n\\nWrite time seconds 每个磁盘分区写操作花费的秒数\\n\\nIO time seconds 每个磁盘分区输入/输出操作花费的秒数\\\
+    n\\nIO time weighted seconds每个磁盘分区输入/输出操作花费的加权秒数\",\n          \"fieldConfig\"\
+    : {\n            \"defaults\": {\n              \"color\": {\n               \
+    \ \"mode\": \"palette-classic\"\n              },\n              \"custom\": {\n\
+    \                \"axisBorderShow\": false,\n                \"axisCenteredZero\"\
+    : false,\n                \"axisColorMode\": \"text\",\n                \"axisLabel\"\
+    : \"读取（-）/写入（+）\",\n                \"axisPlacement\": \"auto\",\n           \
+    \     \"barAlignment\": 0,\n                \"drawStyle\": \"line\",\n       \
+    \         \"fillOpacity\": 10,\n                \"gradientMode\": \"opacity\"\
+    ,\n                \"hideFrom\": {\n                  \"legend\": false,\n   \
+    \               \"tooltip\": false,\n                  \"viz\": false\n      \
+    \          },\n                \"insertNulls\": false,\n                \"lineInterpolation\"\
+    : \"linear\",\n                \"lineWidth\": 1,\n                \"pointSize\"\
+    : 5,\n                \"scaleDistribution\": {\n                  \"type\": \"\
+    linear\"\n                },\n                \"showPoints\": \"never\",\n   \
+    \             \"spanNulls\": false,\n                \"stacking\": {\n       \
+    \           \"group\": \"A\",\n                  \"mode\": \"none\"\n        \
+    \        },\n                \"thresholdsStyle\": {\n                  \"mode\"\
+    : \"off\"\n                }\n              },\n              \"links\": [],\n\
+    \              \"mappings\": [],\n              \"thresholds\": {\n          \
+    \      \"mode\": \"absolute\",\n                \"steps\": [\n               \
+    \   {\n                    \"color\": \"green\"\n                  },\n      \
+    \            {\n                    \"color\": \"red\",\n                    \"\
+    value\": 80\n                  }\n                ]\n              },\n      \
+    \        \"unit\": \"s\"\n            },\n            \"overrides\": [\n     \
+    \         {\n                \"matcher\": {\n                  \"id\": \"byName\"\
+    ,\n                  \"options\": \"vda\"\n                },\n              \
+    \  \"properties\": [\n                  {\n                    \"id\": \"color\"\
+    ,\n                    \"value\": {\n                      \"fixedColor\": \"\
+    #6ED0E0\",\n                      \"mode\": \"fixed\"\n                    }\n\
+    \                  }\n                ]\n              },\n              {\n \
+    \               \"matcher\": {\n                  \"id\": \"byRegexp\",\n    \
+    \              \"options\": \"/,*_读取$/\"\n                },\n               \
+    \ \"properties\": [\n                  {\n                    \"id\": \"custom.transform\"\
+    ,\n                    \"value\": \"negative-Y\"\n                  }\n      \
+    \          ]\n              },\n              {\n                \"matcher\":\
+    \ {\n                  \"id\": \"byValue\",\n                  \"options\": {\n\
+    \                    \"op\": \"gte\",\n                    \"reducer\": \"allIsZero\"\
+    ,\n                    \"value\": 0\n                  }\n                },\n\
+    \                \"properties\": [\n                  {\n                    \"\
+    id\": \"custom.hideFrom\",\n                    \"value\": {\n               \
+    \       \"legend\": true,\n                      \"tooltip\": true,\n        \
+    \              \"viz\": false\n                    }\n                  }\n  \
+    \              ]\n              },\n              {\n                \"matcher\"\
+    : {\n                  \"id\": \"byValue\",\n                  \"options\": {\n\
+    \                    \"op\": \"gte\",\n                    \"reducer\": \"allIsNull\"\
+    ,\n                    \"value\": 0\n                  }\n                },\n\
+    \                \"properties\": [\n                  {\n                    \"\
+    id\": \"custom.hideFrom\",\n                    \"value\": {\n               \
+    \       \"legend\": true,\n                      \"tooltip\": true,\n        \
+    \              \"viz\": false\n                    }\n                  }\n  \
+    \              ]\n              }\n            ]\n          },\n          \"gridPos\"\
+    : {\n            \"h\": 8,\n            \"w\": 6,\n            \"x\": 0,\n   \
+    \         \"y\": 42\n          },\n          \"id\": 160,\n          \"options\"\
+    : {\n            \"legend\": {\n              \"calcs\": [\n                \"\
+    mean\",\n                \"lastNotNull\",\n                \"max\"\n         \
+    \     ],\n              \"displayMode\": \"table\",\n              \"placement\"\
+    : \"bottom\",\n              \"showLegend\": true\n            },\n          \
+    \  \"tooltip\": {\n              \"maxHeight\": 600,\n              \"mode\":\
+    \ \"multi\",\n              \"sort\": \"desc\"\n            }\n          },\n\
+    \          \"pluginVersion\": \"10.4.1\",\n          \"targets\": [\n        \
+    \    {\n              \"datasource\": {\n                \"type\": \"prometheus\"\
+    ,\n                \"uid\": \"victoriametrics\"\n              },\n          \
+    \    \"expr\": \"irate(node_disk_read_time_seconds_total{job=\\\"node-exporter\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,instance=~\\\"$instance\\\"}[$interval]) / irate(node_disk_reads_completed_total{job=\\\
     \"node-exporter\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
     \",instance=~\\\"$instance\\\"}[$interval])\",\n              \"format\": \"time_series\"\
     ,\n              \"hide\": false,\n              \"instant\": false,\n       \
