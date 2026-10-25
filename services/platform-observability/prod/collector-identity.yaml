@@ -9,9 +9,18 @@ metadata:
   name: web-saas-k3s-v5-node-stats
 rules:
   - apiGroups: [""]
-    resources: [nodes/stats, nodes/metrics, nodes]
-    resourceNames: [localhost]
-    verbs: [get]
+    resources:
+      - nodes
+      - nodes/stats
+      - nodes/metrics
+      - nodes/proxy
+      - pods
+      - namespaces
+    verbs: ["get", "list", "watch"]
+  - nonResourceURLs:
+      - /metrics
+      - /metrics/cadvisor
+    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
