@@ -22,49 +22,15 @@ hosts:
     image: linode/debian12
     private_ip: true
     ansible_user: root
-    groups: [web_saas, prod, akamai_cloud, generation_candidate]
-    tags: [svc-plus, prod, web-saas, prod-v5, migration-candidate]
+    groups: [prod, akamai_cloud]
+    tags: [svc-plus, prod, state-handoff]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: ["::/0"]
       allow_http: true
       allow_https: true
     host_vars:
-      service_variant: v5
-      source_generation: prod-v4
-      target_generation: prod-v5
-      deployment_mode: selfhost
-      service_domains:
-        - console-selfhost-prod-v5.svc.plus
-        - accounts-selfhost-prod-v5.svc.plus
-        - billing-selfhost-prod-v5.svc.plus
-        - postgresql-selfhost-prod-v5.svc.plus
-        - xworktech.com
-        - console-prod-v5.svc.plus
-        - accounts-prod-v5.svc.plus
-        - billing-prod-v5.svc.plus
-        - console.svc.plus
-        - accounts.svc.plus
-        - billing.svc.plus
-        - postgresql.svc.plus
-      # These names coexist. CNAME targets do not rewrite the HTTP Host header.
-      web_saas_host_config_console_aliases:
-        - console-prod-v5.svc.plus
-        - console.svc.plus
-      web_saas_host_config_accounts_aliases:
-        - accounts-prod-v5.svc.plus
-        - accounts.svc.plus
-      web_saas_host_config_billing_aliases:
-        - billing-prod-v5.svc.plus
-        - billing.svc.plus
-      # Existing V5 release selection; never fall back to latest/default target.
-      doco_cd_image: ghcr.io/kimdre/doco-cd@sha256:46f3e44106fd0f4f30bc450682038509484d9aa28916edd6039b0af45bdc1cec
-      web_saas_doco_cd_repository: https://github.com/ai-workspace-infra/gitops.git
-      web_saas_doco_cd_target: prod-v5-candidate
-      # Last verified runtime selection in the 2026-10-24 public-route receipt.
-      # A new release must explicitly select a new immutable revision.
-      web_saas_doco_cd_reference: 01461922e2c91da946c68626d88d5ffc9472d3a7
-      web_saas_host_config_brand_domain: xworktech.com
-      web_saas_host_config_brand_tls_domain: xworktech.com
-      database_background_writers: false
+      # Retain this production Terraform identity until the existing resource
+      # state is explicitly adopted by the Dev declaration. The stopped V5
+      # Compose stack is no longer a service or deployment target.
       public_dns_cutover: false
