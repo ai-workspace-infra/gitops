@@ -24,6 +24,10 @@ caddy:
     accountsSecret: web-saas-tls
     billingSecret: web-saas-tls
   additionalHosts:
+  - name: brand-console
+    host: xworktech.com
+    serviceRole: console
+    tlsSecret: web-saas-brand-tls
   - name: vault
     host: vault-k3s-v5.svc.plus
     aliases:
