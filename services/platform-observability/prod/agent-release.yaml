@@ -1,4 +1,4 @@
-# Published agent 1.1.0; activation requires promotion of the exact GitOps source ref.
+# Published agent 1.1.1; activation requires promotion of the exact GitOps source ref.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
@@ -8,7 +8,7 @@ spec:
   suspend: false
   url: oci://ghcr.io/ai-workspace-infra/observability-agent
   ref:
-    digest: sha256:e75aebf0aaff448a9d387eb2da1af0695d87752d339dda9c3d982367fe7580af
+    digest: sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
