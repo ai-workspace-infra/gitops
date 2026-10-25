@@ -58,3 +58,32 @@ The generic agent supports `vector.enabled=true`, `vector.mode=relay`: scoped so
 ## Upgrade and rollback
 
 Reviewed producer → immutable agent/stack publication and independently pulled digests (completed) → this activation PR with canonical scrape config → authorized GitOps source tag/revision promotion → runtime checks. Keep prior GitOps/chart refs and restore only this release and scrape selection on regression. Do not delete backend data, transfer writers, rebuild nodes or change DNS. Pending rollout and runtime checks keep parent #564 open.
+
+
+## Pre-release container ownership review
+
+The 18 declared Dashboard models were checked against the pinned OTel container group and the raw kubelet cAdvisor metric/label contract. Only the old K3s overview working-set panel depended on `k8s_pod_name`; it now selects the canonical cAdvisor job and real namespace/pod/workload-container labels. The StarsL generator and generated model select `job="cadvisor"` for raw container metrics. Its ten application CPU/working-set selectors explicitly exclude pause containers; network selectors intentionally keep sandbox samples and `id="/"` CPU totals retain their host meaning. The unmodified upstream source and checksum remain preserved in Playbooks.
+
+No PrometheusRule/VMRule or Grafana alert definitions are declared in this target bundle or the canonical server chart. This is a source audit only: it does not establish that manually managed live rules are absent or compatible. Those rules must be checked with the approved read-only visible-rules API where available; otherwise record NOT_RUN. The original baseline snapshot remains historical evidence rather than being rewritten to claim runtime PASS.
+
+For runtime coverage compare **every actual node** (live node inventory/KSM) with the scoped raw scrape targets; do not verify only the node hosting the server. For each applicable per-node job, this set difference must be empty:
+
+```promql
+max by (node) (kube_node_info{cluster="web-saas-k3s-v5",environment="prod"})
+unless on (node)
+max by (node) (up{cluster="web-saas-k3s-v5",environment="prod",job="cadvisor"} == 1)
+```
+
+Repeat for `node-exporter`, `process-exporter` and `kubelet`, verify each expected node/job has exactly one current target, and compare KSM node names with the actual Kubernetes node list. KSM is a cluster service, not a per-node exporter.
+
+After at least three 15-second scrapes, check active per-container uniqueness, not just different job names. This query must be empty in steady state (repeat for CPU and RSS where applicable):
+
+```promql
+count by (cluster,environment,node,namespace,pod,container) (
+  container_memory_working_set_bytes{cluster="web-saas-k3s-v5",environment="prod",job="cadvisor",namespace!="",pod!="",container!="",container!="POD"}
+  and
+  ((time() - timestamp(container_memory_working_set_bytes{cluster="web-saas-k3s-v5",environment="prod",job="cadvisor",namespace!="",pod!="",container!="",container!="POD"})) < 45)
+) > 1
+```
+
+Also inspect **all jobs** for the same metric and real workload identity; an OTel-derived series may carry `k8s_namespace_name`/`k8s_pod_name`/`container_name` instead of raw namespace/pod/container. Query those separately and require no fresh OTel container-group series after the receiver update; do not infer uniqueness merely from differing labels. Historical samples may remain in the selected time window and are not evidence of current double collection. Query freshness by original sample timestamp. Never sum cgroup root, pod sandbox and application hierarchy together as though they were separate application containers.

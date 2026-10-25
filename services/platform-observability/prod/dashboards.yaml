@@ -44,16 +44,20 @@ data:
     \    \"x\": 0,\n        \"y\": 8,\n        \"w\": 12,\n        \"h\": 8\n    \
     \  },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"\
     uid\": \"${DS_METRICS}\"\n      },\n      \"targets\": [\n        {\n        \
-    \  \"refId\": \"A\",\n          \"expr\": \"sum by (k8s_pod_name) (container_memory_working_set_bytes{cluster=\\\
-    \"web-saas-k3s-v5\\\",environment=\\\"prod\\\"})\",\n          \"legendFormat\"\
-    : \"{{k8s_pod_name}}\"\n        }\n      ],\n      \"fieldConfig\": {\n      \
-    \  \"defaults\": {\n          \"unit\": \"bytes\"\n        },\n        \"overrides\"\
-    : []\n      }\n    },\n    {\n      \"id\": 4,\n      \"type\": \"timeseries\"\
-    ,\n      \"title\": \"Observed request spans / second\",\n      \"gridPos\": {\n\
-    \        \"x\": 12,\n        \"y\": 8,\n        \"w\": 12,\n        \"h\": 8\n\
-    \      },\n      \"datasource\": {\n        \"type\": \"prometheus\",\n      \
-    \  \"uid\": \"${DS_METRICS}\"\n      },\n      \"targets\": [\n        {\n   \
-    \       \"refId\": \"A\",\n          \"expr\": \"sum by (service_name) (rate(traces_span_metrics_calls_total{cluster=\\\
+    \  \"refId\": \"A\",\n          \"expr\": \"sum by (namespace,pod) (container_memory_working_set_bytes{cluster=\\\
+    \"web-saas-k3s-v5\\\",environment=\\\"prod\\\",job=\\\"cadvisor\\\",namespace!=\\\
+    \"\\\",pod!=\\\"\\\",container!=\\\"\\\",container!=\\\"POD\\\"})\",\n       \
+    \   \"legendFormat\": \"{{namespace}} / {{pod}}\"\n        }\n      ],\n     \
+    \ \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"bytes\"\n\
+    \        },\n        \"overrides\": []\n      },\n      \"description\": \"Canonical\
+    \ kubelet cAdvisor workload-container working set, grouped by namespace and pod.\
+    \ Excludes root cgroups and pause containers; no OTel k8s_pod_name dependency.\"\
+    \n    },\n    {\n      \"id\": 4,\n      \"type\": \"timeseries\",\n      \"title\"\
+    : \"Observed request spans / second\",\n      \"gridPos\": {\n        \"x\": 12,\n\
+    \        \"y\": 8,\n        \"w\": 12,\n        \"h\": 8\n      },\n      \"datasource\"\
+    : {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n \
+    \     },\n      \"targets\": [\n        {\n          \"refId\": \"A\",\n     \
+    \     \"expr\": \"sum by (service_name) (rate(traces_span_metrics_calls_total{cluster=\\\
     \"web-saas-k3s-v5\\\",environment=\\\"prod\\\",span_kind=\\\"SPAN_KIND_SERVER\\\
     \"}[5m]))\",\n          \"legendFormat\": \"{{service_name}}\"\n        }\n  \
     \    ],\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\"\

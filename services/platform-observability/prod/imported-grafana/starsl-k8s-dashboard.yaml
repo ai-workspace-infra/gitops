@@ -65,19 +65,19 @@ data:
     : \"color\"\n      },\n      \"pluginVersion\": \"10.4.1\",\n      \"targets\"\
     : [\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"exemplar\": true,\n          \"expr\": \"sum(container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"}) / sum(kube_node_status_allocatable{cluster=~\\\"\
+    : \"code\",\n          \"exemplar\": true,\n          \"expr\": \"sum(container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"}) / sum(kube_node_status_allocatable{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
+    memory\\\", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"})\",\n          \"format\"\
+    : \"time_series\",\n          \"hide\": false,\n          \"instant\": true,\n\
+    \          \"interval\": \"\",\n          \"legendFormat\": \"内存使用率\",\n     \
+    \     \"refId\": \"C\"\n        },\n        {\n          \"datasource\": {\n \
+    \           \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n\
+    \          },\n          \"editorMode\": \"code\",\n          \"exemplar\": true,\n\
+    \          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\"\
     ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"memory\\\
-    \", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"})\",\n          \"format\": \"time_series\"\
-    ,\n          \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"内存使用率\",\n          \"refId\": \"C\"\n\
-    \        },\n        {\n          \"datasource\": {\n            \"type\": \"\
-    prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n        \
-    \  \"editorMode\": \"code\",\n          \"exemplar\": true,\n          \"expr\"\
-    : \"sum(kube_pod_container_resource_requests{cluster=~\\\"${cluster:regex}\\\"\
-    ,environment=~\\\"${environment:regex}\\\",resource=\\\"memory\\\", unit=\\\"\
-    byte\\\",node=~\\\"^$Node$\\\"}) / sum(kube_node_status_allocatable{cluster=~\\\
+    \", unit=\\\"byte\\\",node=~\\\"^$Node$\\\"}) / sum(kube_node_status_allocatable{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     memory\\\", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"})\",\n          \"format\"\
     : \"time_series\",\n          \"hide\": false,\n          \"instant\": true,\n\
@@ -116,9 +116,9 @@ data:
     10.4.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n    \
     \        \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n \
     \         },\n          \"editorMode\": \"code\",\n          \"exemplar\": true,\n\
-    \          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"}[2m])) / sum(kube_node_status_allocatable{cluster=~\\\
+    \          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{job=\\\"cadvisor\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"}[2m])) / sum(kube_node_status_allocatable{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     cpu\\\", unit=\\\"core\\\", node=~\\\"^$Node$\\\"})\",\n          \"format\":\
     \ \"time_series\",\n          \"hide\": false,\n          \"instant\": true,\n\
@@ -286,55 +286,56 @@ data:
     : \"10.4.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
     \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
     \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": true,\n\
-    \          \"expr\": \"sum (irate(container_network_receive_bytes_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}[2m]))*8\",\n          \"format\": \"time_series\"\
-    ,\n          \"interval\": \"\",\n          \"intervalFactor\": 1,\n         \
-    \ \"legendFormat\": \"接收\",\n          \"metric\": \"network\",\n          \"\
-    range\": true,\n          \"refId\": \"A\",\n          \"step\": 10\n        },\n\
-    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"exemplar\": true,\n          \"expr\": \"sum (irate(container_network_transmit_bytes_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}[2m]))*8\",\n          \"instant\": false,\n\
-    \          \"interval\": \"\",\n          \"intervalFactor\": 1,\n          \"\
-    legendFormat\": \"发送\",\n          \"metric\": \"network\",\n          \"refId\"\
-    : \"B\",\n          \"step\": 10\n        }\n      ],\n      \"title\": \"$NameSpace：网络总览（可关联节点与命名空间）\"\
-    ,\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n  \
-    \      \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n\
-    \      \"fieldConfig\": {\n        \"defaults\": {\n          \"decimals\": 1,\n\
-    \          \"mappings\": [],\n          \"max\": 2000000000000,\n          \"\
-    min\": 1,\n          \"thresholds\": {\n            \"mode\": \"absolute\",\n\
-    \            \"steps\": [\n              {\n                \"color\": \"green\"\
-    ,\n                \"value\": null\n              },\n              {\n      \
-    \          \"color\": \"orange\",\n                \"value\": 100000000000\n \
-    \             },\n              {\n                \"color\": \"red\",\n     \
-    \           \"value\": 2000000000000\n              }\n            ]\n       \
-    \   },\n          \"unit\": \"bytes\"\n        },\n        \"overrides\": []\n\
-    \      },\n      \"gridPos\": {\n        \"h\": 4,\n        \"w\": 4,\n      \
-    \  \"x\": 0,\n        \"y\": 5\n      },\n      \"id\": 71,\n      \"options\"\
-    : {\n        \"displayMode\": \"basic\",\n        \"maxVizHeight\": 300,\n   \
-    \     \"minVizHeight\": 10,\n        \"minVizWidth\": 0,\n        \"namePlacement\"\
-    : \"auto\",\n        \"orientation\": \"vertical\",\n        \"reduceOptions\"\
-    : {\n          \"calcs\": [\n            \"last\"\n          ],\n          \"\
-    fields\": \"\",\n          \"values\": false\n        },\n        \"showUnfilled\"\
-    : false,\n        \"sizing\": \"auto\",\n        \"text\": {},\n        \"valueMode\"\
-    : \"color\"\n      },\n      \"pluginVersion\": \"10.4.1\",\n      \"targets\"\
-    : [\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
-    : true,\n          \"expr\": \"sum(kube_node_status_allocatable{cluster=~\\\"\
-    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"memory\\\
-    \", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"})\",\n          \"instant\": true,\n\
-    \          \"interval\": \"\",\n          \"legendFormat\": \"总内存\",\n       \
-    \   \"refId\": \"A\"\n        },\n        {\n          \"datasource\": {\n   \
-    \         \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n\
-    \          },\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"})\",\n          \"instant\": true,\n          \"\
-    interval\": \"\",\n          \"legendFormat\": \"使用量\",\n          \"refId\":\
-    \ \"C\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
+    \          \"expr\": \"sum (irate(container_network_receive_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m]))*8\",\n         \
+    \ \"format\": \"time_series\",\n          \"interval\": \"\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"接收\",\n          \"metric\": \"network\",\n\
+    \          \"range\": true,\n          \"refId\": \"A\",\n          \"step\":\
+    \ 10\n        },\n        {\n          \"datasource\": {\n            \"type\"\
     : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
-    \      \"exemplar\": true,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \      \"editorMode\": \"code\",\n          \"exemplar\": true,\n          \"\
+    expr\": \"sum (irate(container_network_transmit_bytes_total{job=\\\"cadvisor\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m]))*8\",\n          \"\
+    instant\": false,\n          \"interval\": \"\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"发送\",\n          \"metric\": \"network\",\n\
+    \          \"refId\": \"B\",\n          \"step\": 10\n        }\n      ],\n  \
+    \    \"title\": \"$NameSpace：网络总览（可关联节点与命名空间）\",\n      \"type\": \"timeseries\"\
+    \n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n\
+    \        \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n    \
+    \    \"defaults\": {\n          \"decimals\": 1,\n          \"mappings\": [],\n\
+    \          \"max\": 2000000000000,\n          \"min\": 1,\n          \"thresholds\"\
+    : {\n            \"mode\": \"absolute\",\n            \"steps\": [\n         \
+    \     {\n                \"color\": \"green\",\n                \"value\": null\n\
+    \              },\n              {\n                \"color\": \"orange\",\n \
+    \               \"value\": 100000000000\n              },\n              {\n \
+    \               \"color\": \"red\",\n                \"value\": 2000000000000\n\
+    \              }\n            ]\n          },\n          \"unit\": \"bytes\"\n\
+    \        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n     \
+    \   \"h\": 4,\n        \"w\": 4,\n        \"x\": 0,\n        \"y\": 5\n      },\n\
+    \      \"id\": 71,\n      \"options\": {\n        \"displayMode\": \"basic\",\n\
+    \        \"maxVizHeight\": 300,\n        \"minVizHeight\": 10,\n        \"minVizWidth\"\
+    : 0,\n        \"namePlacement\": \"auto\",\n        \"orientation\": \"vertical\"\
+    ,\n        \"reduceOptions\": {\n          \"calcs\": [\n            \"last\"\n\
+    \          ],\n          \"fields\": \"\",\n          \"values\": false\n    \
+    \    },\n        \"showUnfilled\": false,\n        \"sizing\": \"auto\",\n   \
+    \     \"text\": {},\n        \"valueMode\": \"color\"\n      },\n      \"pluginVersion\"\
+    : \"10.4.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
+    \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum(kube_node_status_allocatable{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
+    memory\\\", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"})\",\n          \"instant\"\
+    : true,\n          \"interval\": \"\",\n          \"legendFormat\": \"总内存\",\n\
+    \          \"refId\": \"A\"\n        },\n        {\n          \"datasource\":\
+    \ {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"})\",\n   \
+    \       \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
+    : \"使用量\",\n          \"refId\": \"C\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     memory\\\", unit=\\\"byte\\\",node=~\\\"^$Node$\\\"})\",\n          \"instant\"\
     : true,\n          \"interval\": \"\",\n          \"legendFormat\": \"请求量\",\n\
@@ -372,13 +373,13 @@ data:
     : true,\n          \"interval\": \"\",\n          \"legendFormat\": \"总核数\",\n\
     \          \"refId\": \"A\"\n        },\n        {\n          \"datasource\":\
     \ {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",id=\\\"/\\\"\
-    ,node=~\\\"^$Node$\\\"}[2m]))\",\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"使用量\",\n          \"refId\": \"C\"\n  \
-    \      },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
-    : true,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",id=\\\"/\\\",node=~\\\"^$Node$\\\"}[2m]))\",\n          \"instant\": true,\n\
+    \          \"interval\": \"\",\n          \"legendFormat\": \"使用量\",\n       \
+    \   \"refId\": \"C\"\n        },\n        {\n          \"datasource\": {\n   \
+    \         \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n\
+    \          },\n          \"exemplar\": true,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     cpu\\\", unit=\\\"core\\\",node=~\\\"^$Node$\\\"})\",\n          \"instant\":\
     \ true,\n          \"interval\": \"\",\n          \"legendFormat\": \"请求量\",\n\
@@ -429,36 +430,37 @@ data:
     \ \"color\"\n      },\n      \"pluginVersion\": \"10.4.1\",\n      \"targets\"\
     : [\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"expr\": \"\
-    sum (container_fs_usage_bytes{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
-    \"${environment:regex}\\\",device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\
-    \"}) / sum (container_fs_limit_bytes{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
-    \"${environment:regex}\\\",device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\
-    \"})\",\n          \"instant\": true,\n          \"interval\": \"\",\n       \
-    \   \"legendFormat\": \"使用率\",\n          \"refId\": \"C\"\n        },\n     \
-    \   {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n  \
-    \          \"uid\": \"${DS_METRICS}\"\n          },\n          \"expr\": \"sum\
-    \ (container_fs_usage_bytes{cluster=~\\\"${cluster:regex}\\\",environment=~\\\"\
-    ${environment:regex}\\\",device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\
-    \"})\",\n          \"instant\": true,\n          \"interval\": \"\",\n       \
-    \   \"legendFormat\": \"使用量\",\n          \"refId\": \"A\"\n        },\n     \
-    \   {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n  \
-    \          \"uid\": \"${DS_METRICS}\"\n          },\n          \"expr\": \"sum\
-    \ (container_fs_limit_bytes{cluster=~\\\"${cluster:regex}\\\",environment=~\\\"\
-    ${environment:regex}\\\",device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\
-    \"})\",\n          \"instant\": true,\n          \"interval\": \"\",\n       \
-    \   \"legendFormat\": \"总量\",\n          \"refId\": \"B\"\n        }\n      ],\n\
-    \      \"title\": \"节点存储信息\",\n      \"type\": \"bargauge\"\n    },\n    {\n \
-    \     \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"\
-    ${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n\
-    \          \"color\": {\n            \"mode\": \"palette-classic\"\n         \
-    \ },\n          \"mappings\": [],\n          \"thresholds\": {\n            \"\
-    mode\": \"absolute\",\n            \"steps\": [\n              {\n           \
-    \     \"color\": \"green\",\n                \"value\": null\n              },\n\
-    \              {\n                \"color\": \"red\",\n                \"value\"\
-    : 80\n              }\n            ]\n          }\n        },\n        \"overrides\"\
-    : [\n          {\n            \"matcher\": {\n              \"id\": \"byRegexp\"\
-    ,\n              \"options\": \"/异常.*/\"\n            },\n            \"properties\"\
-    : [\n              {\n                \"id\": \"color\",\n                \"value\"\
+    sum (container_fs_usage_bytes{job=\\\"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",device=~\\\"^/dev/.*$\\\",id=\\\"\
+    /\\\",node=~\\\"^$Node$\\\"}) / sum (container_fs_limit_bytes{job=\\\"cadvisor\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"})\",\n         \
+    \ \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
+    : \"使用率\",\n          \"refId\": \"C\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"expr\": \"sum (container_fs_usage_bytes{job=\\\"cadvisor\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"})\",\n         \
+    \ \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
+    : \"使用量\",\n          \"refId\": \"A\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"expr\": \"sum (container_fs_limit_bytes{job=\\\"cadvisor\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"})\",\n         \
+    \ \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
+    : \"总量\",\n          \"refId\": \"B\"\n        }\n      ],\n      \"title\": \"\
+    节点存储信息\",\n      \"type\": \"bargauge\"\n    },\n    {\n      \"datasource\":\
+    \ {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n \
+    \     },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\"\
+    : {\n            \"mode\": \"palette-classic\"\n          },\n          \"mappings\"\
+    : [],\n          \"thresholds\": {\n            \"mode\": \"absolute\",\n    \
+    \        \"steps\": [\n              {\n                \"color\": \"green\",\n\
+    \                \"value\": null\n              },\n              {\n        \
+    \        \"color\": \"red\",\n                \"value\": 80\n              }\n\
+    \            ]\n          }\n        },\n        \"overrides\": [\n          {\n\
+    \            \"matcher\": {\n              \"id\": \"byRegexp\",\n           \
+    \   \"options\": \"/异常.*/\"\n            },\n            \"properties\": [\n \
+    \             {\n                \"id\": \"color\",\n                \"value\"\
     : {\n                  \"fixedColor\": \"red\",\n                  \"mode\": \"\
     fixed\"\n                }\n              }\n            ]\n          }\n    \
     \    ]\n      },\n      \"gridPos\": {\n        \"h\": 2,\n        \"w\": 24,\n\
@@ -558,13 +560,13 @@ data:
     : false,\n          \"interval\": \"\",\n          \"legendFormat\": \"总内存\",\n\
     \          \"refId\": \"A\"\n        },\n        {\n          \"datasource\":\
     \ {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"})\",\n          \"instant\": false,\n          \"\
-    interval\": \"\",\n          \"legendFormat\": \"使用量\",\n          \"refId\":\
-    \ \"C\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
-    : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
-    \      \"exemplar\": true,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"})\",\n   \
+    \       \"instant\": false,\n          \"interval\": \"\",\n          \"legendFormat\"\
+    : \"使用量\",\n          \"refId\": \"C\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     memory\\\", unit=\\\"byte\\\",node=~\\\"^$Node$\\\"})\",\n          \"hide\":\
     \ true,\n          \"instant\": false,\n          \"interval\": \"\",\n      \
@@ -620,13 +622,13 @@ data:
     : false,\n          \"interval\": \"\",\n          \"legendFormat\": \"总核数\",\n\
     \          \"refId\": \"A\"\n        },\n        {\n          \"datasource\":\
     \ {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",id=\\\"/\\\"\
-    ,node=~\\\"^$Node$\\\"}[2m]))\",\n          \"instant\": false,\n          \"\
-    interval\": \"\",\n          \"legendFormat\": \"使用量\",\n          \"refId\":\
-    \ \"C\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
-    : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
-    \      \"exemplar\": true,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",id=\\\"/\\\",node=~\\\"^$Node$\\\"}[2m]))\",\n          \"instant\": false,\n\
+    \          \"interval\": \"\",\n          \"legendFormat\": \"使用量\",\n       \
+    \   \"refId\": \"C\"\n        },\n        {\n          \"datasource\": {\n   \
+    \         \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n\
+    \          },\n          \"exemplar\": true,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     cpu\\\", unit=\\\"core\\\",node=~\\\"^$Node$\\\"})\",\n          \"hide\": true,\n\
     \          \"instant\": false,\n          \"interval\": \"\",\n          \"legendFormat\"\
@@ -740,13 +742,14 @@ data:
     \      \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n        {\n     \
     \     \"datasource\": {\n            \"type\": \"prometheus\",\n            \"\
     uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\": true,\n      \
-    \    \"expr\": \"sum (irate(container_cpu_usage_seconds_total{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",container!=\\\"\\\",node=~\\\"^$Node$\\\
-    \"}[2m]))by (node) / sum(kube_node_status_allocatable{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",resource=\\\"cpu\\\", unit=\\\"core\\\
-    \", node=~\\\"^$Node$\\\"})by (node)*100\",\n          \"format\": \"time_series\"\
-    ,\n          \"hide\": false,\n          \"instant\": false,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"{{node}}\",\n          \"refId\": \"I\"\
+    \    \"expr\": \"sum (irate(container_cpu_usage_seconds_total{job=\\\"cadvisor\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"}[2m]))by (node)\
+    \ / sum(kube_node_status_allocatable{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
+    \"${environment:regex}\\\",resource=\\\"cpu\\\", unit=\\\"core\\\", node=~\\\"\
+    ^$Node$\\\"})by (node)*100\",\n          \"format\": \"time_series\",\n      \
+    \    \"hide\": false,\n          \"instant\": false,\n          \"interval\":\
+    \ \"\",\n          \"legendFormat\": \"{{node}}\",\n          \"refId\": \"I\"\
     \n        }\n      ],\n      \"title\": \"$Node：节点CPU明细\",\n      \"type\": \"\
     timeseries\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\"\
     ,\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n  \
@@ -779,108 +782,109 @@ data:
     \          \"sort\": \"desc\"\n        }\n      },\n      \"pluginVersion\": \"\
     10.4.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n    \
     \        \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n \
-    \         },\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"})by (node) / sum(kube_node_status_allocatable{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
-    memory\\\", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"})by (node)*100\",\n     \
-    \     \"format\": \"time_series\",\n          \"hide\": false,\n          \"instant\"\
-    : false,\n          \"interval\": \"\",\n          \"legendFormat\": \"{{node}}\"\
-    ,\n          \"refId\": \"I\"\n        }\n      ],\n      \"title\": \"$Node：节点内存明细\"\
-    ,\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n  \
-    \      \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n\
-    \      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n \
-    \           \"mode\": \"palette-classic\"\n          },\n          \"custom\"\
-    : {\n            \"axisBorderShow\": false,\n            \"axisCenteredZero\"\
-    : false,\n            \"axisColorMode\": \"series\",\n            \"axisLabel\"\
-    : \"←流入/流出→\",\n            \"axisPlacement\": \"auto\",\n            \"barAlignment\"\
-    : 0,\n            \"drawStyle\": \"line\",\n            \"fillOpacity\": 0,\n\
-    \            \"gradientMode\": \"none\",\n            \"hideFrom\": {\n      \
-    \        \"legend\": false,\n              \"tooltip\": false,\n             \
-    \ \"viz\": false\n            },\n            \"insertNulls\": false,\n      \
-    \      \"lineInterpolation\": \"linear\",\n            \"lineWidth\": 1,\n   \
-    \         \"pointSize\": 5,\n            \"scaleDistribution\": {\n          \
-    \    \"type\": \"linear\"\n            },\n            \"showPoints\": \"never\"\
-    ,\n            \"spanNulls\": false,\n            \"stacking\": {\n          \
-    \    \"group\": \"A\",\n              \"mode\": \"none\"\n            },\n   \
-    \         \"thresholdsStyle\": {\n              \"mode\": \"off\"\n          \
-    \  }\n          },\n          \"links\": [],\n          \"mappings\": [],\n  \
-    \        \"thresholds\": {\n            \"mode\": \"absolute\",\n            \"\
-    steps\": [\n              {\n                \"color\": \"green\",\n         \
-    \       \"value\": null\n              },\n              {\n                \"\
-    color\": \"red\",\n                \"value\": 80\n              }\n          \
-    \  ]\n          },\n          \"unit\": \"binbps\"\n        },\n        \"overrides\"\
-    : [\n          {\n            \"matcher\": {\n              \"id\": \"byRegexp\"\
-    ,\n              \"options\": \"/流入.*/\"\n            },\n            \"properties\"\
-    : [\n              {\n                \"id\": \"custom.transform\",\n        \
-    \        \"value\": \"negative-Y\"\n              }\n            ]\n         \
-    \ }\n        ]\n      },\n      \"gridPos\": {\n        \"h\": 6,\n        \"\
-    w\": 8,\n        \"x\": 16,\n        \"y\": 16\n      },\n      \"id\": 78,\n\
-    \      \"options\": {\n        \"legend\": {\n          \"calcs\": [\n       \
-    \     \"mean\",\n            \"lastNotNull\",\n            \"max\"\n         \
-    \ ],\n          \"displayMode\": \"table\",\n          \"placement\": \"bottom\"\
-    ,\n          \"showLegend\": false\n        },\n        \"tooltip\": {\n     \
-    \     \"mode\": \"multi\",\n          \"sort\": \"desc\"\n        }\n      },\n\
-    \      \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n        {\n     \
-    \     \"datasource\": {\n            \"type\": \"prometheus\",\n            \"\
-    uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\": true,\n      \
-    \    \"expr\": \"sum (irate(container_network_receive_bytes_total{cluster=~\\\"\
-    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",node=~\\\"^$Node$\\\
-    \"}[2m]))by (node) *8\",\n          \"format\": \"time_series\",\n          \"\
-    interval\": \"\",\n          \"intervalFactor\": 1,\n          \"legendFormat\"\
-    : \"流入:{{node}}\",\n          \"metric\": \"network\",\n          \"refId\": \"\
-    A\",\n          \"step\": 10\n        },\n        {\n          \"datasource\"\
-    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"exemplar\": true,\n          \"expr\": \"sum (irate(container_network_transmit_bytes_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",node=~\\\"^$Node$\\\
-    \"}[2m]))by (node) *8\",\n          \"instant\": false,\n          \"interval\"\
-    : \"\",\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"流出:{{node}}\"\
-    ,\n          \"metric\": \"network\",\n          \"refId\": \"B\",\n         \
-    \ \"step\": 10\n        }\n      ],\n      \"title\": \"$Node：节点网络总览\",\n    \
-    \  \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n        \"\
-    type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"\
-    fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n          \
-    \  \"mode\": \"thresholds\"\n          },\n          \"custom\": {\n         \
-    \   \"align\": \"center\",\n            \"cellOptions\": {\n              \"type\"\
-    : \"auto\"\n            },\n            \"filterable\": false,\n            \"\
-    inspect\": false\n          },\n          \"mappings\": [],\n          \"max\"\
-    : 1,\n          \"min\": 0,\n          \"thresholds\": {\n            \"mode\"\
+    \         },\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"})by (node)\
+    \ / sum(kube_node_status_allocatable{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
+    \"${environment:regex}\\\",resource=\\\"memory\\\", unit=\\\"byte\\\", node=~\\\
+    \"^$Node$\\\"})by (node)*100\",\n          \"format\": \"time_series\",\n    \
+    \      \"hide\": false,\n          \"instant\": false,\n          \"interval\"\
+    : \"\",\n          \"legendFormat\": \"{{node}}\",\n          \"refId\": \"I\"\
+    \n        }\n      ],\n      \"title\": \"$Node：节点内存明细\",\n      \"type\": \"\
+    timeseries\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\"\
+    ,\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n  \
+    \      \"defaults\": {\n          \"color\": {\n            \"mode\": \"palette-classic\"\
+    \n          },\n          \"custom\": {\n            \"axisBorderShow\": false,\n\
+    \            \"axisCenteredZero\": false,\n            \"axisColorMode\": \"series\"\
+    ,\n            \"axisLabel\": \"←流入/流出→\",\n            \"axisPlacement\": \"\
+    auto\",\n            \"barAlignment\": 0,\n            \"drawStyle\": \"line\"\
+    ,\n            \"fillOpacity\": 0,\n            \"gradientMode\": \"none\",\n\
+    \            \"hideFrom\": {\n              \"legend\": false,\n             \
+    \ \"tooltip\": false,\n              \"viz\": false\n            },\n        \
+    \    \"insertNulls\": false,\n            \"lineInterpolation\": \"linear\",\n\
+    \            \"lineWidth\": 1,\n            \"pointSize\": 5,\n            \"\
+    scaleDistribution\": {\n              \"type\": \"linear\"\n            },\n \
+    \           \"showPoints\": \"never\",\n            \"spanNulls\": false,\n  \
+    \          \"stacking\": {\n              \"group\": \"A\",\n              \"\
+    mode\": \"none\"\n            },\n            \"thresholdsStyle\": {\n       \
+    \       \"mode\": \"off\"\n            }\n          },\n          \"links\": [],\n\
+    \          \"mappings\": [],\n          \"thresholds\": {\n            \"mode\"\
     : \"absolute\",\n            \"steps\": [\n              {\n                \"\
-    color\": \"green\"\n              },\n              {\n                \"color\"\
-    : \"red\",\n                \"value\": 80\n              }\n            ]\n  \
-    \        }\n        },\n        \"overrides\": [\n          {\n            \"\
-    matcher\": {\n              \"id\": \"byName\",\n              \"options\": \"\
-    CPU限制\"\n            },\n            \"properties\": [\n              {\n    \
-    \            \"id\": \"custom.width\",\n                \"value\": 76\n      \
-    \        }\n            ]\n          },\n          {\n            \"matcher\"\
-    : {\n              \"id\": \"byName\",\n              \"options\": \"内存使用\"\n\
+    color\": \"green\",\n                \"value\": null\n              },\n     \
+    \         {\n                \"color\": \"red\",\n                \"value\": 80\n\
+    \              }\n            ]\n          },\n          \"unit\": \"binbps\"\n\
+    \        },\n        \"overrides\": [\n          {\n            \"matcher\": {\n\
+    \              \"id\": \"byRegexp\",\n              \"options\": \"/流入.*/\"\n\
     \            },\n            \"properties\": [\n              {\n            \
-    \    \"id\": \"custom.width\",\n                \"value\": 71\n              }\n\
+    \    \"id\": \"custom.transform\",\n                \"value\": \"negative-Y\"\n\
+    \              }\n            ]\n          }\n        ]\n      },\n      \"gridPos\"\
+    : {\n        \"h\": 6,\n        \"w\": 8,\n        \"x\": 16,\n        \"y\":\
+    \ 16\n      },\n      \"id\": 78,\n      \"options\": {\n        \"legend\": {\n\
+    \          \"calcs\": [\n            \"mean\",\n            \"lastNotNull\",\n\
+    \            \"max\"\n          ],\n          \"displayMode\": \"table\",\n  \
+    \        \"placement\": \"bottom\",\n          \"showLegend\": false\n       \
+    \ },\n        \"tooltip\": {\n          \"mode\": \"multi\",\n          \"sort\"\
+    : \"desc\"\n        }\n      },\n      \"pluginVersion\": \"10.4.1\",\n      \"\
+    targets\": [\n        {\n          \"datasource\": {\n            \"type\": \"\
+    prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n        \
+    \  \"exemplar\": true,\n          \"expr\": \"sum (irate(container_network_receive_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",node=~\\\"^$Node$\\\"}[2m]))by (node) *8\",\n          \"format\": \"time_series\"\
+    ,\n          \"interval\": \"\",\n          \"intervalFactor\": 1,\n         \
+    \ \"legendFormat\": \"流入:{{node}}\",\n          \"metric\": \"network\",\n   \
+    \       \"refId\": \"A\",\n          \"step\": 10\n        },\n        {\n   \
+    \       \"datasource\": {\n            \"type\": \"prometheus\",\n           \
+    \ \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\": true,\n  \
+    \        \"expr\": \"sum (irate(container_network_transmit_bytes_total{job=\\\"\
+    cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",node=~\\\"^$Node$\\\"}[2m]))by (node) *8\",\n          \"instant\": false,\n\
+    \          \"interval\": \"\",\n          \"intervalFactor\": 1,\n          \"\
+    legendFormat\": \"流出:{{node}}\",\n          \"metric\": \"network\",\n       \
+    \   \"refId\": \"B\",\n          \"step\": 10\n        }\n      ],\n      \"title\"\
+    : \"$Node：节点网络总览\",\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\"\
+    : {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n \
+    \     },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\"\
+    : {\n            \"mode\": \"thresholds\"\n          },\n          \"custom\"\
+    : {\n            \"align\": \"center\",\n            \"cellOptions\": {\n    \
+    \          \"type\": \"auto\"\n            },\n            \"filterable\": false,\n\
+    \            \"inspect\": false\n          },\n          \"mappings\": [],\n \
+    \         \"max\": 1,\n          \"min\": 0,\n          \"thresholds\": {\n  \
+    \          \"mode\": \"absolute\",\n            \"steps\": [\n              {\n\
+    \                \"color\": \"green\"\n              },\n              {\n   \
+    \             \"color\": \"red\",\n                \"value\": 80\n           \
+    \   }\n            ]\n          }\n        },\n        \"overrides\": [\n    \
+    \      {\n            \"matcher\": {\n              \"id\": \"byName\",\n    \
+    \          \"options\": \"CPU限制\"\n            },\n            \"properties\"\
+    : [\n              {\n                \"id\": \"custom.width\",\n            \
+    \    \"value\": 76\n              }\n            ]\n          },\n          {\n\
+    \            \"matcher\": {\n              \"id\": \"byName\",\n             \
+    \ \"options\": \"内存使用\"\n            },\n            \"properties\": [\n     \
+    \         {\n                \"id\": \"custom.width\",\n                \"value\"\
+    : 71\n              }\n            ]\n          },\n          {\n            \"\
+    matcher\": {\n              \"id\": \"byName\",\n              \"options\": \"\
+    内存限制\"\n            },\n            \"properties\": [\n              {\n     \
+    \           \"id\": \"custom.width\",\n                \"value\": 74\n       \
+    \       }\n            ]\n          },\n          {\n            \"matcher\":\
+    \ {\n              \"id\": \"byName\",\n              \"options\": \"磁盘使用\"\n\
+    \            },\n            \"properties\": [\n              {\n            \
+    \    \"id\": \"custom.width\",\n                \"value\": 74\n              }\n\
     \            ]\n          },\n          {\n            \"matcher\": {\n      \
-    \        \"id\": \"byName\",\n              \"options\": \"内存限制\"\n          \
-    \  },\n            \"properties\": [\n              {\n                \"id\"\
-    : \"custom.width\",\n                \"value\": 74\n              }\n        \
-    \    ]\n          },\n          {\n            \"matcher\": {\n              \"\
-    id\": \"byName\",\n              \"options\": \"磁盘使用\"\n            },\n     \
-    \       \"properties\": [\n              {\n                \"id\": \"custom.width\"\
-    ,\n                \"value\": 74\n              }\n            ]\n          },\n\
-    \          {\n            \"matcher\": {\n              \"id\": \"byRegexp\",\n\
-    \              \"options\": \".*%\"\n            },\n            \"properties\"\
-    : [\n              {\n                \"id\": \"custom.cellOptions\",\n      \
-    \          \"value\": {\n                  \"mode\": \"gradient\",\n         \
-    \         \"type\": \"color-background\"\n                }\n              },\n\
-    \              {\n                \"id\": \"color\",\n                \"value\"\
-    : {\n                  \"mode\": \"continuous-GrYlRd\"\n                }\n  \
-    \            },\n              {\n                \"id\": \"custom.width\",\n\
-    \                \"value\": 85\n              },\n              {\n          \
-    \      \"id\": \"unit\",\n                \"value\": \"percentunit\"\n       \
-    \       },\n              {\n                \"id\": \"decimals\",\n         \
-    \       \"value\": 0\n              }\n            ]\n          },\n         \
-    \ {\n            \"matcher\": {\n              \"id\": \"byRegexp\",\n       \
-    \       \"options\": \"(内存使用|内存总|内存请求|内存限制|磁盘使用|磁盘总)\"\n            },\n     \
-    \       \"properties\": [\n              {\n                \"id\": \"unit\",\n\
-    \                \"value\": \"bytes\"\n              }\n            ]\n      \
-    \    },\n          {\n            \"matcher\": {\n              \"id\": \"byName\"\
+    \        \"id\": \"byRegexp\",\n              \"options\": \".*%\"\n         \
+    \   },\n            \"properties\": [\n              {\n                \"id\"\
+    : \"custom.cellOptions\",\n                \"value\": {\n                  \"\
+    mode\": \"gradient\",\n                  \"type\": \"color-background\"\n    \
+    \            }\n              },\n              {\n                \"id\": \"\
+    color\",\n                \"value\": {\n                  \"mode\": \"continuous-GrYlRd\"\
+    \n                }\n              },\n              {\n                \"id\"\
+    : \"custom.width\",\n                \"value\": 85\n              },\n       \
+    \       {\n                \"id\": \"unit\",\n                \"value\": \"percentunit\"\
+    \n              },\n              {\n                \"id\": \"decimals\",\n \
+    \               \"value\": 0\n              }\n            ]\n          },\n \
+    \         {\n            \"matcher\": {\n              \"id\": \"byRegexp\",\n\
+    \              \"options\": \"(内存使用|内存总|内存请求|内存限制|磁盘使用|磁盘总)\"\n            },\n\
+    \            \"properties\": [\n              {\n                \"id\": \"unit\"\
+    ,\n                \"value\": \"bytes\"\n              }\n            ]\n    \
+    \      },\n          {\n            \"matcher\": {\n              \"id\": \"byName\"\
     ,\n              \"options\": \"节点\"\n            },\n            \"properties\"\
     : [\n              {\n                \"id\": \"custom.width\",\n            \
     \    \"value\": 96\n              }\n            ]\n          },\n          {\n\
@@ -971,21 +975,21 @@ data:
     \        \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
     : \"状态\",\n          \"refId\": \"B\"\n        },\n        {\n          \"datasource\"\
     : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"}[2m])) by (node)\",\n          \"format\": \"table\"\
-    ,\n          \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"\",\n          \"refId\": \"I\"\n     \
-    \   },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
-    : false,\n          \"expr\": \"kube_node_status_allocatable{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",resource=\\\"cpu\\\", unit=\\\"core\\\
-    \", node=~\\\"^$Node$\\\"} - 0\",\n          \"format\": \"table\",\n        \
-    \  \"hide\": false,\n          \"instant\": true,\n          \"interval\": \"\"\
-    ,\n          \"legendFormat\": \"\",\n          \"refId\": \"C\"\n        },\n\
-    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
-    : false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"}[2m])) by\
+    \ (node)\",\n          \"format\": \"table\",\n          \"hide\": false,\n  \
+    \        \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
+    : \"\",\n          \"refId\": \"I\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": false,\n          \"expr\": \"kube_node_status_allocatable{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
+    cpu\\\", unit=\\\"core\\\", node=~\\\"^$Node$\\\"} - 0\",\n          \"format\"\
+    : \"table\",\n          \"hide\": false,\n          \"instant\": true,\n     \
+    \     \"interval\": \"\",\n          \"legendFormat\": \"\",\n          \"refId\"\
+    : \"C\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
+    : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
+    \      \"exemplar\": false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     cpu\\\", unit=\\\"core\\\",node=~\\\"^$Node$\\\"}) by (node)\",\n          \"\
     format\": \"table\",\n          \"hide\": false,\n          \"instant\": true,\n\
@@ -999,21 +1003,21 @@ data:
     \          \"interval\": \"\",\n          \"legendFormat\": \"\",\n          \"\
     refId\": \"F\"\n        },\n        {\n          \"datasource\": {\n         \
     \   \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n      \
-    \    },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"}) by (node)\",\n          \"format\": \"table\",\n\
-    \          \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"\",\n          \"refId\": \"J\"\n     \
-    \   },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
-    : false,\n          \"expr\": \"sum(kube_node_status_allocatable{cluster=~\\\"\
-    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"memory\\\
-    \", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"}) by (node) - 0\",\n          \"\
-    format\": \"table\",\n          \"hide\": false,\n          \"instant\": true,\n\
-    \          \"interval\": \"\",\n          \"legendFormat\": \"\",\n          \"\
-    refId\": \"D\"\n        },\n        {\n          \"datasource\": {\n         \
-    \   \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n      \
-    \    },\n          \"exemplar\": false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \    },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"}) by (node)\"\
+    ,\n          \"format\": \"table\",\n          \"hide\": false,\n          \"\
+    instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\": \"\
+    \",\n          \"refId\": \"J\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum(kube_node_status_allocatable{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
+    memory\\\", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"}) by (node) - 0\",\n    \
+    \      \"format\": \"table\",\n          \"hide\": false,\n          \"instant\"\
+    : true,\n          \"interval\": \"\",\n          \"legendFormat\": \"\",\n  \
+    \        \"refId\": \"D\"\n        },\n        {\n          \"datasource\": {\n\
+    \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     memory\\\", unit=\\\"byte\\\",node=~\\\"^$Node$\\\"}) by (node)\",\n         \
     \ \"format\": \"table\",\n          \"hide\": false,\n          \"instant\": true,\n\
@@ -1027,30 +1031,31 @@ data:
     \          \"interval\": \"\",\n          \"legendFormat\": \"\",\n          \"\
     refId\": \"H\"\n        },\n        {\n          \"datasource\": {\n         \
     \   \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n      \
-    \    },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_fs_usage_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",device=~\\\"\
-    ^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"}) by (node)\",\n          \"\
-    format\": \"table\",\n          \"hide\": false,\n          \"instant\": true,\n\
-    \          \"interval\": \"\",\n          \"legendFormat\": \"\",\n          \"\
-    refId\": \"K\"\n        },\n        {\n          \"datasource\": {\n         \
-    \   \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n      \
-    \    },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_fs_limit_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",device=~\\\"\
-    ^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"}) by (node)\",\n          \"\
-    format\": \"table\",\n          \"hide\": false,\n          \"instant\": true,\n\
-    \          \"interval\": \"\",\n          \"legendFormat\": \"\",\n          \"\
-    refId\": \"L\"\n        },\n        {\n          \"datasource\": {\n         \
-    \   \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n      \
-    \    },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"})by (node) / sum(kube_node_status_allocatable{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
-    memory\\\", unit=\\\"byte\\\", node=~\\\"^$Node$\\\"})by (node)\",\n         \
-    \ \"format\": \"table\",\n          \"hide\": false,\n          \"instant\": true,\n\
-    \          \"interval\": \"\",\n          \"legendFormat\": \"内存使用%\",\n     \
-    \     \"refId\": \"M\"\n        },\n        {\n          \"datasource\": {\n \
-    \           \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n\
-    \          },\n          \"exemplar\": false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \    },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_fs_usage_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"}) by (node)\"\
+    ,\n          \"format\": \"table\",\n          \"hide\": false,\n          \"\
+    instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\": \"\
+    \",\n          \"refId\": \"K\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_fs_limit_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"}) by (node)\"\
+    ,\n          \"format\": \"table\",\n          \"hide\": false,\n          \"\
+    instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\": \"\
+    \",\n          \"refId\": \"L\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"})by (node)\
+    \ / sum(kube_node_status_allocatable{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
+    \"${environment:regex}\\\",resource=\\\"memory\\\", unit=\\\"byte\\\", node=~\\\
+    \"^$Node$\\\"})by (node)\",\n          \"format\": \"table\",\n          \"hide\"\
+    : false,\n          \"instant\": true,\n          \"interval\": \"\",\n      \
+    \    \"legendFormat\": \"内存使用%\",\n          \"refId\": \"M\"\n        },\n  \
+    \      {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n\
+    \            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
+    : false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     memory\\\", unit=\\\"byte\\\",node=~\\\"^$Node$\\\"})by (node) / sum(kube_node_status_allocatable{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
@@ -1068,16 +1073,17 @@ data:
     \          \"interval\": \"\",\n          \"legendFormat\": \"内存限制%\",\n     \
     \     \"refId\": \"O\"\n        },\n        {\n          \"datasource\": {\n \
     \           \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n\
-    \          },\n          \"exemplar\": false,\n          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container!=\\\
-    \"\\\",node=~\\\"^$Node$\\\"}[2m]))by (node) / sum(kube_node_status_allocatable{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
-    cpu\\\", unit=\\\"core\\\", node=~\\\"^$Node$\\\"})by (node)\",\n          \"\
-    format\": \"table\",\n          \"hide\": false,\n          \"instant\": true,\n\
-    \          \"interval\": \"\",\n          \"legendFormat\": \"CPU使用%\",\n    \
-    \      \"refId\": \"P\"\n        },\n        {\n          \"datasource\": {\n\
-    \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \          },\n          \"exemplar\": false,\n          \"expr\": \"sum (irate(container_cpu_usage_seconds_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container!=\\\"\\\",node=~\\\"^$Node$\\\",container!=\\\"POD\\\"}[2m]))by (node)\
+    \ / sum(kube_node_status_allocatable{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
+    \"${environment:regex}\\\",resource=\\\"cpu\\\", unit=\\\"core\\\", node=~\\\"\
+    ^$Node$\\\"})by (node)\",\n          \"format\": \"table\",\n          \"hide\"\
+    : false,\n          \"instant\": true,\n          \"interval\": \"\",\n      \
+    \    \"legendFormat\": \"CPU使用%\",\n          \"refId\": \"P\"\n        },\n \
+    \       {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n\
+    \            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
+    : false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     cpu\\\", unit=\\\"core\\\",node=~\\\"^$Node$\\\"})by (node) / sum(kube_node_status_allocatable{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
@@ -1095,16 +1101,17 @@ data:
     \          \"interval\": \"\",\n          \"legendFormat\": \"内存限制%\",\n     \
     \     \"refId\": \"R\"\n        },\n        {\n          \"datasource\": {\n \
     \           \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n\
-    \          },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_fs_usage_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",device=~\\\"\
-    ^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"})by (node) / sum (container_fs_limit_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",device=~\\\"\
-    ^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"})by (node)\",\n          \"format\"\
-    : \"table\",\n          \"hide\": false,\n          \"instant\": true,\n     \
-    \     \"interval\": \"\",\n          \"legendFormat\": \"磁盘使用%\",\n          \"\
-    refId\": \"S\"\n        },\n        {\n          \"datasource\": {\n         \
-    \   \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n      \
-    \    },\n          \"exemplar\": false,\n          \"expr\": \"sum(kube_node_status_allocatable{cluster=~\\\
+    \          },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_fs_usage_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",device=~\\\"^/dev/.*$\\\",id=\\\"/\\\",node=~\\\"^$Node$\\\"})by (node) / sum\
+    \ (container_fs_limit_bytes{job=\\\"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",device=~\\\"^/dev/.*$\\\",id=\\\"\
+    /\\\",node=~\\\"^$Node$\\\"})by (node)\",\n          \"format\": \"table\",\n\
+    \          \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
+    : \"\",\n          \"legendFormat\": \"磁盘使用%\",\n          \"refId\": \"S\"\n\
+    \        },\n        {\n          \"datasource\": {\n            \"type\": \"\
+    prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n        \
+    \  \"exemplar\": false,\n          \"expr\": \"sum(kube_node_status_allocatable{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     pods\\\", unit=\\\"integer\\\",node=~\\\"^$Node$\\\"})by (node)\",\n         \
     \ \"format\": \"table\",\n          \"hide\": false,\n          \"instant\": true,\n\
@@ -1308,13 +1315,13 @@ data:
     : \"10.4.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
     \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
     \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": true,\n\
-    \          \"expr\": \"sum(irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container !=\\\
-    \"\\\",container!=\\\"POD\\\"}[2m])) by (namespace)>0.5\",\n          \"hide\"\
-    : false,\n          \"instant\": false,\n          \"interval\": \"\",\n     \
-    \     \"intervalFactor\": 1,\n          \"legendFormat\": \"{{ namespace }}\"\
-    ,\n          \"metric\": \"container_cpu\",\n          \"refId\": \"A\",\n   \
-    \       \"step\": 10\n        }\n      ],\n      \"title\": \"各命名空间CPU使用核(>0.5)\"\
+    \          \"expr\": \"sum(irate(container_cpu_usage_seconds_total{job=\\\"cadvisor\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,container !=\\\"\\\",container!=\\\"POD\\\"}[2m])) by (namespace)>0.5\",\n  \
+    \        \"hide\": false,\n          \"instant\": false,\n          \"interval\"\
+    : \"\",\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"{{ namespace\
+    \ }}\",\n          \"metric\": \"container_cpu\",\n          \"refId\": \"A\"\
+    ,\n          \"step\": 10\n        }\n      ],\n      \"title\": \"各命名空间CPU使用核(>0.5)\"\
     ,\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n  \
     \      \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n\
     \      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n \
@@ -1348,11 +1355,11 @@ data:
     \      },\n      \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n      \
     \  {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n   \
     \         \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\":\
-    \ \"code\",\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container !=\\\
-    \"\\\",container!=\\\"POD\\\"}) by (namespace) > 1*1024*1024*1024\",\n       \
-    \   \"interval\": \"\",\n          \"intervalFactor\": 1,\n          \"legendFormat\"\
-    : \"{{namespace} {{ pod }}\",\n          \"metric\": \"container_memory_usage:sort_desc\"\
+    \ \"code\",\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container !=\\\"\\\",container!=\\\"POD\\\"}) by (namespace) > 1*1024*1024*1024\"\
+    ,\n          \"interval\": \"\",\n          \"intervalFactor\": 1,\n         \
+    \ \"legendFormat\": \"{{namespace} {{ pod }}\",\n          \"metric\": \"container_memory_usage:sort_desc\"\
     ,\n          \"range\": true,\n          \"refId\": \"A\",\n          \"step\"\
     : 10\n        }\n      ],\n      \"title\": \"命名空间WSS内存使用(>1G)\",\n      \"type\"\
     : \"timeseries\"\n    },\n    {\n      \"collapsed\": false,\n      \"datasource\"\
@@ -1514,28 +1521,29 @@ data:
     \    ]\n      },\n      \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n\
     \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"sum(irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
+    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"sum(irate(container_cpu_usage_seconds_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\
+    \"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by (container,\
+    \ pod,node,namespace) / (sum(kube_pod_container_resource_limits{cluster=~\\\"\
+    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
     \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by (container, pod,node,namespace)\
-    \ / (sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\"\
-    ,environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
-    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\",resource=\\\"cpu\\\",unit=\\\"core\\\"}) by (container,\
-    \ pod,node,namespace)) \",\n          \"format\": \"table\",\n          \"hide\"\
+    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"cpu\\\",unit=\\\
+    \"core\\\"}) by (container, pod,node,namespace)) \",\n          \"format\": \"\
+    table\",\n          \"hide\": false,\n          \"instant\": true,\n         \
+    \ \"interval\": \"\",\n          \"legendFormat\": \"\",\n          \"refId\"\
+    : \"A\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
+    : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
+    \      \"exemplar\": false,\n          \"expr\": \"sum(irate(container_cpu_usage_seconds_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\
+    \"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by (container,\
+    \ pod,node,namespace)\",\n          \"format\": \"table\",\n          \"hide\"\
     : false,\n          \"instant\": true,\n          \"interval\": \"\",\n      \
-    \    \"legendFormat\": \"\",\n          \"refId\": \"A\"\n        },\n       \
-    \ {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n    \
-    \        \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\": false,\n\
-    \          \"expr\": \"sum(irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by (container, pod,node,namespace)\"\
-    ,\n          \"format\": \"table\",\n          \"hide\": false,\n          \"\
-    instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\": \"\
-    CPU核数使用\",\n          \"refId\": \"Q\"\n        },\n        {\n          \"datasource\"\
-    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \    \"legendFormat\": \"CPU核数使用\",\n          \"refId\": \"Q\"\n        },\n\
+    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
+    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
+    : false,\n          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
     cpu\\\", unit=\\\"core\\\",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",node=~\\\
     \"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container,pod,node,namespace)\"\
@@ -1552,47 +1560,48 @@ data:
     C\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
     : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
     \      \"editorMode\": \"code\",\n          \"exemplar\": false,\n          \"\
-    expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
-    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)/ sum(kube_pod_container_resource_limits{cluster=~\\\
+    expr\": \"sum (container_memory_working_set_bytes{job=\\\"cadvisor\\\",cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
     \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"memory\\\",unit=\\\
-    \"byte\\\"}) by (container, pod,node,namespace)\",\n          \"format\": \"table\"\
-    ,\n          \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"wss%\",\n          \"refId\": \"I\"\n \
-    \       },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
-    : false,\n          \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)\"\
+    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)/\
+    \ sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
+    \"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container\
+    \ !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\
+    \",resource=\\\"memory\\\",unit=\\\"byte\\\"}) by (container, pod,node,namespace)\"\
     ,\n          \"format\": \"table\",\n          \"hide\": false,\n          \"\
     instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\": \"\
-    wss\",\n          \"refId\": \"D\"\n        },\n        {\n          \"datasource\"\
+    wss%\",\n          \"refId\": \"I\"\n        },\n        {\n          \"datasource\"\
     : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
-    \          \"expr\": \"sum (container_memory_rss{cluster=~\\\"${cluster:regex}\\\
+    \n          },\n          \"exemplar\": false,\n          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\
+    \"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container,\
+    \ pod,node,namespace)\",\n          \"format\": \"table\",\n          \"hide\"\
+    : false,\n          \"instant\": true,\n          \"interval\": \"\",\n      \
+    \    \"legendFormat\": \"wss\",\n          \"refId\": \"D\"\n        },\n    \
+    \    {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n \
+    \           \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
+    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"sum (container_memory_rss{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\
+    \"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container,\
+    \ pod,node,namespace)/ sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\
     \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
     $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)/ sum(kube_pod_container_resource_limits{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"memory\\\",unit=\\\
-    \"byte\\\"}) by (container, pod,node,namespace)\",\n          \"format\": \"table\"\
-    ,\n          \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"rss%\",\n          \"refId\": \"L\"\n \
+    \",namespace=~\\\"$NameSpace\\\",resource=\\\"memory\\\",unit=\\\"byte\\\"}) by\
+    \ (container, pod,node,namespace)\",\n          \"format\": \"table\",\n     \
+    \     \"hide\": false,\n          \"instant\": true,\n          \"interval\":\
+    \ \"\",\n          \"legendFormat\": \"rss%\",\n          \"refId\": \"L\"\n \
     \       },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"exemplar\"\
-    : false,\n          \"expr\": \"sum (container_memory_rss{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
-    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)\",\n   \
-    \       \"format\": \"table\",\n          \"hide\": false,\n          \"instant\"\
-    : true,\n          \"interval\": \"\",\n          \"legendFormat\": \"rss\",\n\
-    \          \"refId\": \"K\"\n        },\n        {\n          \"datasource\":\
-    \ {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    : false,\n          \"expr\": \"sum (container_memory_rss{job=\\\"cadvisor\\\"\
+    ,cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\
+    \"$Pod\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"\
+    POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)\"\
+    ,\n          \"format\": \"table\",\n          \"hide\": false,\n          \"\
+    instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\": \"\
+    rss\",\n          \"refId\": \"K\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
     \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
     \          \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\"\
     ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"memory\\\
@@ -1611,87 +1620,89 @@ data:
     \",\n          \"refId\": \"F\"\n        },\n        {\n          \"datasource\"\
     : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
     \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
-    \          \"expr\": \"sum(container_fs_usage_bytes{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
-    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}) by (container,pod,node,namespace)\",\n    \
-    \      \"format\": \"table\",\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"\",\n          \"refId\": \"J\"\n     \
-    \   },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"kube_pod_container_status_restarts_total{cluster=~\\\
+    \          \"expr\": \"sum(container_fs_usage_bytes{job=\\\"cadvisor\\\",cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
     \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,namespace=~\\\"$NameSpace\\\"} * on(pod,namespace) group_left(node) kube_pod_info{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}\",\n          \"format\"\
-    : \"table\",\n          \"hide\": false,\n          \"instant\": true,\n     \
-    \     \"interval\": \"\",\n          \"legendFormat\": \"\",\n          \"refId\"\
-    : \"H\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
+    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container,pod,node,namespace)\"\
+    ,\n          \"format\": \"table\",\n          \"instant\": true,\n          \"\
+    interval\": \"\",\n          \"legendFormat\": \"\",\n          \"refId\": \"\
+    J\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
     : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
     \      \"editorMode\": \"code\",\n          \"exemplar\": false,\n          \"\
-    expr\": \"time() - kube_pod_created{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
-    \"${environment:regex}\\\",pod=~\\\"$Pod\\\",namespace=~\\\"$NameSpace\\\"} *\
-    \ on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",namespace=~\\\"\
-    $NameSpace\\\",container =~\\\"$Container\\\"}\",\n          \"format\": \"table\"\
-    ,\n          \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"__auto\",\n          \"refId\": \"R\"\n\
-    \        },\n        {\n          \"datasource\": {\n            \"type\": \"\
-    prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n        \
-    \  \"editorMode\": \"code\",\n          \"exemplar\": false,\n          \"expr\"\
-    : \"sum(container_fs_limit_bytes{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
-    \"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container\
-    \ !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\
-    \"}) by (container,pod,node,namespace)\",\n          \"format\": \"table\",\n\
-    \          \"hide\": false,\n          \"instant\": true,\n          \"interval\"\
-    : \"\",\n          \"legendFormat\": \"\",\n          \"refId\": \"S\"\n     \
+    expr\": \"kube_pod_container_status_restarts_total{cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
+    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
+    \"} * on(pod,namespace) group_left(node) kube_pod_info{cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\
+    \",namespace=~\\\"$NameSpace\\\"}\",\n          \"format\": \"table\",\n     \
+    \     \"hide\": false,\n          \"instant\": true,\n          \"interval\":\
+    \ \"\",\n          \"legendFormat\": \"\",\n          \"refId\": \"H\"\n     \
     \   },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"sum(sum(irate(container_network_receive_bytes_total{cluster=~\\\
+    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"time() - kube_pod_created{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by(pod,namespace)*\
-    \ on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",namespace=~\\\"\
-    $NameSpace\\\",container =~\\\"$Container\\\"}) by(pod,namespace) *8\",\n    \
-    \      \"format\": \"table\",\n          \"hide\": false,\n          \"instant\"\
-    : true,\n          \"interval\": \"\",\n          \"legendFormat\": \"__auto\"\
-    ,\n          \"refId\": \"T\"\n        },\n        {\n          \"datasource\"\
+    \",namespace=~\\\"$NameSpace\\\"} * on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
+    \",namespace=~\\\"$NameSpace\\\",container =~\\\"$Container\\\"}\",\n        \
+    \  \"format\": \"table\",\n          \"hide\": false,\n          \"instant\":\
+    \ true,\n          \"interval\": \"\",\n          \"legendFormat\": \"__auto\"\
+    ,\n          \"refId\": \"R\"\n        },\n        {\n          \"datasource\"\
     : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
     \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
-    \          \"expr\": \"sum(sum(irate(container_network_transmit_bytes_total{cluster=~\\\
+    \          \"expr\": \"sum(container_fs_limit_bytes{job=\\\"cadvisor\\\",cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by(pod,namespace)*\
-    \ on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",namespace=~\\\"\
-    $NameSpace\\\",container =~\\\"$Container\\\"}) by(pod,namespace) *8\",\n    \
-    \      \"format\": \"table\",\n          \"hide\": false,\n          \"instant\"\
-    : true,\n          \"interval\": \"\",\n          \"legendFormat\": \"__auto\"\
-    ,\n          \"refId\": \"U\"\n        }\n      ],\n      \"title\": \"$Node：Pod资源明细(可关联节点)\"\
-    ,\n      \"transformations\": [\n        {\n          \"id\": \"merge\",\n   \
-    \       \"options\": {}\n        },\n        {\n          \"id\": \"organize\"\
-    ,\n          \"options\": {\n            \"excludeByName\": {\n              \"\
-    Time\": true,\n              \"Time 1\": true,\n              \"Time 10\": true,\n\
-    \              \"Time 11\": true,\n              \"Time 12\": true,\n        \
-    \      \"Time 13\": true,\n              \"Time 2\": true,\n              \"Time\
-    \ 3\": true,\n              \"Time 4\": true,\n              \"Time 5\": true,\n\
-    \              \"Time 6\": true,\n              \"Time 7\": true,\n          \
-    \    \"Time 8\": true,\n              \"Time 9\": true,\n              \"Value\
-    \ #G\": false,\n              \"__name__\": true,\n              \"app_kubernetes_io_name\"\
-    : true,\n              \"app_kubernetes_io_name 1\": true,\n              \"app_kubernetes_io_name\
-    \ 2\": true,\n              \"app_kubernetes_io_version\": true,\n           \
-    \   \"app_kubernetes_io_version 1\": true,\n              \"app_kubernetes_io_version\
-    \ 2\": true,\n              \"container 1\": true,\n              \"container\
-    \ 10\": true,\n              \"container 11\": true,\n              \"container\
-    \ 12\": true,\n              \"container 2\": true,\n              \"container\
-    \ 3\": true,\n              \"container 4\": true,\n              \"container\
-    \ 5\": true,\n              \"container 6\": true,\n              \"container\
-    \ 7\": true,\n              \"container 8\": true,\n              \"container\
-    \ 9\": true,\n              \"created_by_kind\": true,\n              \"created_by_name\"\
-    : true,\n              \"host_ip\": true,\n              \"instance\": true,\n\
-    \              \"instance 1\": true,\n              \"instance 2\": true,\n  \
-    \            \"job\": true,\n              \"job 1\": true,\n              \"\
-    job 2\": true,\n              \"k8s_namespace\": true,\n              \"k8s_namespace\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container,pod,node,namespace)\"\
+    ,\n          \"format\": \"table\",\n          \"hide\": false,\n          \"\
+    instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\": \"\
+    \",\n          \"refId\": \"S\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
+    \          \"expr\": \"sum(sum(irate(container_network_receive_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m]))\
+    \ by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
+    \",namespace=~\\\"$NameSpace\\\",container =~\\\"$Container\\\"}) by(pod,namespace)\
+    \ *8\",\n          \"format\": \"table\",\n          \"hide\": false,\n      \
+    \    \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
+    : \"__auto\",\n          \"refId\": \"T\"\n        },\n        {\n          \"\
+    datasource\": {\n            \"type\": \"prometheus\",\n            \"uid\": \"\
+    ${DS_METRICS}\"\n          },\n          \"editorMode\": \"code\",\n         \
+    \ \"exemplar\": false,\n          \"expr\": \"sum(sum(irate(container_network_transmit_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m]))\
+    \ by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
+    \",namespace=~\\\"$NameSpace\\\",container =~\\\"$Container\\\"}) by(pod,namespace)\
+    \ *8\",\n          \"format\": \"table\",\n          \"hide\": false,\n      \
+    \    \"instant\": true,\n          \"interval\": \"\",\n          \"legendFormat\"\
+    : \"__auto\",\n          \"refId\": \"U\"\n        }\n      ],\n      \"title\"\
+    : \"$Node：Pod资源明细(可关联节点)\",\n      \"transformations\": [\n        {\n       \
+    \   \"id\": \"merge\",\n          \"options\": {}\n        },\n        {\n   \
+    \       \"id\": \"organize\",\n          \"options\": {\n            \"excludeByName\"\
+    : {\n              \"Time\": true,\n              \"Time 1\": true,\n        \
+    \      \"Time 10\": true,\n              \"Time 11\": true,\n              \"\
+    Time 12\": true,\n              \"Time 13\": true,\n              \"Time 2\":\
+    \ true,\n              \"Time 3\": true,\n              \"Time 4\": true,\n  \
+    \            \"Time 5\": true,\n              \"Time 6\": true,\n            \
+    \  \"Time 7\": true,\n              \"Time 8\": true,\n              \"Time 9\"\
+    : true,\n              \"Value #G\": false,\n              \"__name__\": true,\n\
+    \              \"app_kubernetes_io_name\": true,\n              \"app_kubernetes_io_name\
+    \ 1\": true,\n              \"app_kubernetes_io_name 2\": true,\n            \
+    \  \"app_kubernetes_io_version\": true,\n              \"app_kubernetes_io_version\
+    \ 1\": true,\n              \"app_kubernetes_io_version 2\": true,\n         \
+    \     \"container 1\": true,\n              \"container 10\": true,\n        \
+    \      \"container 11\": true,\n              \"container 12\": true,\n      \
+    \        \"container 2\": true,\n              \"container 3\": true,\n      \
+    \        \"container 4\": true,\n              \"container 5\": true,\n      \
+    \        \"container 6\": true,\n              \"container 7\": true,\n      \
+    \        \"container 8\": true,\n              \"container 9\": true,\n      \
+    \        \"created_by_kind\": true,\n              \"created_by_name\": true,\n\
+    \              \"host_ip\": true,\n              \"instance\": true,\n       \
+    \       \"instance 1\": true,\n              \"instance 2\": true,\n         \
+    \     \"job\": true,\n              \"job 1\": true,\n              \"job 2\"\
+    : true,\n              \"k8s_namespace\": true,\n              \"k8s_namespace\
     \ 1\": true,\n              \"k8s_namespace 2\": true,\n              \"k8s_sname\"\
     : true,\n              \"k8s_sname 1\": true,\n              \"k8s_sname 2\":\
     \ true,\n              \"namespace\": false,\n              \"namespace 1\": true,\n\
@@ -1780,12 +1791,12 @@ data:
     \   },\n      \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n        {\n\
     \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
     \    \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\": \"code\"\
-    ,\n          \"exemplar\": true,\n          \"expr\": \"max(irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by (container, pod)\
-    \ / (max(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\"\
-    ,environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
+    ,\n          \"exemplar\": true,\n          \"expr\": \"max(irate(container_cpu_usage_seconds_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\
+    \"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by (container,\
+    \ pod) / (max(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
     $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
     \",namespace=~\\\"$NameSpace\\\",resource=\\\"cpu\\\",unit=\\\"core\\\"}) by (container,\
     \ pod)) * 100\",\n          \"hide\": false,\n          \"instant\": false,\n\
@@ -1825,20 +1836,21 @@ data:
     \     \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n        {\n      \
     \    \"datasource\": {\n            \"type\": \"prometheus\",\n            \"\
     uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\": \"code\",\n\
-    \          \"exemplar\": false,\n          \"expr\": \"max (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container, pod)/ max(kube_pod_container_resource_limits{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"memory\\\",unit=\\\
-    \"byte\\\"}) by (container, pod) * 100\",\n          \"interval\": \"\",\n   \
-    \       \"intervalFactor\": 1,\n          \"legendFormat\": \"WSS：{{ pod }}\"\
-    ,\n          \"metric\": \"container_memory_usage:sort_desc\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\",\n          \"step\": 10\n        },\n   \
-    \     {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n\
-    \            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"max (container_memory_rss{cluster=~\\\
+    \          \"exemplar\": false,\n          \"expr\": \"max (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\
+    \"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container,\
+    \ pod)/ max(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
+    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
+    \",namespace=~\\\"$NameSpace\\\",resource=\\\"memory\\\",unit=\\\"byte\\\"}) by\
+    \ (container, pod) * 100\",\n          \"interval\": \"\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"WSS：{{ pod }}\",\n          \"metric\": \"\
+    container_memory_usage:sort_desc\",\n          \"range\": true,\n          \"\
+    refId\": \"A\",\n          \"step\": 10\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
+    \          \"expr\": \"max (container_memory_rss{job=\\\"cadvisor\\\",cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
     \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
     ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container, pod)/ max(kube_pod_container_resource_limits{cluster=~\\\
@@ -1882,42 +1894,43 @@ data:
     \     \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n        {\n      \
     \    \"datasource\": {\n            \"type\": \"prometheus\",\n            \"\
     uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\": \"code\",\n\
-    \          \"exemplar\": false,\n          \"expr\": \"max(max(irate(container_network_receive_bytes_total{cluster=~\\\
+    \          \"exemplar\": false,\n          \"expr\": \"max(max(irate(container_network_receive_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m]))\
+    \ by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by(pod,namespace)*\
-    \ on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",namespace=~\\\"\
-    $NameSpace\\\",container =~\\\"$Container\\\"}) by(pod,namespace) *8\",\n    \
-    \      \"hide\": false,\n          \"interval\": \"\",\n          \"intervalFactor\"\
-    : 1,\n          \"legendFormat\": \"流入:{{ pod}}\",\n          \"metric\": \"network\"\
-    ,\n          \"range\": true,\n          \"refId\": \"A\",\n          \"step\"\
+    \",namespace=~\\\"$NameSpace\\\",container =~\\\"$Container\\\"}) by(pod,namespace)\
+    \ *8\",\n          \"hide\": false,\n          \"interval\": \"\",\n         \
+    \ \"intervalFactor\": 1,\n          \"legendFormat\": \"流入:{{ pod}}\",\n     \
+    \     \"metric\": \"network\",\n          \"range\": true,\n          \"refId\"\
+    : \"A\",\n          \"step\": 10\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
+    \          \"expr\": \"max(max(irate(container_network_transmit_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m]))\
+    \ by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
+    \",namespace=~\\\"$NameSpace\\\",container =~\\\"$Container\\\"}) by(pod,namespace)\
+    \ *8\",\n          \"interval\": \"\",\n          \"intervalFactor\": 1,\n   \
+    \       \"legendFormat\": \"流出:{{ pod}}\",\n          \"metric\": \"network\"\
+    ,\n          \"range\": true,\n          \"refId\": \"B\",\n          \"step\"\
     : 10\n        },\n        {\n          \"datasource\": {\n            \"type\"\
     : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
-    \      \"editorMode\": \"code\",\n          \"exemplar\": false,\n          \"\
-    expr\": \"max(max(irate(container_network_transmit_bytes_total{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}[2m])) by(pod,namespace)* on(pod,namespace) group_right\
-    \ kube_pod_container_info{cluster=~\\\"${cluster:regex}\\\",environment=~\\\"\
-    ${environment:regex}\\\",pod=~\\\"$Pod\\\",namespace=~\\\"$NameSpace\\\",container\
-    \ =~\\\"$Container\\\"}) by(pod,namespace) *8\",\n          \"interval\": \"\"\
-    ,\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"流出:{{ pod}}\"\
-    ,\n          \"metric\": \"network\",\n          \"range\": true,\n          \"\
-    refId\": \"B\",\n          \"step\": 10\n        },\n        {\n          \"datasource\"\
-    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"editorMode\": \"code\",\n          \"expr\": \"sum(sum(irate(container_network_receive_bytes_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",pod=~\\\".*$Container.*\\\
-    \"}[2m])) by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
+    \      \"editorMode\": \"code\",\n          \"expr\": \"sum(sum(irate(container_network_receive_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",pod=~\\\
+    \".*$Container.*\\\"}[2m])) by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"}) by(pod,namespace)\
     \ *8\",\n          \"hide\": true,\n          \"interval\": \"\",\n          \"\
     intervalFactor\": 1,\n          \"legendFormat\": \"__auto\",\n          \"metric\"\
     : \"network\",\n          \"range\": true,\n          \"refId\": \"C\",\n    \
     \      \"step\": 10\n        },\n        {\n          \"datasource\": {\n    \
     \        \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n \
-    \         },\n          \"editorMode\": \"code\",\n          \"expr\": \"sum(sum(irate(container_network_transmit_bytes_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",pod=~\\\".*$Container.*\\\
-    \"}[2m])) by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
+    \         },\n          \"editorMode\": \"code\",\n          \"expr\": \"sum(sum(irate(container_network_transmit_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",pod=~\\\
+    \".*$Container.*\\\"}[2m])) by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"}) by(pod,namespace)\
     \ *8\",\n          \"hide\": true,\n          \"interval\": \"\",\n          \"\
     intervalFactor\": 1,\n          \"legendFormat\": \"__auto\",\n          \"metric\"\
@@ -1962,11 +1975,11 @@ data:
     targets\": [\n        {\n          \"datasource\": {\n            \"type\": \"\
     prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n        \
     \  \"editorMode\": \"code\",\n          \"exemplar\": true,\n          \"expr\"\
-    : \"max(irate(container_cpu_usage_seconds_total{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
-    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}[2m])) by (container, pod,node,namespace)\",\n\
-    \          \"hide\": false,\n          \"instant\": false,\n          \"interval\"\
+    : \"max(irate(container_cpu_usage_seconds_total{job=\\\"cadvisor\\\",cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by (container, pod,node,namespace)\"\
+    ,\n          \"hide\": false,\n          \"instant\": false,\n          \"interval\"\
     : \"\",\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"CPU使用：{{\
     \ pod }}\",\n          \"metric\": \"container_cpu\",\n          \"refId\": \"\
     A\",\n          \"step\": 10\n        },\n        {\n          \"datasource\"\
@@ -2019,31 +2032,31 @@ data:
     \     \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n        {\n      \
     \    \"datasource\": {\n            \"type\": \"prometheus\",\n            \"\
     uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\": \"code\",\n\
-    \          \"exemplar\": false,\n          \"expr\": \"max (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
-    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)\"\
-    ,\n          \"interval\": \"\",\n          \"intervalFactor\": 1,\n         \
-    \ \"legendFormat\": \"WSS：{{ pod }}\",\n          \"metric\": \"container_memory_usage:sort_desc\"\
-    ,\n          \"range\": true,\n          \"refId\": \"A\",\n          \"step\"\
-    : 10\n        },\n        {\n          \"datasource\": {\n            \"type\"\
-    : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
-    \      \"editorMode\": \"code\",\n          \"exemplar\": false,\n          \"\
-    expr\": \"max(max(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",resource=\\\"memory\\\", unit=\\\"\
-    byte\\\",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",node=~\\\"^$Node$\\\"\
-    ,namespace=~\\\"$NameSpace\\\"}) by (container,pod,node,namespace)) by(container)\"\
-    ,\n          \"hide\": false,\n          \"interval\": \"\",\n          \"intervalFactor\"\
-    : 1,\n          \"legendFormat\": \"Pod内存限制：{{ container}}\",\n          \"metric\"\
-    : \"container_memory_usage:sort_desc\",\n          \"range\": true,\n        \
-    \  \"refId\": \"B\",\n          \"step\": 10\n        }\n      ],\n      \"title\"\
-    : \"Pod容器WSS内存使用(可关联节点)\",\n      \"type\": \"timeseries\"\n    },\n    {\n  \
-    \    \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"\
-    ${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n\
-    \          \"color\": {\n            \"mode\": \"palette-classic\"\n         \
-    \ },\n          \"custom\": {\n            \"axisBorderShow\": false,\n      \
-    \      \"axisCenteredZero\": false,\n            \"axisColorMode\": \"text\",\n\
-    \            \"axisLabel\": \"\",\n            \"axisPlacement\": \"auto\",\n\
+    \          \"exemplar\": false,\n          \"expr\": \"max (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\
+    \"POD\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container,\
+    \ pod,node,namespace)\",\n          \"interval\": \"\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"WSS：{{ pod }}\",\n          \"metric\": \"\
+    container_memory_usage:sort_desc\",\n          \"range\": true,\n          \"\
+    refId\": \"A\",\n          \"step\": 10\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
+    \          \"expr\": \"max(max(kube_pod_container_resource_limits{cluster=~\\\"\
+    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"memory\\\
+    \", unit=\\\"byte\\\",pod=~\\\"$Pod\\\",container =~\\\"$Container\\\",node=~\\\
+    \"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container,pod,node,namespace))\
+    \ by(container)\",\n          \"hide\": false,\n          \"interval\": \"\",\n\
+    \          \"intervalFactor\": 1,\n          \"legendFormat\": \"Pod内存限制：{{ container}}\"\
+    ,\n          \"metric\": \"container_memory_usage:sort_desc\",\n          \"range\"\
+    : true,\n          \"refId\": \"B\",\n          \"step\": 10\n        }\n    \
+    \  ],\n      \"title\": \"Pod容器WSS内存使用(可关联节点)\",\n      \"type\": \"timeseries\"\
+    \n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n\
+    \        \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n    \
+    \    \"defaults\": {\n          \"color\": {\n            \"mode\": \"palette-classic\"\
+    \n          },\n          \"custom\": {\n            \"axisBorderShow\": false,\n\
+    \            \"axisCenteredZero\": false,\n            \"axisColorMode\": \"text\"\
+    ,\n            \"axisLabel\": \"\",\n            \"axisPlacement\": \"auto\",\n\
     \            \"barAlignment\": 0,\n            \"drawStyle\": \"line\",\n    \
     \        \"fillOpacity\": 0,\n            \"gradientMode\": \"none\",\n      \
     \      \"hideFrom\": {\n              \"legend\": false,\n              \"tooltip\"\
@@ -2070,12 +2083,12 @@ data:
     : \"10.4.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
     \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
     \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": true,\n\
-    \          \"expr\": \"max (container_memory_rss{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",container =~\\\"\
-    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)\",\n   \
-    \       \"interval\": \"\",\n          \"intervalFactor\": 1,\n          \"legendFormat\"\
-    : \"RSS：{{ pod }}\",\n          \"metric\": \"container_memory_usage:sort_desc\"\
+    \          \"expr\": \"max (container_memory_rss{job=\\\"cadvisor\\\",cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}) by (container, pod,node,namespace)\"\
+    ,\n          \"interval\": \"\",\n          \"intervalFactor\": 1,\n         \
+    \ \"legendFormat\": \"RSS：{{ pod }}\",\n          \"metric\": \"container_memory_usage:sort_desc\"\
     ,\n          \"range\": true,\n          \"refId\": \"A\",\n          \"step\"\
     : 10\n        }\n      ],\n      \"title\": \"Pod容器RSS内存使用(可关联节点)\",\n      \"\
     type\": \"timeseries\"\n    },\n    {\n      \"collapsed\": true,\n      \"datasource\"\
@@ -2228,10 +2241,10 @@ data:
     : [\n            {\n              \"datasource\": {\n                \"type\"\
     : \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n              },\n\
     \              \"editorMode\": \"code\",\n              \"exemplar\": false,\n\
-    \              \"expr\": \"sum(irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
-    \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
-    \"}[2m])) by (container) / (sum(kube_pod_container_resource_limits{cluster=~\\\
+    \              \"expr\": \"sum(irate(container_cpu_usage_seconds_total{job=\\\"\
+    cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,namespace=~\\\"$NameSpace\\\"}[2m])) by (container) / (sum(kube_pod_container_resource_limits{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
     \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
     \",resource=\\\"cpu\\\",unit=\\\"core\\\"}) by (container))\",\n             \
@@ -2240,185 +2253,187 @@ data:
     \",\n              \"refId\": \"A\"\n            },\n            {\n         \
     \     \"datasource\": {\n                \"type\": \"prometheus\",\n         \
     \       \"uid\": \"${DS_METRICS}\"\n              },\n              \"editorMode\"\
-    : \"code\",\n              \"exemplar\": false,\n              \"expr\": \"sum(irate(container_cpu_usage_seconds_total{cluster=~\\\
+    : \"code\",\n              \"exemplar\": false,\n              \"expr\": \"sum(irate(container_cpu_usage_seconds_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,namespace=~\\\"$NameSpace\\\"}[2m])) by (container)\",\n              \"format\"\
+    : \"table\",\n              \"hide\": false,\n              \"instant\": true,\n\
+    \              \"interval\": \"\",\n              \"legendFormat\": \"总核数使用\"\
+    ,\n              \"refId\": \"L\"\n            },\n            {\n           \
+    \   \"datasource\": {\n                \"type\": \"prometheus\",\n           \
+    \     \"uid\": \"${DS_METRICS}\"\n              },\n              \"exemplar\"\
+    : false,\n              \"expr\": \"sum(kube_pod_container_resource_requests{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
+    cpu\\\", unit=\\\"core\\\",container =~\\\"$Container\\\",container !=\\\"\\\"\
+    ,container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\",\n  \
+    \            \"format\": \"table\",\n              \"hide\": false,\n        \
+    \      \"instant\": true,\n              \"interval\": \"\",\n              \"\
+    legendFormat\": \"\",\n              \"refId\": \"B\"\n            },\n      \
+    \      {\n              \"datasource\": {\n                \"type\": \"prometheus\"\
+    ,\n                \"uid\": \"${DS_METRICS}\"\n              },\n            \
+    \  \"exemplar\": false,\n              \"expr\": \"sum(kube_pod_container_resource_limits{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
+    cpu\\\", unit=\\\"core\\\",container =~\\\"$Container\\\",container !=\\\"\\\"\
+    ,container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\",\n  \
+    \            \"format\": \"table\",\n              \"instant\": true,\n      \
+    \        \"interval\": \"\",\n              \"legendFormat\": \"\",\n        \
+    \      \"refId\": \"C\"\n            },\n            {\n              \"datasource\"\
+    : {\n                \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\
+    \n              },\n              \"editorMode\": \"code\",\n              \"\
+    exemplar\": false,\n              \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,namespace=~\\\"$NameSpace\\\"}) by (container)/ sum(kube_pod_container_resource_limits{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
     \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
-    \"}[2m])) by (container)\",\n              \"format\": \"table\",\n          \
-    \    \"hide\": false,\n              \"instant\": true,\n              \"interval\"\
-    : \"\",\n              \"legendFormat\": \"总核数使用\",\n              \"refId\":\
-    \ \"L\"\n            },\n            {\n              \"datasource\": {\n    \
-    \            \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\
-    \n              },\n              \"exemplar\": false,\n              \"expr\"\
-    : \"sum(kube_pod_container_resource_requests{cluster=~\\\"${cluster:regex}\\\"\
-    ,environment=~\\\"${environment:regex}\\\",resource=\\\"cpu\\\", unit=\\\"core\\\
+    \",resource=\\\"memory\\\",unit=\\\"byte\\\"}) by (container)\",\n           \
+    \   \"format\": \"table\",\n              \"hide\": false,\n              \"instant\"\
+    : true,\n              \"interval\": \"\",\n              \"legendFormat\": \"\
+    \",\n              \"refId\": \"I\"\n            },\n            {\n         \
+    \     \"datasource\": {\n                \"type\": \"prometheus\",\n         \
+    \       \"uid\": \"${DS_METRICS}\"\n              },\n              \"exemplar\"\
+    : false,\n              \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
     \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
     ,namespace=~\\\"$NameSpace\\\"}) by (container)\",\n              \"format\":\
     \ \"table\",\n              \"hide\": false,\n              \"instant\": true,\n\
     \              \"interval\": \"\",\n              \"legendFormat\": \"\",\n  \
-    \            \"refId\": \"B\"\n            },\n            {\n              \"\
+    \            \"refId\": \"D\"\n            },\n            {\n              \"\
     datasource\": {\n                \"type\": \"prometheus\",\n                \"\
-    uid\": \"${DS_METRICS}\"\n              },\n              \"exemplar\": false,\n\
-    \              \"expr\": \"sum(kube_pod_container_resource_limits{cluster=~\\\"\
-    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"cpu\\\
-    \", unit=\\\"core\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\
-    \"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\",\n              \"\
-    format\": \"table\",\n              \"instant\": true,\n              \"interval\"\
-    : \"\",\n              \"legendFormat\": \"\",\n              \"refId\": \"C\"\
-    \n            },\n            {\n              \"datasource\": {\n           \
-    \     \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n\
-    \              },\n              \"editorMode\": \"code\",\n              \"exemplar\"\
-    : false,\n              \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
+    uid\": \"${DS_METRICS}\"\n              },\n              \"editorMode\": \"code\"\
+    ,\n              \"exemplar\": false,\n              \"expr\": \"sum (container_memory_rss{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,namespace=~\\\"$NameSpace\\\"}) by (container)/ sum(kube_pod_container_resource_limits{cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
     \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
-    \"}) by (container)/ sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",container =~\\\"$Container\\\",container\
-    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"\
-    memory\\\",unit=\\\"byte\\\"}) by (container)\",\n              \"format\": \"\
-    table\",\n              \"hide\": false,\n              \"instant\": true,\n \
-    \             \"interval\": \"\",\n              \"legendFormat\": \"\",\n   \
-    \           \"refId\": \"I\"\n            },\n            {\n              \"\
-    datasource\": {\n                \"type\": \"prometheus\",\n                \"\
-    uid\": \"${DS_METRICS}\"\n              },\n              \"exemplar\": false,\n\
-    \              \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
-    \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
-    \"}) by (container)\",\n              \"format\": \"table\",\n              \"\
-    hide\": false,\n              \"instant\": true,\n              \"interval\":\
-    \ \"\",\n              \"legendFormat\": \"\",\n              \"refId\": \"D\"\
-    \n            },\n            {\n              \"datasource\": {\n           \
-    \     \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n\
-    \              },\n              \"editorMode\": \"code\",\n              \"exemplar\"\
-    : false,\n              \"expr\": \"sum (container_memory_rss{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",container =~\\\"$Container\\\",container\
-    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)/\
-    \ sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
-    \"${environment:regex}\\\",container =~\\\"$Container\\\",container !=\\\"\\\"\
-    ,container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"memory\\\"\
-    ,unit=\\\"byte\\\"}) by (container)\",\n              \"format\": \"table\",\n\
-    \              \"hide\": false,\n              \"instant\": true,\n          \
-    \    \"interval\": \"\",\n              \"legendFormat\": \"平均内存%(RSS)\",\n  \
-    \            \"refId\": \"H\"\n            },\n            {\n              \"\
-    datasource\": {\n                \"type\": \"prometheus\",\n                \"\
-    uid\": \"${DS_METRICS}\"\n              },\n              \"exemplar\": false,\n\
-    \              \"expr\": \"sum (container_memory_rss{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",container =~\\\"$Container\\\",container\
-    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\"\
-    ,\n              \"format\": \"table\",\n              \"hide\": false,\n    \
-    \          \"instant\": true,\n              \"interval\": \"\",\n           \
-    \   \"legendFormat\": \"总内存使用(RSS) \",\n              \"refId\": \"K\"\n     \
-    \       },\n            {\n              \"datasource\": {\n                \"\
-    type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n        \
-    \      },\n              \"editorMode\": \"code\",\n              \"exemplar\"\
-    : false,\n              \"expr\": \"sum by(container) (kube_pod_container_resource_requests{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
-    memory\\\", unit=\\\"byte\\\",container =~\\\"$Container\\\",container !=\\\"\\\
-    \",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"})\",\n              \"\
-    format\": \"table\",\n              \"hide\": false,\n              \"instant\"\
+    \",resource=\\\"memory\\\",unit=\\\"byte\\\"}) by (container)\",\n           \
+    \   \"format\": \"table\",\n              \"hide\": false,\n              \"instant\"\
     : true,\n              \"interval\": \"\",\n              \"legendFormat\": \"\
-    \",\n              \"refId\": \"E\"\n            },\n            {\n         \
-    \     \"datasource\": {\n                \"type\": \"prometheus\",\n         \
-    \       \"uid\": \"${DS_METRICS}\"\n              },\n              \"exemplar\"\
-    : false,\n              \"expr\": \"sum(kube_pod_container_resource_limits{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
-    memory\\\", unit=\\\"byte\\\",container =~\\\"$Container\\\",container !=\\\"\\\
-    \",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\",\n\
-    \              \"format\": \"table\",\n              \"hide\": false,\n      \
-    \        \"instant\": true,\n              \"interval\": \"\",\n             \
-    \ \"legendFormat\": \"\",\n              \"refId\": \"F\"\n            },\n  \
-    \          {\n              \"datasource\": {\n                \"type\": \"prometheus\"\
-    ,\n                \"uid\": \"${DS_METRICS}\"\n              },\n            \
-    \  \"editorMode\": \"code\",\n              \"exemplar\": false,\n           \
-    \   \"expr\": \"avg(container_fs_usage_bytes{cluster=~\\\"${cluster:regex}\\\"\
-    ,environment=~\\\"${environment:regex}\\\",container =~\\\"$Container\\\",container\
-    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\"\
-    ,\n              \"format\": \"table\",\n              \"instant\": true,\n  \
-    \            \"interval\": \"\",\n              \"legendFormat\": \"\",\n    \
-    \          \"refId\": \"J\"\n            },\n            {\n              \"datasource\"\
+    平均内存%(RSS)\",\n              \"refId\": \"H\"\n            },\n            {\n\
+    \              \"datasource\": {\n                \"type\": \"prometheus\",\n\
+    \                \"uid\": \"${DS_METRICS}\"\n              },\n              \"\
+    exemplar\": false,\n              \"expr\": \"sum (container_memory_rss{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,namespace=~\\\"$NameSpace\\\"}) by (container)\",\n              \"format\":\
+    \ \"table\",\n              \"hide\": false,\n              \"instant\": true,\n\
+    \              \"interval\": \"\",\n              \"legendFormat\": \"总内存使用(RSS)\
+    \ \",\n              \"refId\": \"K\"\n            },\n            {\n       \
+    \       \"datasource\": {\n                \"type\": \"prometheus\",\n       \
+    \         \"uid\": \"${DS_METRICS}\"\n              },\n              \"editorMode\"\
+    : \"code\",\n              \"exemplar\": false,\n              \"expr\": \"sum\
+    \ by(container) (kube_pod_container_resource_requests{cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",resource=\\\"memory\\\", unit=\\\"\
+    byte\\\",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\
+    \",namespace=~\\\"$NameSpace\\\"})\",\n              \"format\": \"table\",\n\
+    \              \"hide\": false,\n              \"instant\": true,\n          \
+    \    \"interval\": \"\",\n              \"legendFormat\": \"\",\n            \
+    \  \"refId\": \"E\"\n            },\n            {\n              \"datasource\"\
+    : {\n                \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\
+    \n              },\n              \"exemplar\": false,\n              \"expr\"\
+    : \"sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
+    \"${environment:regex}\\\",resource=\\\"memory\\\", unit=\\\"byte\\\",container\
+    \ =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\
+    \"$NameSpace\\\"}) by (container)\",\n              \"format\": \"table\",\n \
+    \             \"hide\": false,\n              \"instant\": true,\n           \
+    \   \"interval\": \"\",\n              \"legendFormat\": \"\",\n             \
+    \ \"refId\": \"F\"\n            },\n            {\n              \"datasource\"\
     : {\n                \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\
     \n              },\n              \"editorMode\": \"code\",\n              \"\
-    exemplar\": false,\n              \"expr\": \"count(kube_pod_container_info{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
-    \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
+    exemplar\": false,\n              \"expr\": \"avg(container_fs_usage_bytes{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,namespace=~\\\"$NameSpace\\\"}) by (container)\",\n              \"format\":\
+    \ \"table\",\n              \"instant\": true,\n              \"interval\": \"\
+    \",\n              \"legendFormat\": \"\",\n              \"refId\": \"J\"\n \
+    \           },\n            {\n              \"datasource\": {\n             \
+    \   \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n  \
+    \            },\n              \"editorMode\": \"code\",\n              \"exemplar\"\
+    : false,\n              \"expr\": \"count(kube_pod_container_info{cluster=~\\\"\
+    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\"\
+    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
     \"}) by(container,namespace)\",\n              \"format\": \"table\",\n      \
     \        \"instant\": true,\n              \"interval\": \"\",\n             \
     \ \"legendFormat\": \"\",\n              \"refId\": \"G\"\n            },\n  \
     \          {\n              \"datasource\": {\n                \"type\": \"prometheus\"\
     ,\n                \"uid\": \"${DS_METRICS}\"\n              },\n            \
     \  \"editorMode\": \"code\",\n              \"exemplar\": false,\n           \
-    \   \"expr\": \"avg(container_fs_limit_bytes{cluster=~\\\"${cluster:regex}\\\"\
-    ,environment=~\\\"${environment:regex}\\\",container =~\\\"$Container\\\",container\
-    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\"\
-    ,\n              \"format\": \"table\",\n              \"hide\": false,\n    \
-    \          \"instant\": true,\n              \"interval\": \"\",\n           \
-    \   \"legendFormat\": \"\",\n              \"refId\": \"M\"\n            }\n \
-    \         ],\n          \"title\": \"微服务(容器名)资源统计\",\n          \"transformations\"\
-    : [\n            {\n              \"id\": \"merge\",\n              \"options\"\
-    : {}\n            },\n            {\n              \"id\": \"organize\",\n   \
-    \           \"options\": {\n                \"excludeByName\": {\n           \
-    \       \"Time\": true,\n                  \"Time 1\": true,\n               \
-    \   \"Time 10\": true,\n                  \"Time 11\": true,\n               \
-    \   \"Time 12\": true,\n                  \"Time 2\": true,\n                \
-    \  \"Time 3\": true,\n                  \"Time 4\": true,\n                  \"\
-    Time 5\": true,\n                  \"Time 6\": true,\n                  \"Time\
-    \ 7\": true,\n                  \"Time 8\": true,\n                  \"Time 9\"\
-    : true\n                },\n                \"includeByName\": {},\n         \
-    \       \"indexByName\": {\n                  \"Time\": 15,\n                \
-    \  \"Value #A\": 3,\n                  \"Value #B\": 13,\n                  \"\
-    Value #C\": 6,\n                  \"Value #D\": 9,\n                  \"Value\
-    \ #E\": 14,\n                  \"Value #F\": 8,\n                  \"Value #G\"\
-    : 2,\n                  \"Value #H\": 5,\n                  \"Value #I\": 4,\n\
-    \                  \"Value #J\": 12,\n                  \"Value #K\": 10,\n  \
-    \                \"Value #L\": 7,\n                  \"Value #M\": 11,\n     \
-    \             \"container\": 1,\n                  \"namespace\": 0\n        \
-    \        },\n                \"renameByName\": {\n                  \"Time 1\"\
-    : \"\",\n                  \"Value #A\": \"平均CPU使用%\",\n                  \"Value\
-    \ #B\": \"总CPU需求\",\n                  \"Value #C\": \"总CPU限制\",\n           \
-    \       \"Value #D\": \"总WSS内存使用\",\n                  \"Value #E\": \"总内存需求\"\
-    ,\n                  \"Value #F\": \"总内存限制\",\n                  \"Value #G\"\
-    : \"Pod\",\n                  \"Value #H\": \"平均RSS内存使用%\",\n                \
-    \  \"Value #I\": \"平均WSS内存使用%\",\n                  \"Value #J\": \"平均磁盘使用\",\n\
-    \                  \"Value #K\": \"总RSS内存使用\",\n                  \"Value #L\"\
-    : \"总CPU核使用\",\n                  \"Value #M\": \"平均磁盘限制\",\n                \
-    \  \"container\": \"容器名\",\n                  \"namespace\": \"命名空间\"\n      \
-    \          }\n              }\n            },\n            {\n              \"\
-    id\": \"filterFieldsByName\",\n              \"options\": {}\n            }\n\
-    \          ],\n          \"type\": \"table\"\n        },\n        {\n        \
-    \  \"datasource\": {\n            \"type\": \"prometheus\",\n            \"uid\"\
-    : \"${DS_METRICS}\"\n          },\n          \"fieldConfig\": {\n            \"\
-    defaults\": {\n              \"color\": {\n                \"mode\": \"palette-classic\"\
-    \n              },\n              \"custom\": {\n                \"axisBorderShow\"\
-    : false,\n                \"axisCenteredZero\": false,\n                \"axisColorMode\"\
-    : \"text\",\n                \"axisLabel\": \"\",\n                \"axisPlacement\"\
-    : \"auto\",\n                \"barAlignment\": 0,\n                \"drawStyle\"\
-    : \"line\",\n                \"fillOpacity\": 0,\n                \"gradientMode\"\
-    : \"none\",\n                \"hideFrom\": {\n                  \"legend\": false,\n\
-    \                  \"tooltip\": false,\n                  \"viz\": false\n   \
-    \             },\n                \"insertNulls\": false,\n                \"\
-    lineInterpolation\": \"linear\",\n                \"lineWidth\": 1,\n        \
-    \        \"pointSize\": 5,\n                \"scaleDistribution\": {\n       \
-    \           \"type\": \"linear\"\n                },\n                \"showPoints\"\
-    : \"never\",\n                \"spanNulls\": false,\n                \"stacking\"\
-    : {\n                  \"group\": \"A\",\n                  \"mode\": \"none\"\
-    \n                },\n                \"thresholdsStyle\": {\n               \
-    \   \"mode\": \"off\"\n                }\n              },\n              \"links\"\
-    : [],\n              \"mappings\": [],\n              \"thresholds\": {\n    \
-    \            \"mode\": \"absolute\",\n                \"steps\": [\n         \
-    \         {\n                    \"color\": \"green\"\n                  },\n\
-    \                  {\n                    \"color\": \"red\",\n              \
-    \      \"value\": 80\n                  }\n                ]\n              },\n\
-    \              \"unit\": \"percent\"\n            },\n            \"overrides\"\
-    : []\n          },\n          \"gridPos\": {\n            \"h\": 7,\n        \
-    \    \"w\": 8,\n            \"x\": 0,\n            \"y\": 12\n          },\n \
-    \         \"id\": 24,\n          \"options\": {\n            \"legend\": {\n \
-    \             \"calcs\": [\n                \"max\",\n                \"last\"\
-    ,\n                \"mean\"\n              ],\n              \"displayMode\":\
-    \ \"table\",\n              \"placement\": \"bottom\",\n              \"showLegend\"\
-    : true\n            },\n            \"tooltip\": {\n              \"mode\": \"\
-    multi\",\n              \"sort\": \"desc\"\n            }\n          },\n    \
-    \      \"pluginVersion\": \"10.4.1\",\n          \"targets\": [\n            {\n\
-    \              \"datasource\": {\n                \"type\": \"prometheus\",\n\
-    \                \"uid\": \"${DS_METRICS}\"\n              },\n              \"\
-    exemplar\": true,\n              \"expr\": \"sum(irate(container_cpu_usage_seconds_total{cluster=~\\\
+    \   \"expr\": \"avg(container_fs_limit_bytes{job=\\\"cadvisor\\\",cluster=~\\\"\
+    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\"\
+    $Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
+    \"}) by (container)\",\n              \"format\": \"table\",\n              \"\
+    hide\": false,\n              \"instant\": true,\n              \"interval\":\
+    \ \"\",\n              \"legendFormat\": \"\",\n              \"refId\": \"M\"\
+    \n            }\n          ],\n          \"title\": \"微服务(容器名)资源统计\",\n      \
+    \    \"transformations\": [\n            {\n              \"id\": \"merge\",\n\
+    \              \"options\": {}\n            },\n            {\n              \"\
+    id\": \"organize\",\n              \"options\": {\n                \"excludeByName\"\
+    : {\n                  \"Time\": true,\n                  \"Time 1\": true,\n\
+    \                  \"Time 10\": true,\n                  \"Time 11\": true,\n\
+    \                  \"Time 12\": true,\n                  \"Time 2\": true,\n \
+    \                 \"Time 3\": true,\n                  \"Time 4\": true,\n   \
+    \               \"Time 5\": true,\n                  \"Time 6\": true,\n     \
+    \             \"Time 7\": true,\n                  \"Time 8\": true,\n       \
+    \           \"Time 9\": true\n                },\n                \"includeByName\"\
+    : {},\n                \"indexByName\": {\n                  \"Time\": 15,\n \
+    \                 \"Value #A\": 3,\n                  \"Value #B\": 13,\n    \
+    \              \"Value #C\": 6,\n                  \"Value #D\": 9,\n        \
+    \          \"Value #E\": 14,\n                  \"Value #F\": 8,\n           \
+    \       \"Value #G\": 2,\n                  \"Value #H\": 5,\n               \
+    \   \"Value #I\": 4,\n                  \"Value #J\": 12,\n                  \"\
+    Value #K\": 10,\n                  \"Value #L\": 7,\n                  \"Value\
+    \ #M\": 11,\n                  \"container\": 1,\n                  \"namespace\"\
+    : 0\n                },\n                \"renameByName\": {\n               \
+    \   \"Time 1\": \"\",\n                  \"Value #A\": \"平均CPU使用%\",\n       \
+    \           \"Value #B\": \"总CPU需求\",\n                  \"Value #C\": \"总CPU限制\"\
+    ,\n                  \"Value #D\": \"总WSS内存使用\",\n                  \"Value #E\"\
+    : \"总内存需求\",\n                  \"Value #F\": \"总内存限制\",\n                  \"\
+    Value #G\": \"Pod\",\n                  \"Value #H\": \"平均RSS内存使用%\",\n      \
+    \            \"Value #I\": \"平均WSS内存使用%\",\n                  \"Value #J\": \"\
+    平均磁盘使用\",\n                  \"Value #K\": \"总RSS内存使用\",\n                  \"\
+    Value #L\": \"总CPU核使用\",\n                  \"Value #M\": \"平均磁盘限制\",\n      \
+    \            \"container\": \"容器名\",\n                  \"namespace\": \"命名空间\"\
+    \n                }\n              }\n            },\n            {\n        \
+    \      \"id\": \"filterFieldsByName\",\n              \"options\": {}\n      \
+    \      }\n          ],\n          \"type\": \"table\"\n        },\n        {\n\
+    \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
+    \    \"uid\": \"${DS_METRICS}\"\n          },\n          \"fieldConfig\": {\n\
+    \            \"defaults\": {\n              \"color\": {\n                \"mode\"\
+    : \"palette-classic\"\n              },\n              \"custom\": {\n       \
+    \         \"axisBorderShow\": false,\n                \"axisCenteredZero\": false,\n\
+    \                \"axisColorMode\": \"text\",\n                \"axisLabel\":\
+    \ \"\",\n                \"axisPlacement\": \"auto\",\n                \"barAlignment\"\
+    : 0,\n                \"drawStyle\": \"line\",\n                \"fillOpacity\"\
+    : 0,\n                \"gradientMode\": \"none\",\n                \"hideFrom\"\
+    : {\n                  \"legend\": false,\n                  \"tooltip\": false,\n\
+    \                  \"viz\": false\n                },\n                \"insertNulls\"\
+    : false,\n                \"lineInterpolation\": \"linear\",\n               \
+    \ \"lineWidth\": 1,\n                \"pointSize\": 5,\n                \"scaleDistribution\"\
+    : {\n                  \"type\": \"linear\"\n                },\n            \
+    \    \"showPoints\": \"never\",\n                \"spanNulls\": false,\n     \
+    \           \"stacking\": {\n                  \"group\": \"A\",\n           \
+    \       \"mode\": \"none\"\n                },\n                \"thresholdsStyle\"\
+    : {\n                  \"mode\": \"off\"\n                }\n              },\n\
+    \              \"links\": [],\n              \"mappings\": [],\n             \
+    \ \"thresholds\": {\n                \"mode\": \"absolute\",\n               \
+    \ \"steps\": [\n                  {\n                    \"color\": \"green\"\n\
+    \                  },\n                  {\n                    \"color\": \"\
+    red\",\n                    \"value\": 80\n                  }\n             \
+    \   ]\n              },\n              \"unit\": \"percent\"\n            },\n\
+    \            \"overrides\": []\n          },\n          \"gridPos\": {\n     \
+    \       \"h\": 7,\n            \"w\": 8,\n            \"x\": 0,\n            \"\
+    y\": 12\n          },\n          \"id\": 24,\n          \"options\": {\n     \
+    \       \"legend\": {\n              \"calcs\": [\n                \"max\",\n\
+    \                \"last\",\n                \"mean\"\n              ],\n     \
+    \         \"displayMode\": \"table\",\n              \"placement\": \"bottom\"\
+    ,\n              \"showLegend\": true\n            },\n            \"tooltip\"\
+    : {\n              \"mode\": \"multi\",\n              \"sort\": \"desc\"\n  \
+    \          }\n          },\n          \"pluginVersion\": \"10.4.1\",\n       \
+    \   \"targets\": [\n            {\n              \"datasource\": {\n         \
+    \       \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n\
+    \              },\n              \"exemplar\": true,\n              \"expr\":\
+    \ \"sum(irate(container_cpu_usage_seconds_total{job=\\\"cadvisor\\\",cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
     \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
     \"}[2m])) by (container) / (sum(kube_pod_container_resource_limits{cluster=~\\\
@@ -2466,27 +2481,27 @@ data:
     \      \"pluginVersion\": \"10.4.1\",\n          \"targets\": [\n            {\n\
     \              \"datasource\": {\n                \"type\": \"prometheus\",\n\
     \                \"uid\": \"${DS_METRICS}\"\n              },\n              \"\
-    expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\"${cluster:regex}\\\
+    expr\": \"sum (container_memory_working_set_bytes{job=\\\"cadvisor\\\",cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
+    \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
+    \"}) by (container)/ sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\
     \",environment=~\\\"${environment:regex}\\\",container =~\\\"$Container\\\",container\
-    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)/\
-    \ sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
-    \"${environment:regex}\\\",container =~\\\"$Container\\\",container !=\\\"\\\"\
-    ,container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"memory\\\"\
-    ,unit=\\\"byte\\\"}) by (container) * 100\",\n              \"interval\": \"\"\
-    ,\n              \"intervalFactor\": 1,\n              \"legendFormat\": \"WSS：{{\
-    \ container }}\",\n              \"metric\": \"container_memory_usage:sort_desc\"\
+    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"\
+    memory\\\",unit=\\\"byte\\\"}) by (container) * 100\",\n              \"interval\"\
+    : \"\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
+    : \"WSS：{{ container }}\",\n              \"metric\": \"container_memory_usage:sort_desc\"\
     ,\n              \"refId\": \"A\",\n              \"step\": 10\n            },\n\
     \            {\n              \"datasource\": {\n                \"type\": \"\
     prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n              },\n\
-    \              \"expr\": \"sum (container_memory_rss{cluster=~\\\"${cluster:regex}\\\
+    \              \"expr\": \"sum (container_memory_rss{job=\\\"cadvisor\\\",cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
+    \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
+    \"}) by (container)/ sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\
     \",environment=~\\\"${environment:regex}\\\",container =~\\\"$Container\\\",container\
-    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)/\
-    \ sum(kube_pod_container_resource_limits{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
-    \"${environment:regex}\\\",container =~\\\"$Container\\\",container !=\\\"\\\"\
-    ,container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"memory\\\"\
-    ,unit=\\\"byte\\\"}) by (container) * 100\",\n              \"interval\": \"\"\
-    ,\n              \"intervalFactor\": 1,\n              \"legendFormat\": \"RSS：{{\
-    \ container }}\",\n              \"metric\": \"container_memory_usage:sort_desc\"\
+    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\",resource=\\\"\
+    memory\\\",unit=\\\"byte\\\"}) by (container) * 100\",\n              \"interval\"\
+    : \"\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
+    : \"RSS：{{ container }}\",\n              \"metric\": \"container_memory_usage:sort_desc\"\
     ,\n              \"refId\": \"B\",\n              \"step\": 10\n            }\n\
     \          ],\n          \"title\": \"微服务(容器名)平均内存使用率\",\n          \"type\":\
     \ \"timeseries\"\n        },\n        {\n          \"datasource\": {\n       \
@@ -2526,109 +2541,47 @@ data:
     \              \"datasource\": {\n                \"type\": \"prometheus\",\n\
     \                \"uid\": \"${DS_METRICS}\"\n              },\n              \"\
     editorMode\": \"code\",\n              \"exemplar\": true,\n              \"expr\"\
-    : \"sum(sum(irate(container_network_receive_bytes_total{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",node=~\\\"^$Node$\\\",namespace=~\\\
-    \"$NameSpace\\\"}[2m])) by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",namespace=~\\\
-    \"$NameSpace\\\",container =~\\\"$Container\\\"}) by(container) *8\",\n      \
-    \        \"hide\": false,\n              \"interval\": \"\",\n              \"\
-    intervalFactor\": 1,\n              \"legendFormat\": \"流入:{{ container }}\",\n\
-    \              \"metric\": \"network\",\n              \"range\": true,\n    \
-    \          \"refId\": \"A\",\n              \"step\": 10\n            },\n   \
-    \         {\n              \"datasource\": {\n                \"type\": \"prometheus\"\
-    ,\n                \"uid\": \"${DS_METRICS}\"\n              },\n            \
-    \  \"editorMode\": \"code\",\n              \"exemplar\": true,\n            \
-    \  \"expr\": \"sum(sum(irate(container_network_transmit_bytes_total{cluster=~\\\
+    : \"sum(sum(irate(container_network_receive_bytes_total{job=\\\"cadvisor\\\",cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",node=~\\\"^$Node$\\\
     \",namespace=~\\\"$NameSpace\\\"}[2m])) by(pod,namespace)* on(pod,namespace) group_right\
     \ kube_pod_container_info{cluster=~\\\"${cluster:regex}\\\",environment=~\\\"\
     ${environment:regex}\\\",namespace=~\\\"$NameSpace\\\",container =~\\\"$Container\\\
-    \"}) by(container) *8\",\n              \"interval\": \"\",\n              \"\
-    intervalFactor\": 1,\n              \"legendFormat\": \"流出:{{ container }}\",\n\
-    \              \"metric\": \"network\",\n              \"range\": true,\n    \
-    \          \"refId\": \"B\",\n              \"step\": 10\n            },\n   \
-    \         {\n              \"datasource\": {\n                \"type\": \"prometheus\"\
-    ,\n                \"uid\": \"${DS_METRICS}\"\n              },\n            \
-    \  \"expr\": \"sum (rate (container_network_receive_bytes_total{cluster=~\\\"\
-    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\
-    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",pod=~\\\".*$Container.*\\\
-    \"}[2m])) by(pod,namespace)\",\n              \"hide\": true,\n              \"\
-    interval\": \"\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
-    : \"-> {{ pod }}\",\n              \"metric\": \"network\",\n              \"\
-    refId\": \"C\",\n              \"step\": 10\n            },\n            {\n \
-    \             \"datasource\": {\n                \"type\": \"prometheus\",\n \
-    \               \"uid\": \"${DS_METRICS}\"\n              },\n              \"\
-    expr\": \"- sum (rate (container_network_transmit_bytes_total{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\
-    \",namespace=~\\\"$NameSpace\\\",pod=~\\\".*$Container.*\\\"}[2m])) by(pod,namespace)\"\
-    ,\n              \"hide\": true,\n              \"interval\": \"\",\n        \
-    \      \"intervalFactor\": 1,\n              \"legendFormat\": \"<- {{ pod }}\"\
-    ,\n              \"metric\": \"network\",\n              \"refId\": \"D\",\n \
-    \             \"step\": 10\n            }\n          ],\n          \"title\":\
-    \ \"微服务(容器名)每秒网络带宽 (可关联节点)\",\n          \"type\": \"timeseries\"\n        },\n\
-    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"fieldConfig\"\
-    : {\n            \"defaults\": {\n              \"color\": {\n               \
-    \ \"mode\": \"palette-classic\"\n              },\n              \"custom\": {\n\
-    \                \"axisBorderShow\": false,\n                \"axisCenteredZero\"\
-    : false,\n                \"axisColorMode\": \"text\",\n                \"axisLabel\"\
-    : \"\",\n                \"axisPlacement\": \"auto\",\n                \"barAlignment\"\
-    : 0,\n                \"drawStyle\": \"line\",\n                \"fillOpacity\"\
-    : 0,\n                \"gradientMode\": \"none\",\n                \"hideFrom\"\
-    : {\n                  \"legend\": false,\n                  \"tooltip\": false,\n\
-    \                  \"viz\": false\n                },\n                \"insertNulls\"\
-    : false,\n                \"lineInterpolation\": \"linear\",\n               \
-    \ \"lineWidth\": 1,\n                \"pointSize\": 5,\n                \"scaleDistribution\"\
-    : {\n                  \"type\": \"linear\"\n                },\n            \
-    \    \"showPoints\": \"never\",\n                \"spanNulls\": false,\n     \
-    \           \"stacking\": {\n                  \"group\": \"A\",\n           \
-    \       \"mode\": \"none\"\n                },\n                \"thresholdsStyle\"\
-    : {\n                  \"mode\": \"off\"\n                }\n              },\n\
-    \              \"links\": [],\n              \"mappings\": [],\n             \
-    \ \"thresholds\": {\n                \"mode\": \"absolute\",\n               \
-    \ \"steps\": [\n                  {\n                    \"color\": \"green\"\n\
-    \                  },\n                  {\n                    \"color\": \"\
-    red\",\n                    \"value\": 80\n                  }\n             \
-    \   ]\n              },\n              \"unit\": \"none\"\n            },\n  \
-    \          \"overrides\": [\n              {\n                \"matcher\": {\n\
-    \                  \"id\": \"byRegexp\",\n                  \"options\": \"/CPU限制.*/\"\
-    \n                },\n                \"properties\": [\n                  {\n\
-    \                    \"id\": \"color\",\n                    \"value\": {\n  \
-    \                    \"fixedColor\": \"red\",\n                      \"mode\"\
-    : \"fixed\"\n                    }\n                  }\n                ]\n \
-    \             }\n            ]\n          },\n          \"gridPos\": {\n     \
-    \       \"h\": 8,\n            \"w\": 8,\n            \"x\": 0,\n            \"\
-    y\": 19\n          },\n          \"id\": 91,\n          \"options\": {\n     \
-    \       \"legend\": {\n              \"calcs\": [\n                \"max\",\n\
-    \                \"last\",\n                \"mean\"\n              ],\n     \
-    \         \"displayMode\": \"table\",\n              \"placement\": \"bottom\"\
-    ,\n              \"showLegend\": true,\n              \"sortBy\": \"Max\",\n \
-    \             \"sortDesc\": true\n            },\n            \"tooltip\": {\n\
-    \              \"mode\": \"multi\",\n              \"sort\": \"desc\"\n      \
-    \      }\n          },\n          \"pluginVersion\": \"10.4.1\",\n          \"\
-    targets\": [\n            {\n              \"datasource\": {\n               \
-    \ \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n    \
-    \          },\n              \"editorMode\": \"code\",\n              \"exemplar\"\
-    : true,\n              \"expr\": \"sum(kube_pod_container_resource_limits{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
-    cpu\\\", unit=\\\"core\\\",container =~\\\"$Container\\\",container !=\\\"\\\"\
-    ,container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\",\n  \
-    \            \"hide\": false,\n              \"instant\": false,\n           \
-    \   \"interval\": \"\",\n              \"intervalFactor\": 1,\n              \"\
-    legendFormat\": \"CPU限制：{{ container}}\",\n              \"metric\": \"container_cpu\"\
-    ,\n              \"refId\": \"A\",\n              \"step\": 10\n            },\n\
-    \            {\n              \"datasource\": {\n                \"type\": \"\
-    prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n              },\n\
-    \              \"editorMode\": \"code\",\n              \"exemplar\": true,\n\
-    \              \"expr\": \"sum(irate(container_cpu_usage_seconds_total{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
-    \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
-    \"}[2m])) by (container)\",\n              \"hide\": false,\n              \"\
-    instant\": false,\n              \"interval\": \"\",\n              \"intervalFactor\"\
-    : 1,\n              \"legendFormat\": \"CPU核使用：{{ container}}\",\n           \
-    \   \"metric\": \"container_cpu\",\n              \"refId\": \"B\",\n        \
-    \      \"step\": 10\n            }\n          ],\n          \"title\": \"微服务(容器名)整体CPU使用核\"\
-    ,\n          \"type\": \"timeseries\"\n        },\n        {\n          \"datasource\"\
+    \"}) by(container) *8\",\n              \"hide\": false,\n              \"interval\"\
+    : \"\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
+    : \"流入:{{ container }}\",\n              \"metric\": \"network\",\n          \
+    \    \"range\": true,\n              \"refId\": \"A\",\n              \"step\"\
+    : 10\n            },\n            {\n              \"datasource\": {\n       \
+    \         \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\
+    \n              },\n              \"editorMode\": \"code\",\n              \"\
+    exemplar\": true,\n              \"expr\": \"sum(sum(irate(container_network_transmit_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\"}[2m])) by(pod,namespace)*\
+    \ on(pod,namespace) group_right kube_pod_container_info{cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",namespace=~\\\"$NameSpace\\\",container\
+    \ =~\\\"$Container\\\"}) by(container) *8\",\n              \"interval\": \"\"\
+    ,\n              \"intervalFactor\": 1,\n              \"legendFormat\": \"流出:{{\
+    \ container }}\",\n              \"metric\": \"network\",\n              \"range\"\
+    : true,\n              \"refId\": \"B\",\n              \"step\": 10\n       \
+    \     },\n            {\n              \"datasource\": {\n                \"type\"\
+    : \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n              },\n\
+    \              \"expr\": \"sum (rate (container_network_receive_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",pod=~\\\
+    \".*$Container.*\\\"}[2m])) by(pod,namespace)\",\n              \"hide\": true,\n\
+    \              \"interval\": \"\",\n              \"intervalFactor\": 1,\n   \
+    \           \"legendFormat\": \"-> {{ pod }}\",\n              \"metric\": \"\
+    network\",\n              \"refId\": \"C\",\n              \"step\": 10\n    \
+    \        },\n            {\n              \"datasource\": {\n                \"\
+    type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n        \
+    \      },\n              \"expr\": \"- sum (rate (container_network_transmit_bytes_total{job=\\\
+    \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",pod=~\\\"$Pod\\\",node=~\\\"^$Node$\\\",namespace=~\\\"$NameSpace\\\",pod=~\\\
+    \".*$Container.*\\\"}[2m])) by(pod,namespace)\",\n              \"hide\": true,\n\
+    \              \"interval\": \"\",\n              \"intervalFactor\": 1,\n   \
+    \           \"legendFormat\": \"<- {{ pod }}\",\n              \"metric\": \"\
+    network\",\n              \"refId\": \"D\",\n              \"step\": 10\n    \
+    \        }\n          ],\n          \"title\": \"微服务(容器名)每秒网络带宽 (可关联节点)\",\n \
+    \         \"type\": \"timeseries\"\n        },\n        {\n          \"datasource\"\
     : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
     \n          },\n          \"fieldConfig\": {\n            \"defaults\": {\n  \
     \            \"color\": {\n                \"mode\": \"palette-classic\"\n   \
@@ -2652,16 +2605,16 @@ data:
     \         {\n                    \"color\": \"green\"\n                  },\n\
     \                  {\n                    \"color\": \"red\",\n              \
     \      \"value\": 80\n                  }\n                ]\n              },\n\
-    \              \"unit\": \"bytes\"\n            },\n            \"overrides\"\
-    : [\n              {\n                \"matcher\": {\n                  \"id\"\
-    : \"byRegexp\",\n                  \"options\": \"/内存限制.*/\"\n               \
-    \ },\n                \"properties\": [\n                  {\n               \
-    \     \"id\": \"color\",\n                    \"value\": {\n                 \
-    \     \"fixedColor\": \"red\",\n                      \"mode\": \"fixed\"\n  \
-    \                  }\n                  }\n                ]\n              }\n\
+    \              \"unit\": \"none\"\n            },\n            \"overrides\":\
+    \ [\n              {\n                \"matcher\": {\n                  \"id\"\
+    : \"byRegexp\",\n                  \"options\": \"/CPU限制.*/\"\n              \
+    \  },\n                \"properties\": [\n                  {\n              \
+    \      \"id\": \"color\",\n                    \"value\": {\n                \
+    \      \"fixedColor\": \"red\",\n                      \"mode\": \"fixed\"\n \
+    \                   }\n                  }\n                ]\n              }\n\
     \            ]\n          },\n          \"gridPos\": {\n            \"h\": 8,\n\
-    \            \"w\": 8,\n            \"x\": 8,\n            \"y\": 19\n       \
-    \   },\n          \"id\": 90,\n          \"options\": {\n            \"legend\"\
+    \            \"w\": 8,\n            \"x\": 0,\n            \"y\": 19\n       \
+    \   },\n          \"id\": 91,\n          \"options\": {\n            \"legend\"\
     : {\n              \"calcs\": [\n                \"max\",\n                \"\
     last\",\n                \"mean\"\n              ],\n              \"displayMode\"\
     : \"table\",\n              \"placement\": \"bottom\",\n              \"showLegend\"\
@@ -2671,7 +2624,70 @@ data:
     pluginVersion\": \"10.4.1\",\n          \"targets\": [\n            {\n      \
     \        \"datasource\": {\n                \"type\": \"prometheus\",\n      \
     \          \"uid\": \"${DS_METRICS}\"\n              },\n              \"editorMode\"\
-    : \"code\",\n              \"expr\": \"sum (container_memory_working_set_bytes{cluster=~\\\
+    : \"code\",\n              \"exemplar\": true,\n              \"expr\": \"sum(kube_pod_container_resource_limits{cluster=~\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",resource=\\\"\
+    cpu\\\", unit=\\\"core\\\",container =~\\\"$Container\\\",container !=\\\"\\\"\
+    ,container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\",\n  \
+    \            \"hide\": false,\n              \"instant\": false,\n           \
+    \   \"interval\": \"\",\n              \"intervalFactor\": 1,\n              \"\
+    legendFormat\": \"CPU限制：{{ container}}\",\n              \"metric\": \"container_cpu\"\
+    ,\n              \"refId\": \"A\",\n              \"step\": 10\n            },\n\
+    \            {\n              \"datasource\": {\n                \"type\": \"\
+    prometheus\",\n                \"uid\": \"${DS_METRICS}\"\n              },\n\
+    \              \"editorMode\": \"code\",\n              \"exemplar\": true,\n\
+    \              \"expr\": \"sum(irate(container_cpu_usage_seconds_total{job=\\\"\
+    cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
+    \",container =~\\\"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\"\
+    ,namespace=~\\\"$NameSpace\\\"}[2m])) by (container)\",\n              \"hide\"\
+    : false,\n              \"instant\": false,\n              \"interval\": \"\"\
+    ,\n              \"intervalFactor\": 1,\n              \"legendFormat\": \"CPU核使用：{{\
+    \ container}}\",\n              \"metric\": \"container_cpu\",\n             \
+    \ \"refId\": \"B\",\n              \"step\": 10\n            }\n          ],\n\
+    \          \"title\": \"微服务(容器名)整体CPU使用核\",\n          \"type\": \"timeseries\"\
+    \n        },\n        {\n          \"datasource\": {\n            \"type\": \"\
+    prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n        \
+    \  \"fieldConfig\": {\n            \"defaults\": {\n              \"color\": {\n\
+    \                \"mode\": \"palette-classic\"\n              },\n           \
+    \   \"custom\": {\n                \"axisBorderShow\": false,\n              \
+    \  \"axisCenteredZero\": false,\n                \"axisColorMode\": \"text\",\n\
+    \                \"axisLabel\": \"\",\n                \"axisPlacement\": \"auto\"\
+    ,\n                \"barAlignment\": 0,\n                \"drawStyle\": \"line\"\
+    ,\n                \"fillOpacity\": 0,\n                \"gradientMode\": \"none\"\
+    ,\n                \"hideFrom\": {\n                  \"legend\": false,\n   \
+    \               \"tooltip\": false,\n                  \"viz\": false\n      \
+    \          },\n                \"insertNulls\": false,\n                \"lineInterpolation\"\
+    : \"linear\",\n                \"lineWidth\": 1,\n                \"pointSize\"\
+    : 5,\n                \"scaleDistribution\": {\n                  \"type\": \"\
+    linear\"\n                },\n                \"showPoints\": \"never\",\n   \
+    \             \"spanNulls\": false,\n                \"stacking\": {\n       \
+    \           \"group\": \"A\",\n                  \"mode\": \"none\"\n        \
+    \        },\n                \"thresholdsStyle\": {\n                  \"mode\"\
+    : \"off\"\n                }\n              },\n              \"links\": [],\n\
+    \              \"mappings\": [],\n              \"thresholds\": {\n          \
+    \      \"mode\": \"absolute\",\n                \"steps\": [\n               \
+    \   {\n                    \"color\": \"green\"\n                  },\n      \
+    \            {\n                    \"color\": \"red\",\n                    \"\
+    value\": 80\n                  }\n                ]\n              },\n      \
+    \        \"unit\": \"bytes\"\n            },\n            \"overrides\": [\n \
+    \             {\n                \"matcher\": {\n                  \"id\": \"\
+    byRegexp\",\n                  \"options\": \"/内存限制.*/\"\n                },\n\
+    \                \"properties\": [\n                  {\n                    \"\
+    id\": \"color\",\n                    \"value\": {\n                      \"fixedColor\"\
+    : \"red\",\n                      \"mode\": \"fixed\"\n                    }\n\
+    \                  }\n                ]\n              }\n            ]\n    \
+    \      },\n          \"gridPos\": {\n            \"h\": 8,\n            \"w\"\
+    : 8,\n            \"x\": 8,\n            \"y\": 19\n          },\n          \"\
+    id\": 90,\n          \"options\": {\n            \"legend\": {\n             \
+    \ \"calcs\": [\n                \"max\",\n                \"last\",\n        \
+    \        \"mean\"\n              ],\n              \"displayMode\": \"table\"\
+    ,\n              \"placement\": \"bottom\",\n              \"showLegend\": true,\n\
+    \              \"sortBy\": \"Max\",\n              \"sortDesc\": true\n      \
+    \      },\n            \"tooltip\": {\n              \"mode\": \"multi\",\n  \
+    \            \"sort\": \"desc\"\n            }\n          },\n          \"pluginVersion\"\
+    : \"10.4.1\",\n          \"targets\": [\n            {\n              \"datasource\"\
+    : {\n                \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\
+    \n              },\n              \"editorMode\": \"code\",\n              \"\
+    expr\": \"sum (container_memory_working_set_bytes{job=\\\"cadvisor\\\",cluster=~\\\
     \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",container =~\\\
     \"$Container\\\",container !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\
     \"}) by (container)\",\n              \"interval\": \"\",\n              \"intervalFactor\"\
@@ -2690,11 +2706,11 @@ data:
     \     \"step\": 10\n            },\n            {\n              \"datasource\"\
     : {\n                \"type\": \"prometheus\",\n                \"uid\": \"${DS_METRICS}\"\
     \n              },\n              \"editorMode\": \"code\",\n              \"\
-    expr\": \"sum (container_memory_rss{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
-    \"${environment:regex}\\\",container =~\\\"$Container\\\",container !=\\\"\\\"\
-    ,container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\",\n  \
-    \            \"hide\": false,\n              \"interval\": \"\",\n           \
-    \   \"intervalFactor\": 1,\n              \"legendFormat\": \"RSS：{{ container\
+    expr\": \"sum (container_memory_rss{job=\\\"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\
+    \",environment=~\\\"${environment:regex}\\\",container =~\\\"$Container\\\",container\
+    \ !=\\\"\\\",container!=\\\"POD\\\",namespace=~\\\"$NameSpace\\\"}) by (container)\"\
+    ,\n              \"hide\": false,\n              \"interval\": \"\",\n       \
+    \       \"intervalFactor\": 1,\n              \"legendFormat\": \"RSS：{{ container\
     \ }}\",\n              \"metric\": \"container_memory_usage:sort_desc\",\n   \
     \           \"range\": true,\n              \"refId\": \"C\",\n              \"\
     step\": 10\n            }\n          ],\n          \"title\": \"微服务(容器名)整体内存使用量\"\
