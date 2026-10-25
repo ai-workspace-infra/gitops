@@ -4,8 +4,9 @@ metadata:
   name: source-grafana-values
   namespace: platform-observability
 data:
-  values.yaml: "grafana:\n  datasourcesConfigMap: source-grafana-datasources\n  appsConfigMap: source-grafana-apps\n\
-    \  dashboardProviders:\n  - name: import-general\n    folder: ''\n    folderUid: ''\n    path: general\n   \
-    \ configMaps:\n    - source-grafana-general-0\n  - name: import-b3e84e3d474a\n    folder: Observability Alerts\n\
-    \    folderUid: dfzrqnab9cpa8e\n    path: b3e84e3d474a\n    configMaps:\n    - source-grafana-b3e84e3d474a-0\n\
-    \  bundleChecksum: 2c794b9563d6399705b813f9b1c41877c611c3288d53b51fe3429a53324a8c53\n"
+  values.yaml: "grafana:\n  datasourcesConfigMap: source-grafana-datasources\n  appsConfigMap:\
+    \ source-grafana-apps\n  dashboardProviders:\n  - name: import-general\n    folder:\
+    \ ''\n    folderUid: ''\n    path: general\n    configMaps:\n    - source-grafana-general-0\n\
+    \    - starsl-k8s-dashboard\n  - name: import-b3e84e3d474a\n    folder: Observability\
+    \ Alerts\n    folderUid: dfzrqnab9cpa8e\n    path: b3e84e3d474a\n    configMaps:\n\
+    \    - source-grafana-b3e84e3d474a-0\n  bundleChecksum: 04dce3a71ea12481565c6b7a7bb9916e2cadb4a186e5ab6e5010e7a0d4932b0d\n"
