@@ -48,3 +48,31 @@ spec:
                   spec:
                     securityContext:
                       fsGroup: 472
+                    # Published stack 1.1.5 has no per-container resources values.
+                    # Pin this target-only post-render patch until that contract exists.
+                    initContainers:
+                      - name: verified-grafana-plugins
+                        resources:
+                          requests: {cpu: 10m, memory: 64Mi}
+                          limits: {cpu: 200m, memory: 384Mi}
+                    containers:
+                      - name: victoria-metrics
+                        resources:
+                          requests: {cpu: 50m, memory: 384Mi}
+                          limits: {cpu: 400m, memory: 768Mi}
+                      - name: victoria-logs
+                        resources:
+                          requests: {cpu: 10m, memory: 32Mi}
+                          limits: {cpu: 50m, memory: 128Mi}
+                      - name: victoria-traces
+                        resources:
+                          requests: {cpu: 25m, memory: 192Mi}
+                          limits: {cpu: 100m, memory: 384Mi}
+                      - name: otel-collector
+                        resources:
+                          requests: {cpu: 25m, memory: 128Mi}
+                          limits: {cpu: 200m, memory: 256Mi}
+                      - name: grafana
+                        resources:
+                          requests: {cpu: 50m, memory: 512Mi}
+                          limits: {cpu: 400m, memory: 1Gi}

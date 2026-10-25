@@ -5,6 +5,9 @@ caddy:
   enabled: true
   image: ghcr.io/ai-workspace-infra/caddy-cloudflare:959d6c8@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf
   frontendService: console
+  resources:
+    requests: {cpu: 15m, memory: 48Mi}
+    limits: {cpu: 100m, memory: 128Mi}
   gatewayEnabled: false
   httpOnly: false
   service:
@@ -63,6 +66,9 @@ console:
     args:
     - export PORT=3000; exec /usr/local/bin/start-all-in-one
     replicas: 1
+    resources:
+      requests: {cpu: 50m, memory: 192Mi}
+      limits: {cpu: 300m, memory: 384Mi}
     securityContext:
       allowPrivilegeEscalation: true
       capabilities:
@@ -87,6 +93,9 @@ accounts:
     image: ghcr.io/ai-workspace-services/accounts:sha-3ef09c82f46152096bfc16edc9ba767f128a197f@sha256:b5bf111a64ca2f2ed5e74d2ab1f87e0e164d09869a32832368fb43e577fdf37b
     port: 8080
     replicas: 1
+    resources:
+      requests: {cpu: 25m, memory: 64Mi}
+      limits: {cpu: 200m, memory: 256Mi}
     env:
       CONFIG_TEMPLATE: /app/config/account.cloudrun.yaml
       DB_HOST: RELEASE_NAME-postgresql
@@ -115,6 +124,9 @@ billing:
     image: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
     port: 8080
     replicas: 1
+    resources:
+      requests: {cpu: 15m, memory: 48Mi}
+      limits: {cpu: 100m, memory: 192Mi}
     secretRefs:
     - web-saas-secrets
     probes:
@@ -143,6 +155,9 @@ content:
     image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
     port: 8080
     replicas: 1
+    resources:
+      requests: {cpu: 25m, memory: 64Mi}
+      limits: {cpu: 150m, memory: 256Mi}
     env:
       KNOWLEDGE_REPO_PATH: /tmp/knowledge
       KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git

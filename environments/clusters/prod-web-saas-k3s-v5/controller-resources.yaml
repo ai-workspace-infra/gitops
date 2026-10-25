@@ -1,0 +1,85 @@
+# Resource-only SSA overlays for existing bootstrap-managed Flux controllers.
+# Merge retains images, arguments, RBAC and selectors; pruning must never delete controllers.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helm-controller
+  namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: Merge
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  template:
+    spec:
+      containers:
+      - name: manager
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kustomize-controller
+  namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: Merge
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  template:
+    spec:
+      containers:
+      - name: manager
+        resources:
+          requests:
+            cpu: 75m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 384Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: source-controller
+  namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: Merge
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  template:
+    spec:
+      containers:
+      - name: manager
+        resources:
+          requests:
+            cpu: 50m
+            memory: 96Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-controller
+  namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: Merge
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  template:
+    spec:
+      containers:
+      - name: manager
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 100m
+            memory: 128Mi
