@@ -22,6 +22,9 @@ ssh_keys:
   - name: github-actions-cloud-neutral-toolkit
     public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
 
+  - name: operator-macos-ed25519
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGeMGuRKEGtIOTb9BsXMP2rD9Fpv9f3rrrABjOW7EV7s shenlan@HaitaodeMacBook-Pro.local"
+
 hosts:
   - name: web-saas-k3s-v5
     region: jp-tyo-3
