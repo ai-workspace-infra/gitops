@@ -27,8 +27,8 @@ hosts:
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: ["::/0"]
-      allow_http: true
-      allow_https: true
+      allow_http: false
+      allow_https: false
     host_vars:
       # Retain this production Terraform identity until the existing resource
       # state is explicitly adopted by the Dev declaration. The stopped V5
