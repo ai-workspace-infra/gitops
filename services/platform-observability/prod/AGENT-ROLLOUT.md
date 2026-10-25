@@ -7,7 +7,7 @@ Parent: GitOps #564. Producer: Artifacts #225. This consumer uses the existing r
 This declaration now pins independently pulled published charts:
 
 - agent **1.1.1**: `sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12`; publication run 40209012117, source `b8972db` (lightweight process health probe fix, Artifacts #233).
-- server stack **1.1.4**: `sha256:cbc00eaa3798542b6445a785a24556d24f828c9949a4fb7359778de2932ee871`; publication run 40206795144, source `8d1d4124bcdd576a3618ad4c7af702c80395fd18`.
+- server stack **1.1.5**: `sha256:6cf607b36fa0c92fd14f06d4db5186242dba85b7171757257242c0c6f90162a0`; publication run 40212878369, source `1d3812d386924105498afefbe3c1ad3e418fd90a` (bounded verified-plugin archive read fix, Artifacts #235).
 
 The OCIRepository and independent agent HelmRelease are unsuspended in the desired state. The five scrape jobs are attached directly to canonical `values.yaml`; the inactive staging patch has been removed, so there is no second scrape source or manual values merge step. `agent-values.yaml` selects the three producers and leaves Vector off.
 
@@ -105,3 +105,7 @@ The collector may get/list/watch nodes, pods and namespaces for service discover
 Consumer proof uses the independently published stack 1.1.4 package: `templates/configmap.yaml` configures kubeletstats at `https://${env:K8S_NODE_IP}:10250` with ServiceAccount authentication; canonical Node/Pod discovery and the two HTTPS `/metrics` and `/metrics/cadvisor` jobs also use direct kubelet addresses. None uses `/api/v1/nodes/.../proxy`. In that package `templates/rbac.yaml` only generates a collector Role/Binding when `rbac.create` is not false, and `serviceAccount.create` defaults false; disabling its RBAC does not remove this externally declared account.
 
 Render assertions prove only the declared boundary. After authorized deployment, verify intended get/discovery operations and `nodes/proxy` denial with the actual collector identity or clearly identified authorization checks. Never invoke proxy with the audit identity, print a minted token, or treat administrator impersonation/configuration alone as an actual identity-denial PASS. No live RBAC or audit-role acceptance is claimed by this source change.
+
+## Verified plugin archive compatibility
+
+Stack 1.1.5 keeps SHA256 and plugin identity/path/extraction checks, raises the fixed download cap from 50,000,000 bytes to 64 MiB, and distinguishes size rejection from checksum mismatch. The existing pinned custom plugin archive is 50,833,418 bytes, so older Stack installers cannot rebuild this target successfully. Keep this fixed producer digest when preparing future release snapshots. Production incident and runtime evidence are tracked in #570 and the Knowledge runbook; this declaration is not an acceptance receipt.
