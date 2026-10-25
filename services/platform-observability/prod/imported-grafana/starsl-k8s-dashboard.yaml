@@ -451,31 +451,36 @@ data:
     : \"总量\",\n          \"refId\": \"B\"\n        }\n      ],\n      \"title\": \"\
     节点存储信息\",\n      \"type\": \"bargauge\"\n    },\n    {\n      \"datasource\":\
     \ {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n \
-    \     },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\"\
-    : {\n            \"mode\": \"palette-classic\"\n          },\n          \"mappings\"\
-    : [],\n          \"thresholds\": {\n            \"mode\": \"absolute\",\n    \
-    \        \"steps\": [\n              {\n                \"color\": \"green\",\n\
-    \                \"value\": null\n              },\n              {\n        \
-    \        \"color\": \"red\",\n                \"value\": 80\n              }\n\
-    \            ]\n          }\n        },\n        \"overrides\": [\n          {\n\
-    \            \"matcher\": {\n              \"id\": \"byRegexp\",\n           \
-    \   \"options\": \"/异常.*/\"\n            },\n            \"properties\": [\n \
-    \             {\n                \"id\": \"color\",\n                \"value\"\
-    : {\n                  \"fixedColor\": \"red\",\n                  \"mode\": \"\
-    fixed\"\n                }\n              }\n            ]\n          }\n    \
-    \    ]\n      },\n      \"gridPos\": {\n        \"h\": 2,\n        \"w\": 24,\n\
-    \        \"x\": 0,\n        \"y\": 9\n      },\n      \"id\": 88,\n      \"maxPerRow\"\
-    : 2,\n      \"options\": {\n        \"colorMode\": \"background\",\n        \"\
-    graphMode\": \"none\",\n        \"justifyMode\": \"center\",\n        \"orientation\"\
-    : \"auto\",\n        \"reduceOptions\": {\n          \"calcs\": [\n          \
-    \  \"last\"\n          ],\n          \"fields\": \"\",\n          \"values\":\
-    \ false\n        },\n        \"showPercentChange\": false,\n        \"text\":\
-    \ {},\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n      },\n\
-    \      \"pluginVersion\": \"10.4.1\",\n      \"repeat\": \"cluster\",\n      \"\
-    repeatDirection\": \"v\",\n      \"targets\": [\n        {\n          \"datasource\"\
-    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
-    \          \"expr\": \"count({__name__=~\\\"kube_deployment_metadata_generation|kube_daemonset_metadata_generation|kube_statefulset_metadata_generation\\\
+    \     },\n      \"description\": \"Untainted-node count subtracts distinct nodes\
+    \ carrying non-system taints from the real node inventory. Multiple taints on\
+    \ one node count once. No taints means all inventoried nodes are untainted; missing\
+    \ node inventory stays No data. Taint-detail queries A/D stay empty when there\
+    \ are no matching taints.\",\n      \"fieldConfig\": {\n        \"defaults\":\
+    \ {\n          \"color\": {\n            \"mode\": \"palette-classic\"\n     \
+    \     },\n          \"mappings\": [],\n          \"thresholds\": {\n         \
+    \   \"mode\": \"absolute\",\n            \"steps\": [\n              {\n     \
+    \           \"color\": \"green\",\n                \"value\": null\n         \
+    \     },\n              {\n                \"color\": \"red\",\n             \
+    \   \"value\": 80\n              }\n            ]\n          }\n        },\n \
+    \       \"overrides\": [\n          {\n            \"matcher\": {\n          \
+    \    \"id\": \"byRegexp\",\n              \"options\": \"/异常.*/\"\n          \
+    \  },\n            \"properties\": [\n              {\n                \"id\"\
+    : \"color\",\n                \"value\": {\n                  \"fixedColor\":\
+    \ \"red\",\n                  \"mode\": \"fixed\"\n                }\n       \
+    \       }\n            ]\n          }\n        ]\n      },\n      \"gridPos\"\
+    : {\n        \"h\": 2,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\":\
+    \ 9\n      },\n      \"id\": 88,\n      \"maxPerRow\": 2,\n      \"options\":\
+    \ {\n        \"colorMode\": \"background\",\n        \"graphMode\": \"none\",\n\
+    \        \"justifyMode\": \"center\",\n        \"orientation\": \"auto\",\n  \
+    \      \"reduceOptions\": {\n          \"calcs\": [\n            \"last\"\n  \
+    \        ],\n          \"fields\": \"\",\n          \"values\": false\n      \
+    \  },\n        \"showPercentChange\": false,\n        \"text\": {},\n        \"\
+    textMode\": \"auto\",\n        \"wideLayout\": true\n      },\n      \"pluginVersion\"\
+    : \"10.4.1\",\n      \"repeat\": \"cluster\",\n      \"repeatDirection\": \"v\"\
+    ,\n      \"targets\": [\n        {\n          \"datasource\": {\n            \"\
+    type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n\
+    \          \"editorMode\": \"code\",\n          \"exemplar\": false,\n       \
+    \   \"expr\": \"count({__name__=~\\\"kube_deployment_metadata_generation|kube_daemonset_metadata_generation|kube_statefulset_metadata_generation\\\
     \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
     })\",\n          \"hide\": false,\n          \"instant\": true,\n          \"\
     legendFormat\": \"工作负载\",\n          \"range\": false,\n          \"refId\": \"\
@@ -502,16 +507,18 @@ data:
     \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\"\
     : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"count by(cluster)(kube_node_info{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"}) - count by(cluster)(kube_node_spec_taint{cluster=~\\\
-    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",key!~\\\"node.kubernetes.io.*\\\
+    \"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"}) - (count by(cluster)(count\
+    \ by(cluster,node)(kube_node_spec_taint{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
+    \"${environment:regex}\\\",key!~\\\"node.kubernetes.io.*\\\"})) or on(cluster)\
+    \ (count by(cluster)(kube_node_info{cluster=~\\\"${cluster:regex}\\\",environment=~\\\
+    \"${environment:regex}\\\"}) * 0))\",\n          \"hide\": false,\n          \"\
+    instant\": true,\n          \"legendFormat\": \"正常节点\",\n          \"range\":\
+    \ false,\n          \"refId\": \"B\"\n        },\n        {\n          \"datasource\"\
+    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": false,\n\
+    \          \"expr\": \"count by(key,cluster)(kube_node_spec_taint{cluster=~\\\"\
+    ${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\",key!~\\\"node.kubernetes.io.*\\\
     \"})\",\n          \"hide\": false,\n          \"instant\": true,\n          \"\
-    legendFormat\": \"正常节点\",\n          \"range\": false,\n          \"refId\": \"\
-    B\"\n        },\n        {\n          \"datasource\": {\n            \"type\"\
-    : \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\n          },\n    \
-    \      \"editorMode\": \"code\",\n          \"exemplar\": false,\n          \"\
-    expr\": \"count by(key,cluster)(kube_node_spec_taint{cluster=~\\\"${cluster:regex}\\\
-    \",environment=~\\\"${environment:regex}\\\",key!~\\\"node.kubernetes.io.*\\\"\
-    })\",\n          \"hide\": false,\n          \"instant\": true,\n          \"\
     legendFormat\": \"{{key}}\",\n          \"range\": false,\n          \"refId\"\
     : \"A\"\n        }\n      ],\n      \"transformations\": [\n        {\n      \
     \    \"id\": \"renameByRegex\",\n          \"options\": {\n            \"regex\"\
@@ -1284,69 +1291,31 @@ data:
     \       \"persistentvolumeclaim\": \"PVC\"\n            }\n          }\n     \
     \   }\n      ],\n      \"type\": \"table\"\n    },\n    {\n      \"datasource\"\
     : {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n \
-    \     },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\"\
-    : {\n            \"mode\": \"palette-classic\"\n          },\n          \"custom\"\
-    : {\n            \"axisBorderShow\": false,\n            \"axisCenteredZero\"\
-    : false,\n            \"axisColorMode\": \"text\",\n            \"axisLabel\"\
-    : \"\",\n            \"axisPlacement\": \"auto\",\n            \"barAlignment\"\
-    : 0,\n            \"drawStyle\": \"line\",\n            \"fillOpacity\": 0,\n\
-    \            \"gradientMode\": \"none\",\n            \"hideFrom\": {\n      \
-    \        \"legend\": false,\n              \"tooltip\": false,\n             \
-    \ \"viz\": false\n            },\n            \"insertNulls\": false,\n      \
-    \      \"lineInterpolation\": \"linear\",\n            \"lineWidth\": 1,\n   \
-    \         \"pointSize\": 5,\n            \"scaleDistribution\": {\n          \
-    \    \"type\": \"linear\"\n            },\n            \"showPoints\": \"never\"\
-    ,\n            \"spanNulls\": false,\n            \"stacking\": {\n          \
-    \    \"group\": \"A\",\n              \"mode\": \"none\"\n            },\n   \
-    \         \"thresholdsStyle\": {\n              \"mode\": \"off\"\n          \
-    \  }\n          },\n          \"links\": [],\n          \"mappings\": [],\n  \
-    \        \"thresholds\": {\n            \"mode\": \"absolute\",\n            \"\
-    steps\": [\n              {\n                \"color\": \"green\"\n          \
-    \    },\n              {\n                \"color\": \"red\",\n              \
-    \  \"value\": 80\n              }\n            ]\n          },\n          \"unit\"\
-    : \"none\"\n        },\n        \"overrides\": []\n      },\n      \"gridPos\"\
-    : {\n        \"h\": 8,\n        \"w\": 9,\n        \"x\": 6,\n        \"y\": 33\n\
-    \      },\n      \"id\": 86,\n      \"options\": {\n        \"legend\": {\n  \
-    \        \"calcs\": [\n            \"last\",\n            \"max\"\n          ],\n\
-    \          \"displayMode\": \"table\",\n          \"placement\": \"right\",\n\
-    \          \"showLegend\": true,\n          \"sortBy\": \"Max\",\n          \"\
-    sortDesc\": true\n        },\n        \"tooltip\": {\n          \"mode\": \"multi\"\
-    ,\n          \"sort\": \"desc\"\n        }\n      },\n      \"pluginVersion\"\
-    : \"10.4.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
-    \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
-    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": true,\n\
-    \          \"expr\": \"sum(irate(container_cpu_usage_seconds_total{job=\\\"cadvisor\\\
-    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
-    ,container !=\\\"\\\",container!=\\\"POD\\\"}[2m])) by (namespace)>0.5\",\n  \
-    \        \"hide\": false,\n          \"instant\": false,\n          \"interval\"\
-    : \"\",\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"{{ namespace\
-    \ }}\",\n          \"metric\": \"container_cpu\",\n          \"refId\": \"A\"\
-    ,\n          \"step\": 10\n        }\n      ],\n      \"title\": \"各命名空间CPU使用核(>0.5)\"\
-    ,\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n  \
-    \      \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n\
-    \      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n \
-    \           \"mode\": \"palette-classic\"\n          },\n          \"custom\"\
-    : {\n            \"axisBorderShow\": false,\n            \"axisCenteredZero\"\
-    : false,\n            \"axisColorMode\": \"text\",\n            \"axisLabel\"\
-    : \"\",\n            \"axisPlacement\": \"auto\",\n            \"barAlignment\"\
-    : 0,\n            \"drawStyle\": \"line\",\n            \"fillOpacity\": 0,\n\
-    \            \"gradientMode\": \"none\",\n            \"hideFrom\": {\n      \
-    \        \"legend\": false,\n              \"tooltip\": false,\n             \
-    \ \"viz\": false\n            },\n            \"insertNulls\": false,\n      \
-    \      \"lineInterpolation\": \"linear\",\n            \"lineWidth\": 1,\n   \
-    \         \"pointSize\": 5,\n            \"scaleDistribution\": {\n          \
-    \    \"type\": \"linear\"\n            },\n            \"showPoints\": \"never\"\
-    ,\n            \"spanNulls\": false,\n            \"stacking\": {\n          \
-    \    \"group\": \"A\",\n              \"mode\": \"none\"\n            },\n   \
-    \         \"thresholdsStyle\": {\n              \"mode\": \"off\"\n          \
-    \  }\n          },\n          \"decimals\": 0,\n          \"links\": [],\n   \
-    \       \"mappings\": [],\n          \"thresholds\": {\n            \"mode\":\
-    \ \"absolute\",\n            \"steps\": [\n              {\n                \"\
+    \     },\n      \"description\": \"Shows namespaces exceeding 0.5 CPU cores only.\
+    \ An empty result can mean none exceed the threshold; confirm CPU collection/freshness\
+    \ separately. Empty is not a zero CPU measurement.\",\n      \"fieldConfig\":\
+    \ {\n        \"defaults\": {\n          \"color\": {\n            \"mode\": \"\
+    palette-classic\"\n          },\n          \"custom\": {\n            \"axisBorderShow\"\
+    : false,\n            \"axisCenteredZero\": false,\n            \"axisColorMode\"\
+    : \"text\",\n            \"axisLabel\": \"\",\n            \"axisPlacement\":\
+    \ \"auto\",\n            \"barAlignment\": 0,\n            \"drawStyle\": \"line\"\
+    ,\n            \"fillOpacity\": 0,\n            \"gradientMode\": \"none\",\n\
+    \            \"hideFrom\": {\n              \"legend\": false,\n             \
+    \ \"tooltip\": false,\n              \"viz\": false\n            },\n        \
+    \    \"insertNulls\": false,\n            \"lineInterpolation\": \"linear\",\n\
+    \            \"lineWidth\": 1,\n            \"pointSize\": 5,\n            \"\
+    scaleDistribution\": {\n              \"type\": \"linear\"\n            },\n \
+    \           \"showPoints\": \"never\",\n            \"spanNulls\": false,\n  \
+    \          \"stacking\": {\n              \"group\": \"A\",\n              \"\
+    mode\": \"none\"\n            },\n            \"thresholdsStyle\": {\n       \
+    \       \"mode\": \"off\"\n            }\n          },\n          \"links\": [],\n\
+    \          \"mappings\": [],\n          \"thresholds\": {\n            \"mode\"\
+    : \"absolute\",\n            \"steps\": [\n              {\n                \"\
     color\": \"green\"\n              },\n              {\n                \"color\"\
     : \"red\",\n                \"value\": 80\n              }\n            ]\n  \
-    \        },\n          \"unit\": \"bytes\"\n        },\n        \"overrides\"\
-    : []\n      },\n      \"gridPos\": {\n        \"h\": 8,\n        \"w\": 9,\n \
-    \       \"x\": 15,\n        \"y\": 33\n      },\n      \"id\": 85,\n      \"options\"\
+    \        },\n          \"unit\": \"none\"\n        },\n        \"overrides\":\
+    \ []\n      },\n      \"gridPos\": {\n        \"h\": 8,\n        \"w\": 9,\n \
+    \       \"x\": 6,\n        \"y\": 33\n      },\n      \"id\": 86,\n      \"options\"\
     : {\n        \"legend\": {\n          \"calcs\": [\n            \"last\",\n  \
     \          \"max\"\n          ],\n          \"displayMode\": \"table\",\n    \
     \      \"placement\": \"right\",\n          \"showLegend\": true,\n          \"\
@@ -1355,9 +1324,52 @@ data:
     \      },\n      \"pluginVersion\": \"10.4.1\",\n      \"targets\": [\n      \
     \  {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n   \
     \         \"uid\": \"${DS_METRICS}\"\n          },\n          \"editorMode\":\
-    \ \"code\",\n          \"exemplar\": true,\n          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\
+    \ \"code\",\n          \"exemplar\": true,\n          \"expr\": \"sum(irate(container_cpu_usage_seconds_total{job=\\\
     \"cadvisor\\\",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\
-    \",container !=\\\"\\\",container!=\\\"POD\\\"}) by (namespace) > 1*1024*1024*1024\"\
+    \",container !=\\\"\\\",container!=\\\"POD\\\"}[2m])) by (namespace)>0.5\",\n\
+    \          \"hide\": false,\n          \"instant\": false,\n          \"interval\"\
+    : \"\",\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"{{ namespace\
+    \ }}\",\n          \"metric\": \"container_cpu\",\n          \"refId\": \"A\"\
+    ,\n          \"step\": 10\n        }\n      ],\n      \"title\": \"各命名空间CPU使用核(>0.5)\"\
+    ,\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n  \
+    \      \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n\
+    \      \"description\": \"Shows namespaces whose working-set memory exceeds 1\
+    \ GiB only. An empty result can mean none exceed the threshold; confirm memory\
+    \ collection/freshness separately. Empty is not zero memory usage.\",\n      \"\
+    fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n          \
+    \  \"mode\": \"palette-classic\"\n          },\n          \"custom\": {\n    \
+    \        \"axisBorderShow\": false,\n            \"axisCenteredZero\": false,\n\
+    \            \"axisColorMode\": \"text\",\n            \"axisLabel\": \"\",\n\
+    \            \"axisPlacement\": \"auto\",\n            \"barAlignment\": 0,\n\
+    \            \"drawStyle\": \"line\",\n            \"fillOpacity\": 0,\n     \
+    \       \"gradientMode\": \"none\",\n            \"hideFrom\": {\n           \
+    \   \"legend\": false,\n              \"tooltip\": false,\n              \"viz\"\
+    : false\n            },\n            \"insertNulls\": false,\n            \"lineInterpolation\"\
+    : \"linear\",\n            \"lineWidth\": 1,\n            \"pointSize\": 5,\n\
+    \            \"scaleDistribution\": {\n              \"type\": \"linear\"\n  \
+    \          },\n            \"showPoints\": \"never\",\n            \"spanNulls\"\
+    : false,\n            \"stacking\": {\n              \"group\": \"A\",\n     \
+    \         \"mode\": \"none\"\n            },\n            \"thresholdsStyle\"\
+    : {\n              \"mode\": \"off\"\n            }\n          },\n          \"\
+    decimals\": 0,\n          \"links\": [],\n          \"mappings\": [],\n      \
+    \    \"thresholds\": {\n            \"mode\": \"absolute\",\n            \"steps\"\
+    : [\n              {\n                \"color\": \"green\"\n              },\n\
+    \              {\n                \"color\": \"red\",\n                \"value\"\
+    : 80\n              }\n            ]\n          },\n          \"unit\": \"bytes\"\
+    \n        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n    \
+    \    \"h\": 8,\n        \"w\": 9,\n        \"x\": 15,\n        \"y\": 33\n   \
+    \   },\n      \"id\": 85,\n      \"options\": {\n        \"legend\": {\n     \
+    \     \"calcs\": [\n            \"last\",\n            \"max\"\n          ],\n\
+    \          \"displayMode\": \"table\",\n          \"placement\": \"right\",\n\
+    \          \"showLegend\": true,\n          \"sortBy\": \"Max\",\n          \"\
+    sortDesc\": true\n        },\n        \"tooltip\": {\n          \"mode\": \"multi\"\
+    ,\n          \"sort\": \"desc\"\n        }\n      },\n      \"pluginVersion\"\
+    : \"10.4.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
+    \            \"type\": \"prometheus\",\n            \"uid\": \"${DS_METRICS}\"\
+    \n          },\n          \"editorMode\": \"code\",\n          \"exemplar\": true,\n\
+    \          \"expr\": \"sum (container_memory_working_set_bytes{job=\\\"cadvisor\\\
+    \",cluster=~\\\"${cluster:regex}\\\",environment=~\\\"${environment:regex}\\\"\
+    ,container !=\\\"\\\",container!=\\\"POD\\\"}) by (namespace) > 1*1024*1024*1024\"\
     ,\n          \"interval\": \"\",\n          \"intervalFactor\": 1,\n         \
     \ \"legendFormat\": \"{{namespace} {{ pod }}\",\n          \"metric\": \"container_memory_usage:sort_desc\"\
     ,\n          \"range\": true,\n          \"refId\": \"A\",\n          \"step\"\
@@ -1368,35 +1380,40 @@ data:
     x\": 0,\n        \"y\": 41\n      },\n      \"id\": 49,\n      \"panels\": [],\n\
     \      \"targets\": [],\n      \"title\": \"Pod资源总览：所选Pod:【$Pod】\",\n      \"\
     type\": \"row\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"\
-    prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\"\
-    : {\n        \"defaults\": {\n          \"color\": {\n            \"mode\": \"\
-    thresholds\"\n          },\n          \"custom\": {\n            \"align\": \"\
-    center\",\n            \"cellOptions\": {\n              \"type\": \"auto\"\n\
-    \            },\n            \"filterable\": false,\n            \"inspect\":\
-    \ false\n          },\n          \"displayName\": \"\",\n          \"mappings\"\
-    : [],\n          \"max\": 100,\n          \"min\": 0,\n          \"thresholds\"\
-    : {\n            \"mode\": \"percentage\",\n            \"steps\": [\n       \
-    \       {\n                \"color\": \"green\",\n                \"value\": null\n\
-    \              },\n              {\n                \"color\": \"#EAB839\",\n\
-    \                \"value\": 80\n              },\n              {\n          \
-    \      \"color\": \"red\",\n                \"value\": 90\n              }\n \
-    \           ]\n          },\n          \"unit\": \"short\"\n        },\n     \
-    \   \"overrides\": [\n          {\n            \"matcher\": {\n              \"\
-    id\": \"byName\",\n              \"options\": \"命名空间\"\n            },\n     \
-    \       \"properties\": [\n              {\n                \"id\": \"custom.width\"\
-    ,\n                \"value\": 96\n              }\n            ]\n          },\n\
-    \          {\n            \"matcher\": {\n              \"id\": \"byName\",\n\
-    \              \"options\": \"Pod名称\"\n            },\n            \"properties\"\
-    : [\n              {\n                \"id\": \"custom.width\",\n            \
-    \    \"value\": 207\n              },\n              {\n                \"id\"\
-    : \"custom.align\",\n                \"value\": \"right\"\n              }\n \
-    \           ]\n          },\n          {\n            \"matcher\": {\n       \
-    \       \"id\": \"byName\",\n              \"options\": \"使用核数\"\n           \
-    \ },\n            \"properties\": [\n              {\n                \"id\":\
-    \ \"custom.width\",\n                \"value\": 71\n              }\n        \
+    prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"description\"\
+    : \"Filesystem targets J/S require per-application-container container_fs_usage_bytes\
+    \ / container_fs_limit_bytes with pod/container labels. Current k3s/containerd\
+    \ telemetry does not provide these selected series. These fields remain No data;\
+    \ node/root filesystem metrics do not substitute for per-container usage or limits.\
+    \ No synthetic zero or additional collector permissions are used.\",\n      \"\
+    fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n          \
+    \  \"mode\": \"thresholds\"\n          },\n          \"custom\": {\n         \
+    \   \"align\": \"center\",\n            \"cellOptions\": {\n              \"type\"\
+    : \"auto\"\n            },\n            \"filterable\": false,\n            \"\
+    inspect\": false\n          },\n          \"displayName\": \"\",\n          \"\
+    mappings\": [],\n          \"max\": 100,\n          \"min\": 0,\n          \"\
+    thresholds\": {\n            \"mode\": \"percentage\",\n            \"steps\"\
+    : [\n              {\n                \"color\": \"green\",\n                \"\
+    value\": null\n              },\n              {\n                \"color\": \"\
+    #EAB839\",\n                \"value\": 80\n              },\n              {\n\
+    \                \"color\": \"red\",\n                \"value\": 90\n        \
+    \      }\n            ]\n          },\n          \"unit\": \"short\"\n       \
+    \ },\n        \"overrides\": [\n          {\n            \"matcher\": {\n    \
+    \          \"id\": \"byName\",\n              \"options\": \"命名空间\"\n        \
+    \    },\n            \"properties\": [\n              {\n                \"id\"\
+    : \"custom.width\",\n                \"value\": 96\n              }\n        \
     \    ]\n          },\n          {\n            \"matcher\": {\n              \"\
-    id\": \"byName\",\n              \"options\": \"重启\"\n            },\n       \
-    \     \"properties\": [\n              {\n                \"id\": \"custom.width\"\
+    id\": \"byName\",\n              \"options\": \"Pod名称\"\n            },\n    \
+    \        \"properties\": [\n              {\n                \"id\": \"custom.width\"\
+    ,\n                \"value\": 207\n              },\n              {\n       \
+    \         \"id\": \"custom.align\",\n                \"value\": \"right\"\n  \
+    \            }\n            ]\n          },\n          {\n            \"matcher\"\
+    : {\n              \"id\": \"byName\",\n              \"options\": \"使用核数\"\n\
+    \            },\n            \"properties\": [\n              {\n            \
+    \    \"id\": \"custom.width\",\n                \"value\": 71\n              }\n\
+    \            ]\n          },\n          {\n            \"matcher\": {\n      \
+    \        \"id\": \"byName\",\n              \"options\": \"重启\"\n            },\n\
+    \            \"properties\": [\n              {\n                \"id\": \"custom.width\"\
     ,\n                \"value\": 38\n              },\n              {\n        \
     \        \"id\": \"thresholds\",\n                \"value\": {\n             \
     \     \"mode\": \"absolute\",\n                  \"steps\": [\n              \
@@ -2096,34 +2113,39 @@ data:
     \ },\n      \"gridPos\": {\n        \"h\": 1,\n        \"w\": 24,\n        \"\
     x\": 0,\n        \"y\": 68\n      },\n      \"id\": 61,\n      \"panels\": [\n\
     \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"fieldConfig\"\
-    : {\n            \"defaults\": {\n              \"color\": {\n               \
-    \ \"mode\": \"thresholds\"\n              },\n              \"custom\": {\n  \
-    \              \"align\": \"center\",\n                \"cellOptions\": {\n  \
-    \                \"type\": \"auto\"\n                },\n                \"filterable\"\
-    : false,\n                \"inspect\": false\n              },\n             \
-    \ \"displayName\": \"\",\n              \"mappings\": [],\n              \"thresholds\"\
-    : {\n                \"mode\": \"percentage\",\n                \"steps\": [\n\
-    \                  {\n                    \"color\": \"green\"\n             \
-    \     }\n                ]\n              },\n              \"unit\": \"none\"\
-    \n            },\n            \"overrides\": [\n              {\n            \
-    \    \"matcher\": {\n                  \"id\": \"byRegexp\",\n               \
-    \   \"options\": \".*%\"\n                },\n                \"properties\":\
-    \ [\n                  {\n                    \"id\": \"unit\",\n            \
-    \        \"value\": \"percentunit\"\n                  },\n                  {\n\
-    \                    \"id\": \"custom.cellOptions\",\n                    \"value\"\
-    : {\n                      \"mode\": \"gradient\",\n                      \"type\"\
-    : \"gauge\",\n                      \"valueDisplayMode\": \"color\"\n        \
-    \            }\n                  },\n                  {\n                  \
-    \  \"id\": \"max\",\n                    \"value\": 1\n                  },\n\
-    \                  {\n                    \"id\": \"min\",\n                 \
-    \   \"value\": 0\n                  },\n                  {\n                \
-    \    \"id\": \"color\",\n                    \"value\": {\n                  \
-    \    \"mode\": \"continuous-GrYlRd\"\n                    }\n                \
-    \  },\n                  {\n                    \"id\": \"decimals\",\n      \
-    \              \"value\": 0\n                  }\n                ]\n        \
-    \      },\n              {\n                \"matcher\": {\n                 \
-    \ \"id\": \"byRegexp\",\n                  \"options\": \".*内存使用$|.*内存限制$|.*内存需求$|.*磁盘使用$|.*磁盘限制$\"\
+    ,\n            \"uid\": \"${DS_METRICS}\"\n          },\n          \"description\"\
+    : \"Filesystem targets J/M require per-application-container container_fs_usage_bytes\
+    \ / container_fs_limit_bytes with pod/container labels. Current k3s/containerd\
+    \ telemetry does not provide these selected series. These fields remain No data;\
+    \ node/root filesystem metrics do not substitute for per-container usage or limits.\
+    \ No synthetic zero or additional collector permissions are used.\",\n       \
+    \   \"fieldConfig\": {\n            \"defaults\": {\n              \"color\":\
+    \ {\n                \"mode\": \"thresholds\"\n              },\n            \
+    \  \"custom\": {\n                \"align\": \"center\",\n                \"cellOptions\"\
+    : {\n                  \"type\": \"auto\"\n                },\n              \
+    \  \"filterable\": false,\n                \"inspect\": false\n              },\n\
+    \              \"displayName\": \"\",\n              \"mappings\": [],\n     \
+    \         \"thresholds\": {\n                \"mode\": \"percentage\",\n     \
+    \           \"steps\": [\n                  {\n                    \"color\":\
+    \ \"green\"\n                  }\n                ]\n              },\n      \
+    \        \"unit\": \"none\"\n            },\n            \"overrides\": [\n  \
+    \            {\n                \"matcher\": {\n                  \"id\": \"byRegexp\"\
+    ,\n                  \"options\": \".*%\"\n                },\n              \
+    \  \"properties\": [\n                  {\n                    \"id\": \"unit\"\
+    ,\n                    \"value\": \"percentunit\"\n                  },\n    \
+    \              {\n                    \"id\": \"custom.cellOptions\",\n      \
+    \              \"value\": {\n                      \"mode\": \"gradient\",\n \
+    \                     \"type\": \"gauge\",\n                      \"valueDisplayMode\"\
+    : \"color\"\n                    }\n                  },\n                  {\n\
+    \                    \"id\": \"max\",\n                    \"value\": 1\n    \
+    \              },\n                  {\n                    \"id\": \"min\",\n\
+    \                    \"value\": 0\n                  },\n                  {\n\
+    \                    \"id\": \"color\",\n                    \"value\": {\n  \
+    \                    \"mode\": \"continuous-GrYlRd\"\n                    }\n\
+    \                  },\n                  {\n                    \"id\": \"decimals\"\
+    ,\n                    \"value\": 0\n                  }\n                ]\n\
+    \              },\n              {\n                \"matcher\": {\n         \
+    \         \"id\": \"byRegexp\",\n                  \"options\": \".*内存使用$|.*内存限制$|.*内存需求$|.*磁盘使用$|.*磁盘限制$\"\
     \n                },\n                \"properties\": [\n                  {\n\
     \                    \"id\": \"unit\",\n                    \"value\": \"bytes\"\
     \n                  }\n                ]\n              },\n              {\n\
