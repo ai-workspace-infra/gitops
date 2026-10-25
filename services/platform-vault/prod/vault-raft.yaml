@@ -139,6 +139,14 @@ spec:
     - protocol: TCP
       port: 8200
   egress:
+  # GitHub OIDC discovery/JWKS; published GitHub web range (api.github.com/meta).
+  # Restricted to HTTPS, with issuer/audience/repository/workflow enforced by Vault.
+  - to:
+    - ipBlock:
+        cidr: 140.82.112.0/20
+    ports:
+    - protocol: TCP
+      port: 443
   - to:
     - ipBlock:
         cidr: 10.43.0.1/32
