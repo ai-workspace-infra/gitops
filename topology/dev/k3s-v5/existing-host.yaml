@@ -7,7 +7,7 @@ metadata:
 spec:
   management_mode: existing
   fact_source: explicit-target
-  existing_node: web-saas-prod-v5
+  existing_node: web-saas-dev-v5
   provider: akamai-cloud
   region: jp-tyo-3
   cluster_name: dev-k3s-v5

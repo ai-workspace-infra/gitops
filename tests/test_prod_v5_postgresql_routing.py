@@ -41,6 +41,7 @@ class ProdV5PostgresqlRoutingTests(unittest.TestCase):
         self.assertNotIn('generation_candidate', host_record['groups'])
         dev = yaml.safe_load((ROOT / 'topology/dev/k3s-v5/existing-host.yaml').read_text())
         self.assertEqual(dev['metadata']['environment'], 'dev')
+        self.assertEqual(dev['spec']['existing_node'], 'web-saas-dev-v5')
         self.assertEqual(dev['spec']['inventory_host'], 'dev-k3s-v5.svc.plus')
         self.assertEqual(dev['spec']['service_domains'], ['dev-k3s-v5.svc.plus'])
         cluster = yaml.safe_load((ROOT / 'environments/clusters/dev-k3s-v5/namespaces.yaml').read_text())
