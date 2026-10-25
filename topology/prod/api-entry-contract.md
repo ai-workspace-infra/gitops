@@ -11,3 +11,5 @@
 - IaC owns Cloudflare DNS and Worker-domain resources; Edge Gateway owns Worker deployment; Toolkit selects fixed owner revisions and acceptance evidence. Host configuration is applied to the existing K3s node through SSH + Playbook, then reconciled by Flux.
 - Keep Serverless active until complete business equality, PROD Proxy UUID equality, latest native schema and a single writer fence are verified. Identity-only copying is insufficient.
 - GitOps declaration changes are not live CNAME or database cutover evidence. Existing callers must migrate to the reviewed IaC owner before production alias reconciliation.
+
+- PostgreSQL alias: `postgresql.svc.plus` targets `postgresql-k3s-v5.svc.plus`. The current K3s database is ClusterIP-only and stunnel is disabled; DNS readiness does not establish an external database tunnel.
