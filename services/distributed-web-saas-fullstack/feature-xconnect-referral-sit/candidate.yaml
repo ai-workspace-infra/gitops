@@ -1,0 +1,19 @@
+# Configuration snapshot; this is not deployment approval or business acceptance.
+feature_id: xconnect-referral
+stage: sit
+status: BLOCKED
+base_gitops_sha: 3aae1f740349117c70f1fa02abeac829c057a879
+accounts_source_sha: 8d1b09a6f2022af221b2a817d516952af41ced0e
+portal_source_sha: 2a272f295235efdd39f469245ad74177d1a5ff5d
+frontend_router_source_sha: ab3f9e81223f19290b03a6b8d2dfefffb3309e55
+# Cloudflare Worker is outside this lane; public routed flow requires separate evidence.
+frontend_router_in_lane: false
+data_baseline: unknown_not_observed
+runtime_image_ids: unknown_not_observed
+candidate_fingerprint: BLOCKED
+blockers:
+  - trusted_dev_resource_identity
+  - isolated_data_baseline
+  - flux_and_runtime_image_reconciliation
+  - authorized_real_stripe_sandbox_credentials_and_egress
+  - database_owner_and_runtime_ddl_refusal

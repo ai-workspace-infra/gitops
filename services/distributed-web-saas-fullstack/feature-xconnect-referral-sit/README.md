@@ -13,3 +13,16 @@ referenced by name only and generated in-namespace by the lane operator.
 Egress is restricted to in-namespace peers and cluster DNS.
 
 Lifecycle: this directory is removed (GitOps target revoked) at SIT cleanup.
+
+## Candidate evidence
+
+`candidate.yaml` records unresolved evidence explicitly. Run
+`python3 candidate-fingerprint.py` to compute a reproducible declaration hash.
+The hash covers all deployed configuration inputs plus candidate metadata; it is
+not a frozen candidate fingerprint. Data baseline and runtime image reconciliation
+remain unknown, so the command always reports `BLOCKED`. The namespace and values
+both identify SIT. This delta grants no deployment or UAT promotion authority.
+
+The declared egress policy currently permits only namespace peers and DNS. Real
+Stripe Sandbox validation remains blocked until the existing owner supplies a
+reviewed egress path and authorized Sandbox identity; mock results do not satisfy it.

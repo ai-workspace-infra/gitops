@@ -5,7 +5,7 @@ metadata:
   labels:
     release.svc.plus/feature: xconnect-referral
     release.svc.plus/lane: sit
-    release.svc.plus/environment: dev
+    release.svc.plus/environment: sit
     release.svc.plus/candidate: accounts-8d1b09a-portal-2a272f2-router-ab3f9e8
     # The pinned PostgreSQL subchart does not drop container capabilities,
     # so restricted is audited/warned and baseline is enforced (recorded gap).
