@@ -37,5 +37,5 @@ targets:
         review.
   namespace: agent-proxy-us
   lifecycle:
-    status: active
+    status: migration
     persistent: false
