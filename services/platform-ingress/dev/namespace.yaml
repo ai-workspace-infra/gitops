@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform-ingress
+  labels:
+    environment: dev
+    app.kubernetes.io/part-of: dev-platform-ingress
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
+  annotations:
+    security.svc.plus/exception: Exactly hostPort 80/443 on the Dev node; non-root/drop
+      ALL/no privileged/no hostNetwork. Platform-owned, outside feature TTL.

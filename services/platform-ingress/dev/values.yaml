@@ -1,0 +1,86 @@
+image:
+  registry: docker.io
+  repository: library/traefik
+  digest: sha256:1336e85aaed293bd63d005086e0dd013b04078b26aaeb1c18b26a2f928af7e65
+versionOverride: v3.7.16
+deployment:
+  replicas: 1
+updateStrategy:
+  type: Recreate
+hostNetwork: false
+nodeSelector:
+  kubernetes.io/hostname: dev-k3s-v5
+service:
+  enabled: false
+ingressClass:
+  enabled: false
+gateway:
+  enabled: false
+gatewayClass:
+  enabled: false
+api:
+  dashboard: false
+ingressRoute:
+  dashboard:
+    enabled: false
+  healthcheck:
+    enabled: false
+providers:
+  kubernetesCRD:
+    enabled: false
+  kubernetesGateway:
+    enabled: false
+  kubernetesIngress:
+    enabled: true
+    ingressClass: dev-web-saas
+    namespaces:
+    - feature-xconnect-referral-sit
+    - web-saas-uat
+    publishedService:
+      enabled: false
+    allowExternalNameServices: false
+    allowEmptyServices: false
+rbac:
+  enabled: true
+  namespaced: true
+ports:
+  web:
+    port: 8000
+    hostPort: 80
+  websecure:
+    port: 8443
+    hostPort: 443
+    http:
+      tls:
+        enabled: true
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  readOnlyRootFilesystem: true
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  runAsGroup: 65532
+  fsGroup: 65532
+  seccompProfile:
+    type: RuntimeDefault
+persistence:
+  enabled: true
+  path: /data
+  size: 1Gi
+  storageClass: local-path
+certificatesResolvers:
+  dev-http01:
+    acme:
+      storage: /data/acme.json
+      httpChallenge:
+        entryPoint: web
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    cpu: 300m
+    memory: 256Mi

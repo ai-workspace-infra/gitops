@@ -1,0 +1,53 @@
+# Immutable six-component Helm values overlay. Update atomically through the reviewed release writer.
+caddy:
+  podAnnotations:
+    release.svc.plus/source_repository: ai-workspace-infra/artifacts
+    release.svc.plus/source_sha: 959d6c8ec8dfdf1224fe3b976ae4548d38947332
+    release.svc.plus/image_digest: sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf
+    release.svc.plus/build_run_id: '30419099530'
+  image: ghcr.io/ai-workspace-infra/caddy-cloudflare@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf
+console:
+  podAnnotations:
+    release.svc.plus/source_repository: ai-workspace-services/portal
+    release.svc.plus/source_sha: 2a272f295235efdd39f469245ad74177d1a5ff5d
+    release.svc.plus/image_digest: sha256:03ffaf0174c64aede7602b5d566ff27921f760e134028afabb62b646324228f9
+    release.svc.plus/build_run_id: '40256113380'
+  singleContainer:
+    image: ghcr.io/ai-workspace-services/console@sha256:03ffaf0174c64aede7602b5d566ff27921f760e134028afabb62b646324228f9
+accounts:
+  podAnnotations:
+    release.svc.plus/source_repository: ai-workspace-services/accounts
+    release.svc.plus/source_sha: 8d1b09a6f2022af221b2a817d516952af41ced0e
+    release.svc.plus/image_digest: sha256:6edd156ce6974dfd0cd7486beebbb446091e4019eacf3c272e05aba4a609737d
+    release.svc.plus/build_run_id: '40222728214'
+  workload:
+    image: ghcr.io/ai-workspace-services/accounts@sha256:6edd156ce6974dfd0cd7486beebbb446091e4019eacf3c272e05aba4a609737d
+    env:
+      IMAGE: ghcr.io/ai-workspace-services/accounts@sha256:6edd156ce6974dfd0cd7486beebbb446091e4019eacf3c272e05aba4a609737d
+billing:
+  podAnnotations:
+    release.svc.plus/source_repository: ai-workspace-services/billing-service
+    release.svc.plus/source_sha: 77557d796a66dcd3373d7731125890bd91ebc5d3
+    release.svc.plus/image_digest: sha256:01cc4490e62be69aaa936dd3c2aa9aa909a876844e2968f0ccdc1cbbdbd44ba2
+    release.svc.plus/build_run_id: '40222731605'
+  workload:
+    image: ghcr.io/ai-workspace-services/billing-service@sha256:01cc4490e62be69aaa936dd3c2aa9aa909a876844e2968f0ccdc1cbbdbd44ba2
+    env:
+      IMAGE: ghcr.io/ai-workspace-services/billing-service@sha256:01cc4490e62be69aaa936dd3c2aa9aa909a876844e2968f0ccdc1cbbdbd44ba2
+content:
+  podAnnotations:
+    release.svc.plus/source_repository: ai-workspace-services/content-service
+    release.svc.plus/source_sha: 94e722c913a8c6e8adbb5b0bd363b20c9d3b4d08
+    release.svc.plus/image_digest: sha256:791113978a1f158ae411901f4fc25b18bc3a407fbb858bc89ce669df67469478
+    release.svc.plus/build_run_id: '40222734705'
+  workload:
+    image: ghcr.io/ai-workspace-services/docs@sha256:791113978a1f158ae411901f4fc25b18bc3a407fbb858bc89ce669df67469478
+    env:
+      IMAGE: ghcr.io/ai-workspace-services/docs@sha256:791113978a1f158ae411901f4fc25b18bc3a407fbb858bc89ce669df67469478
+postgresql:
+  podAnnotations:
+    release.svc.plus/source_repository: ai-workspace-services/postgresql
+    release.svc.plus/source_sha: 5920028cd696780b64f35b51f9f263578fb8e6fe
+    release.svc.plus/image_digest: sha256:c6ee94d4c91054128823e816e936e03702eee80fdcc04d3271a7e68167974ad2
+    release.svc.plus/build_run_id: '40222746656'
+  image: ghcr.io/ai-workspace-services/postgresql@sha256:c6ee94d4c91054128823e816e936e03702eee80fdcc04d3271a7e68167974ad2
