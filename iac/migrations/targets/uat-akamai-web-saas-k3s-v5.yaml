@@ -1,0 +1,44 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: uat-akamai-web-saas-k3s-v5-migration
+  environment: uat
+  project: svc.plus
+  provider: akamai-cloud
+  account: manbuzhe2026
+  workspace: web-saas-k3s-v5
+  auth:
+    expected_identity: manbuzhe2026
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Verify the existing Vault-backed account token; never create or revoke
+        the management identity.
+    account:
+      mode: not_applicable
+      reason: Akamai namespaces use declared public keys and workload firewalls; this
+        adapter owns no independent account resources.
+    resources:
+      mode: terraform
+      manifest: iac/migrations/resources/svc.plus/uat/akamai/web-saas-k3s-v5.yaml
+      state:
+        key: terraform/uat/svc.plus/akamai-cloud/manbuzhe2026/web-saas-k3s-v5/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - module.compute_web_saas_k3s_v5
+      - linode_firewall.fw_web_saas_k3s_v5
+      protected:
+      - module.compute_web_saas_k3s_v5
+      - linode_firewall.fw_web_saas_k3s_v5
+      ownership_reviewed: true
+      requires_existing_state: true
+      destroy_allowed: false
+      reason: Read-only historical UAT state inspection. Keep workdir/state ownership
+        until the state is verified empty or explicitly handed off.
+  namespace: web-saas-k3s-v5
+  lifecycle:
+    status: migration
+    persistent: true
+  provenance:
+    commit: 110c7d38747daca070aaffc98e88321ca136a201
+    path: resources/svc.plus/uat/akamai/web-saas-k3s-v5.yaml

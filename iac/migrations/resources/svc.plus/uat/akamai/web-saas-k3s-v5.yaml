@@ -1,0 +1,17 @@
+# Historical UAT identity only; never deploy this manifest.
+global:
+  provider: akamai-cloud
+  environment: uat
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: web-saas-k3s-v5
+  state_namespace: web-saas-k3s-v5
+  region: jp-tyo-3
+  image: linode/debian13
+  type: g6-standard-2
+  name_prefix: ''
+hosts:
+- name: web-saas-k3s-v5
+  region: jp-tyo-3
+  type: g6-standard-2
+  image: linode/debian13

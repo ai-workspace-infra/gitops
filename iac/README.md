@@ -31,3 +31,23 @@ Terraform stages require `manifest`, exact `state.key`, `cli_workspace: default`
 External/shared prerequisites use live checks, not resource IDs copied into a
 receipt. Persistent volumes, shared identities, network and backend cannot be
 retired by the ordinary deployment chain.
+
+## Catalog and lifecycle
+
+`iac/catalog.yaml` references the same `IaCPipelineTargets` files used by deployment.
+The IaC owner validates the selected GitOps SHA, all referenced manifest identities,
+unique state ownership, and the canonical environment/project/provider/account/namespace
+key before credentials are read. `workspace` remains a compatibility alias and must
+match `namespace` exactly.
+
+Every catalog target declares `lifecycle.status: active | migration | retired` and
+`lifecycle.persistent`. Deployment selects active targets; preflight also inspects
+migration/retired targets. Non-active targets cannot plan/apply/destroy, and persistent
+targets cannot be destroyed. Moving a target changes its lifecycle declaration; it
+never silently changes its state key or transfers state ownership.
+
+Historical source states are declared under `migration_sources` with exact keys and
+immutable provenance. They remain read-only. Historical resource manifests under
+`iac/migrations/resources/` are only inspection inputs and cannot be deployed.
+The old Kubernetes UAT target is retained there until its state bindings are verified;
+this change neither removes state nor changes the current production cluster.
