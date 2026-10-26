@@ -1,6 +1,7 @@
 apiVersion: gitops.svc.plus/v1alpha1
 kind: IaCTargetCatalog
 target_manifests:
+- iac/targets/dev-akamai-dev-k3s-v5.yaml
 - iac/targets/prod-akamai-web-saas-k3s-v5.yaml
 - iac/targets/prod-akamai-web-saas-prod-v5.yaml
 - iac/targets/prod-gcp-identity.yaml

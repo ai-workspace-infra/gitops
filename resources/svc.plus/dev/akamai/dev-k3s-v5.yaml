@@ -1,0 +1,48 @@
+# On-demand Dev K3s host on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
+# 4 vCPU / 8 GB shared (g6-standard-4), Debian 12 to match the current Dev host.
+# Disposable: created/destroyed on demand by the Toolkit dev-host lifecycle dispatch.
+# Owns no DNS, volumes or business data. Never shares state with PROD web-saas-k3s-v5.
+global:
+  provider: akamai-cloud
+  environment: dev
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: dev-k3s-v5
+  state_namespace: dev-k3s-v5
+  region: jp-tyo-3
+  image: linode/debian12
+  type: g6-standard-4
+  name_prefix: ""
+  user_data_file: cloud-init.yaml
+  prevent_destroy: false
+
+ssh_keys:
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+  - name: operator-macos-ed25519
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGeMGuRKEGtIOTb9BsXMP2rD9Fpv9f3rrrABjOW7EV7s shenlan@HaitaodeMacBook-Pro.local"
+
+hosts:
+  - name: dev-k3s-v5
+    region: jp-tyo-3
+    type: g6-standard-4
+    image: linode/debian12
+    private_ip: false
+    ansible_user: root
+    groups: [dev, k3s_server, akamai_cloud]
+    tags: [svc-plus, dev, dev-k3s-v5, akamai-cloud, on-demand]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: false
+      allow_https: false
+      additional_tcp_ports: []
+    host_vars:
+      role: primary
+      cloud_provider: akamai-cloud
+      cloud_region: jp-tyo-3
+      deployment_mode: kubernetes
+      k8s_cluster_name: dev-k3s-v5
+      k3s_platform_k3s_version: v1.37.1+k3s1
+      k3s_platform_write_kubeconfig_mode: "0600"
+      public_dns_cutover: false

@@ -1,0 +1,41 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: dev-akamai-dev-k3s-v5
+  environment: dev
+  project: svc.plus
+  provider: akamai-cloud
+  account: manbuzhe2026
+  workspace: dev-k3s-v5
+  auth:
+    expected_identity: manbuzhe2026
+    # Dev-only role; must be created by the Vault owner and bound to the Toolkit
+    # `dev` GitHub Environment. Never reuse UAT/PROD roles for this target.
+    vault_role: github-actions-platform-ops-toolkit-dev-akamai-oidc-bootstrap-manbuzhe2026
+    record: kv/data/CICD/dev/akamai-cloud/manbuzhe2026
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Verify the existing Vault-backed account token; never create or revoke the management identity.
+    account:
+      mode: not_applicable
+      reason: Akamai namespaces use declared public keys and workload firewalls; this adapter owns no independent account resources.
+    resources:
+      mode: terraform
+      manifest: resources/svc.plus/dev/akamai/dev-k3s-v5.yaml
+      state:
+        key: terraform/dev/svc.plus/akamai-cloud/manbuzhe2026/dev-k3s-v5/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - module.compute_dev_k3s_v5
+      - linode_firewall.fw_dev_k3s_v5
+      protected: []
+      ownership_reviewed: true
+      requires_existing_state: false
+      destroy_allowed: true
+      reason: Disposable Dev K3s host for feature lanes. Create/destroy on demand; no business data, DNS or volumes are owned here.
+  namespace: dev-k3s-v5
+  lifecycle:
+    status: active
+    persistent: false
+    on_demand: true
