@@ -64,7 +64,7 @@ accounts:
       DATABASE_BACKGROUND_WRITERS: 'true'
       DATABASE_IDENTITY_SHA256: 9b1feed566dbd40af07447a60a6f04185af5e59202f1afb6a0a5a994088bc3be
       STRIPE_MODE: test
-      OAUTH_FRONTEND_URL: http://web-saas-console:8080
+      OAUTH_FRONTEND_URL: http://web-saas-console
     secretRefs:
     - lane-accounts-runtime
 console:
@@ -92,13 +92,13 @@ console:
       HOSTNAME: 0.0.0.0
       RUNTIME_ENV: sit
       NEXT_PUBLIC_RUNTIME_ENVIRONMENT: sit
-      ACCOUNT_SERVICE_URL: http://web-saas-accounts:8080
-      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: http://web-saas-accounts:8080
-      RUNTIME_AUTH_URL: http://web-saas-accounts:8080
-      SERVER_SERVICE_URL: http://web-saas-accounts:8080
+      ACCOUNT_SERVICE_URL: http://web-saas-accounts
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: http://web-saas-accounts
+      RUNTIME_AUTH_URL: http://web-saas-accounts
+      SERVER_SERVICE_URL: http://web-saas-accounts
       BRIDGE_SERVER_URL: http://lane-disabled.invalid
-      NEXT_PUBLIC_SITE_URL: http://web-saas-console:8080
-      APP_BASE_URL: http://web-saas-console:8080
+      NEXT_PUBLIC_SITE_URL: http://web-saas-console
+      APP_BASE_URL: http://web-saas-console
       SESSION_COOKIE_SECURE: 'false'
       NEXT_PUBLIC_SESSION_COOKIE_SECURE: 'false'
     secretRefs:
