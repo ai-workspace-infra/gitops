@@ -1,0 +1,113 @@
+# Feature lane SIT: XConnect referral, re-verification of merged fixed candidate.
+# Secrets are referenced by name only; they are created in-namespace by the
+# lane operator and never stored in Git.
+global:
+  environment: sit
+  expectedNamespace: feature-xconnect-referral-sit
+caddy:
+  enabled: false
+edgeGateway:
+  enabled: false
+stunnelClient:
+  enabled: false
+stunnelServer:
+  enabled: false
+billing:
+  enabled: false
+content:
+  enabled: false
+postgresql:
+  enabled: true
+  image: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
+  username: lane_admin
+  database: account
+  existingSecret: lane-db-admin
+  secretKey: password
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    fsGroup: 999
+    seccompProfile: {type: RuntimeDefault}
+  resources:
+    requests: {cpu: 100m, memory: 192Mi}
+    limits: {cpu: 500m, memory: 384Mi}
+  storage:
+    className: local-path
+    size: 2Gi
+accounts:
+  enabled: true
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile: {type: RuntimeDefault}
+  workload:
+    image: ghcr.io/ai-workspace-services/accounts@sha256:6edd156ce6974dfd0cd7486beebbb446091e4019eacf3c272e05aba4a609737d
+    port: 8080
+    replicas: 1
+    resources:
+      requests: {cpu: 25m, memory: 64Mi}
+      limits: {cpu: 300m, memory: 256Mi}
+    env:
+      CONFIG_TEMPLATE: /app/config/account.cloudrun.yaml
+      CONFIG_PATH: /tmp/xcontrol/account.yaml
+      DB_HOST: web-saas-postgresql
+      DB_PORT: '5432'
+      DB_NAME: account
+      POSTGRES_USER: xc_app_rw
+      ROOT_BOOTSTRAP_EMAIL: lane-root@sit.xconnect-referral.invalid
+      XWORKMATE_SHARED_TENANT_DOMAIN: sit.xconnect-referral.invalid
+      XWORKMATE_SHARED_TENANT_DOMAINS: sit.xconnect-referral.invalid
+      IMAGE: ghcr.io/ai-workspace-services/accounts@sha256:6edd156ce6974dfd0cd7486beebbb446091e4019eacf3c272e05aba4a609737d
+      DATABASE_RUNTIME_ROLE: primary
+      DATABASE_BACKGROUND_WRITERS: 'true'
+      DATABASE_IDENTITY_SHA256: 9b1feed566dbd40af07447a60a6f04185af5e59202f1afb6a0a5a994088bc3be
+      STRIPE_MODE: test
+      OAUTH_FRONTEND_URL: http://web-saas-console:8080
+    secretRefs:
+    - lane-accounts-runtime
+console:
+  enabled: true
+  deploymentProfile: single-container
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    seccompProfile: {type: RuntimeDefault}
+  singleContainer:
+    image: ghcr.io/ai-workspace-services/console@sha256:03ffaf0174c64aede7602b5d566ff27921f760e134028afabb62b646324228f9
+    port: 8080
+    command:
+    - /usr/bin/tini
+    - --
+    args:
+    - node
+    - server.js
+    replicas: 1
+    resources:
+      requests: {cpu: 50m, memory: 192Mi}
+      limits: {cpu: 300m, memory: 384Mi}
+    env:
+      HOSTNAME: 0.0.0.0
+      RUNTIME_ENV: sit
+      NEXT_PUBLIC_RUNTIME_ENVIRONMENT: sit
+      ACCOUNT_SERVICE_URL: http://web-saas-accounts:8080
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: http://web-saas-accounts:8080
+      RUNTIME_AUTH_URL: http://web-saas-accounts:8080
+      SERVER_SERVICE_URL: http://web-saas-accounts:8080
+      BRIDGE_SERVER_URL: http://lane-disabled.invalid
+      NEXT_PUBLIC_SITE_URL: http://web-saas-console:8080
+      APP_BASE_URL: http://web-saas-console:8080
+      SESSION_COOKIE_SECURE: 'false'
+      NEXT_PUBLIC_SESSION_COOKIE_SECURE: 'false'
+    secretRefs:
+    - lane-console-runtime
+    probes:
+      readinessProbe:
+        tcpSocket:
+          port: primary
+      livenessProbe:
+        tcpSocket:
+          port: primary
+        initialDelaySeconds: 20
