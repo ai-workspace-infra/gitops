@@ -1,4 +1,4 @@
-# dev-k3s-v5 metrics collectors (desired state, applied manually 2026-10-26)
+# dev-k3s-v5 metrics collectors (declaration; runtime state not verified)
 
 Namespace `monitoring` on dev-k3s-v5 only. Production web-saas-k3s-v5 is unchanged.
 
@@ -9,13 +9,40 @@ Namespace `monitoring` on dev-k3s-v5 only. Production web-saas-k3s-v5 is unchang
 
 ## Label scheme
 - `cluster=dev-k3s-v5` (vmagent external label).
-- `environment`: `dev` by default (host/unlabelled); series whose `namespace` ends in `-sit` / `-uat`
-  get `sit` / `uat`. Convention: such namespaces must also carry label `environment=sit|uat`.
-- `namespace`, `pod`, `container`, `node`, `instance`, `nodename` kept as in prod.
+- Host and unmapped namespaces retain `environment=dev`.
+- The explicit referral namespace rule targets the planned SIT Namespace from
+  GitOps #606, stacked on #605: `release.svc.plus/lane=sit`,
+  `release.svc.plus/feature=xconnect-referral`. `release.svc.plus/environment=dev` denotes
+  the infrastructure tier; `lane` supplies the measurement phase. Candidate and
+  environment remain independent. No candidate label is emitted by this static
+  declaration. Only a trusted owner runtime receipt binding namespace UID, full
+  candidate and actual imageIDs may supply it; #599 metadata is not runtime proof.
+- Do not infer phase from a namespace suffix. Unknown namespaces stay `dev`
+  without a fabricated feature or candidate. New controlled namespace metadata
+  requires a reviewed rule snapshot from the execution owner.
+- The persistent `web-saas-uat` namespace is not mapped by this snapshot and
+  currently falls back to `environment=dev`; add a reviewed UAT rule before
+  claiming phase-aware UAT monitoring.
+- The former shell renderer was removed: it read unrelated `websaas.io` keys,
+  and executable renderers do not belong in this declarations-only repository.
+- `namespace`, `pod`, `container`, `node`, `instance`, `nodename` are preserved.
+  Node series do not acquire a synthetic namespace/feature label.
+
+## Deployment gates
+This is a patch of the existing #601 declaration, not an independently deployable
+release. No Dev identity or supported non-production ingest identity has been
+verified. Do not deploy, merge, change production routing, or copy credentials.
+The local sink is an explicit blocked placeholder, not central Grafana ingestion.
+Current canonical StarsL supports cluster/environment, but its environment
+choices derive from `kube_node_info`; host series marked `dev` do not enumerate
+`sit`/`uat`. Selecting a phase can hide node metrics. Verify the live read-only
+contract before claiming the requested combined view; do not duplicate node
+series into phases to make the dashboard appear healthy.
 
 ## Remote write — BLOCKED
 `-remoteWrite.url` currently points at a temporary in-namespace sink (`vmsink`, 2d retention).
-observability-k3s-v5.svc.plus only proxies Grafana (:3000); there is no authenticated VictoriaMetrics
-write route and no non-prod write credential. Needs a server-side ingest route + dedicated dev write
-credential before switching the URL. Deviation: kubelet/cadvisor use `insecure_skip_verify: true`
-(K3s kubelet serving cert not verified yet).
+An authenticated central Dev write route and dedicated write identity have not been
+verified; this declaration does not establish whether an unobserved server-side route exists.
+Do not switch the URL or claim central ingestion until the approved non-production route and
+runtime injection are reviewed and verified. Kubelet/cadvisor use
+`insecure_skip_verify: true`; K3s serving-certificate validation remains unresolved.

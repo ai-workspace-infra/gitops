@@ -27,8 +27,10 @@ data:
       scrape_interval: 15s
       external_labels:
         cluster: dev-k3s-v5
-    # environment: default dev; namespaces named *-sit / *-uat (which must also carry
-    # label environment=sit|uat) map to sit / uat.
+    # Host/unmapped series remain dev. Namespace rules below are a review-time
+    # snapshot of the planned #606 SIT namespace metadata, not suffix inference.
+    # Regenerate through the owning execution layer when namespace metadata changes.
+    # Candidate labels require a trusted owner runtime receipt; no static candidate.
     scrape_configs:
     - job_name: node-exporter
       kubernetes_sd_configs: [{role: pod, namespaces: {names: [monitoring]}}]
@@ -51,12 +53,11 @@ data:
       metric_relabel_configs:
       - {source_labels: [__name__], regex: 'namedprocess_namegroup_(read_bytes_total|write_bytes_total|open_filedesc|worst_fd_ratio)', action: drop}
     - job_name: kube-state-metrics
-      static_configs: [{targets: [dev-observability-agent-state.monitoring.svc:8080], labels: {environment: dev}}]
+      static_configs: [{targets: ["dev-observability-agent-state.monitoring.svc:8080"], labels: {environment: dev}}]
       metric_relabel_configs: &envmap
       - {target_label: environment, replacement: dev}
       - {source_labels: [namespace], regex: 'feature-xconnect-referral-sit', target_label: environment, replacement: 'sit'}
       - {source_labels: [namespace], regex: 'feature-xconnect-referral-sit', target_label: feature_id, replacement: 'xconnect-referral'}
-      - {source_labels: [namespace], regex: 'feature-xconnect-referral-sit', target_label: candidate, replacement: 'mock-r1-bc4f53b49f8a'}
     - job_name: kubelet
       scheme: https
       authorization: {type: Bearer, credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}
@@ -90,7 +91,7 @@ spec:
       containers:
       - name: vm
         image: victoriametrics/victoria-metrics:v1.101.0
-        args: [-storageDataPath=/data, -retentionPeriod=2d, -httpListenAddr=:8428]
+        args: ["-storageDataPath=/data", "-retentionPeriod=2d", "-httpListenAddr=:8428"]
         ports: [{containerPort: 8428, name: http}]
         securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
         resources: {requests: {cpu: 20m, memory: 64Mi}, limits: {cpu: 300m, memory: 384Mi}}
