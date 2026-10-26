@@ -1,7 +1,12 @@
 # On-demand Dev K3s host on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
 # 4 vCPU / 8 GB shared (g6-standard-4), Debian 12 to match the current Dev host.
 # Disposable: created/destroyed on demand by the Toolkit dev-host lifecycle dispatch.
-# Owns no DNS, volumes or business data. Never shares state with PROD web-saas-k3s-v5.
+# Owns no DNS or separate volumes. Never shares state with PROD web-saas-k3s-v5.
+# One non-production node hosts isolated PR feature SIT namespaces and, after an
+# authorized merge to main, UAT namespaces. Namespace stage does not rename this
+# host or change its Terraform state identity. Feature data needs its own cleanup.
+# Address and instance ID are runtime facts: consume refreshed IaC CMDB/inventory,
+# never a historical IP or this declaration as a connection target.
 global:
   provider: akamai-cloud
   environment: dev
@@ -29,7 +34,7 @@ hosts:
     image: linode/debian12
     private_ip: false
     ansible_user: root
-    groups: [dev, k3s_server, akamai_cloud]
+    groups: [dev, k3s, k3s_server, akamai_cloud]
     tags: [svc-plus, dev, dev-k3s-v5, akamai-cloud, on-demand]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
@@ -43,6 +48,14 @@ hosts:
       cloud_region: jp-tyo-3
       deployment_mode: kubernetes
       k8s_cluster_name: dev-k3s-v5
+      # Consume the existing Playbooks k3s_platform_bootstrap role; never its
+      # production-root/repository defaults for this non-production node.
+      k3s_platform_node_name: dev-k3s-v5
+      k3s_platform_cluster_name: dev-k3s-v5
+      k3s_platform_git_url: https://github.com/ai-workspace-infra/gitops.git
+      k3s_platform_git_branch: main
+      k3s_platform_flux_root_path: ./environments/clusters/dev-k3s-v5
+      k3s_platform_git_auth_mode: public
       k3s_platform_k3s_version: v1.37.1+k3s1
       k3s_platform_write_kubeconfig_mode: "0600"
       public_dns_cutover: false

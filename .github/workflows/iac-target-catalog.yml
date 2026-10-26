@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: ai-workspace-infra/iac_modules
-          ref: f5d410595b93aef8ce5dac4e510583c110da12a1  # iac_modules PR 476; repin to its merge SHA
+          ref: 1d3bc5b54a49b946b98e48bf9f73606369b77d02
           path: iac_modules
           persist-credentials: false
       - uses: actions/setup-python@v5
