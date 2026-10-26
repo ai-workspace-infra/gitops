@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-saas-http
+  namespace: web-saas-uat
+  annotations:
+    kubernetes.io/ingress.class: dev-web-saas
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+  - host: web-saas-uat.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80
+  - host: accounts-web-saas-uat.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80
+  - host: billing-web-saas-uat.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80

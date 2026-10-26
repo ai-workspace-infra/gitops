@@ -1,0 +1,20 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dev-ingress
+  namespace: platform-ingress
+spec:
+  interval: 5m
+  releaseName: dev-ingress
+  serviceAccountName: platform-ingress-reconciler
+  chartRef:
+    kind: OCIRepository
+    name: traefik-chart
+  install:
+    crds: Skip
+  upgrade:
+    crds: Skip
+  valuesFrom:
+  - kind: ConfigMap
+    name: dev-ingress-values
+    valuesKey: values.yaml
