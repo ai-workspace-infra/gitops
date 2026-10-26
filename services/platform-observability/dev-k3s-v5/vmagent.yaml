@@ -54,7 +54,9 @@ data:
       static_configs: [{targets: [dev-observability-agent-state.monitoring.svc:8080], labels: {environment: dev}}]
       metric_relabel_configs: &envmap
       - {target_label: environment, replacement: dev}
-      - {source_labels: [namespace], regex: '.*-(sit|uat)', target_label: environment, replacement: '$1'}
+      - {source_labels: [namespace], regex: 'feature-xconnect-referral-sit', target_label: environment, replacement: 'sit'}
+      - {source_labels: [namespace], regex: 'feature-xconnect-referral-sit', target_label: feature_id, replacement: 'xconnect-referral'}
+      - {source_labels: [namespace], regex: 'feature-xconnect-referral-sit', target_label: candidate, replacement: 'mock-r1-bc4f53b49f8a'}
     - job_name: kubelet
       scheme: https
       authorization: {type: Bearer, credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}
