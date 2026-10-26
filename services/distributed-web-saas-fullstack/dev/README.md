@@ -79,9 +79,15 @@ These are names/fields, not stored secret values:
   Dev `kv/CICD/dev/ghcr` fields GHCR_USERNAME/GHCR_TOKEN. Five service packages are
   private; Caddy/chart are public. Each namespace receives its own Secret object.
 - `web-saas-db-admin`: `password`, for the PostgreSQL initializer/admin only.
-- `web-saas-accounts-runtime`: POSTGRES_PASSWORD for xc_accounts_rw, signing fields
+- `web-saas-accounts-runtime`: DATABASE_URL for the namespace-qualified PostgreSQL
+  service, account database and xc_accounts_rw role (password remains runtime-only),
+  plus POSTGRES_PASSWORD for the template and signing fields
   AUTH_TOKEN_PUBLIC_TOKEN/AUTH_TOKEN_ACCESS_SECRET/AUTH_TOKEN_REFRESH_SECRET,
-  AGENT_API_TOKEN and a **real owner-verified** DATABASE_IDENTITY_SHA256. Optional
+  AGENT_API_TOKEN and DATABASE_IDENTITY_SHA256 matching the managed DATABASE_URL.
+  DATABASE_RUNTIME_ROLE=primary requires DATABASE_URL explicitly; the template
+  store.dsn is not the managed runtime override. ConnectionIdentity hashes JSON
+  Host/Port/Database/Role (not the password); it is a routing fingerprint, not
+  physical database identity or business acceptance. Verify the actual DB separately. Optional
   Sandbox STRIPE_SECRET_KEY/STRIPE_WEBHOOK_SECRET must derive only from authorized
   SANDBOX_* Dev fields. No live payment/payout key is permitted.
 - `web-saas-console-runtime`, `web-saas-billing-runtime` and
