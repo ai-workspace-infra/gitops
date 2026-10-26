@@ -38,6 +38,14 @@ run logs: Caddy 30419099530, Console 40256113380, Accounts 40222728214, Billing
 40222731605, Content 40222734705 and PostgreSQL 40222746656. Chart publishing run
 40212878369 uses source 1d3812d386924105498afefbe3c1ad3e418fd90a. PostgreSQL is a new
 candidate c6ee94d4... from source 5920028c..., not the unproven old 56f4179b digest.
+SIT Accounts now uses the actual unmerged [Accounts #279](https://github.com/ai-workspace-services/accounts/pull/279)
+preview at source `450ab9940071883139d4a73e6cfd2f4b77d193ba`, publisher run
+`40378515318`, digest `sha256:97a58ebe7fab56432777591604491c2dea7fc7cc57cd35820fedef78fa328572`.
+Its authenticated publisher job and OCI source/revision/platform labels were checked.
+UAT retains the main Accounts baseline above until a merged-main release exists;
+the other five components are unchanged. Accounts #277 remains historical business
+baseline and cannot be retrospectively claimed as a pre-merge SIT test. The native
+schema source/hash remains reviewed 8d/e223; #279 changes the publishing proof.
 A changed image/config/data baseline requires new candidate evidence.
 
 ## Trusted owner and persistent main

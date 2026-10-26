@@ -12,8 +12,10 @@ Values were checked against the actual pinned chart schema and final rendering.
 
 A single replica, Recreate, UID/GID/fsGroup 65532, RuntimeDefault, no capabilities,
 no privilege escalation, no hostNetwork or hostPath. Container 8000/8443 maps only
-to hostPort 80/443 on dev-k3s-v5. The namespace's Pod Security hostPort exception
-permits these exact host ports; it does not make the process privileged.
+to hostPort 80/443 on dev-k3s-v5. The namespace uses Pod Security enforce=privileged to permit hostPort; PSA does
+not restrict it to these exact ports. The fixed reviewed manifest, owner raw/rendered
+hashes and runtime checks constrain the intended 80/443 mapping. The controller
+process remains non-root with no privileged container.
 
 RBAC is namespaced to platform-ingress and the two exact app namespaces; there
 are no ClusterRoles/ClusterRoleBindings, Gateway/Traefik CRD providers, IngressClass
