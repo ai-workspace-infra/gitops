@@ -17,8 +17,13 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.before }}
+          path: gitops-base
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
           repository: ai-workspace-infra/iac_modules
-          ref: 0b2a6b6b23d458f04b247f62f97ee16cb0f322a9
+          ref: 8f49ea39d07e3192353058aeca72bb8293ae6cb5
           path: iac_modules
           persist-credentials: false
       - uses: actions/setup-python@v5
@@ -30,3 +35,4 @@ jobs:
         env:
           IAC_GITOPS_ROOT: ${{ github.workspace }}/gitops
           IAC_MANIFEST: iac/catalog.yaml
+          IAC_BASE_ROOT: ${{ github.workspace }}/gitops-base

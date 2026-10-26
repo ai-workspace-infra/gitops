@@ -51,3 +51,8 @@ immutable provenance. They remain read-only. Historical resource manifests under
 `iac/migrations/resources/` are only inspection inputs and cannot be deployed.
 The old Kubernetes UAT target is retained there until its state bindings are verified;
 this change neither removes state nor changes the current production cluster.
+
+Catalog CI compares state identities with the base revision. A removed or renamed
+active domain must keep its old state identity in a migration/retired target, so it
+remains visible to preflight. Final state ownership retirement needs separately
+verified evidence and a reviewed maintenance change.
