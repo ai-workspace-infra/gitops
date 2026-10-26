@@ -33,10 +33,10 @@ resources/<project>/<environment>/<provider>/<declaration>.yaml
 Terraform 模块通过输入接收声明路径，不在模块仓库内搜索文件。渲染后的 HCL、tfvars、state、
 CMDB 和 Ansible inventory 都是构建产物，并由 Git 忽略。
 
-Akamai UAT 资源按 Terraform state namespace 拆分时，每个 YAML 只声明一台主机；
-`global.state_namespace`、`global.workspace` 和文件名（不含 `.yaml`）必须一致。现有消费流水线
-通过 `workspace` 参数生成统一 state key，因此触发时必须使用声明中的 namespace；不能把多个服务重新合并进 `selfhost`。
-`scripts/validate-akamai-uat-six-namespaces.sh` 是此契约的 CI 校验。
+GitOps IaC catalog 引用明确的目标声明，统一提供 manifest、环境、project、provider、account、namespace 与 lifecycle。
+部署和 preflight 共用 IaC owner 的 loader 与 canonical key 生成器。Akamai UAT 每个目标只声明一台主机，
+资源的 workspace/state_namespace 必须与目标 namespace 一致。历史对象保留为只读的 migration/retired 目标。
+Catalog CI 同时比较变更前后的 state 身份，防止资源域改名或删除后漏检尚未退休的 state。
 
 新增云厂商或环境时：
 
