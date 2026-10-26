@@ -17,13 +17,13 @@ console:
 accounts:
   podAnnotations:
     release.svc.plus/source_repository: ai-workspace-services/accounts
-    release.svc.plus/source_sha: 8d1b09a6f2022af221b2a817d516952af41ced0e
-    release.svc.plus/image_digest: sha256:6edd156ce6974dfd0cd7486beebbb446091e4019eacf3c272e05aba4a609737d
-    release.svc.plus/build_run_id: '40222728214'
+    release.svc.plus/source_sha: 450ab9940071883139d4a73e6cfd2f4b77d193ba
+    release.svc.plus/image_digest: sha256:97a58ebe7fab56432777591604491c2dea7fc7cc57cd35820fedef78fa328572
+    release.svc.plus/build_run_id: '40378515318'
   workload:
-    image: ghcr.io/ai-workspace-services/accounts@sha256:6edd156ce6974dfd0cd7486beebbb446091e4019eacf3c272e05aba4a609737d
+    image: ghcr.io/ai-workspace-services/accounts@sha256:97a58ebe7fab56432777591604491c2dea7fc7cc57cd35820fedef78fa328572
     env:
-      IMAGE: ghcr.io/ai-workspace-services/accounts@sha256:6edd156ce6974dfd0cd7486beebbb446091e4019eacf3c272e05aba4a609737d
+      IMAGE: ghcr.io/ai-workspace-services/accounts@sha256:97a58ebe7fab56432777591604491c2dea7fc7cc57cd35820fedef78fa328572
 billing:
   podAnnotations:
     release.svc.plus/source_repository: ai-workspace-services/billing-service
