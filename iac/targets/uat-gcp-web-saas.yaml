@@ -55,3 +55,7 @@ targets:
       ownership_reviewed: true
       destroy_allowed: false
       reason: Reconcile the existing persistent web-saas-uat host only; database data and destruction remain outside this emergency release.
+  namespace: web-saas
+  lifecycle:
+    status: active
+    persistent: false

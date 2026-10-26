@@ -11,12 +11,6 @@ targets:
     expected_identity: manbuzhe2026
     vault_role: github-actions-platform-ops-toolkit-prod-akamai-oidc-bootstrap-manbuzhe2026
     record: kv/data/CICD/prod/akamai-cloud/manbuzhe2026
-  validation:
-    mode: cleanroom
-    source_manifest: iac/targets/prod-gcp-web-saas.yaml
-    source_target: prod-gcp-web-saas
-    destroy_owners:
-    - module.compute_web_saas_prod_v5
   stages:
     bootstrap:
       mode: verify
@@ -39,3 +33,7 @@ targets:
       requires_existing_state: true
       destroy_allowed: false
       reason: The stopped candidate host is retained for Dev adoption. Do not destroy it from the production target; migrate ownership through a separately reviewed IaC state handoff.
+  namespace: web-saas-prod-v5
+  lifecycle:
+    status: migration
+    persistent: true

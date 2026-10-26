@@ -35,3 +35,7 @@ targets:
       destroy_allowed: false
       reason: Retain existing state; destroy stays disabled until per-target UAT/cleanup
         review.
+  namespace: agent-proxy-us
+  lifecycle:
+    status: active
+    persistent: false

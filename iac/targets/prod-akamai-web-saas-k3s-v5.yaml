@@ -32,3 +32,7 @@ targets:
       requires_existing_state: true
       destroy_allowed: false
       reason: Retained Kubernetes PROD namespace; plan must be additive only, with zero deletions or modifications to V5.
+  namespace: web-saas-k3s-v5
+  lifecycle:
+    status: active
+    persistent: true

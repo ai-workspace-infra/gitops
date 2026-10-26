@@ -37,11 +37,13 @@ the renderer (`--resources` or `RESOURCES`). Terraform modules receive declarati
 inputs; they do not discover files under the module repository. Rendered HCL, tfvars, state,
 CMDB and Ansible inventory remain build artifacts and are ignored by Git.
 
-For isolated Akamai UAT resources, each YAML declares exactly one host. The
-`global.state_namespace`, `global.workspace` and filename stem must match. The existing consuming
-workflow derives the canonical state key from its `workspace` input, so it must be invoked with
-the matching namespace; declarations must not be regrouped under shared `selfhost`. CI validates this contract with
-`scripts/validate-akamai-uat-six-namespaces.sh`.
+The GitOps IaC catalog references explicit target declarations with manifest,
+environment, project, provider, concrete account, namespace and lifecycle. Deployment
+and preflight share the IaC owner loader and canonical key generator. Akamai UAT
+targets own one host each; resource workspace/state_namespace must match the target
+namespace. Historical targets remain inspection-only migration/retired records.
+The catalog CI validates identities and compares the base revision so state ownership
+cannot disappear when a domain is removed or renamed.
 
 When adding a provider or environment:
 

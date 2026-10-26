@@ -1,0 +1,35 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCTargetCatalog
+target_manifests:
+- iac/targets/prod-akamai-web-saas-k3s-v5.yaml
+- iac/targets/prod-akamai-web-saas-prod-v5.yaml
+- iac/targets/prod-gcp-identity.yaml
+- iac/targets/prod-gcp-web-saas.yaml
+- iac/targets/prod-serverless-runtime.yaml
+- iac/targets/uat-akamai-agent-proxy-jp.yaml
+- iac/targets/uat-akamai-agent-proxy-sg.yaml
+- iac/targets/uat-akamai-agent-proxy-us.yaml
+- iac/targets/uat-akamai-ai-workspace.yaml
+- iac/targets/uat-akamai-open-platform.yaml
+- iac/targets/uat-akamai-web-saas.yaml
+- iac/targets/uat-gcp-identity.yaml
+- iac/targets/uat-gcp-web-saas.yaml
+- iac/targets/uat-serverless-runtime.yaml
+- iac/migrations/targets/uat-akamai-web-saas-k3s-v5.yaml
+migration_sources:
+- id: uat-akamai-legacy-shared
+  environment: uat
+  project: platform-ops-toolkit
+  provider: akamai-cloud
+  account: manbuzhe2026
+  namespace: selfhost
+  lifecycle:
+    status: migration
+    persistent: true
+  read_only: true
+  state:
+    key: terraform/uat/platform-ops-toolkit/akamai-cloud/manbuzhe2026/selfhost/terraform.tfstate
+    cli_workspace: default
+  provenance:
+    commit: 77d3a51f5b39f420ebee4fe07a22b442ddd3b206
+    path: .github/scripts/platform-ops/provision/platform-ops_provision_route-ref-to-an-explicit-profile.sh

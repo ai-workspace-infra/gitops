@@ -1,0 +1,38 @@
+name: IaC target catalog declarations
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths: ['iac/**', 'resources/**', '.github/workflows/iac-target-catalog.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Validate IaC target catalog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: gitops
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.event.before }}
+          path: gitops-base
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: ai-workspace-infra/iac_modules
+          ref: c68c50fcc74aa805efa3065138befcc1238c817c
+          path: iac_modules
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install PyYAML==6.0.2 Jinja2==3.1.6
+      - name: Validate references, lifecycle and canonical state identities
+        run: python3 iac_modules/scripts/pipeline/unified_cli.py catalog-check
+        env:
+          IAC_GITOPS_ROOT: ${{ github.workspace }}/gitops
+          IAC_MANIFEST: iac/catalog.yaml
+          IAC_BASE_ROOT: ${{ github.workspace }}/gitops-base

@@ -51,3 +51,7 @@ targets:
       mode: unsupported
       reason: Use an explicitly reviewed workload target; bootstrap does not own workload
         state.
+  namespace: bootstrap-identity
+  lifecycle:
+    status: active
+    persistent: false

@@ -58,3 +58,7 @@ targets:
       requires_existing_state: true
       destroy_allowed: false
       reason: Manage the protected V3 host and retained ingress in the existing state; do not recreate the absent legacy host or adopt the separately managed V2 generation.
+  namespace: web-saas
+  lifecycle:
+    status: active
+    persistent: false

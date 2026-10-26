@@ -32,3 +32,7 @@ targets:
         location: asia-east1
       reason: Verify the declared shared registry. Cloud Run application release and
         Cloudflare DNS remain independent owners.
+  namespace: serverless-runtime
+  lifecycle:
+    status: active
+    persistent: false
