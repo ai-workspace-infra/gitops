@@ -34,7 +34,7 @@ hosts:
     image: linode/debian12
     private_ip: false
     ansible_user: root
-    groups: [dev, k3s_server, akamai_cloud]
+    groups: [dev, k3s, k3s_server, akamai_cloud]
     tags: [svc-plus, dev, dev-k3s-v5, akamai-cloud, on-demand]
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
@@ -48,6 +48,14 @@ hosts:
       cloud_region: jp-tyo-3
       deployment_mode: kubernetes
       k8s_cluster_name: dev-k3s-v5
+      # Consume the existing Playbooks k3s_platform_bootstrap role; never its
+      # production-root/repository defaults for this non-production node.
+      k3s_platform_node_name: dev-k3s-v5
+      k3s_platform_cluster_name: dev-k3s-v5
+      k3s_platform_git_url: https://github.com/ai-workspace-infra/gitops.git
+      k3s_platform_git_branch: main
+      k3s_platform_flux_root_path: ./environments/clusters/dev-k3s-v5
+      k3s_platform_git_auth_mode: public
       k3s_platform_k3s_version: v1.37.1+k3s1
       k3s_platform_write_kubeconfig_mode: "0600"
       public_dns_cutover: false
