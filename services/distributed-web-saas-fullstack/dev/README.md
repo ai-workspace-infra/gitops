@@ -83,7 +83,9 @@ These are names/fields, not stored secret values:
   service, account database and xc_accounts_rw role (password remains runtime-only),
   plus POSTGRES_PASSWORD for the template and signing fields
   AUTH_TOKEN_PUBLIC_TOKEN/AUTH_TOKEN_ACCESS_SECRET/AUTH_TOKEN_REFRESH_SECRET,
-  AGENT_API_TOKEN and DATABASE_IDENTITY_SHA256 matching the managed DATABASE_URL.
+  AGENT_API_TOKEN, a namespace-random ROOT_BOOTSTRAP_PASSWORD for the mandatory
+  application bootstrap (not a seeded review user), and DATABASE_IDENTITY_SHA256
+  matching the managed DATABASE_URL.
   DATABASE_RUNTIME_ROLE=primary requires DATABASE_URL explicitly; the template
   store.dsn is not the managed runtime override. ConnectionIdentity hashes JSON
   Host/Port/Database/Role (not the password); it is a routing fingerprint, not
@@ -92,8 +94,10 @@ These are names/fields, not stored secret values:
   SANDBOX_* Dev fields. No live payment/payout key is permitted.
 - `web-saas-console-runtime`, `web-saas-billing-runtime` and
   `web-saas-content-runtime`: namespace-specific INTERNAL_SERVICE_TOKEN; Billing
-  additionally needs DATABASE_URL for its independent billing DB/xc_billing_rw.
-- The trusted DB owner must create/migrate the account/billing databases, separate
+  additionally needs DATABASE_URL for the same namespace account DB, using its
+  separate xc_billing_rw role. The real Billing schema references Accounts users;
+  no cross-database users mirror or FDW is created.
+- The trusted DB owner must create/migrate each namespace account database, separate
   DDL owners from business DML roles and prove DDL refusal before business PASS.
   The PostgreSQL chart alone only initializes lane_admin/account. A SecretRef is
   not proof that a role, schema, identity or permission exists. No known default
