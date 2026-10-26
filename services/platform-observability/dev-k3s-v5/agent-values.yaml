@@ -1,0 +1,32 @@
+# Independent reusable agent release. Exporters only; the existing server scrapes once.
+fullnameOverride: dev-observability-agent
+nodeExporter:
+  enabled: true
+  hostMetrics: true
+  hostNetwork: true
+  listenOnNodeIP: true
+  image:
+    repository: quay.io/prometheus/node-exporter
+    tag: v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
+kubeStateMetrics:
+  enabled: true
+  resources:
+    requests: {cpu: 10m, memory: 48Mi}
+    limits: {cpu: 50m, memory: 128Mi}
+processExporter:
+  enabled: true
+  resources:
+    requests: {cpu: 25m, memory: 48Mi}
+    limits: {cpu: 200m, memory: 128Mi}
+  networkPolicy:
+    enabled: true
+    podSelector:
+      matchLabels:
+        app.kubernetes.io/name: vmagent
+vector:
+  enabled: false
+
+# Single-node profile; generic chart defaults remain unchanged.
+resources:
+  requests: {cpu: 25m, memory: 64Mi}
+  limits: {cpu: 150m, memory: 128Mi}
