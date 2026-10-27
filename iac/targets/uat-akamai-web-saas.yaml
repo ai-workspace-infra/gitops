@@ -37,5 +37,5 @@ targets:
         review.
   namespace: web-saas
   lifecycle:
-    status: active
+    status: migration
     persistent: false

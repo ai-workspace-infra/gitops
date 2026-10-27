@@ -37,5 +37,5 @@ targets:
         review.
   namespace: ai-workspace
   lifecycle:
-    status: active
+    status: migration
     persistent: false

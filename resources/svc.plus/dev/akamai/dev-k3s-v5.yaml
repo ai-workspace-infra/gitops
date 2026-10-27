@@ -1,10 +1,10 @@
 # On-demand Dev K3s host on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
-# 4 vCPU / 8 GB shared (g6-standard-4), Debian 12 to match the current Dev host.
+# 2 vCPU / 4 GB shared (g6-standard-2), Debian 12 to match the current Dev host.
 # Disposable: created/destroyed on demand by the Toolkit dev-host lifecycle dispatch.
 # Owns no DNS or separate volumes. Never shares state with PROD web-saas-k3s-v5.
-# One non-production node hosts isolated PR feature SIT namespaces and, after an
-# authorized merge to main, UAT namespaces. Namespace stage does not rename this
-# host or change its Terraform state identity. Feature data needs its own cleanup.
+# One non-production node hosts temporary complete PR feature SIT namespaces only.
+# After validated PRs merge to main, persistent UAT uses the existing Serverless
+# runtime, never a namespace on this node. State identity stays unchanged.
 # Address and instance ID are runtime facts: consume refreshed IaC CMDB/inventory,
 # never a historical IP or this declaration as a connection target.
 global:
@@ -16,7 +16,7 @@ global:
   state_namespace: dev-k3s-v5
   region: jp-tyo-3
   image: linode/debian12
-  type: g6-standard-4
+  type: g6-standard-2
   name_prefix: ""
   user_data_file: cloud-init.yaml
   prevent_destroy: false
@@ -30,7 +30,7 @@ ssh_keys:
 hosts:
   - name: dev-k3s-v5
     region: jp-tyo-3
-    type: g6-standard-4
+    type: g6-standard-2
     image: linode/debian12
     private_ip: false
     ansible_user: root
@@ -39,8 +39,10 @@ hosts:
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: ["::/0"]
-      allow_http: false
-      allow_https: false
+      # One Dev ingress controller routes temporary feature SIT hosts.
+      # K3s control-plane ports remain closed to public ingress.
+      allow_http: true
+      allow_https: true
       additional_tcp_ports: []
     host_vars:
       role: primary

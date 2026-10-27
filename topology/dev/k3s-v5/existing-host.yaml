@@ -6,7 +6,7 @@ metadata:
   environment: dev
 spec:
   # Superseded by the on-demand IaC target iac/targets/dev-akamai-dev-k3s-v5.yaml
-  # (g6-standard-4, 4C8G). This record describes the manually created 2C4G host
+  # (g6-standard-2, 2C4G; temporary SIT only). This record describes the manually created 2C4G host
   # until it is replaced and retired by a reviewed maintenance step.
   management_mode: existing
   fact_source: explicit-target

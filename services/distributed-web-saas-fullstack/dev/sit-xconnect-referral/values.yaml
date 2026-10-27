@@ -81,9 +81,9 @@ accounts:
       OAUTH_FRONTEND_URL: https://xconnect-referral-sit.onwalk.net
       OAUTH_GITHUB_REDIRECT_URL: https://accounts-xconnect-referral-sit.onwalk.net/api/auth/github/callback
       OAUTH_GOOGLE_REDIRECT_URL: https://accounts-xconnect-referral-sit.onwalk.net/api/auth/google/callback
-      SMTP_HOST: mail-disabled.invalid
-      SMTP_PORT: '1025'
-      SMTP_FROM: noreply@xconnect-referral-sit.onwalk.net
+      SMTP_HOST: smtp.gmail.com
+      SMTP_PORT: '587'
+      SMTP_TLS_MODE: starttls
     secretRefs:
     - web-saas-accounts-runtime
     volumeMounts:
@@ -98,7 +98,7 @@ accounts:
         cpu: 500m
         memory: 384Mi
   podAnnotations:
-    checksum/account-template: a4e77f77c20b7b95e911662edf307de72fb96ed9950ec1cbdebf37134ee51fa5
+    checksum/account-template: 6fc3a11c3e1ac80a3726b3a84d39733fa37adb0a290acca48d66f572ec95f391
 console:
   enabled: true
   deploymentProfile: single-container
