@@ -13,6 +13,8 @@ This `docs/` directory now has a bilingual canonical layer for the current repos
 - English index / 英文入口: `docs/en/README.md`
 - 中文入口 / Chinese index: `docs/zh/README.md`
 
+- Feature delivery evidence and lifecycle index / 特性交付证据与生命周期索引: [features/README.md](features/README.md)
+
 ## Canonical Bilingual Pages / 双语规范页
 
 - `docs/en/architecture.md` / `docs/zh/architecture.md`

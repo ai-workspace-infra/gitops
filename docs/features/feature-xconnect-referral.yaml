@@ -1,0 +1,86 @@
+# Tracking record only: never apply as a Kubernetes resource or use as deployment input.
+format: feature-delivery-record/v1
+feature_id: feature-xconnect-referral
+observed_on: '2026-10-27'
+requirement:
+  repository: ai-workspace-services/accounts
+  path: docs/tasks/xconnect-referral-completion-20261025.md
+  observed_ref: 8d1b09a6f2022af221b2a817d516952af41ced0e
+  acceptance_gap: deployed referral registration/verification/MFA browser journey
+scope:
+  release_model: postmerge-uat
+  production: manual-controlled-separate-release
+  rootless_deepening: deferred
+pull_requests:
+  - repository: ai-workspace-services/accounts
+    number: 277
+    role: business-baseline
+    observed_state: MERGED
+    merge_sha: 8d1b09a6f2022af221b2a817d516952af41ced0e
+  - repository: ai-workspace-services/portal
+    number: 472
+    role: business-baseline
+    observed_state: MERGED
+    merge_sha: 2a272f295235efdd39f469245ad74177d1a5ff5d
+  - repository: ai-workspace-services/frontend-router
+    number: 35
+    role: business-baseline
+    observed_state: MERGED
+    merge_sha: ab3f9e81223f19290b03a6b8d2dfefffb3309e55
+  - repository: ai-workspace-services/accounts
+    number: 279
+    role: sit-preview-provenance
+    observed_state: OPEN
+    head_sha: 450ab9940071883139d4a73e6cfd2f4b77d193ba
+  - repository: ai-workspace-infra/gitops
+    number: 606
+    role: sit-declaration
+    observed_state: MERGED
+    merge_sha: adc943b172e49b7134348e925cb1423b2ee0f755
+candidate:
+  # Reuse the authoritative complete matrix instead of copying six digest values.
+  artifact_matrix: services/distributed-web-saas-fullstack/dev/sit-xconnect-referral/release.yaml
+  chart: services/distributed-web-saas-fullstack/dev/sit-xconnect-referral/oci-repository.yaml
+  config: services/distributed-web-saas-fullstack/dev/sit-xconnect-referral/kustomization.yaml
+  observed_gitops_sha: 6010d6eb54332d25d488f0385fbdecfe0738e580
+  # No runtime fingerprint or data-baseline evidence was authenticated by this record.
+  fingerprint: null
+  data_baseline_receipt: null
+  actual_running_matrix_receipt: null
+stages:
+  sit:
+    result: BLOCKED
+    evidence:
+      - url: https://github.com/ai-workspace-infra/platform-ops-toolkit/actions/runs/40461033102
+        kind: rebuild
+        conclusion: failure
+    combination_test_receipt: null
+    reported_manual_audit: not-authenticated-as-owner-receipt
+  main:
+    result: BLOCKED
+    reason: preview PR and required candidate acceptance remain incomplete
+  uat:
+    result: NOT_RUN
+    runtime_contract: topology/uat/serverless/runtime-topology.yaml
+    release_manifest_receipt: null
+    main_artifact_receipt: null
+    acceptance_receipt: null
+  production:
+    result: NOT_RUN
+    promotion: manual-only-from-accepted-uat-release
+observability:
+  correlation: [feature_id, release_id, candidate_fingerprint, deployed_revision]
+  test_and_deployment_receipt_index: null
+  query_window_and_sanitized_evidence: null
+archive:
+  result: NOT_RUN
+  final_receipt: null
+  policy: preserve-candidate-tests-deployments-approvals-and-failures-outside-lane
+cleanup:
+  result: NOT_RUN
+  automatic_policy_implementation: NOT_VERIFIED
+  namespace_uid_receipt: null
+  resource_inventory_receipt: null
+  gitops_source_stop_receipt: null
+  deletion_receipt: null
+  policy: approved-sit-only-after-evidence-preservation
