@@ -39,7 +39,7 @@ hosts:
     firewall:
       ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: ["::/0"]
-      # One Dev ingress controller routes feature SIT and persistent UAT hosts.
+      # One Dev ingress controller routes temporary feature SIT hosts.
       # K3s control-plane ports remain closed to public ingress.
       allow_http: true
       allow_https: true
