@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: feature-xconnect-referral-sit
+  labels:
+    release.svc.plus/feature: xconnect-referral
+    release.svc.plus/lane: sit
+    release.svc.plus/environment: dev
+    release.svc.plus/candidate: accounts-8d1b09a-portal-2a272f2-router-ab3f9e8
+    # The pinned PostgreSQL subchart does not drop container capabilities,
+    # so restricted is audited/warned and baseline is enforced (recorded gap).
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted
