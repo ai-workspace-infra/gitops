@@ -39,9 +39,11 @@ session:
   ttl: 24h
   cache: memory
 smtp:
-  host: mail-disabled.invalid
-  port: 1025
-  from: noreply@xconnect-referral-sit.onwalk.net
+  host: smtp.gmail.com
+  port: 587
+  username: ${SMTP_USERNAME}
+  password: ${SMTP_PASSWORD}
+  from: ${SMTP_USERNAME}
   timeout: 10s
   tls:
     mode: starttls
