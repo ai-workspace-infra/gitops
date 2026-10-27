@@ -35,4 +35,4 @@ targets:
   namespace: serverless-runtime
   lifecycle:
     status: active
-    persistent: false
+    persistent: true
