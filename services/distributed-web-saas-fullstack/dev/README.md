@@ -3,28 +3,27 @@
 Original task: [XConnect referral](https://github.com/ai-workspace-services/accounts/blob/8d1b09a6f2022af221b2a817d516952af41ced0e/docs/tasks/xconnect-referral-completion-20261025.md).
 This is a new candidate revision after #599/#602. Those branches are not changed.
 
-Both namespaces run the complete existing six-component single-container-console
-profile: Caddy, Console (Next SSR **and** static Nginx), Accounts, Billing, Content
-and PostgreSQL. The chart's optional edgeGateway/stunnel profiles remain disabled,
-as in the established complete deployment profile. Router #35 is historical
-external-Worker baseline, not a container quietly substituted into this profile.
+Dev K3s V5 runs temporary SIT lanes only. Each lane runs Caddy, Console
+(Next SSR and static Nginx), Accounts, Billing, Content and an independent
+PostgreSQL instance. Optional edgeGateway/stunnel remain disabled.
 
-| Stage | Namespace | Console / Accounts / Billing hosts |
+| Stage | Runtime | Hosts |
 |---|---|---|
-| temporary SIT | feature-xconnect-referral-sit | xconnect-referral-sit.onwalk.net / accounts-xconnect-referral-sit.onwalk.net / billing-xconnect-referral-sit.onwalk.net |
-| persistent UAT | web-saas-uat | web-saas-uat.onwalk.net / accounts-web-saas-uat.onwalk.net / billing-web-saas-uat.onwalk.net |
+| temporary SIT | feature-xconnect-referral-sit on Dev K3s V5 | xconnect-referral-sit.onwalk.net / accounts-xconnect-referral-sit.onwalk.net / billing-xconnect-referral-sit.onwalk.net |
+| persistent UAT after main | existing Serverless runtime | console-serverless-uat.onwalk.net / accounts-serverless-uat.onwalk.net / billing-serverless-uat.onwalk.net |
 
-All public URL, OAuth callback, APP_BASE_URL and NEXT_PUBLIC_APP_BASE_URL values
-use onwalk.net. Production svc.plus hosts are not configured or changed. Internal
-service/DB names are namespace-qualified. Content's knowledge revision is pinned;
-its cache and each namespace's PostgreSQL volume are independent. Accounts uses
-in-process session storage and its own signing keys; Portal receives an onwalk.net
-request host and both explicit onwalk base URLs, so its legacy svc.plus-wide cookie
-branch does not apply. Real login/logout/MFA responses still need runtime tests.
+Acceptance flow: associated multi-repository PRs → fixed artifacts → temporary
+SIT Namespace and feature hostnames → automated business acceptance → latest-main
+combination verification → merge main. Persistent Serverless UAT is a separate
+main release consumer; no UAT namespace is created on the Dev node.
+
+SIT public URLs and callbacks use onwalk.net and isolated signing/session keys.
+Internal service names and PostgreSQL are namespace-qualified. UAT uses existing
+Serverless data and identity owners; no SIT database or credential is promoted.
 
 ## Immutable published inputs
 
-Chart 0.2.5 is pinned by OCI digest in each OCIRepository. `release.yaml` is a Helm
+Chart 0.2.5 is pinned by OCI digest in the SIT OCIRepository. `release.yaml` is a Helm
 values overlay consumed as the last HelmRelease valuesFrom entry, not an inert
 release ledger. Every component has an immutable image and actual PodTemplate
 annotations `release.svc.plus/source_repository`, `source_sha`, `image_digest`,
@@ -42,8 +41,7 @@ SIT Accounts now uses the actual unmerged [Accounts #279](https://github.com/ai-
 preview at source `450ab9940071883139d4a73e6cfd2f4b77d193ba`, publisher run
 `40378515318`, digest `sha256:97a58ebe7fab56432777591604491c2dea7fc7cc57cd35820fedef78fa328572`.
 Its authenticated publisher job and OCI source/revision/platform labels were checked.
-UAT retains the main Accounts baseline above until a merged-main release exists;
-the other five components are unchanged. Accounts #277 remains historical business
+The other five SIT components are unchanged. Accounts #277 remains historical business
 baseline and cannot be retrospectively claimed as a pre-merge SIT test. The native
 schema source/hash remains reviewed 8d/e223; #279 changes the publishing proof.
 A changed image/config/data baseline requires new candidate evidence.
@@ -57,27 +55,22 @@ The reviewed deployment owner creates the fixed namespace/labels and restricted
 SIT consumes a fixed full PR commit at
 `./services/distributed-web-saas-fullstack/dev/sit-xconnect-referral`; it must not
 merge first, redirect the platform root to an arbitrary PR or execute PR scripts.
-UAT uses its own unique persistent GitRepository with **ref.branch: main** and
-`./services/distributed-web-saas-fullstack/dev/uat`. Its initial observed source
-and applied revision must equal a freshly sampled current main SHA; subsequent
-main changes reconcile automatically and invalidate earlier PASS. There is no
-second root/UAT watcher here and no persistent feature-branch UAT. A main source
-must not start against this path until the reviewed UAT declaration exists on
-main. The application-main publishing → verified digest → reviewed GitOps main
-writer is a separate required control-plane dependency, not claimed complete by
-a `branch: main` string.
+Persistent UAT is owned by `topology/uat/serverless/runtime-topology.yaml` and
+`iac/targets/uat-serverless-runtime.yaml`. It uses Cloudflare Pages, Cloud Run and
+Supabase. Its main-triggered release must select verified immutable artifacts and
+use the existing Serverless orchestrator; no K3s UAT source or writer is enabled.
 
 ## HTTP first, DNS-gated TLS
 
-One platform-owned Traefik controller serves both namespace Caddy ClusterIP
-services; neither stack reserves host ports. Base paths include HTTP ingress
+One platform-owned Traefik controller serves the SIT namespace Caddy ClusterIP
+service; the stack does not reserve host ports. Base paths include HTTP ingress
 only. The corresponding `tls/` path contains HTTPS ingress using the fixed
 `dev-http01` ACME resolver. It must be enabled only after the DNS owner confirms
 all exact A records match the current Dev resource and HTTP-01 is reachable.
 Missing DNS or HTTP reachability means TLS NOT_RUN, not repeated issuance.
 Traefik owns persistent private `/data/acme.json`; no Cloudflare token or copied
 TLS key is placed in a business namespace. Feature cleanup excludes the platform
-controller, its ACME PVC and persistent UAT.
+controller, its ACME PVC and independent Serverless UAT.
 
 ## Required owner materialization
 
