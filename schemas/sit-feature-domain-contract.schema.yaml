@@ -1,0 +1,55 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+title: SIT Feature Domain Contract
+type: object
+required: [format, zone, environment, services, namespace, feature_id, dns, ingress, candidate]
+properties:
+  format: {const: sit-feature-domain-contract/v1}
+  zone: {const: onwalk.net}
+  environment: {const: sit}
+  services:
+    type: object
+    required: [console, accounts, billing]
+    additionalProperties: false
+    properties:
+      console: {const: '{feature_slug}-sit.onwalk.net'}
+      accounts: {const: 'accounts-{feature_slug}-sit.onwalk.net'}
+      billing: {const: 'billing-{feature_slug}-sit.onwalk.net'}
+  namespace: {const: 'feature-{feature_slug}-sit'}
+  feature_id:
+    type: object
+    required: [pattern, slug_rule]
+    properties:
+      pattern: {const: '^feature-[a-z][a-z0-9-]{1,48}$'}
+      slug_rule: {const: remove-leading-feature-prefix}
+    additionalProperties: false
+  dns:
+    type: object
+    required: [provider_owner, record_type, target, ttl_seconds, proxied, conflict_policy, cleanup_policy]
+    properties:
+      provider_owner: {const: iac_modules}
+      record_type: {const: A}
+      target: {const: fresh-cmdb-dev-k3s-v5-ip}
+      ttl_seconds: {const: 60}
+      proxied: {const: false}
+      conflict_policy: {const: refuse-unowned-record}
+      cleanup_policy: {const: exact-feature-id-owned-records-only}
+    additionalProperties: false
+  ingress:
+    type: object
+    required: [owner, listener, tls, require_http_health_gate, require_https_application_health_gate]
+    properties:
+      owner: {const: playbooks}
+      listener: {const: dev-web-saas}
+      tls: {const: enable-after-exact-dns-and-http-01-evidence}
+      require_http_health_gate: {const: true}
+      require_https_application_health_gate: {const: true}
+    additionalProperties: false
+  candidate:
+    type: object
+    required: [immutable_gitops_commit_required, one_feature_id_per_namespace, domains_recorded_in_release_receipt]
+    properties:
+      immutable_gitops_commit_required: {const: true}
+      one_feature_id_per_namespace: {const: true}
+      domains_recorded_in_release_receipt: {const: true}
+    additionalProperties: false
+additionalProperties: false
