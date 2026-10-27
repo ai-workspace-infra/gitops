@@ -1,0 +1,30 @@
+# Contract only: consumers must validate and materialize this mapping; not a Kubernetes resource.
+format: sit-feature-domain-contract/v1
+zone: onwalk.net
+environment: sit
+services:
+  console: '{feature_slug}-sit.onwalk.net'
+  accounts: accounts-{feature_slug}-sit.onwalk.net
+  billing: billing-{feature_slug}-sit.onwalk.net
+namespace: feature-{feature_slug}-sit
+feature_id:
+  pattern: '^feature-[a-z][a-z0-9-]{1,48}$'
+  slug_rule: remove-leading-feature-prefix
+dns:
+  provider_owner: iac_modules
+  record_type: A
+  target: fresh-cmdb-dev-k3s-v5-ip
+  ttl_seconds: 60
+  proxied: false
+  conflict_policy: refuse-unowned-record
+  cleanup_policy: exact-feature-id-owned-records-only
+ingress:
+  owner: playbooks
+  listener: dev-web-saas
+  tls: enable-after-exact-dns-and-http-01-evidence
+  require_http_health_gate: true
+  require_https_application_health_gate: true
+candidate:
+  immutable_gitops_commit_required: true
+  one_feature_id_per_namespace: true
+  domains_recorded_in_release_receipt: true
