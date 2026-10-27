@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-saas-https
+  namespace: feature-xconnect-referral-sit
+  annotations:
+    kubernetes.io/ingress.class: dev-web-saas
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: 'true'
+    traefik.ingress.kubernetes.io/router.tls.certresolver: dev-http01
+spec:
+  rules:
+  - host: xconnect-referral-sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80
+  - host: accounts-xconnect-referral-sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80
+  - host: billing-xconnect-referral-sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - xconnect-referral-sit.onwalk.net
+    - accounts-xconnect-referral-sit.onwalk.net
+    - billing-xconnect-referral-sit.onwalk.net
