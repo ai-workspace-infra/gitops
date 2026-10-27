@@ -10,8 +10,8 @@ Namespace `monitoring` on dev-k3s-v5 only. Production web-saas-k3s-v5 is unchang
 ## Label scheme
 - `cluster=dev-k3s-v5` (vmagent external label).
 - Host and unmapped namespaces retain `environment=dev`.
-- The explicit referral namespace rule targets the planned SIT Namespace from
-  GitOps #606, stacked on #605: `release.svc.plus/lane=sit`,
+- The explicit referral namespace rule targets the merged SIT Namespace from
+  GitOps #606: `release.svc.plus/lane=sit`,
   `release.svc.plus/feature=xconnect-referral`. `release.svc.plus/environment=dev` denotes
   the infrastructure tier; `lane` supplies the measurement phase. Candidate and
   environment remain independent. No candidate label is emitted by this static
@@ -20,9 +20,12 @@ Namespace `monitoring` on dev-k3s-v5 only. Production web-saas-k3s-v5 is unchang
 - Do not infer phase from a namespace suffix. Unknown namespaces stay `dev`
   without a fabricated feature or candidate. New controlled namespace metadata
   requires a reviewed rule snapshot from the execution owner.
-- The persistent `web-saas-uat` namespace is not mapped by this snapshot and
-  currently falls back to `environment=dev`; add a reviewed UAT rule before
-  claiming phase-aware UAT monitoring.
+- Dev K3s V5 is strictly allocated for temporary SIT feature lanes only (g6-standard-2
+  2C4G, per `docs/dev-sit-only-2c4g-transition.md` and GitOps #608). Persistent UAT
+  is deployed entirely in Serverless mode (Cloudflare Pages + Cloud Run + Supabase Free)
+  per `topology/uat/serverless/runtime-topology.yaml`. No UAT workload or namespace exists
+  on Dev K3s V5; UAT monitoring is decoupled and handled by the Serverless observability
+  plane, not by this cluster's vmagent.
 - The former shell renderer was removed: it read unrelated `websaas.io` keys,
   and executable renderers do not belong in this declarations-only repository.
 - `namespace`, `pod`, `container`, `node`, `instance`, `nodename` are preserved.

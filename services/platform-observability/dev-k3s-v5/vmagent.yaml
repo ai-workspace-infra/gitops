@@ -28,7 +28,9 @@ data:
       external_labels:
         cluster: dev-k3s-v5
     # Host/unmapped series remain dev. Namespace rules below are a review-time
-    # snapshot of the planned #606 SIT namespace metadata, not suffix inference.
+    # snapshot of the merged #606 SIT namespace metadata, not suffix inference.
+    # Dev K3s V5 is dedicated to temporary SIT feature lanes (2C4G); persistent UAT
+    # runs exclusively in Serverless mode (Cloudflare Pages + Cloud Run + Supabase Free).
     # Regenerate through the owning execution layer when namespace metadata changes.
     # Candidate labels require a trusted owner runtime receipt; no static candidate.
     scrape_configs:
