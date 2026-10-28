@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-saas-http
+  namespace: feature-sit-test-1483-sit
+spec:
+  ingressClassName: caddy
+  rules:
+  - host: smoke-sit-test-1483-sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80
+  - host: accounts-smoke-sit-test-1483-sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80
+  - host: billing-smoke-sit-test-1483-sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-caddy-ingress
+            port:
+              number: 80

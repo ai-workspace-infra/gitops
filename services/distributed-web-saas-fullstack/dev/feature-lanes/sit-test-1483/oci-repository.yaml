@@ -1,0 +1,13 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: web-saas-fullstack-chart
+  namespace: feature-sit-test-1483-sit
+spec:
+  interval: 10m
+  url: oci://ghcr.io/ai-workspace-infra/distributed-web-saas-fullstack
+  ref:
+    digest: sha256:2257fde6ee6a8664f57d98e2fdf0a85a3813570546bb854290577d74f9d51f0c
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy

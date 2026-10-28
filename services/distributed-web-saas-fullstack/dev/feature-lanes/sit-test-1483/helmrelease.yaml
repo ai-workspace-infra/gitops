@@ -1,0 +1,65 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: distributed-web-saas-fullstack
+  namespace: feature-sit-test-1483-sit
+spec:
+  interval: 2m
+  releaseName: web-saas
+  targetNamespace: feature-sit-test-1483-sit
+  serviceAccountName: lane-reconciler
+  timeout: 10m
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  valuesFrom:
+  - kind: ConfigMap
+    name: web-saas-fullstack-values
+    valuesKey: values.yaml
+  - kind: ConfigMap
+    name: web-saas-fullstack-release
+    valuesKey: release.yaml
+  postRenderers:
+  - kustomize:
+      patches:
+      - target:
+          kind: StatefulSet
+          name: web-saas-postgresql
+        patch: "apiVersion: apps/v1\nkind: StatefulSet\nmetadata:\n  name: web-saas-postgresql\n\
+          spec:\n  template:\n    spec:\n      securityContext:\n        seccompProfile:\n\
+          \          type: RuntimeDefault\n      containers:\n      - name: postgresql\n\
+          \        securityContext:\n          allowPrivilegeEscalation: false\n \
+          \         capabilities:\n            drop:\n            - ALL\n"
+      - target:
+          kind: Deployment
+          name: web-saas-caddy
+        patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-saas-caddy\n\
+          spec:\n  template:\n    spec:\n      securityContext:\n        seccompProfile:\n\
+          \          type: RuntimeDefault\n      containers:\n      - name: caddy\n\
+          \        securityContext:\n          allowPrivilegeEscalation: false\n \
+          \         capabilities:\n            drop:\n            - ALL\n"
+      - target:
+          kind: Deployment
+          name: web-saas-console
+        patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-saas-console\n\
+          spec:\n  template:\n    spec:\n      containers:\n      - name: console\n\
+          \        env:\n        - name: PORT\n          value: '3000'\n"
+      - target:
+          kind: ConfigMap
+          name: web-saas-caddy-config
+        patch: "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: web-saas-caddy-config\n\
+          data:\n  Caddyfile: \"{\\n  admin off\\n  auto_https off\\n  http_port 8080\\\
+          n  metrics\\n  servers\\\n    \\ {\\n    trusted_proxies static private_ranges\\\
+          n  }\\n}\\n:9180 {\\n  metrics\\n}\\n\\\n    :8080 {\\n  respond /healthz\
+          \ \\\"ok\\\" 200\\n  respond \\\"not found\\\" 404\\n}\\nhttp://smoke-sit-test-1483-sit.onwalk.net:8080\\\
+          \n    \\ {\\n  reverse_proxy web-saas-console:80\\n}\\nhttp://accounts-smoke-sit-test-1483-sit.onwalk.net:8080\\\
+          \n    \\ {\\n  reverse_proxy web-saas-accounts:80\\n}\\nhttp://billing-smoke-sit-test-1483-sit.onwalk.net:8080\\\
+          \n    \\ {\\n  reverse_proxy web-saas-billing:80\\n}\\n\"\n"
+      - target:
+          kind: NetworkPolicy
+          name: web-saas-caddy
+        patch: "- op: replace\n  path: /spec/ingress\n  value:\n  - from:\n    - namespaceSelector:\n\
+          \        matchLabels:\n          kubernetes.io/metadata.name: platform-ingress\n\
+          \      podSelector:\n        matchLabels:\n          app.kubernetes.io/name:\
+          \ caddy-ingress-controller\n    - podSelector: {}\n    ports:\n    - protocol:\
+          \ TCP\n      port: 8080\n"
