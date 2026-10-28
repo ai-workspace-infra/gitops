@@ -6,7 +6,7 @@ Declarative Kubernetes manifests for deploying the dedicated MCP gateways onto t
 
 ```text
 mcp-server.svc.plus (dev-k3s-v5)
-  |-- Ingress: dev-web-saas (Traefik TLS dev-http01)
+  |-- Ingress: caddy (Caddy Ingress Controller in platform-ingress)
   |-- Path: /v1/grafana -> mcp-grafana:8000
   |     |-- SSE transport (/v1/grafana/sse)
   |     |-- Read-only guardrails: --disable-write --disable-admin

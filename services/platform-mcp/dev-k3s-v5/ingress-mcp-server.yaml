@@ -7,11 +7,9 @@ metadata:
     app.kubernetes.io/name: infrastructure-mcp-server
     app.kubernetes.io/part-of: platform-mcp
   annotations:
-    kubernetes.io/ingress.class: dev-web-saas
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.tls.certresolver: dev-http01
+    external-dns.alpha.kubernetes.io/hostname: mcp-server.svc.plus
 spec:
+  ingressClassName: caddy
   rules:
   - host: mcp-server.svc.plus
     http:
