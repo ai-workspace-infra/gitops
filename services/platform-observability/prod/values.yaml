@@ -46,6 +46,14 @@ telemetry:
     - pod
     - volume
   extraScrapeConfigs:
+  - job_name: caddy
+    scrape_interval: 30s
+    static_configs:
+    - targets:
+      - web-saas-caddy-metrics.web-saas-k3s-v5.svc:9180
+      labels:
+        cluster: web-saas-k3s-v5
+        environment: prod
   - job_name: node-exporter
     scrape_interval: 15s
     kubernetes_sd_configs:
