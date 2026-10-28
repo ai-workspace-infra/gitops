@@ -1,0 +1,32 @@
+# Published agent chart pinned to the existing immutable OCI digest.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: dev-observability-agent-chart
+  namespace: platform-observability
+spec:
+  interval: 5m
+  url: oci://ghcr.io/ai-workspace-infra/observability-agent
+  ref:
+    digest: sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dev-platform-observability-agent
+  namespace: platform-observability
+spec:
+  interval: 5m
+  releaseName: dev-platform-observability-agent
+  targetNamespace: monitoring
+  chartRef:
+    kind: OCIRepository
+    name: dev-observability-agent-chart
+    namespace: platform-observability
+  valuesFrom:
+    - kind: ConfigMap
+      name: platform-observability-agent-values
+      valuesKey: values.yaml

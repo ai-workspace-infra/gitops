@@ -1,4 +1,4 @@
-# Independent reusable agent release. Exporters only; the existing server scrapes once.
+# Independent reusable agent release. vmagent.yaml scrapes these exporters.
 fullnameOverride: dev-observability-agent
 nodeExporter:
   enabled: true
@@ -22,7 +22,7 @@ processExporter:
     enabled: true
     podSelector:
       matchLabels:
-        app.kubernetes.io/name: vmagent
+        app.kubernetes.io/name: dev-vmagent
 vector:
   enabled: false
 
