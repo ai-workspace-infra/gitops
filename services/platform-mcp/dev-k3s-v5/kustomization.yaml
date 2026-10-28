@@ -9,4 +9,3 @@ resources:
 - ingress-mcp-server.yaml
 - deployment-observability-mcp.yaml
 - service-observability-mcp.yaml
-- ingress-mcp-observability.yaml

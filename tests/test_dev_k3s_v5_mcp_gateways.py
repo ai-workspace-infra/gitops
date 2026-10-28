@@ -36,9 +36,11 @@ class DevK3sV5MCPGatewayTests(unittest.TestCase):
         self.assertIn('ingress-mcp-server.yaml', resources)
         self.assertIn('deployment-observability-mcp.yaml', resources)
         self.assertIn('service-observability-mcp.yaml', resources)
-        self.assertIn('ingress-mcp-observability.yaml', resources)
+        # Ensure separate mcp.svc.plus ingress is retired and absent
+        self.assertNotIn('ingress-mcp-observability.yaml', resources)
+        self.assertFalse((ROOT / 'services/platform-mcp/dev-k3s-v5/ingress-mcp-observability.yaml').exists())
 
-    def test_infrastructure_mcp_ingress_contract(self):
+    def test_single_domain_mcp_server_ingress_contract(self):
         ingress_path = ROOT / 'services/platform-mcp/dev-k3s-v5/ingress-mcp-server.yaml'
         self.assertTrue(ingress_path.exists())
         ingress = yaml.safe_load(ingress_path.read_text())
@@ -49,27 +51,31 @@ class DevK3sV5MCPGatewayTests(unittest.TestCase):
         rules = ingress['spec']['rules']
         self.assertEqual(len(rules), 1)
         self.assertEqual(rules[0]['host'], 'mcp-server.svc.plus')
-        self.assertEqual(rules[0]['http']['paths'][0]['backend']['service']['name'], 'infrastructure-mcp-server')
-        self.assertEqual(rules[0]['http']['paths'][0]['backend']['service']['port']['number'], 8080)
-        self.assertEqual(ingress['spec']['tls'][0]['hosts'], ['mcp-server.svc.plus'])
 
-    def test_observability_mcp_ingress_contract(self):
-        ingress_path = ROOT / 'services/platform-mcp/dev-k3s-v5/ingress-mcp-observability.yaml'
-        self.assertTrue(ingress_path.exists())
-        ingress = yaml.safe_load(ingress_path.read_text())
-        annotations = ingress['metadata']['annotations']
-        self.assertEqual(annotations.get('kubernetes.io/ingress.class'), 'dev-web-saas')
-        self.assertEqual(annotations.get('traefik.ingress.kubernetes.io/router.tls.certresolver'), 'dev-http01')
-
-        rules = ingress['spec']['rules']
-        self.assertEqual(len(rules), 1)
-        self.assertEqual(rules[0]['host'], 'mcp.svc.plus')
         paths = rules[0]['http']['paths']
         path_map = {p['path']: p['backend']['service'] for p in paths}
+        # Route: /v1/grafana -> mcp-grafana:8000
         self.assertIn('/v1/grafana', path_map)
         self.assertEqual(path_map['/v1/grafana']['name'], 'mcp-grafana')
         self.assertEqual(path_map['/v1/grafana']['port']['number'], 8000)
-        self.assertEqual(ingress['spec']['tls'][0]['hosts'], ['mcp.svc.plus'])
+        # Route: / -> infrastructure-mcp-server:8080
+        self.assertIn('/', path_map)
+        self.assertEqual(path_map['/']['name'], 'infrastructure-mcp-server')
+        self.assertEqual(path_map['/']['port']['number'], 8080)
+
+        self.assertEqual(ingress['spec']['tls'][0]['hosts'], ['mcp-server.svc.plus'])
+
+    def test_infrastructure_mcp_configmap_backends_use_single_domain(self):
+        cm_path = ROOT / 'services/platform-mcp/dev-k3s-v5/configmap-infrastructure-mcp.yaml'
+        self.assertTrue(cm_path.exists())
+        cm = yaml.safe_load(cm_path.read_text())
+        import json
+        config_data = json.loads(cm['data']['config.json'])
+        for backend in config_data['backends']:
+            self.assertTrue(
+                backend['url'].startswith('https://mcp-server.svc.plus/'),
+                f"Backend {backend['name']} URL {backend['url']} does not use mcp-server.svc.plus",
+            )
 
     def test_observability_mcp_readonly_guardrails(self):
         deploy_path = ROOT / 'services/platform-mcp/dev-k3s-v5/deployment-observability-mcp.yaml'
@@ -84,6 +90,9 @@ class DevK3sV5MCPGatewayTests(unittest.TestCase):
         self.assertIn('/v1/grafana', command)
         self.assertIn('--disable-write', command)
         self.assertIn('--disable-admin', command)
+        self.assertIn('--allowed-hosts', command)
+        allowed_hosts_idx = command.index('--allowed-hosts')
+        self.assertIn('mcp-server.svc.plus', command[allowed_hosts_idx + 1])
         env_map = {e['name']: e['value'] for e in container['env']}
         self.assertEqual(env_map['GRAFANA_URL'], 'https://observability.svc.plus/grafana/')
 

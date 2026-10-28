@@ -11,6 +11,7 @@ resources:
   - release.yaml
   - dashboards.yaml
   - imported-grafana
+  - retire-observability-mcp.yaml
 configMapGenerator:
   - name: platform-observability-values
     files:
