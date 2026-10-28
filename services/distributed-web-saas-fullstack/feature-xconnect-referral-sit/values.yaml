@@ -23,6 +23,8 @@ postgresql:
   database: account
   existingSecret: lane-db-admin
   secretKey: password
+  metrics:
+    enabled: true
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 999

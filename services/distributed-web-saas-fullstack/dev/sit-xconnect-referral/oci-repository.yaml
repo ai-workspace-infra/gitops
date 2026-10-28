@@ -7,7 +7,7 @@ spec:
   interval: 10m
   url: oci://ghcr.io/ai-workspace-infra/distributed-web-saas-fullstack
   ref:
-    digest: sha256:6336235445e389958660cc344eead488ad3a50cf67afb1301fd35f6793720f27
+    digest: sha256:3d1caa398eddd42253472391cc0c3978cbc9f1444ed19dff04256c9447f5f4a6
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
