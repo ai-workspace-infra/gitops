@@ -6,4 +6,5 @@ resources:
   - platform-vault-kustomization.yaml
   - source.yaml
   - platform-observability-kustomization.yaml
+  - datakit-kustomization.yaml
   - controller-resources.yaml
