@@ -39,3 +39,6 @@ dkconfig:
     \  keep_exist_metric_name = true\n  election = false\n  [inputs.prom.tags]\n \
     \   cluster = \"web-saas-k3s-v5-prod\"\n    env = \"prod\"\n    service = \"web-saas-caddy\"\
     \n"
+- name: postgresql-exporter.conf
+  path: /usr/local/datakit/conf.d/prom/postgresql-exporter.conf
+  value: "[[inputs.prom]]\n  urls = [\"http://postgresql-metrics.database.svc.cluster.local:9187/metrics\"]\n  source = \"postgresql\"\n  interval = \"15s\"\n  measurement_name = \"postgresql\"\n  keep_exist_metric_name = true\n  election = false\n  [inputs.prom.tags]\n    cluster = \"web-saas-k3s-v5-prod\"\n    env = \"prod\"\n    service = \"postgresql\"\n    db_instance = \"postgresql\"\n    host = \"prod-k3s-v5\"\n"

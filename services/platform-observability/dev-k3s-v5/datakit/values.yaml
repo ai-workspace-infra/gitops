@@ -58,6 +58,7 @@ dkconfig:
         [inputs.prom.tags]
           cluster = "dev-k3s-v5-sit"
           env = "sit"
+          service = "postgresql"
           db_instance = "web-saas-postgresql"
           host = "dev-k3s-v5"
 resources:

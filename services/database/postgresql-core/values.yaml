@@ -46,7 +46,7 @@ persistence:
   size: 20Gi
 
 metrics:
-  enabled: false
+  enabled: true
 
 stunnel:
   enabled: false
