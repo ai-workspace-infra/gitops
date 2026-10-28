@@ -5,6 +5,7 @@ metadata:
   namespace: flux-system
 spec:
   interval: 5m0s
+  force: true
   prune: true
   wait: true
   timeout: 10m0s

@@ -9,7 +9,13 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: Merge
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
+  selector:
+    matchLabels:
+      app: helm-controller
   template:
+    metadata:
+      labels:
+        app: helm-controller
     spec:
       containers:
       - name: manager
@@ -30,7 +36,13 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: Merge
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
+  selector:
+    matchLabels:
+      app: kustomize-controller
   template:
+    metadata:
+      labels:
+        app: kustomize-controller
     spec:
       containers:
       - name: manager
@@ -51,7 +63,13 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: Merge
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
+  selector:
+    matchLabels:
+      app: source-controller
   template:
+    metadata:
+      labels:
+        app: source-controller
     spec:
       containers:
       - name: manager
@@ -72,7 +90,13 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: Merge
     kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
+  selector:
+    matchLabels:
+      app: notification-controller
   template:
+    metadata:
+      labels:
+        app: notification-controller
     spec:
       containers:
       - name: manager
