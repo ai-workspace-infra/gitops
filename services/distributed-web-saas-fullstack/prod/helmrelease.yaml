@@ -15,3 +15,56 @@ spec:
     name: web-saas-fullstack-values
     valuesKey: values.yaml
   suspend: false
+  postRenderers:
+  - kustomize:
+      patches:
+      - target:
+          kind: ConfigMap
+          name: web-saas-caddy-config
+        patch: "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: web-saas-caddy-config\n\
+          data:\n  Caddyfile: \"{\\n  admin off\\n  auto_https off\\n  http_port 8080\\\
+          n  https_port 8443\\n\\\n    \\  metrics\\n}\\n:9180 {\\n  metrics\\n}\\\
+          n:8080 {\\n  handle /healthz {\\n    respond\\\n    \\ \\\"ok\\\" 200\\\
+          n  }\\n  \\n  @api path /api /api/*\\n  handle @api {\\n    reverse_proxy\\\
+          \n    \\ web-saas-accounts:80\\n  }\\n  handle {\\n    respond \\\"not found\\\
+          \" 404\\n  }\\n\\\n    }\\nhttps://accounts-k3s-v5.svc.plus:8443 {\\n  tls\
+          \ /tls/accounts/tls.crt /tls/accounts/tls.key\\n\\\n    \\  \\n  @api path\
+          \ /api /api/*\\n  handle @api {\\n    reverse_proxy web-saas-accounts:80\\\
+          n\\\n    \\  }\\n  handle {\\n    reverse_proxy web-saas-accounts:80\\n\
+          \  }\\n}\\nhttps://accounts.svc.plus:8443\\\n    \\ {\\n  tls /tls/accounts/tls.crt\
+          \ /tls/accounts/tls.key\\n  \\n  @api path /api /api/*\\n\\\n    \\  handle\
+          \ @api {\\n    reverse_proxy web-saas-accounts:80\\n  }\\n  handle {\\n\
+          \  \\\n    \\  reverse_proxy web-saas-accounts:80\\n  }\\n}\\nhttps://billing-k3s-v5.svc.plus:8443\\\
+          \n    \\ {\\n  tls /tls/billing/tls.crt /tls/billing/tls.key\\n  reverse_proxy\
+          \ web-saas-billing:80\\n\\\n    }\\nhttps://billing.svc.plus:8443 {\\n \
+          \ tls /tls/billing/tls.crt /tls/billing/tls.key\\n\\\n    \\  reverse_proxy\
+          \ web-saas-billing:80\\n}\\nhttps://console-k3s-v5.svc.plus:8443\\\n   \
+          \ \\ {\\n  tls /tls/console/tls.crt /tls/console/tls.key\\n  \\n  @api path\
+          \ /api /api/*\\n\\\n    \\  handle @api {\\n    reverse_proxy web-saas-accounts:80\\\
+          n  }\\n  handle {\\n  \\\n    \\  reverse_proxy web-saas-console:80\\n \
+          \ }\\n}\\nhttps://console.svc.plus:8443 {\\n\\\n    \\  tls /tls/console/tls.crt\
+          \ /tls/console/tls.key\\n  \\n  @api path /api /api/*\\n\\\n    \\  handle\
+          \ @api {\\n    reverse_proxy web-saas-accounts:80\\n  }\\n  handle {\\n\
+          \  \\\n    \\  reverse_proxy web-saas-console:80\\n  }\\n}\\nhttps://xworktech.com:8443\
+          \ {\\n \\\n    \\ tls /tls/extra-brand-console/tls.crt /tls/extra-brand-console/tls.key\\\
+          n  \\n\\\n    \\  @api path /api /api/*\\n  handle @api {\\n    reverse_proxy\
+          \ web-saas-accounts:80\\n\\\n    \\  }\\n  handle {\\n    reverse_proxy\
+          \ web-saas-console:80\\n  }\\n}\\nhttps://vault-k3s-v5.svc.plus:8443\\\n\
+          \    \\ {\\n  tls /tls/extra-vault/tls.crt /tls/extra-vault/tls.key\\n \
+          \ reverse_proxy\\\n    \\ https://vault-raft.platform-vault.svc.cluster.local:8200\
+          \ {\\n    transport http\\\n    \\ {\\n      tls_trust_pool file /trust/vault/ca.crt\\\
+          n    }\\n  }\\n}\\nhttps://vault.svc.plus:8443\\\n    \\ {\\n  tls /tls/extra-vault/tls.crt\
+          \ /tls/extra-vault/tls.key\\n  reverse_proxy\\\n    \\ https://vault-raft.platform-vault.svc.cluster.local:8200\
+          \ {\\n    transport http\\\n    \\ {\\n      tls_trust_pool file /trust/vault/ca.crt\\\
+          n    }\\n  }\\n}\\nhttps://observability-k3s-v5.svc.plus:8443\\\n    \\\
+          \ {\\n  tls /tls/extra-observability/tls.crt /tls/extra-observability/tls.key\\\
+          n\\\n    \\  reverse_proxy http://platform-observability-observability-stack.platform-observability.svc.cluster.local:3000\\\
+          \n    \\ {\\n  }\\n}\\nhttps://observability.svc.plus:8443 {\\n  tls /tls/extra-observability/tls.crt\\\
+          \n    \\ /tls/extra-observability/tls.key\\n  reverse_proxy http://platform-observability-observability-stack.platform-observability.svc.cluster.local:3000\\\
+          \n    \\ {\\n  }\\n}\\n\"\n"
+      - target:
+          kind: Deployment
+          name: web-saas-caddy
+        patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-saas-caddy\n\
+          spec:\n  template:\n    metadata:\n      annotations:\n        checksum/caddy-metrics:\
+          \ d4768204cc3a7cc17a1e3e6d69c85f49ae2fd529c6813a2d68ac1221c7cac935\n"

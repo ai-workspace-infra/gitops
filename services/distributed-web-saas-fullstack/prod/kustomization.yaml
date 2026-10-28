@@ -8,6 +8,7 @@ resources:
   - secret-store.yaml
   - external-secret.yaml
   - helmrelease.yaml
+  - caddy-metrics.yaml
 configMapGenerator:
   - name: web-saas-fullstack-values
     files:
