@@ -3,10 +3,8 @@ kind: Ingress
 metadata:
   name: web-saas-http
   namespace: feature-xconnect-referral-sit
-  annotations:
-    kubernetes.io/ingress.class: dev-web-saas
-    traefik.ingress.kubernetes.io/router.entrypoints: web
 spec:
+  ingressClassName: caddy
   rules:
   - host: xconnect-referral-sit.onwalk.net
     http:

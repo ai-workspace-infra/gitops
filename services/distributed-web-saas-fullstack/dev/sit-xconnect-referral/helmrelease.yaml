@@ -61,7 +61,7 @@ spec:
         patch: "- op: replace\n  path: /spec/ingress\n  value:\n  - from:\n    - namespaceSelector:\n\
           \        matchLabels:\n          kubernetes.io/metadata.name: platform-ingress\n\
           \      podSelector:\n        matchLabels:\n          app.kubernetes.io/name:\
-          \ traefik\n    - podSelector: {}\n    ports:\n    - protocol: TCP\n    \
+          \ caddy-ingress-controller\n    - podSelector: {}\n    ports:\n    - protocol: TCP\n    \
           \  port: 8080\n"
       - target:
           kind: Deployment

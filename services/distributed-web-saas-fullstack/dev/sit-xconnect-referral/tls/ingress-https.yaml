@@ -3,12 +3,8 @@ kind: Ingress
 metadata:
   name: web-saas-https
   namespace: feature-xconnect-referral-sit
-  annotations:
-    kubernetes.io/ingress.class: dev-web-saas
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: 'true'
-    traefik.ingress.kubernetes.io/router.tls.certresolver: dev-http01
 spec:
+  ingressClassName: caddy
   rules:
   - host: xconnect-referral-sit.onwalk.net
     http:
