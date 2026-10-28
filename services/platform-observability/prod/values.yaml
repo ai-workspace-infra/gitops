@@ -28,6 +28,8 @@ grafana:
     url: https://github.com/ai-workspace-infra/observability/releases/download/xconnect-user-diagnostics-v0.1.0/aiworkspace-xconnectuserdiagnostics-app-0.1.0.zip
     sha256: e7486697858edf02929f57e068b2971ab23c2f183727d1c28004bfba4c42c2eb
   dashboardsConfigMap: platform-observability-dashboards
+blackboxExporter:
+  enabled: true
 serviceAccountName: observability-collector
 # External collector-identity is the sole RBAC owner for this target.
 rbac:
@@ -222,7 +224,7 @@ telemetry:
       regex: https://([^/]+)/.*
       target_label: name
     - target_label: __address__
-      replacement: blackbox-exporter.platform-observability.svc.cluster.local:9115
+      replacement: platform-observability-blackbox.platform-observability.svc.cluster.local:9115
   - job_name: blackbox-api-http
     scrape_interval: 30s
     metrics_path: /probe
@@ -248,7 +250,7 @@ telemetry:
       regex: https://([^/]+)/.*
       target_label: name
     - target_label: __address__
-      replacement: blackbox-exporter.platform-observability.svc.cluster.local:9115
+      replacement: platform-observability-blackbox.platform-observability.svc.cluster.local:9115
   - job_name: blackbox-postgresql-tls-tunnel
     scrape_interval: 30s
     metrics_path: /probe
@@ -270,7 +272,7 @@ telemetry:
       - __param_target
       target_label: target
     - target_label: __address__
-      replacement: blackbox-exporter.platform-observability.svc.cluster.local:9115
+      replacement: platform-observability-blackbox.platform-observability.svc.cluster.local:9115
   spanMetrics: true
 mcp:
   enabled: false
