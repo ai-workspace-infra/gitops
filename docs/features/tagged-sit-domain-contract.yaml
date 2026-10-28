@@ -1,0 +1,28 @@
+# IaC consumes this declaration only after the control plane authenticates
+# the fixed GitOps commit and the candidate/tag binding.
+format: sit-feature-domain-contract/v2
+environment: sit
+zone: onwalk.net
+namespace: 'feature-{feature_id}-sit'
+services:
+  console: '{feature_tag}-sit.onwalk.net'
+  accounts: 'accounts-{feature_tag}-sit.onwalk.net'
+  billing: 'billing-{feature_tag}-sit.onwalk.net'
+dns:
+  provider_owner: iac_modules
+  record_type: A
+  target: fresh-cmdb-dev-k3s-v5-ip
+  ttl_seconds: 60
+  proxied: false
+  conflict_policy: refuse-unowned-record
+  cleanup_policy: exact-feature-id-and-tag-owned-records-only
+ingress:
+  owner: playbooks
+  listener: dev-web-saas
+  tls: enable-after-exact-dns-and-http-01-evidence
+  require_http_health_gate: true
+  require_https_application_health_gate: true
+candidate:
+  immutable_gitops_commit_required: true
+  one_feature_id_per_namespace: true
+  domains_recorded_in_release_receipt: true
