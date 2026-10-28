@@ -47,14 +47,38 @@ spec:
       - target:
           kind: ConfigMap
           name: web-saas-caddy-config
-        patch: "apiVersion: v1\nkind: ConfigMap\nmetadata:\n  name: web-saas-caddy-config\n\
-          data:\n  Caddyfile: \"{\\n  admin off\\n  auto_https off\\n  http_port 8080\\\
-          n  servers {\\n  \\\n    \\  trusted_proxies static private_ranges\\n  }\\\
-          n}\\n:8080 {\\n  respond /healthz\\\n    \\ \\\"ok\\\" 200\\n  respond \\\
-          \"not found\\\" 404\\n}\\nhttp://xconnect-referral-sit.onwalk.net:8080\\\
-          \n    \\ {\\n  reverse_proxy web-saas-console:80\\n}\\nhttp://accounts-xconnect-referral-sit.onwalk.net:8080\\\
-          \n    \\ {\\n  reverse_proxy web-saas-accounts:80\\n}\\nhttp://billing-xconnect-referral-sit.onwalk.net:8080\\\
-          \n    \\ {\\n  reverse_proxy web-saas-billing:80\\n}\\n\"\n"
+        patch: |-
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: web-saas-caddy-config
+          data:
+            Caddyfile: |
+              {
+                admin off
+                auto_https off
+                http_port 8080
+                metrics
+                servers {
+                  trusted_proxies static private_ranges
+                }
+              }
+              :9180 {
+                metrics
+              }
+              :8080 {
+                respond /healthz "ok" 200
+                respond "not found" 404
+              }
+              http://xconnect-referral-sit.onwalk.net:8080 {
+                reverse_proxy web-saas-console:80
+              }
+              http://accounts-xconnect-referral-sit.onwalk.net:8080 {
+                reverse_proxy web-saas-accounts:80
+              }
+              http://billing-xconnect-referral-sit.onwalk.net:8080 {
+                reverse_proxy web-saas-billing:80
+              }
       - target:
           kind: NetworkPolicy
           name: web-saas-caddy
@@ -85,4 +109,4 @@ spec:
           name: web-saas-caddy
         patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-saas-caddy\n\
           spec:\n  template:\n    metadata:\n      annotations:\n        checksum/caddyfile:\
-          \ cc5b108f2aa4710548e748bd964dcf101991f7257cbd2a616885db3a735733be\n"
+          \ 319943327429b381e2ad2adb320447bc2b87d7a6988649ebc57c25259106e223\n"
