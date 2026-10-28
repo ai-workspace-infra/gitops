@@ -2,24 +2,19 @@
 
 Declarative Kubernetes manifests for deploying the dedicated MCP gateways onto the `dev-k3s-v5` cluster node via FluxCD GitOps.
 
-## Dual-Domain Architecture
+## Single Domain Architecture (`mcp-server.svc.plus`)
 
 ```text
 mcp-server.svc.plus (dev-k3s-v5)
-  |-- Ingress: dev-web-saas (hostPort 80/443 -> 8080)
-  |-- TLS: dev-http01 (ACME HTTP-01)
-  \-- Backend: infrastructure-mcp-server
+  |-- Ingress: dev-web-saas (Traefik TLS dev-http01)
+  |-- Path: /v1/grafana -> mcp-grafana:8000
+  |     |-- SSE transport (/v1/grafana/sse)
+  |     |-- Read-only guardrails: --disable-write --disable-admin
+  |     \-- Upstream telemetry data: https://observability.svc.plus/
+  \-- Path: / -> infrastructure-mcp-server:8080
         |-- Multi-cloud CMDB inventory & 15-edge Environment Graph
         |-- Safe read-only CLI executor & QMD memory integration
-        \-- Upstream MCP client aggregation
-
-mcp.svc.plus (dev-k3s-v5)
-  |-- Ingress: dev-web-saas (hostPort 80/443 -> 8000)
-  |-- TLS: dev-http01 (ACME HTTP-01)
-  \-- Backend: observability-mcp-gateway
-        |-- mcp-grafana: SSE (/v1/grafana/sse)
-        |-- Read-only guardrails: --disable-write --disable-admin
-        \-- Upstream telemetry data: https://observability.svc.plus/
+        \-- Upstream MCP client aggregation (https://mcp-server.svc.plus/v1/...)
 ```
 
 ## Security & Resource Guardrails

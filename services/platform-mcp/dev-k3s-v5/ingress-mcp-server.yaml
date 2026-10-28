@@ -16,6 +16,13 @@ spec:
   - host: mcp-server.svc.plus
     http:
       paths:
+      - path: /v1/grafana
+        pathType: Prefix
+        backend:
+          service:
+            name: mcp-grafana
+            port:
+              number: 8000
       - path: /
         pathType: Prefix
         backend:
@@ -26,3 +33,4 @@ spec:
   tls:
   - hosts:
     - mcp-server.svc.plus
+    secretName: mcp-server-tls

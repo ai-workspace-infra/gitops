@@ -42,7 +42,7 @@ spec:
         - "--disable-write"
         - "--disable-admin"
         - "--allowed-hosts"
-        - "mcp.svc.plus,localhost,127.0.0.1,127.0.0.1:8000"
+        - "mcp-server.svc.plus,localhost,127.0.0.1,127.0.0.1:8000"
         env:
         - name: GRAFANA_URL
           value: "https://observability.svc.plus/grafana/"

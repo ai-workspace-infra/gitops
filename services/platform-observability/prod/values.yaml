@@ -188,3 +188,17 @@ telemetry:
     - target_label: environment
       replacement: prod
   spanMetrics: true
+mcp:
+  enabled: false
+  victoriametrics:
+    enabled: false
+    replicaCount: 0
+  grafana:
+    enabled: false
+    replicaCount: 0
+  victorialogs:
+    enabled: false
+    replicaCount: 0
+  victoriatraces:
+    enabled: false
+    replicaCount: 0
