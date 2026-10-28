@@ -49,10 +49,14 @@ dkconfig:
         urls = ["http://web-saas-postgresql-exporter.feature-xconnect-referral-sit:9187/metrics"]
         source = "postgresql"
         interval = "15s"
+        measurement_name = "postgresql"
+        keep_exist_metric_name = true
+        election = false
         [inputs.prom.tags]
           cluster = "dev-k3s-v5-sit"
           env = "sit"
           db_instance = "web-saas-postgresql"
+          host = "dev-k3s-v5"
 resources:
   requests:
     cpu: 100m
