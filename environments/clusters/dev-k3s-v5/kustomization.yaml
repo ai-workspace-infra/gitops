@@ -5,3 +5,4 @@ resources:
   - source.yaml
   - platform-ingress-kustomization.yaml
   - platform-mcp-kustomization.yaml
+  - platform-observability-kustomization.yaml

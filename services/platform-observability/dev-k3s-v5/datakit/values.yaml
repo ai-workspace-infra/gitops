@@ -1,0 +1,62 @@
+MetricsServerEnabled: false
+componentHealthLivenessProbe:
+  enabled: false
+  failureThreshold: 4
+  initialDelaySeconds: 120
+  periodSeconds: 15
+  timeoutSeconds: 3
+workload:
+  kind: DaemonSet
+datakit:
+  dataway_secret_enabled: true
+  dataway_secret_create: false
+  dataway_secret_name: datakit-dataway-secret
+  dataway_secret_key: ENV_DATAWAY
+  cluster_name_k8s: default
+  enabled_election: true
+  global_tags: cluster=dev-k3s-v5-sit,env=sit
+  default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,host_processes,container,kubernetesprometheus,opentelemetry,prom
+  log: info
+extraEnvs:
+  - name: ENV_INPUT_OTEL_GRPC
+    value: '{"addr": "0.0.0.0:4317", "max_payload": 16777216}'
+  - name: ENV_INPUT_OTEL_HTTP
+    value: '{"enable": true, "http_status_ok": 200, "trace_api": "/otel/v1/traces", "metric_api": "/otel/v1/metrics", "logs_api": "/otel/v1/logs"}'
+  - name: ENV_INPUT_OTEL_CUSTOMER_TAGS_ALL
+    value: "true"
+  - name: ENV_INPUT_OTEL_METRIC_ENABLE_AGGREGATE
+    value: "true"
+  - name: ENV_INPUT_CONTAINER_CONTAINER_INCLUDE_LOG
+    value: namespace:feature-*
+dkconfig:
+  - name: caddy-metrics.conf
+    path: /usr/local/datakit/conf.d/prom/caddy-metrics.conf
+    value: |
+      [[inputs.prom]]
+        urls = ["http://web-saas-caddy-metrics.feature-xconnect-referral-sit:9180/metrics"]
+        source = "caddy"
+        interval = "30s"
+        measurement_name = "caddy"
+        keep_exist_metric_name = true
+        [inputs.prom.tags]
+          cluster = "dev-k3s-v5-sit"
+          env = "sit"
+          service = "web-saas-caddy"
+  - name: postgresql-exporter.conf
+    path: /usr/local/datakit/conf.d/prom/postgresql-exporter.conf
+    value: |
+      [[inputs.prom]]
+        urls = ["http://web-saas-postgresql-exporter.feature-xconnect-referral-sit:9187/metrics"]
+        source = "postgresql"
+        interval = "15s"
+        [inputs.prom.tags]
+          cluster = "dev-k3s-v5-sit"
+          env = "sit"
+          db_instance = "web-saas-postgresql"
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

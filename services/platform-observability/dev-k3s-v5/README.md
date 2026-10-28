@@ -49,3 +49,6 @@ verified; this declaration does not establish whether an unobserved server-side 
 Do not switch the URL or claim central ingestion until the approved non-production route and
 runtime injection are reviewed and verified. Kubelet/cadvisor use
 `insecure_skip_verify: true`; K3s serving-certificate validation remains unresolved.
+## DataKit via Flux HelmRelease
+
+`datakit/` declares Flux ownership of the existing DataKit Helm release in the DEV K3s cluster. It configures Caddy metrics and feature-lane business Pod stdout/stderr logs for Guance while retaining the PostgreSQL exporter scrape. See `datakit/README.md` for ownership, migration, rollback, and acceptance details. This declaration does not enable or claim central VictoriaMetrics/Grafana ingestion.
