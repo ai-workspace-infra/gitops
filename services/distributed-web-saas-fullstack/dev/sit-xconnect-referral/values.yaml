@@ -11,6 +11,9 @@ stunnelServer:
   enabled: false
 caddy:
   enabled: true
+  metrics:
+    prometheus:
+      enabled: true
   frontendService: console
   gatewayEnabled: false
   httpOnly: true

@@ -64,8 +64,25 @@ spec:
           \ caddy-ingress-controller\n    - podSelector: {}\n    ports:\n    - protocol: TCP\n    \
           \  port: 8080\n"
       - target:
+          kind: NetworkPolicy
+          name: web-saas-caddy
+        patch: |-
+          - op: add
+            path: /spec/ingress/-
+            value:
+              from:
+              - namespaceSelector:
+                  matchLabels:
+                    kubernetes.io/metadata.name: datakit
+                podSelector:
+                  matchLabels:
+                    app: datakit
+              ports:
+              - protocol: TCP
+                port: 9180
+      - target:
           kind: Deployment
           name: web-saas-caddy
         patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: web-saas-caddy\n\
           spec:\n  template:\n    metadata:\n      annotations:\n        checksum/caddyfile:\
-          \ beeafbc2b157462c13dc02738bd3f2a4183e16d331d8f383cf1995b95e6bc082\n"
+          \ cc5b108f2aa4710548e748bd964dcf101991f7257cbd2a616885db3a735733be\n"
