@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mcp-server-ingress
+  namespace: platform-mcp
+  labels:
+    app.kubernetes.io/name: infrastructure-mcp-server
+    app.kubernetes.io/part-of: platform-mcp
+  annotations:
+    kubernetes.io/ingress.class: dev-web-saas
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: dev-http01
+spec:
+  rules:
+  - host: mcp-server.svc.plus
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: infrastructure-mcp-server
+            port:
+              number: 8080
+  tls:
+  - hosts:
+    - mcp-server.svc.plus

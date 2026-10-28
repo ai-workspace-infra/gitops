@@ -1,0 +1,35 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mcp-observability-ingress
+  namespace: platform-mcp
+  labels:
+    app.kubernetes.io/name: observability-mcp-gateway
+    app.kubernetes.io/part-of: platform-mcp
+  annotations:
+    kubernetes.io/ingress.class: dev-web-saas
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: dev-http01
+spec:
+  rules:
+  - host: mcp.svc.plus
+    http:
+      paths:
+      - path: /v1/grafana
+        pathType: Prefix
+        backend:
+          service:
+            name: mcp-grafana
+            port:
+              number: 8000
+      - path: /healthz
+        pathType: Prefix
+        backend:
+          service:
+            name: mcp-grafana
+            port:
+              number: 8000
+  tls:
+  - hosts:
+    - mcp.svc.plus

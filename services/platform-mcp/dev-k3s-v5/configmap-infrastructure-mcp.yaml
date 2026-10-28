@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infrastructure-mcp-config
+  namespace: platform-mcp
+  labels:
+    app.kubernetes.io/name: infrastructure-mcp-server
+    app.kubernetes.io/part-of: platform-mcp
+    environment: dev
+data:
+  config.json: |
+    {
+      "server": {
+        "name": "infrastructure-mcp-server",
+        "version": "0.1.0"
+      },
+      "backends": [
+        {
+          "name": "observability-grafana",
+          "capability": "observability",
+          "transport": "sse",
+          "url": "https://mcp.svc.plus/v1/grafana/sse",
+          "enabled": true
+        },
+        {
+          "name": "observability-metrics",
+          "capability": "observability",
+          "transport": "streamable-http",
+          "url": "https://mcp.svc.plus/v1/metrics/mcp",
+          "enabled": true
+        },
+        {
+          "name": "observability-logs",
+          "capability": "observability",
+          "transport": "streamable-http",
+          "url": "https://mcp.svc.plus/v1/logs/mcp",
+          "enabled": true
+        },
+        {
+          "name": "observability-traces",
+          "capability": "observability",
+          "transport": "streamable-http",
+          "url": "https://mcp.svc.plus/v1/traces/mcp",
+          "enabled": true
+        }
+      ]
+    }
