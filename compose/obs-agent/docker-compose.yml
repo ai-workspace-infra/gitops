@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  obs-agent:
+    image: pubrepo.guance.com/guance/obs-agent:v0.15.2
+    container_name: obs-agent
+    restart: unless-stopped
+    user: "10001:10001"
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    env_file:
+      - .env
+    volumes:
+      - obs-agent-work:/app
+      - obs-agent-profile-cache:/var/lib/obs-agent/profile-cache
+      - obs-agent-owl:/app/.owl
+
+volumes:
+  obs-agent-work:
+    name: obs-agent-work
+  obs-agent-profile-cache:
+    name: obs-agent-profile-cache
+  obs-agent-owl:
+    name: obs-agent-owl
