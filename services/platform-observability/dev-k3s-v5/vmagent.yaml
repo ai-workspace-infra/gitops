@@ -19,6 +19,14 @@ roleRef: {apiGroup: rbac.authorization.k8s.io, kind: ClusterRole, name: dev-vmag
 subjects: [{kind: ServiceAccount, name: vmagent, namespace: monitoring}]
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/managed-by: flux
+    cluster: dev-k3s-v5
+---
+apiVersion: v1
 kind: ConfigMap
 metadata: {name: vmagent-config, namespace: monitoring}
 data:
@@ -27,55 +35,55 @@ data:
       scrape_interval: 15s
       external_labels:
         cluster: dev-k3s-v5
-    # Host/unmapped series remain dev. Namespace rules below are a review-time
-    # snapshot of the merged #606 SIT namespace metadata, not suffix inference.
-    # Dev K3s V5 is dedicated to temporary SIT feature lanes (2C4G); persistent UAT
-    # runs exclusively in Serverless mode (Cloudflare Pages + Cloud Run + Supabase Free).
-    # Regenerate through the owning execution layer when namespace metadata changes.
-    # Candidate labels require a trusted owner runtime receipt; no static candidate.
+    # This collector is scoped to the requested SIT Dashboard view.
     scrape_configs:
     - job_name: node-exporter
-      kubernetes_sd_configs: [{role: pod, namespaces: {names: [monitoring]}}]
+      kubernetes_sd_configs: [{role: pod, namespaces: {names: [platform-observability]}}]
       relabel_configs:
       - {source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name], regex: observability-agent, action: keep}
+      - {source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance], regex: dev-platform-observability-agent, action: keep}
+      - {source_labels: [__meta_kubernetes_pod_phase], regex: Running, action: keep}
       - {source_labels: [__meta_kubernetes_pod_container_port_name], regex: metrics, action: keep}
       - {source_labels: [__meta_kubernetes_pod_node_name], target_label: node}
       - {source_labels: [__meta_kubernetes_pod_node_name], target_label: instance}
-      - {target_label: environment, replacement: dev}
+      - {target_label: cluster, replacement: dev-k3s-v5}
+      - {target_label: environment, replacement: sit}
       metric_relabel_configs:
       - {source_labels: [node], target_label: nodename}
     - job_name: process-exporter
-      kubernetes_sd_configs: [{role: pod, namespaces: {names: [monitoring]}}]
+      kubernetes_sd_configs: [{role: pod, namespaces: {names: [platform-observability]}}]
       relabel_configs:
       - {source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name], regex: process-exporter, action: keep}
+      - {source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_instance], regex: dev-platform-observability-agent, action: keep}
+      - {source_labels: [__meta_kubernetes_pod_phase], regex: Running, action: keep}
       - {source_labels: [__meta_kubernetes_pod_container_port_name], regex: metrics, action: keep}
       - {source_labels: [__meta_kubernetes_pod_node_name], target_label: node}
       - {source_labels: [__meta_kubernetes_pod_node_name], target_label: instance}
-      - {target_label: environment, replacement: dev}
+      - {target_label: cluster, replacement: dev-k3s-v5}
+      - {target_label: environment, replacement: sit}
       metric_relabel_configs:
       - {source_labels: [__name__], regex: 'namedprocess_namegroup_(read_bytes_total|write_bytes_total|open_filedesc|worst_fd_ratio)', action: drop}
     - job_name: kube-state-metrics
-      static_configs: [{targets: ["dev-observability-agent-state.monitoring.svc:8080"], labels: {environment: dev}}]
+      static_configs: [{targets: ["dev-platform-observability-agent-state.platform-observability.svc:8080"], labels: {cluster: dev-k3s-v5, environment: sit}}]
       metric_relabel_configs: &envmap
-      - {target_label: environment, replacement: dev}
-      - {source_labels: [namespace], regex: 'feature-xconnect-referral-sit', target_label: environment, replacement: 'sit'}
-      - {source_labels: [namespace], regex: 'feature-xconnect-referral-sit', target_label: feature_id, replacement: 'xconnect-referral'}
+      - {target_label: cluster, replacement: dev-k3s-v5}
+      - {target_label: environment, replacement: sit}
     - job_name: kubelet
       scheme: https
       authorization: {type: Bearer, credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}
-      tls_config: {ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt, insecure_skip_verify: true}
+      tls_config: {ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt, insecure_skip_verify: false}
       kubernetes_sd_configs: [{role: node}]
       relabel_configs: &noderl
       - {source_labels: [__meta_kubernetes_node_name], target_label: node}
       - {source_labels: [__meta_kubernetes_node_name], target_label: instance}
-      - {source_labels: [__address__], regex: '(.+):[0-9]+', replacement: '$1:10250', target_label: __address__}
-      - {target_label: environment, replacement: dev}
+      - {target_label: cluster, replacement: dev-k3s-v5}
+      - {target_label: environment, replacement: sit}
       metric_relabel_configs: *envmap
     - job_name: cadvisor
       scheme: https
       metrics_path: /metrics/cadvisor
       authorization: {type: Bearer, credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}
-      tls_config: {ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt, insecure_skip_verify: true}
+      tls_config: {ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt, insecure_skip_verify: false}
       kubernetes_sd_configs: [{role: node}]
       relabel_configs: *noderl
       metric_relabel_configs: *envmap
