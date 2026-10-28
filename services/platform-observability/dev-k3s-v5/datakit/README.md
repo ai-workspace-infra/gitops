@@ -2,7 +2,7 @@
 
 Flux owns the DataKit Helm release in the DEV K3s cluster. It adopts the existing release name `datakit` in namespace `datakit`; chart version is pinned to `2.16.1`. This path is for the current SIT feature lane only.
 
-The values preserve the existing DataWay Secret by name and do not contain its value. `inputs.prom` scrapes the Caddy metrics Service on port 9180 every 30 seconds and retains the existing PostgreSQL exporter scrape on port 9187. Container stdout/stderr logs are scoped to namespaces matching `feature-*`. Existing OTLP receiver settings and the DataKit DaemonSet resource budget are retained.
+The values preserve the existing DataWay Secret by name and do not contain its value. `inputs.prom` scrapes the Caddy metrics Service on port 9180 every 30 seconds and retains the existing PostgreSQL exporter scrape on port 9187. Container stdout/stderr logs are scoped to namespaces matching `feature-*`; the container collector connects to the K3s containerd socket at `/var/run/k3s/containerd/containerd.sock` through the existing `/var/run` host mount. Existing OTLP receiver settings and the DataKit DaemonSet resource budget are retained.
 
 ## Ownership and operation
 
