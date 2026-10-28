@@ -36,6 +36,7 @@ providers:
     namespaces:
     - feature-xconnect-referral-sit
     - web-saas-uat
+    - platform-mcp
     publishedService:
       enabled: false
     allowExternalNameServices: false

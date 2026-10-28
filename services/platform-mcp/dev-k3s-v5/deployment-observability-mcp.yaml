@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: observability-mcp-gateway
+  namespace: platform-mcp
+  labels:
+    app.kubernetes.io/name: observability-mcp-gateway
+    app.kubernetes.io/part-of: platform-mcp
+    environment: dev
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: observability-mcp-gateway
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: observability-mcp-gateway
+        app.kubernetes.io/part-of: platform-mcp
+        environment: dev
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: dev-k3s-v5
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: mcp-grafana
+        image: grafana/mcp-grafana:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - "-t"
+        - "sse"
+        - "--base-path"
+        - "/v1/grafana"
+        - "--disable-write"
+        - "--disable-admin"
+        - "--allowed-hosts"
+        - "mcp.svc.plus,localhost,127.0.0.1,127.0.0.1:8000"
+        env:
+        - name: GRAFANA_URL
+          value: "https://observability.svc.plus/grafana/"
+        ports:
+        - name: grafana-sse
+          containerPort: 8000
+          protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL

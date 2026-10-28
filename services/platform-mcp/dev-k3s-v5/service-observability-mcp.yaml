@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-grafana
+  namespace: platform-mcp
+  labels:
+    app.kubernetes.io/name: observability-mcp-gateway
+    app.kubernetes.io/part-of: platform-mcp
+spec:
+  type: ClusterIP
+  ports:
+  - name: http-sse
+    port: 8000
+    targetPort: 8000
+    protocol: TCP
+  selector:
+    app.kubernetes.io/name: observability-mcp-gateway

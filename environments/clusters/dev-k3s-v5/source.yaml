@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: platform-config-dev
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: main
