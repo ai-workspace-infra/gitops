@@ -195,6 +195,82 @@ telemetry:
       replacement: web-saas-k3s-v5
     - target_label: environment
       replacement: prod
+  # Blackbox exporter probes are kept in the existing VictoriaMetrics scrape
+  # pipeline so the Grafana dashboard layout and datasource remain unchanged.
+  - job_name: blackbox-core-http
+    scrape_interval: 30s
+    metrics_path: /probe
+    params:
+      module:
+      - http_2xx
+    static_configs:
+    - targets:
+      - https://xworktech.com/
+      - https://console.svc.plus/
+      labels:
+        environment: prod
+        probe_group: core-http
+    relabel_configs:
+    - source_labels:
+      - __address__
+      target_label: __param_target
+    - source_labels:
+      - __param_target
+      target_label: target
+    - source_labels:
+      - __param_target
+      regex: https://([^/]+)/.*
+      target_label: name
+    - target_label: __address__
+      replacement: blackbox-exporter.platform-observability.svc.cluster.local:9115
+  - job_name: blackbox-api-http
+    scrape_interval: 30s
+    metrics_path: /probe
+    params:
+      module:
+      - http_2xx
+    static_configs:
+    - targets:
+      - https://accounts.svc.plus/
+      - https://billing.svc.plus/
+      labels:
+        environment: prod
+        probe_group: api-http
+    relabel_configs:
+    - source_labels:
+      - __address__
+      target_label: __param_target
+    - source_labels:
+      - __param_target
+      target_label: target
+    - source_labels:
+      - __param_target
+      regex: https://([^/]+)/.*
+      target_label: name
+    - target_label: __address__
+      replacement: blackbox-exporter.platform-observability.svc.cluster.local:9115
+  - job_name: blackbox-postgresql-tls-tunnel
+    scrape_interval: 30s
+    metrics_path: /probe
+    params:
+      module:
+      - tcp_tls
+    static_configs:
+    - targets:
+      - postgresql.svc.plus:15432
+      labels:
+        environment: prod
+        probe_group: db-tls-tunnel
+        name: postgresql-tls-tunnel
+    relabel_configs:
+    - source_labels:
+      - __address__
+      target_label: __param_target
+    - source_labels:
+      - __param_target
+      target_label: target
+    - target_label: __address__
+      replacement: blackbox-exporter.platform-observability.svc.cluster.local:9115
   spanMetrics: true
 mcp:
   enabled: false

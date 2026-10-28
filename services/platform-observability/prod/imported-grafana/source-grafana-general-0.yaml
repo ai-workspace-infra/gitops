@@ -3711,22 +3711,22 @@ data:
     \        \"desc\": false,\n            \"displayName\": \"探测状态\"\n          }\n\
     \        ]\n      },\n      \"targets\": [\n        {\n          \"datasource\"\
     : {\n            \"type\": \"prometheus\",\n            \"uid\": \"$DS_METRICS\"\
-    \n          },\n          \"expr\": \"max by (name, target, env) (probe_success{target=~\\\
+    \n          },\n          \"expr\": \"max by (name, target, environment) (probe_success{target=~\\\
     \"$target\\\"})\",\n          \"format\": \"table\",\n          \"instant\": true,\n\
     \          \"legendFormat\": \"\",\n          \"refId\": \"probe_success\"\n \
     \       },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"$DS_METRICS\"\n          },\n          \"expr\": \"\
-    max by (name, target, env) (probe_http_status_code{target=~\\\"$target\\\"})\"\
+    max by (name, target, environment) (probe_http_status_code{target=~\\\"$target\\\"})\"\
     ,\n          \"format\": \"table\",\n          \"instant\": true,\n          \"\
     legendFormat\": \"\",\n          \"refId\": \"probe_http_status_code\"\n     \
     \   },\n        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
     ,\n            \"uid\": \"$DS_METRICS\"\n          },\n          \"expr\": \"\
-    avg by (name, target, env) (probe_duration_seconds{target=~\\\"$target\\\"} *\
+    avg by (name, target, environment) (probe_duration_seconds{target=~\\\"$target\\\"} *\
     \ 1000)\",\n          \"format\": \"table\",\n          \"instant\": true,\n \
     \         \"legendFormat\": \"\",\n          \"refId\": \"probe_duration_seconds\"\
     \n        },\n        {\n          \"datasource\": {\n            \"type\": \"\
     prometheus\",\n            \"uid\": \"$DS_METRICS\"\n          },\n          \"\
-    expr\": \"min by (name, target, env) ((probe_ssl_earliest_cert_expiry{target=~\\\
+    expr\": \"min by (name, target, environment) ((probe_ssl_earliest_cert_expiry{target=~\\\
     \"$target\\\"} - time()) / 86400)\",\n          \"format\": \"table\",\n     \
     \     \"instant\": true,\n          \"legendFormat\": \"\",\n          \"refId\"\
     : \"D\"\n        }\n      ],\n      \"title\": \"全域域名与 SSL 证书探测总览表\",\n      \"\
