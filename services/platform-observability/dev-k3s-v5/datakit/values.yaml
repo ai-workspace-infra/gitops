@@ -38,6 +38,7 @@ dkconfig:
         interval = "30s"
         measurement_name = "caddy"
         keep_exist_metric_name = true
+        election = false
         [inputs.prom.tags]
           cluster = "dev-k3s-v5-sit"
           env = "sit"
