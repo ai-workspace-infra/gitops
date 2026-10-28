@@ -26,16 +26,18 @@ class ProdK3sV5RetireObservabilityMCPTests(unittest.TestCase):
         vm_deploy = deploy_map['platform-observability-mcp-victoriametrics']
         self.assertEqual(vm_deploy['spec']['replicas'], 0)
         self.assertEqual(vm_deploy['metadata']['namespace'], 'platform-observability')
+        self.assertEqual(vm_deploy['spec']['selector']['matchLabels']['app.kubernetes.io/name'], 'mcp-victoriametrics')
 
         # Other observability-mcp deployments
-        for name in [
-            'platform-observability-mcp-grafana',
-            'platform-observability-mcp-victorialogs',
-            'platform-observability-mcp-victoriatraces',
+        for name, short_name in [
+            ('platform-observability-mcp-grafana', 'mcp-grafana'),
+            ('platform-observability-mcp-victorialogs', 'mcp-victorialogs'),
+            ('platform-observability-mcp-victoriatraces', 'mcp-victoriatraces'),
         ]:
             self.assertIn(name, deploy_map)
             self.assertEqual(deploy_map[name]['spec']['replicas'], 0)
             self.assertEqual(deploy_map[name]['metadata']['namespace'], 'platform-observability')
+            self.assertEqual(deploy_map[name]['spec']['selector']['matchLabels']['app.kubernetes.io/name'], short_name)
 
     def test_prod_values_mcp_disabled(self):
         values_path = ROOT / 'services/platform-observability/prod/values.yaml'
