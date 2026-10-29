@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: caddy
   rules:
-  - host: smoke-sit-test-1483-sit.onwalk.net
+  - host: verified-sit-test-1483-sit.onwalk.net
     http:
       paths:
       - path: /
@@ -16,7 +16,7 @@ spec:
             name: web-saas-caddy-ingress
             port:
               number: 80
-  - host: accounts-smoke-sit-test-1483-sit.onwalk.net
+  - host: accounts-verified-sit-test-1483-sit.onwalk.net
     http:
       paths:
       - path: /
@@ -26,7 +26,7 @@ spec:
             name: web-saas-caddy-ingress
             port:
               number: 80
-  - host: billing-smoke-sit-test-1483-sit.onwalk.net
+  - host: billing-verified-sit-test-1483-sit.onwalk.net
     http:
       paths:
       - path: /
