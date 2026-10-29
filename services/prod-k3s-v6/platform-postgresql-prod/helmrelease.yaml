@@ -1,0 +1,36 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: postgresql
+  namespace: platform-postgresql-prod
+spec:
+  suspend: true
+  interval: 5m
+  releaseName: postgresql
+  targetNamespace: platform-postgresql-prod
+  chartRef:
+    kind: OCIRepository
+    name: postgresql-chart
+  install:
+    remediation:
+      retries: 0
+  upgrade:
+    remediation:
+      retries: 0
+  values:
+    server:
+      enabled: true
+    image:
+      repository: ghcr.io/x-evor/images/postgresql
+      tag: "sha-8d3a508"
+      pullPolicy: IfNotPresent
+    auth:
+      username: postgres
+      database: postgres
+      existingSecret: postgresql-superuser
+      secretKey: POSTGRES_PASSWORD
+    persistence:
+      enabled: true
+      size: 20Gi
+    metrics:
+      enabled: true

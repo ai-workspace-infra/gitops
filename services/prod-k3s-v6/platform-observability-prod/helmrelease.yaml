@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: platform-observability
+  namespace: platform-observability-prod
+spec:
+  suspend: true
+  interval: 5m
+  releaseName: platform-observability
+  targetNamespace: platform-observability-prod
+  chartRef:
+    kind: OCIRepository
+    name: observability-stack-chart
+  values:
+    telemetry:
+      cluster: web-saas-k3s-v6
+      environment: prod
+    grafana:
+      rootUrl: https://observability-k3s-v6.svc.plus/
+      existingSecret: grafana-admin
+      adminPasswordKey: password
+    persistence:
+      enabled: true
+      size: 20Gi
+      storageClass: local-path

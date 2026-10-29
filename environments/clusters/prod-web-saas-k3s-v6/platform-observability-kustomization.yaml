@@ -1,0 +1,18 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: platform-observability-prod
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 5m
+  prune: true
+  wait: true
+  timeout: 20m
+  dependsOn:
+    - name: platform-vault-prod
+    - name: platform-ingress-prod
+  sourceRef:
+    kind: GitRepository
+    name: platform-config-prod
+  path: ./services/prod-k3s-v6/platform-observability-prod

@@ -1,0 +1,13 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: observability-stack-chart
+  namespace: platform-observability-prod
+spec:
+  interval: 10m
+  url: oci://ghcr.io/ai-workspace-infra/observability-stack
+  ref:
+    digest: sha256:61e414722d21bbf4ace63d54c7236de30af5ff54d3878dcb5c8da8999894c706
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy

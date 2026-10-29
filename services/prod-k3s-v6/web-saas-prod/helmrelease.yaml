@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: distributed-web-saas-fullstack
+  namespace: web-saas-prod
+spec:
+  suspend: true
+  interval: 5m
+  releaseName: web-saas
+  targetNamespace: web-saas-prod
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  values:
+    global:
+      environment: prod
+      expectedNamespace: web-saas-prod
+    caddy:
+      enabled: false
+    postgresql:
+      enabled: false
+    console:
+      enabled: true
+    accounts:
+      enabled: true
+      workload:
+        env:
+          DB_HOST: postgresql.platform-postgresql-prod.svc.cluster.local
+          DB_PORT: "5432"
+          POSTGRES_USER: accounts_runtime
+          DB_NAME: web_saas
+        secretRefs:
+          - accounts-db-runtime
+    billing:
+      enabled: true
+      workload:
+        env:
+          DB_HOST: postgresql.platform-postgresql-prod.svc.cluster.local
+          DB_PORT: "5432"
+          POSTGRES_USER: billing_runtime
+          DB_NAME: web_saas
+        secretRefs:
+          - billing-db-runtime
+    content:
+      enabled: true
