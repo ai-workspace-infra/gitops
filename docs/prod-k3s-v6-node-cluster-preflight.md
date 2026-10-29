@@ -82,10 +82,11 @@ namespace，HelmRelease 也在该 namespace。**所有 Flux Kustomization 和 Gi
 | `caddy-ingress` | `ingress-prod` | `caddy.enabled: true`，`externalBackends.enabled: true` | PostgreSQL、Console、Accounts、Billing、Content、edgeGateway、stunnel | 独立 Caddy 反向代理，经显式 FQDN 连接业务 namespace；不是另装 Ingress API controller |
 | `web-saas-prod` | `web-saas-prod` | Console、Accounts、Billing、Content | PostgreSQL、Caddy、edgeGateway、stunnel | releaseName `web-saas`，应用连接 `postgresql-postgresql.postgresql-prod.svc.cluster.local` |
 
-现有公开 chart 的校验要求 Caddy 与本地 Console/Accounts 同时启用。Artifacts owner 分支已补充
-独立 Caddy `externalBackends` 契约：显式上游、禁止重复部署业务/数据库、保留旧 combined 模式。
-该源版本为 0.2.10 候选；需经 PR、发布工作流和新 OCI digest 验证后，统一更新 V6 三个初始
-chart pin。当前旧 digest 保持暂停占位，不得作为独立 Caddy 已可部署的证据。
+Artifacts [PR #246](https://github.com/ai-workspace-infra/artifacts/pull/246) 已合入，
+[发布运行 40833566718](https://github.com/ai-workspace-infra/artifacts/actions/runs/40833566718)
+已发布 chart **0.2.10**。V6 三个独立 release 均固定初始 OCI digest
+`sha256:45c2f15ab10499d7a44dc59a844246283db7bd26ff748a4b21e2207f2e749ffe`。
+Caddy `externalBackends` 显式引用跨 namespace 上游，禁止重复部署业务/数据库。
 跨 namespace DB NetworkPolicy、TLS Secret、Vault/观测入口路由和实际资源预算仍需相应验收。
 
 | 发布单元 | 最小单元依赖 | 独立发布说明 |
@@ -258,3 +259,21 @@ V6 容量验收结果。按当前规格创建节点与后续放行全部业务�
   Helm chart，不能证明 chart values、镜像、Ingress/TLS、数据库连接或实际部署有效。
 - 未执行 Terraform init/plan/apply、云 API 调用、SSH、格式化/挂载、数据库操作或 workflow dispatch。
   临时生成的 HCL、运行配置和构建输出均在仓库外，不作为运行 CMDB 或执行回执提交。
+
+## 正式冷启动执行边界
+
+Selfhost Orchestrator 的 `prod-v6` 专用路径消费此声明，支持 `plan`、`infra`、
+`deploy`。`deploy` 创建独立资源并执行 K3s/Flux 暂停式引导；全部 6 个配置源、
+6 个 Flux Kustomization、7 个 HelmRelease 仍为 suspend=true。它不执行 migratectl、
+SQL schema 变更、业务恢复、DNS、源写者停用或写入权交接。
+
+初始配置 tag 为 `v2026.10.29.4`，必须发布于包含本声明的合入提交，才可调度。
+固定安装版本：K3s `v1.37.1+k3s1`、Flux `2.9.6`、Helm `v3.22.1`。
+独立卷挂载 `/data`，local-path provisioner 使用 `/data/k3s/storage`；K3s systemd
+依赖该挂载，不允许在丢失挂载时向系统盘的同名目录写入。
+
+IaC 角色 `prod-k3s-v6-iac` 仅能读取 provider 与 state 凭据，Bootstrap 角色
+`prod-k3s-v6-bootstrap` 仅读取本集群 SSH 绑定与 provider 主机密钥核验凭据。
+两者仅接受正式发布 tag 下相应固定 workflow 的 PROD OIDC 身份。系统管理员首次
+配置专用角色和 SSH KV 绑定；不把管理员 Vault token 放入 CI 或业务。
+实际云端 plan/apply、节点/集群身份、挂载 UUID 和暂停声明回执仍需运行证明。

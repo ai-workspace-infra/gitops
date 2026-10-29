@@ -9,7 +9,7 @@ targets:
   workspace: prod-k3s-v6
   auth:
     expected_identity: manbuzhe2026
-    vault_role: prod-akamai-iac
+    vault_role: github-actions-platform-ops-toolkit-prod-k3s-v6-iac
     record: kv/data/CICD/prod/akamai-cloud/manbuzhe2026
   stages:
     bootstrap:
@@ -31,6 +31,7 @@ targets:
       protected: []
       ownership_reviewed: true
       requires_existing_state: false
+      create_only: true
       destroy_allowed: false
       reason: New isolated V6 validation cluster with an independent 100 GB data volume; capacity, volume protection and CMDB/mount contracts require preflight; no V5 resources or canonical DNS may change.
   namespace: prod-k3s-v6

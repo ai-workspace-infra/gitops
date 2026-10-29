@@ -32,7 +32,7 @@ hosts:
     image: linode/debian13
     private_ip: true
     ansible_user: root
-    groups: [web_saas, prod, debian, akamai_cloud, k3s_server]
+    groups: [web_saas, prod, debian, akamai_cloud, k3s_server, k3s]
     tags: [svc-plus, prod, prod-k3s-v6, akamai-cloud]
     # Independent PROD data volume; capacity is a planning candidate in provider GB.
     # Mount/format and Kubernetes storage routing belong to Playbooks, not IaC.
@@ -53,11 +53,17 @@ hosts:
       cloud_provider: akamai-cloud
       cloud_region: jp-tyo-3
       service_variant: k3s-v6
+      target_generation: prod-v6
       deployment_mode: kubernetes
       k8s_cluster_name: PROD-K3S-V6
       k3s_platform_flux_namespace: flux-system
       k3s_platform_cluster_name: PROD-K3S-V6
       k3s_platform_node_name: prod-k3s-v6
+      k3s_platform_k3s_version: v1.37.1+k3s1
+      k3s_platform_flux_version: "2.9.6"
+      k3s_platform_helm_version: v3.22.1
+      k3s_platform_local_storage_path: /data/k3s/storage
+      k3s_platform_require_data_mount: true
       k3s_platform_write_kubeconfig_mode: "0600"
       k3s_platform_flux_bootstrap_mode: declarative_paused
       k3s_platform_git_url: https://github.com/ai-workspace-infra/gitops.git

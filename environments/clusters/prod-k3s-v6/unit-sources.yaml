@@ -10,7 +10,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.3
+    tag: v2026.10.29.4
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -22,7 +22,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.3
+    tag: v2026.10.29.4
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -34,7 +34,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.3
+    tag: v2026.10.29.4
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -46,7 +46,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.3
+    tag: v2026.10.29.4
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -58,4 +58,4 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.3
+    tag: v2026.10.29.4
