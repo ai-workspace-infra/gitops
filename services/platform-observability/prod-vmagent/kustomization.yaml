@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: platform-observability
 resources:
   - vmagent.yaml
+  - blackbox.yaml
 configMapGenerator:
   - name: prod-vmagent-config
     files:
