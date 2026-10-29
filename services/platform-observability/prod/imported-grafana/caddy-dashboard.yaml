@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,804 +7,2457 @@ metadata:
   annotations:
     observability.svc.plus/source-sha256: de68f8d1d5d6479364f73de7d0244d9e0db74802d31f81b447921ebe5b2e89d0
 data:
-  caddy-dashboard.json: "{\n  \"__elements\": {},\n  \"__requires\": [\n    {\n  \
-    \    \"type\": \"grafana\",\n      \"id\": \"grafana\",\n      \"name\": \"Grafana\"\
-    ,\n      \"version\": \"11.5.1\"\n    },\n    {\n      \"type\": \"panel\",\n\
-    \      \"id\": \"heatmap\",\n      \"name\": \"Heatmap\",\n      \"version\":\
-    \ \"\"\n    },\n    {\n      \"type\": \"panel\",\n      \"id\": \"piechart\"\
-    ,\n      \"name\": \"Pie chart\",\n      \"version\": \"\"\n    },\n    {\n  \
-    \    \"type\": \"datasource\",\n      \"id\": \"prometheus\",\n      \"name\"\
-    : \"Prometheus\",\n      \"version\": \"1.0.0\"\n    },\n    {\n      \"type\"\
-    : \"panel\",\n      \"id\": \"stat\",\n      \"name\": \"Stat\",\n      \"version\"\
-    : \"\"\n    },\n    {\n      \"type\": \"panel\",\n      \"id\": \"timeseries\"\
-    ,\n      \"name\": \"Time series\",\n      \"version\": \"\"\n    }\n  ],\n  \"\
-    annotations\": {\n    \"list\": [\n      {\n        \"builtIn\": 1,\n        \"\
-    datasource\": {\n          \"type\": \"grafana\",\n          \"uid\": \"-- Grafana\
-    \ --\"\n        },\n        \"enable\": true,\n        \"hide\": true,\n     \
-    \   \"iconColor\": \"rgba(0, 211, 255, 1)\",\n        \"name\": \"Annotations\
-    \ & Alerts\",\n        \"type\": \"dashboard\"\n      }\n    ]\n  },\n  \"description\"\
-    : \"Caddy HTTP server monitoring.\",\n  \"editable\": true,\n  \"fiscalYearStartMonth\"\
-    : 0,\n  \"graphTooltip\": 0,\n  \"id\": null,\n  \"links\": [],\n  \"panels\"\
-    : [\n    {\n      \"collapsed\": false,\n      \"gridPos\": {\n        \"h\":\
-    \ 1,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\": 0\n      },\n    \
-    \  \"id\": 8,\n      \"panels\": [],\n      \"title\": \"Summary\",\n      \"\
-    type\": \"row\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"\
-    prometheus\",\n        \"uid\": \"${datasource}\"\n      },\n      \"description\"\
-    : \"The number of requests currently being handled by the server.\",\n      \"\
-    fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n          \
-    \  \"mode\": \"fixed\"\n          },\n          \"mappings\": [],\n          \"\
-    thresholds\": {\n            \"mode\": \"absolute\",\n            \"steps\": [\n\
-    \              {\n                \"color\": \"green\",\n                \"value\"\
-    : null\n              }\n            ]\n          }\n        },\n        \"overrides\"\
-    : []\n      },\n      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 4,\n \
-    \       \"x\": 0,\n        \"y\": 1\n      },\n      \"id\": 7,\n      \"options\"\
-    : {\n        \"colorMode\": \"value\",\n        \"graphMode\": \"none\",\n   \
-    \     \"justifyMode\": \"auto\",\n        \"orientation\": \"auto\",\n       \
-    \ \"percentChangeColorMode\": \"standard\",\n        \"reduceOptions\": {\n  \
-    \        \"calcs\": [\n            \"lastNotNull\"\n          ],\n          \"\
-    fields\": \"\",\n          \"values\": false\n        },\n        \"showPercentChange\"\
-    : false,\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n    \
-    \  },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n\
-    \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
-    \    \"uid\": \"${datasource}\"\n          },\n          \"editorMode\": \"code\"\
-    ,\n          \"expr\": \"sum(caddy_http_requests_in_flight{job=\\\"$job\\\",instance=\\\
-    \"$instance\\\"})\",\n          \"instant\": false,\n          \"legendFormat\"\
-    : \"__auto\",\n          \"range\": true,\n          \"refId\": \"A\"\n      \
-    \  }\n      ],\n      \"title\": \"Requests in flight\",\n      \"type\": \"stat\"\
-    \n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n\
-    \        \"uid\": \"${datasource}\"\n      },\n      \"description\": \"Total\
-    \ requests handled in the selected time range.\",\n      \"fieldConfig\": {\n\
-    \        \"defaults\": {\n          \"color\": {\n            \"mode\": \"fixed\"\
-    \n          },\n          \"mappings\": [],\n          \"thresholds\": {\n   \
-    \         \"mode\": \"absolute\",\n            \"steps\": [\n              {\n\
-    \                \"color\": \"green\",\n                \"value\": null\n    \
-    \          }\n            ]\n          }\n        },\n        \"overrides\": []\n\
-    \      },\n      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 4,\n      \
-    \  \"x\": 4,\n        \"y\": 1\n      },\n      \"id\": 1,\n      \"options\"\
-    : {\n        \"colorMode\": \"value\",\n        \"graphMode\": \"none\",\n   \
-    \     \"justifyMode\": \"auto\",\n        \"orientation\": \"auto\",\n       \
-    \ \"percentChangeColorMode\": \"standard\",\n        \"reduceOptions\": {\n  \
-    \        \"calcs\": [\n            \"lastNotNull\"\n          ],\n          \"\
-    fields\": \"\",\n          \"values\": false\n        },\n        \"showPercentChange\"\
-    : false,\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n    \
-    \  },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n\
-    \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
-    \    \"uid\": \"${datasource}\"\n          },\n          \"disableTextWrap\":\
-    \ false,\n          \"editorMode\": \"code\",\n          \"expr\": \"sum(increase(caddy_http_requests_total{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range]))\",\n          \"fullMetaSearch\"\
-    : false,\n          \"includeNullMetadata\": true,\n          \"instant\": false,\n\
-    \          \"legendFormat\": \"__auto\",\n          \"range\": true,\n       \
-    \   \"refId\": \"A\",\n          \"useBackend\": false\n        }\n      ],\n\
-    \      \"title\": \"Total requests\",\n      \"type\": \"stat\"\n    },\n    {\n\
-    \      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\":\
-    \ \"${datasource}\"\n      },\n      \"description\": \"Rate of requests handled\
-    \ per second in the selected time range.\",\n      \"fieldConfig\": {\n      \
-    \  \"defaults\": {\n          \"color\": {\n            \"mode\": \"fixed\"\n\
-    \          },\n          \"mappings\": [],\n          \"thresholds\": {\n    \
-    \        \"mode\": \"absolute\",\n            \"steps\": [\n              {\n\
-    \                \"color\": \"green\",\n                \"value\": null\n    \
-    \          }\n            ]\n          }\n        },\n        \"overrides\": []\n\
-    \      },\n      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 4,\n      \
-    \  \"x\": 8,\n        \"y\": 1\n      },\n      \"id\": 2,\n      \"options\"\
-    : {\n        \"colorMode\": \"value\",\n        \"graphMode\": \"none\",\n   \
-    \     \"justifyMode\": \"auto\",\n        \"orientation\": \"auto\",\n       \
-    \ \"percentChangeColorMode\": \"standard\",\n        \"reduceOptions\": {\n  \
-    \        \"calcs\": [\n            \"lastNotNull\"\n          ],\n          \"\
-    fields\": \"\",\n          \"values\": false\n        },\n        \"showPercentChange\"\
-    : false,\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n    \
-    \  },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n\
-    \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
-    \    \"uid\": \"${datasource}\"\n          },\n          \"editorMode\": \"code\"\
-    ,\n          \"expr\": \"sum(rate(caddy_http_requests_total{job=\\\"$job\\\",instance=\\\
-    \"$instance\\\"}[$__range]))\",\n          \"instant\": false,\n          \"legendFormat\"\
-    : \"__auto\",\n          \"range\": true,\n          \"refId\": \"A\"\n      \
-    \  }\n      ],\n      \"title\": \"Requests per second\",\n      \"type\": \"\
-    stat\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\"\
-    ,\n        \"uid\": \"${datasource}\"\n      },\n      \"description\": \"Median\
-    \ round-trip request duration for the selected time range.\",\n      \"fieldConfig\"\
-    : {\n        \"defaults\": {\n          \"color\": {\n            \"mode\": \"\
-    fixed\"\n          },\n          \"mappings\": [],\n          \"thresholds\":\
-    \ {\n            \"mode\": \"absolute\",\n            \"steps\": [\n         \
-    \     {\n                \"color\": \"green\",\n                \"value\": null\n\
-    \              }\n            ]\n          },\n          \"unit\": \"s\"\n   \
-    \     },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n        \"\
-    h\": 5,\n        \"w\": 4,\n        \"x\": 12,\n        \"y\": 1\n      },\n \
-    \     \"id\": 3,\n      \"options\": {\n        \"colorMode\": \"value\",\n  \
-    \      \"graphMode\": \"none\",\n        \"justifyMode\": \"auto\",\n        \"\
-    orientation\": \"auto\",\n        \"percentChangeColorMode\": \"standard\",\n\
-    \        \"reduceOptions\": {\n          \"calcs\": [\n            \"lastNotNull\"\
-    \n          ],\n          \"fields\": \"\",\n          \"values\": false\n   \
-    \     },\n        \"showPercentChange\": false,\n        \"textMode\": \"auto\"\
-    ,\n        \"wideLayout\": true\n      },\n      \"pluginVersion\": \"11.5.1\"\
-    ,\n      \"targets\": [\n        {\n          \"datasource\": {\n            \"\
-    type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\n          },\n\
-    \          \"editorMode\": \"code\",\n          \"expr\": \"histogram_quantile(0.5,\
-    \ sum(rate(caddy_http_request_duration_seconds_bucket{job=\\\"$job\\\",instance=\\\
-    \"$instance\\\"}[$__range])) by (le))\",\n          \"instant\": false,\n    \
-    \      \"legendFormat\": \"__auto\",\n          \"range\": true,\n          \"\
-    refId\": \"A\"\n        }\n      ],\n      \"title\": \"Median request duration\"\
-    ,\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n        \"\
-    type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n      },\n      \"\
-    description\": \"Median time-to-first-byte response duration for the selected\
-    \ time range.\",\n      \"fieldConfig\": {\n        \"defaults\": {\n        \
-    \  \"color\": {\n            \"mode\": \"fixed\"\n          },\n          \"mappings\"\
-    : [],\n          \"thresholds\": {\n            \"mode\": \"absolute\",\n    \
-    \        \"steps\": [\n              {\n                \"color\": \"green\",\n\
-    \                \"value\": null\n              }\n            ]\n          },\n\
-    \          \"unit\": \"s\"\n        },\n        \"overrides\": []\n      },\n\
-    \      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 4,\n        \"x\": 16,\n\
-    \        \"y\": 1\n      },\n      \"id\": 20,\n      \"options\": {\n       \
-    \ \"colorMode\": \"value\",\n        \"graphMode\": \"none\",\n        \"justifyMode\"\
-    : \"auto\",\n        \"orientation\": \"auto\",\n        \"percentChangeColorMode\"\
-    : \"standard\",\n        \"reduceOptions\": {\n          \"calcs\": [\n      \
-    \      \"lastNotNull\"\n          ],\n          \"fields\": \"\",\n          \"\
-    values\": false\n        },\n        \"showPercentChange\": false,\n        \"\
-    textMode\": \"auto\",\n        \"wideLayout\": true\n      },\n      \"pluginVersion\"\
-    : \"11.5.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
-    \            \"type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\
-    \n          },\n          \"editorMode\": \"code\",\n          \"expr\": \"histogram_quantile(0.5,\
-    \ sum(rate(caddy_http_response_duration_seconds_bucket{job=\\\"$job\\\",instance=\\\
-    \"$instance\\\"}[$__range])) by (le))\",\n          \"instant\": false,\n    \
-    \      \"legendFormat\": \"__auto\",\n          \"range\": true,\n          \"\
-    refId\": \"A\"\n        }\n      ],\n      \"title\": \"Median response duration\"\
-    ,\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n        \"\
-    type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n      },\n      \"\
-    description\": \"A number of middleware errors encountered while handling requests\
-    \ in the selected time range.\",\n      \"fieldConfig\": {\n        \"defaults\"\
-    : {\n          \"color\": {\n            \"mode\": \"fixed\"\n          },\n \
-    \         \"decimals\": 0,\n          \"mappings\": [],\n          \"noValue\"\
-    : \"0\",\n          \"thresholds\": {\n            \"mode\": \"absolute\",\n \
-    \           \"steps\": [\n              {\n                \"color\": \"green\"\
-    ,\n                \"value\": null\n              }\n            ]\n         \
-    \ }\n        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n \
-    \       \"h\": 5,\n        \"w\": 4,\n        \"x\": 20,\n        \"y\": 1\n \
-    \     },\n      \"id\": 5,\n      \"options\": {\n        \"colorMode\": \"value\"\
-    ,\n        \"graphMode\": \"none\",\n        \"justifyMode\": \"auto\",\n    \
-    \    \"orientation\": \"auto\",\n        \"percentChangeColorMode\": \"standard\"\
-    ,\n        \"reduceOptions\": {\n          \"calcs\": [\n            \"lastNotNull\"\
-    \n          ],\n          \"fields\": \"\",\n          \"values\": false\n   \
-    \     },\n        \"showPercentChange\": false,\n        \"textMode\": \"auto\"\
-    ,\n        \"wideLayout\": true\n      },\n      \"pluginVersion\": \"11.5.1\"\
-    ,\n      \"targets\": [\n        {\n          \"datasource\": {\n            \"\
-    type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\n          },\n\
-    \          \"editorMode\": \"code\",\n          \"expr\": \"sum(increase(caddy_http_request_errors_total{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range]))\",\n          \"instant\":\
-    \ false,\n          \"legendFormat\": \"__auto\",\n          \"range\": true,\n\
-    \          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Total middleware\
-    \ errors\",\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n\
-    \        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n     \
-    \ },\n      \"description\": \"Median request (estimated) size in bytes in the\
-    \ selected time range. Includes body.\",\n      \"fieldConfig\": {\n        \"\
-    defaults\": {\n          \"color\": {\n            \"mode\": \"fixed\"\n     \
-    \     },\n          \"mappings\": [],\n          \"thresholds\": {\n         \
-    \   \"mode\": \"absolute\",\n            \"steps\": [\n              {\n     \
-    \           \"color\": \"green\",\n                \"value\": null\n         \
-    \     }\n            ]\n          },\n          \"unit\": \"bytes\"\n        },\n\
-    \        \"overrides\": []\n      },\n      \"gridPos\": {\n        \"h\": 5,\n\
-    \        \"w\": 4,\n        \"x\": 0,\n        \"y\": 6\n      },\n      \"id\"\
-    : 4,\n      \"options\": {\n        \"colorMode\": \"value\",\n        \"graphMode\"\
-    : \"none\",\n        \"justifyMode\": \"auto\",\n        \"orientation\": \"auto\"\
-    ,\n        \"percentChangeColorMode\": \"standard\",\n        \"reduceOptions\"\
-    : {\n          \"calcs\": [\n            \"lastNotNull\"\n          ],\n     \
-    \     \"fields\": \"\",\n          \"values\": false\n        },\n        \"showPercentChange\"\
-    : false,\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n    \
-    \  },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n\
-    \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
-    \    \"uid\": \"${datasource}\"\n          },\n          \"editorMode\": \"code\"\
-    ,\n          \"expr\": \"histogram_quantile(0.5, sum(rate(caddy_http_request_size_bytes_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range])) by (le))\",\n          \"instant\"\
-    : false,\n          \"legendFormat\": \"__auto\",\n          \"range\": true,\n\
-    \          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Median request\
-    \ size\",\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n\
-    \        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n     \
-    \ },\n      \"description\": \"Median returned response body size in bytes in\
-    \ the selected time range.\",\n      \"fieldConfig\": {\n        \"defaults\"\
-    : {\n          \"color\": {\n            \"mode\": \"fixed\"\n          },\n \
-    \         \"mappings\": [],\n          \"thresholds\": {\n            \"mode\"\
-    : \"absolute\",\n            \"steps\": [\n              {\n                \"\
-    color\": \"green\",\n                \"value\": null\n              }\n      \
-    \      ]\n          },\n          \"unit\": \"bytes\"\n        },\n        \"\
-    overrides\": []\n      },\n      \"gridPos\": {\n        \"h\": 5,\n        \"\
-    w\": 4,\n        \"x\": 4,\n        \"y\": 6\n      },\n      \"id\": 21,\n  \
-    \    \"options\": {\n        \"colorMode\": \"value\",\n        \"graphMode\"\
-    : \"none\",\n        \"justifyMode\": \"auto\",\n        \"orientation\": \"auto\"\
-    ,\n        \"percentChangeColorMode\": \"standard\",\n        \"reduceOptions\"\
-    : {\n          \"calcs\": [\n            \"lastNotNull\"\n          ],\n     \
-    \     \"fields\": \"\",\n          \"values\": false\n        },\n        \"showPercentChange\"\
-    : false,\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n    \
-    \  },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n\
-    \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
-    \    \"uid\": \"${datasource}\"\n          },\n          \"editorMode\": \"code\"\
-    ,\n          \"expr\": \"histogram_quantile(0.5, sum(rate(caddy_http_response_size_bytes_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range])) by (le))\",\n          \"instant\"\
-    : false,\n          \"legendFormat\": \"__auto\",\n          \"range\": true,\n\
-    \          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Median response\
-    \ size\",\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n\
-    \        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n     \
-    \ },\n      \"description\": \"Sum of the sizes of all received requests in the\
-    \ selected time range.\",\n      \"fieldConfig\": {\n        \"defaults\": {\n\
-    \          \"color\": {\n            \"mode\": \"fixed\"\n          },\n     \
-    \     \"mappings\": [],\n          \"thresholds\": {\n            \"mode\": \"\
-    absolute\",\n            \"steps\": [\n              {\n                \"color\"\
-    : \"green\",\n                \"value\": null\n              }\n            ]\n\
-    \          },\n          \"unit\": \"bytes\"\n        },\n        \"overrides\"\
-    : []\n      },\n      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 4,\n \
-    \       \"x\": 8,\n        \"y\": 6\n      },\n      \"id\": 22,\n      \"options\"\
-    : {\n        \"colorMode\": \"value\",\n        \"graphMode\": \"none\",\n   \
-    \     \"justifyMode\": \"auto\",\n        \"orientation\": \"auto\",\n       \
-    \ \"percentChangeColorMode\": \"standard\",\n        \"reduceOptions\": {\n  \
-    \        \"calcs\": [\n            \"lastNotNull\"\n          ],\n          \"\
-    fields\": \"\",\n          \"values\": false\n        },\n        \"showPercentChange\"\
-    : false,\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n    \
-    \  },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n\
-    \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
-    \    \"uid\": \"${datasource}\"\n          },\n          \"editorMode\": \"code\"\
-    ,\n          \"expr\": \"sum(increase(caddy_http_request_size_bytes_sum{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range]))\",\n          \"instant\":\
-    \ false,\n          \"legendFormat\": \"__auto\",\n          \"range\": true,\n\
-    \          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Total requests\
-    \ size\",\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n\
-    \        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n     \
-    \ },\n      \"description\": \"Sum of sizes of all response bodies in the selected\
-    \ time range.\",\n      \"fieldConfig\": {\n        \"defaults\": {\n        \
-    \  \"color\": {\n            \"mode\": \"fixed\"\n          },\n          \"mappings\"\
-    : [],\n          \"thresholds\": {\n            \"mode\": \"absolute\",\n    \
-    \        \"steps\": [\n              {\n                \"color\": \"green\",\n\
-    \                \"value\": null\n              }\n            ]\n          },\n\
-    \          \"unit\": \"bytes\"\n        },\n        \"overrides\": []\n      },\n\
-    \      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 4,\n        \"x\": 12,\n\
-    \        \"y\": 6\n      },\n      \"id\": 23,\n      \"options\": {\n       \
-    \ \"colorMode\": \"value\",\n        \"graphMode\": \"none\",\n        \"justifyMode\"\
-    : \"auto\",\n        \"orientation\": \"auto\",\n        \"percentChangeColorMode\"\
-    : \"standard\",\n        \"reduceOptions\": {\n          \"calcs\": [\n      \
-    \      \"lastNotNull\"\n          ],\n          \"fields\": \"\",\n          \"\
-    values\": false\n        },\n        \"showPercentChange\": false,\n        \"\
-    textMode\": \"auto\",\n        \"wideLayout\": true\n      },\n      \"pluginVersion\"\
-    : \"11.5.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
-    \            \"type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\
-    \n          },\n          \"editorMode\": \"code\",\n          \"expr\": \"sum(increase(caddy_http_response_size_bytes_sum{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range]))\",\n          \"instant\":\
-    \ false,\n          \"legendFormat\": \"__auto\",\n          \"range\": true,\n\
-    \          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Total responses\
-    \ size\",\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\": {\n\
-    \        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n     \
-    \ },\n      \"description\": \"Percentage of responses with 4xx status code in\
-    \ all responses.\",\n      \"fieldConfig\": {\n        \"defaults\": {\n     \
-    \     \"color\": {\n            \"mode\": \"fixed\"\n          },\n          \"\
-    mappings\": [],\n          \"noValue\": \"0%\",\n          \"thresholds\": {\n\
-    \            \"mode\": \"absolute\",\n            \"steps\": [\n             \
-    \ {\n                \"color\": \"green\",\n                \"value\": null\n\
-    \              }\n            ]\n          },\n          \"unit\": \"percentunit\"\
-    \n        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n    \
-    \    \"h\": 5,\n        \"w\": 4,\n        \"x\": 16,\n        \"y\": 6\n    \
-    \  },\n      \"id\": 24,\n      \"options\": {\n        \"colorMode\": \"value\"\
-    ,\n        \"graphMode\": \"none\",\n        \"justifyMode\": \"auto\",\n    \
-    \    \"orientation\": \"auto\",\n        \"percentChangeColorMode\": \"standard\"\
-    ,\n        \"reduceOptions\": {\n          \"calcs\": [\n            \"lastNotNull\"\
-    \n          ],\n          \"fields\": \"\",\n          \"values\": false\n   \
-    \     },\n        \"showPercentChange\": false,\n        \"textMode\": \"auto\"\
-    ,\n        \"wideLayout\": true\n      },\n      \"pluginVersion\": \"11.5.1\"\
-    ,\n      \"targets\": [\n        {\n          \"datasource\": {\n            \"\
-    type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\n          },\n\
-    \          \"disableTextWrap\": false,\n          \"editorMode\": \"code\",\n\
-    \          \"expr\": \"sum(increase(caddy_http_response_duration_seconds_count{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\", code=~\\\"4..\\\"}[$__range])) / sum(increase(caddy_http_response_duration_seconds_count{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range]))\",\n          \"fullMetaSearch\"\
-    : false,\n          \"includeNullMetadata\": true,\n          \"instant\": false,\n\
-    \          \"legendFormat\": \"__auto\",\n          \"range\": true,\n       \
-    \   \"refId\": \"A\",\n          \"useBackend\": false\n        }\n      ],\n\
-    \      \"title\": \"4xx response percentage\",\n      \"type\": \"stat\"\n   \
-    \ },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n    \
-    \    \"uid\": \"${datasource}\"\n      },\n      \"description\": \"Percentage\
-    \ of responses with 4xx status code in all responses.\",\n      \"fieldConfig\"\
-    : {\n        \"defaults\": {\n          \"color\": {\n            \"mode\": \"\
-    fixed\"\n          },\n          \"mappings\": [],\n          \"noValue\": \"\
-    0%\",\n          \"thresholds\": {\n            \"mode\": \"absolute\",\n    \
-    \        \"steps\": [\n              {\n                \"color\": \"green\",\n\
-    \                \"value\": null\n              }\n            ]\n          },\n\
-    \          \"unit\": \"percentunit\"\n        },\n        \"overrides\": []\n\
-    \      },\n      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 4,\n      \
-    \  \"x\": 20,\n        \"y\": 6\n      },\n      \"id\": 25,\n      \"options\"\
-    : {\n        \"colorMode\": \"value\",\n        \"graphMode\": \"none\",\n   \
-    \     \"justifyMode\": \"auto\",\n        \"orientation\": \"auto\",\n       \
-    \ \"percentChangeColorMode\": \"standard\",\n        \"reduceOptions\": {\n  \
-    \        \"calcs\": [\n            \"lastNotNull\"\n          ],\n          \"\
-    fields\": \"\",\n          \"values\": false\n        },\n        \"showPercentChange\"\
-    : false,\n        \"textMode\": \"auto\",\n        \"wideLayout\": true\n    \
-    \  },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n\
-    \          \"datasource\": {\n            \"type\": \"prometheus\",\n        \
-    \    \"uid\": \"${datasource}\"\n          },\n          \"disableTextWrap\":\
-    \ false,\n          \"editorMode\": \"code\",\n          \"expr\": \"sum(increase(caddy_http_response_duration_seconds_count{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\", code=~\\\"5..\\\"}[$__range])) / sum(increase(caddy_http_response_duration_seconds_count{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range]))\",\n          \"fullMetaSearch\"\
-    : false,\n          \"includeNullMetadata\": true,\n          \"instant\": false,\n\
-    \          \"legendFormat\": \"__auto\",\n          \"range\": true,\n       \
-    \   \"refId\": \"A\",\n          \"useBackend\": false\n        }\n      ],\n\
-    \      \"title\": \"5xx response percentage\",\n      \"type\": \"stat\"\n   \
-    \ },\n    {\n      \"collapsed\": false,\n      \"gridPos\": {\n        \"h\"\
-    : 1,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\": 11\n      },\n   \
-    \   \"id\": 11,\n      \"panels\": [],\n      \"title\": \"Detailed metrics\"\
-    ,\n      \"type\": \"row\"\n    },\n    {\n      \"datasource\": {\n        \"\
-    type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n      },\n      \"\
-    fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n          \
-    \  \"mode\": \"palette-classic\"\n          },\n          \"custom\": {\n    \
-    \        \"axisBorderShow\": false,\n            \"axisCenteredZero\": false,\n\
-    \            \"axisColorMode\": \"text\",\n            \"axisLabel\": \"\",\n\
-    \            \"axisPlacement\": \"auto\",\n            \"barAlignment\": 0,\n\
-    \            \"barWidthFactor\": 0.6,\n            \"drawStyle\": \"line\",\n\
-    \            \"fillOpacity\": 20,\n            \"gradientMode\": \"none\",\n \
-    \           \"hideFrom\": {\n              \"legend\": false,\n              \"\
-    tooltip\": false,\n              \"viz\": false\n            },\n            \"\
-    insertNulls\": false,\n            \"lineInterpolation\": \"linear\",\n      \
-    \      \"lineWidth\": 1,\n            \"pointSize\": 5,\n            \"scaleDistribution\"\
-    : {\n              \"type\": \"linear\"\n            },\n            \"showPoints\"\
-    : \"auto\",\n            \"spanNulls\": false,\n            \"stacking\": {\n\
-    \              \"group\": \"A\",\n              \"mode\": \"normal\"\n       \
-    \     },\n            \"thresholdsStyle\": {\n              \"mode\": \"off\"\n\
-    \            }\n          },\n          \"mappings\": [],\n          \"thresholds\"\
-    : {\n            \"mode\": \"absolute\",\n            \"steps\": [\n         \
-    \     {\n                \"color\": \"green\",\n                \"value\": null\n\
-    \              }\n            ]\n          }\n        },\n        \"overrides\"\
-    : [\n          {\n            \"matcher\": {\n              \"id\": \"byRegexp\"\
-    ,\n              \"options\": \"^2\\\\d\\\\d$\"\n            },\n            \"\
-    properties\": [\n              {\n                \"id\": \"color\",\n       \
-    \         \"value\": {\n                  \"fixedColor\": \"green\",\n       \
-    \           \"mode\": \"shades\"\n                }\n              }\n       \
-    \     ]\n          },\n          {\n            \"matcher\": {\n             \
-    \ \"id\": \"byRegexp\",\n              \"options\": \"^3\\\\d\\\\d$\"\n      \
-    \      },\n            \"properties\": [\n              {\n                \"\
-    id\": \"color\",\n                \"value\": {\n                  \"fixedColor\"\
-    : \"blue\",\n                  \"mode\": \"shades\"\n                }\n     \
-    \         }\n            ]\n          },\n          {\n            \"matcher\"\
-    : {\n              \"id\": \"byRegexp\",\n              \"options\": \"^4\\\\\
-    d\\\\d$\"\n            },\n            \"properties\": [\n              {\n  \
-    \              \"id\": \"color\",\n                \"value\": {\n            \
-    \      \"fixedColor\": \"orange\",\n                  \"mode\": \"shades\"\n \
-    \               }\n              }\n            ]\n          },\n          {\n\
-    \            \"matcher\": {\n              \"id\": \"byRegexp\",\n           \
-    \   \"options\": \"^5\\\\d\\\\d$\"\n            },\n            \"properties\"\
-    : [\n              {\n                \"id\": \"color\",\n                \"value\"\
-    : {\n                  \"fixedColor\": \"red\",\n                  \"mode\": \"\
-    shades\"\n                }\n              }\n            ]\n          }\n   \
-    \     ]\n      },\n      \"gridPos\": {\n        \"h\": 10,\n        \"w\": 12,\n\
-    \        \"x\": 0,\n        \"y\": 12\n      },\n      \"id\": 26,\n      \"options\"\
-    : {\n        \"legend\": {\n          \"calcs\": [],\n          \"displayMode\"\
-    : \"list\",\n          \"placement\": \"bottom\",\n          \"showLegend\": true\n\
-    \        },\n        \"tooltip\": {\n          \"hideZeros\": false,\n       \
-    \   \"mode\": \"multi\",\n          \"sort\": \"desc\"\n        }\n      },\n\
-    \      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n     \
-    \     \"datasource\": {\n            \"type\": \"prometheus\",\n            \"\
-    uid\": \"${datasource}\"\n          },\n          \"editorMode\": \"code\",\n\
-    \          \"expr\": \"sum(rate(caddy_http_request_duration_seconds_count{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$interval])) by (method)\",\n         \
-    \ \"instant\": false,\n          \"legendFormat\": \"__auto\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
-    Rate of requests by HTTP method (stacked)\",\n      \"type\": \"timeseries\"\n\
-    \    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n \
-    \       \"uid\": \"${datasource}\"\n      },\n      \"fieldConfig\": {\n     \
-    \   \"defaults\": {\n          \"color\": {\n            \"mode\": \"palette-classic\"\
-    \n          },\n          \"custom\": {\n            \"hideFrom\": {\n       \
-    \       \"legend\": false,\n              \"tooltip\": false,\n              \"\
-    viz\": false\n            }\n          },\n          \"mappings\": []\n      \
-    \  },\n        \"overrides\": [\n          {\n            \"matcher\": {\n   \
-    \           \"id\": \"byRegexp\",\n              \"options\": \"^2\\\\d\\\\d$\"\
-    \n            },\n            \"properties\": [\n              {\n           \
-    \     \"id\": \"color\",\n                \"value\": {\n                  \"fixedColor\"\
-    : \"green\",\n                  \"mode\": \"shades\"\n                }\n    \
-    \          }\n            ]\n          },\n          {\n            \"matcher\"\
-    : {\n              \"id\": \"byRegexp\",\n              \"options\": \"^3\\\\\
-    d\\\\d$\"\n            },\n            \"properties\": [\n              {\n  \
-    \              \"id\": \"color\",\n                \"value\": {\n            \
-    \      \"fixedColor\": \"blue\",\n                  \"mode\": \"shades\"\n   \
-    \             }\n              }\n            ]\n          },\n          {\n \
-    \           \"matcher\": {\n              \"id\": \"byRegexp\",\n            \
-    \  \"options\": \"^4\\\\d\\\\d$\"\n            },\n            \"properties\"\
-    : [\n              {\n                \"id\": \"color\",\n                \"value\"\
-    : {\n                  \"fixedColor\": \"orange\",\n                  \"mode\"\
-    : \"shades\"\n                }\n              }\n            ]\n          },\n\
-    \          {\n            \"matcher\": {\n              \"id\": \"byRegexp\",\n\
-    \              \"options\": \"^5\\\\d\\\\d$\"\n            },\n            \"\
-    properties\": [\n              {\n                \"id\": \"color\",\n       \
-    \         \"value\": {\n                  \"fixedColor\": \"red\",\n         \
-    \         \"mode\": \"shades\"\n                }\n              }\n         \
-    \   ]\n          }\n        ]\n      },\n      \"gridPos\": {\n        \"h\":\
-    \ 10,\n        \"w\": 6,\n        \"x\": 12,\n        \"y\": 12\n      },\n  \
-    \    \"id\": 15,\n      \"options\": {\n        \"displayLabels\": [],\n     \
-    \   \"legend\": {\n          \"displayMode\": \"table\",\n          \"placement\"\
-    : \"right\",\n          \"showLegend\": true,\n          \"values\": [\n     \
-    \       \"value\",\n            \"percent\"\n          ]\n        },\n       \
-    \ \"pieType\": \"pie\",\n        \"reduceOptions\": {\n          \"calcs\": [\n\
-    \            \"lastNotNull\"\n          ],\n          \"fields\": \"\",\n    \
-    \      \"values\": false\n        },\n        \"tooltip\": {\n          \"hideZeros\"\
-    : false,\n          \"mode\": \"single\",\n          \"sort\": \"none\"\n    \
-    \    }\n      },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n\
-    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${datasource}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"expr\": \"sum(increase(caddy_http_request_duration_seconds_count{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range])) by (code)\",\n          \"\
-    instant\": false,\n          \"legendFormat\": \"__auto\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
-    HTTP status breakdown\",\n      \"type\": \"piechart\"\n    },\n    {\n      \"\
-    datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\
-    \n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\"\
-    : {\n            \"mode\": \"palette-classic\"\n          },\n          \"custom\"\
-    : {\n            \"hideFrom\": {\n              \"legend\": false,\n         \
-    \     \"tooltip\": false,\n              \"viz\": false\n            }\n     \
-    \     },\n          \"mappings\": []\n        },\n        \"overrides\": []\n\
-    \      },\n      \"gridPos\": {\n        \"h\": 10,\n        \"w\": 6,\n     \
-    \   \"x\": 18,\n        \"y\": 12\n      },\n      \"id\": 16,\n      \"options\"\
-    : {\n        \"displayLabels\": [],\n        \"legend\": {\n          \"displayMode\"\
-    : \"table\",\n          \"placement\": \"right\",\n          \"showLegend\": true,\n\
-    \          \"values\": [\n            \"value\",\n            \"percent\"\n  \
-    \        ]\n        },\n        \"pieType\": \"pie\",\n        \"reduceOptions\"\
-    : {\n          \"calcs\": [\n            \"lastNotNull\"\n          ],\n     \
-    \     \"fields\": \"\",\n          \"values\": false\n        },\n        \"tooltip\"\
-    : {\n          \"hideZeros\": false,\n          \"mode\": \"single\",\n      \
-    \    \"sort\": \"none\"\n        }\n      },\n      \"pluginVersion\": \"11.5.1\"\
-    ,\n      \"targets\": [\n        {\n          \"datasource\": {\n            \"\
-    type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\n          },\n\
-    \          \"editorMode\": \"code\",\n          \"expr\": \"sum(increase(caddy_http_request_duration_seconds_count{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__range])) by (method)\",\n          \"\
-    instant\": false,\n          \"legendFormat\": \"__auto\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
-    HTTP method breakdown\",\n      \"type\": \"piechart\"\n    },\n    {\n      \"\
-    datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\
-    \n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\"\
-    : {\n            \"mode\": \"palette-classic\"\n          },\n          \"custom\"\
-    : {\n            \"axisBorderShow\": false,\n            \"axisCenteredZero\"\
-    : false,\n            \"axisColorMode\": \"text\",\n            \"axisLabel\"\
-    : \"\",\n            \"axisPlacement\": \"auto\",\n            \"barAlignment\"\
-    : 0,\n            \"barWidthFactor\": 0.6,\n            \"drawStyle\": \"line\"\
-    ,\n            \"fillOpacity\": 0,\n            \"gradientMode\": \"none\",\n\
-    \            \"hideFrom\": {\n              \"legend\": false,\n             \
-    \ \"tooltip\": false,\n              \"viz\": false\n            },\n        \
-    \    \"insertNulls\": false,\n            \"lineInterpolation\": \"linear\",\n\
-    \            \"lineWidth\": 1,\n            \"pointSize\": 5,\n            \"\
-    scaleDistribution\": {\n              \"type\": \"linear\"\n            },\n \
-    \           \"showPoints\": \"auto\",\n            \"spanNulls\": false,\n   \
-    \         \"stacking\": {\n              \"group\": \"A\",\n              \"mode\"\
-    : \"none\"\n            },\n            \"thresholdsStyle\": {\n             \
-    \ \"mode\": \"off\"\n            }\n          },\n          \"mappings\": [],\n\
-    \          \"thresholds\": {\n            \"mode\": \"absolute\",\n          \
-    \  \"steps\": [\n              {\n                \"color\": \"green\",\n    \
-    \            \"value\": null\n              },\n              {\n            \
-    \    \"color\": \"red\",\n                \"value\": 80\n              }\n   \
-    \         ]\n          },\n          \"unit\": \"s\"\n        },\n        \"overrides\"\
-    : []\n      },\n      \"gridPos\": {\n        \"h\": 10,\n        \"w\": 12,\n\
-    \        \"x\": 0,\n        \"y\": 22\n      },\n      \"id\": 10,\n      \"options\"\
-    : {\n        \"legend\": {\n          \"calcs\": [],\n          \"displayMode\"\
-    : \"list\",\n          \"placement\": \"bottom\",\n          \"showLegend\": true\n\
-    \        },\n        \"tooltip\": {\n          \"hideZeros\": false,\n       \
-    \   \"mode\": \"multi\",\n          \"sort\": \"desc\"\n        }\n      },\n\
-    \      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n     \
-    \     \"datasource\": {\n            \"type\": \"prometheus\",\n            \"\
-    uid\": \"${datasource}\"\n          },\n          \"editorMode\": \"code\",\n\
-    \          \"expr\": \"histogram_quantile(0.99, sum(rate(caddy_http_request_duration_seconds_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$interval])) by (le))\",\n          \"\
-    instant\": false,\n          \"legendFormat\": \"0.99\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\"\n        },\n        {\n          \"datasource\"\
-    : {\n            \"type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\
-    \n          },\n          \"editorMode\": \"code\",\n          \"expr\": \"histogram_quantile(0.95,\
-    \ sum(rate(caddy_http_request_duration_seconds_bucket{job=\\\"$job\\\",instance=\\\
-    \"$instance\\\"}[$interval])) by (le))\",\n          \"hide\": false,\n      \
-    \    \"instant\": false,\n          \"legendFormat\": \"0.95\",\n          \"\
-    range\": true,\n          \"refId\": \"B\"\n        },\n        {\n          \"\
-    datasource\": {\n            \"type\": \"prometheus\",\n            \"uid\": \"\
-    ${datasource}\"\n          },\n          \"editorMode\": \"code\",\n         \
-    \ \"expr\": \"histogram_quantile(0.90, sum(rate(caddy_http_request_duration_seconds_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$interval])) by (le))\",\n          \"\
-    hide\": false,\n          \"instant\": false,\n          \"legendFormat\": \"\
-    0.90\",\n          \"range\": true,\n          \"refId\": \"C\"\n        },\n\
-    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${datasource}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"expr\": \"histogram_quantile(0.75, sum(rate(caddy_http_request_duration_seconds_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$interval])) by (le))\",\n          \"\
-    hide\": false,\n          \"instant\": false,\n          \"legendFormat\": \"\
-    0.75\",\n          \"range\": true,\n          \"refId\": \"D\"\n        },\n\
-    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${datasource}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"expr\": \"histogram_quantile(0.5, sum(rate(caddy_http_request_duration_seconds_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$interval])) by (le))\",\n          \"\
-    hide\": false,\n          \"instant\": false,\n          \"legendFormat\": \"\
-    0.5\",\n          \"range\": true,\n          \"refId\": \"E\"\n        }\n  \
-    \    ],\n      \"title\": \"Request duration percentiles\",\n      \"type\": \"\
-    timeseries\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\"\
-    ,\n        \"uid\": \"${datasource}\"\n      },\n      \"fieldConfig\": {\n  \
-    \      \"defaults\": {\n          \"color\": {\n            \"mode\": \"palette-classic\"\
-    \n          },\n          \"custom\": {\n            \"axisBorderShow\": false,\n\
-    \            \"axisCenteredZero\": false,\n            \"axisColorMode\": \"text\"\
-    ,\n            \"axisLabel\": \"\",\n            \"axisPlacement\": \"auto\",\n\
-    \            \"barAlignment\": 0,\n            \"barWidthFactor\": 0.6,\n    \
-    \        \"drawStyle\": \"line\",\n            \"fillOpacity\": 20,\n        \
-    \    \"gradientMode\": \"none\",\n            \"hideFrom\": {\n              \"\
-    legend\": false,\n              \"tooltip\": false,\n              \"viz\": false\n\
-    \            },\n            \"insertNulls\": false,\n            \"lineInterpolation\"\
-    : \"linear\",\n            \"lineWidth\": 1,\n            \"pointSize\": 5,\n\
-    \            \"scaleDistribution\": {\n              \"type\": \"linear\"\n  \
-    \          },\n            \"showPoints\": \"auto\",\n            \"spanNulls\"\
-    : false,\n            \"stacking\": {\n              \"group\": \"A\",\n     \
-    \         \"mode\": \"normal\"\n            },\n            \"thresholdsStyle\"\
-    : {\n              \"mode\": \"off\"\n            }\n          },\n          \"\
-    mappings\": [],\n          \"thresholds\": {\n            \"mode\": \"absolute\"\
-    ,\n            \"steps\": [\n              {\n                \"color\": \"green\"\
-    ,\n                \"value\": null\n              }\n            ]\n         \
-    \ },\n          \"unit\": \"bytes\"\n        },\n        \"overrides\": [\n  \
-    \        {\n            \"matcher\": {\n              \"id\": \"byRegexp\",\n\
-    \              \"options\": \"^2\\\\d\\\\d$\"\n            },\n            \"\
-    properties\": [\n              {\n                \"id\": \"color\",\n       \
-    \         \"value\": {\n                  \"fixedColor\": \"green\",\n       \
-    \           \"mode\": \"shades\"\n                }\n              }\n       \
-    \     ]\n          },\n          {\n            \"matcher\": {\n             \
-    \ \"id\": \"byRegexp\",\n              \"options\": \"^3\\\\d\\\\d$\"\n      \
-    \      },\n            \"properties\": [\n              {\n                \"\
-    id\": \"color\",\n                \"value\": {\n                  \"fixedColor\"\
-    : \"blue\",\n                  \"mode\": \"shades\"\n                }\n     \
-    \         }\n            ]\n          },\n          {\n            \"matcher\"\
-    : {\n              \"id\": \"byRegexp\",\n              \"options\": \"^4\\\\\
-    d\\\\d$\"\n            },\n            \"properties\": [\n              {\n  \
-    \              \"id\": \"color\",\n                \"value\": {\n            \
-    \      \"fixedColor\": \"orange\",\n                  \"mode\": \"shades\"\n \
-    \               }\n              }\n            ]\n          },\n          {\n\
-    \            \"matcher\": {\n              \"id\": \"byRegexp\",\n           \
-    \   \"options\": \"^5\\\\d\\\\d$\"\n            },\n            \"properties\"\
-    : [\n              {\n                \"id\": \"color\",\n                \"value\"\
-    : {\n                  \"fixedColor\": \"red\",\n                  \"mode\": \"\
-    shades\"\n                }\n              }\n            ]\n          }\n   \
-    \     ]\n      },\n      \"gridPos\": {\n        \"h\": 10,\n        \"w\": 12,\n\
-    \        \"x\": 12,\n        \"y\": 22\n      },\n      \"id\": 27,\n      \"\
-    options\": {\n        \"legend\": {\n          \"calcs\": [],\n          \"displayMode\"\
-    : \"list\",\n          \"placement\": \"bottom\",\n          \"showLegend\": true\n\
-    \        },\n        \"tooltip\": {\n          \"hideZeros\": false,\n       \
-    \   \"mode\": \"multi\",\n          \"sort\": \"desc\"\n        }\n      },\n\
-    \      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n     \
-    \     \"datasource\": {\n            \"type\": \"prometheus\",\n            \"\
-    uid\": \"${datasource}\"\n          },\n          \"editorMode\": \"code\",\n\
-    \          \"expr\": \"sum(rate(caddy_http_request_size_bytes_sum{job=\\\"$job\\\
-    \",instance=\\\"$instance\\\"}[$interval]))\",\n          \"instant\": false,\n\
-    \          \"legendFormat\": \"request\",\n          \"range\": true,\n      \
-    \    \"refId\": \"A\"\n        },\n        {\n          \"datasource\": {\n  \
-    \          \"type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\n\
-    \          },\n          \"editorMode\": \"code\",\n          \"expr\": \"-sum(rate(caddy_http_response_size_bytes_sum{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$interval]))\",\n          \"hide\": false,\n\
-    \          \"instant\": false,\n          \"legendFormat\": \"response\",\n  \
-    \        \"range\": true,\n          \"refId\": \"B\"\n        }\n      ],\n \
-    \     \"title\": \"Data transfer rate\",\n      \"type\": \"timeseries\"\n   \
-    \ },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n    \
-    \    \"uid\": \"${datasource}\"\n      },\n      \"fieldConfig\": {\n        \"\
-    defaults\": {\n          \"color\": {\n            \"mode\": \"palette-classic\"\
-    \n          },\n          \"custom\": {\n            \"axisBorderShow\": false,\n\
-    \            \"axisCenteredZero\": false,\n            \"axisColorMode\": \"text\"\
-    ,\n            \"axisLabel\": \"\",\n            \"axisPlacement\": \"auto\",\n\
-    \            \"barAlignment\": 0,\n            \"barWidthFactor\": 0.6,\n    \
-    \        \"drawStyle\": \"line\",\n            \"fillOpacity\": 20,\n        \
-    \    \"gradientMode\": \"none\",\n            \"hideFrom\": {\n              \"\
-    legend\": false,\n              \"tooltip\": false,\n              \"viz\": false\n\
-    \            },\n            \"insertNulls\": false,\n            \"lineInterpolation\"\
-    : \"linear\",\n            \"lineWidth\": 1,\n            \"pointSize\": 5,\n\
-    \            \"scaleDistribution\": {\n              \"type\": \"linear\"\n  \
-    \          },\n            \"showPoints\": \"auto\",\n            \"spanNulls\"\
-    : false,\n            \"stacking\": {\n              \"group\": \"A\",\n     \
-    \         \"mode\": \"none\"\n            },\n            \"thresholdsStyle\"\
-    : {\n              \"mode\": \"off\"\n            }\n          },\n          \"\
-    mappings\": [],\n          \"thresholds\": {\n            \"mode\": \"absolute\"\
-    ,\n            \"steps\": [\n              {\n                \"color\": \"green\"\
-    ,\n                \"value\": null\n              }\n            ]\n         \
-    \ }\n        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n \
-    \       \"h\": 10,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\": 32\n\
-    \      },\n      \"id\": 9,\n      \"options\": {\n        \"legend\": {\n   \
-    \       \"calcs\": [],\n          \"displayMode\": \"list\",\n          \"placement\"\
-    : \"bottom\",\n          \"showLegend\": true\n        },\n        \"tooltip\"\
-    : {\n          \"hideZeros\": false,\n          \"mode\": \"multi\",\n       \
-    \   \"sort\": \"desc\"\n        }\n      },\n      \"pluginVersion\": \"11.5.1\"\
-    ,\n      \"targets\": [\n        {\n          \"datasource\": {\n            \"\
-    type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\n          },\n\
-    \          \"editorMode\": \"code\",\n          \"expr\": \"sum(rate(caddy_http_request_duration_seconds_count{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\", code=~\\\"4..|5..\\\"}[$interval])) by\
-    \ (code)\",\n          \"instant\": false,\n          \"legendFormat\": \"__auto\"\
-    ,\n          \"range\": true,\n          \"refId\": \"A\"\n        }\n      ],\n\
-    \      \"title\": \"Rate of 4xx and 5xx responses\",\n      \"type\": \"timeseries\"\
-    \n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n\
-    \        \"uid\": \"${datasource}\"\n      },\n      \"description\": \"\",\n\
-    \      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n \
-    \           \"mode\": \"palette-classic\"\n          },\n          \"custom\"\
-    : {\n            \"axisBorderShow\": false,\n            \"axisCenteredZero\"\
-    : false,\n            \"axisColorMode\": \"text\",\n            \"axisLabel\"\
-    : \"\",\n            \"axisPlacement\": \"auto\",\n            \"barAlignment\"\
-    : 0,\n            \"barWidthFactor\": 0.6,\n            \"drawStyle\": \"line\"\
-    ,\n            \"fillOpacity\": 20,\n            \"gradientMode\": \"none\",\n\
-    \            \"hideFrom\": {\n              \"legend\": false,\n             \
-    \ \"tooltip\": false,\n              \"viz\": false\n            },\n        \
-    \    \"insertNulls\": false,\n            \"lineInterpolation\": \"linear\",\n\
-    \            \"lineWidth\": 1,\n            \"pointSize\": 5,\n            \"\
-    scaleDistribution\": {\n              \"type\": \"linear\"\n            },\n \
-    \           \"showPoints\": \"auto\",\n            \"spanNulls\": false,\n   \
-    \         \"stacking\": {\n              \"group\": \"A\",\n              \"mode\"\
-    : \"none\"\n            },\n            \"thresholdsStyle\": {\n             \
-    \ \"mode\": \"off\"\n            }\n          },\n          \"mappings\": [],\n\
-    \          \"thresholds\": {\n            \"mode\": \"absolute\",\n          \
-    \  \"steps\": [\n              {\n                \"color\": \"green\",\n    \
-    \            \"value\": null\n              },\n              {\n            \
-    \    \"color\": \"red\",\n                \"value\": 80\n              }\n   \
-    \         ]\n          }\n        },\n        \"overrides\": []\n      },\n  \
-    \    \"gridPos\": {\n        \"h\": 10,\n        \"w\": 12,\n        \"x\": 12,\n\
-    \        \"y\": 32\n      },\n      \"id\": 14,\n      \"options\": {\n      \
-    \  \"legend\": {\n          \"calcs\": [],\n          \"displayMode\": \"list\"\
-    ,\n          \"placement\": \"bottom\",\n          \"showLegend\": false\n   \
-    \     },\n        \"tooltip\": {\n          \"hideZeros\": false,\n          \"\
-    mode\": \"single\",\n          \"sort\": \"none\"\n        }\n      },\n     \
-    \ \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n        {\n          \"\
-    datasource\": {\n            \"type\": \"prometheus\",\n            \"uid\": \"\
-    ${datasource}\"\n          },\n          \"editorMode\": \"code\",\n         \
-    \ \"expr\": \"rate(caddy_http_request_errors_total{job=\\\"$job\\\",instance=\\\
-    \"$instance\\\"}[$interval])\",\n          \"instant\": false,\n          \"legendFormat\"\
-    : \"errors\",\n          \"range\": true,\n          \"refId\": \"A\"\n      \
-    \  }\n      ],\n      \"title\": \"Middleware error rate\",\n      \"type\": \"\
-    timeseries\"\n    },\n    {\n      \"collapsed\": false,\n      \"gridPos\": {\n\
-    \        \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\": 42\n\
-    \      },\n      \"id\": 19,\n      \"panels\": [],\n      \"title\": \"Heatmaps\"\
-    ,\n      \"type\": \"row\"\n    },\n    {\n      \"datasource\": {\n        \"\
-    type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\n      },\n      \"\
-    description\": \"Round-trip request duration heatmap.\",\n      \"fieldConfig\"\
-    : {\n        \"defaults\": {\n          \"custom\": {\n            \"hideFrom\"\
-    : {\n              \"legend\": false,\n              \"tooltip\": false,\n   \
-    \           \"viz\": false\n            },\n            \"scaleDistribution\"\
-    : {\n              \"type\": \"linear\"\n            }\n          }\n        },\n\
-    \        \"overrides\": []\n      },\n      \"gridPos\": {\n        \"h\": 10,\n\
-    \        \"w\": 12,\n        \"x\": 0,\n        \"y\": 43\n      },\n      \"\
-    id\": 12,\n      \"options\": {\n        \"calculate\": false,\n        \"calculation\"\
-    : {\n          \"xBuckets\": {\n            \"value\": \"600000\"\n          },\n\
-    \          \"yBuckets\": {\n            \"value\": \"\"\n          }\n       \
-    \ },\n        \"cellGap\": 1,\n        \"cellValues\": {\n          \"unit\":\
-    \ \"\"\n        },\n        \"color\": {\n          \"exponent\": 0.5,\n     \
-    \     \"fill\": \"dark-orange\",\n          \"mode\": \"scheme\",\n          \"\
-    reverse\": false,\n          \"scale\": \"exponential\",\n          \"scheme\"\
-    : \"Spectral\",\n          \"steps\": 64\n        },\n        \"exemplars\": {\n\
-    \          \"color\": \"rgba(255,0,255,0.7)\"\n        },\n        \"filterValues\"\
-    : {\n          \"le\": 1e-09\n        },\n        \"legend\": {\n          \"\
-    show\": true\n        },\n        \"rowsFrame\": {\n          \"layout\": \"auto\"\
-    \n        },\n        \"tooltip\": {\n          \"mode\": \"single\",\n      \
-    \    \"showColorScale\": false,\n          \"yHistogram\": false\n        },\n\
-    \        \"yAxis\": {\n          \"axisPlacement\": \"left\",\n          \"reverse\"\
-    : false,\n          \"unit\": \"s\"\n        }\n      },\n      \"pluginVersion\"\
-    : \"11.5.1\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
-    \            \"type\": \"prometheus\",\n            \"uid\": \"${datasource}\"\
-    \n          },\n          \"editorMode\": \"code\",\n          \"expr\": \"sum(increase(caddy_http_request_duration_seconds_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__rate_interval])) by (le)\",\n      \
-    \    \"format\": \"heatmap\",\n          \"instant\": false,\n          \"interval\"\
-    : \"$interval\",\n          \"legendFormat\": \"{{le}}\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
-    Request duration heatmap\",\n      \"type\": \"heatmap\"\n    },\n    {\n    \
-    \  \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\
-    \n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"custom\"\
-    : {\n            \"hideFrom\": {\n              \"legend\": false,\n         \
-    \     \"tooltip\": false,\n              \"viz\": false\n            },\n    \
-    \        \"scaleDistribution\": {\n              \"type\": \"linear\"\n      \
-    \      }\n          }\n        },\n        \"overrides\": []\n      },\n     \
-    \ \"gridPos\": {\n        \"h\": 10,\n        \"w\": 12,\n        \"x\": 12,\n\
-    \        \"y\": 43\n      },\n      \"id\": 13,\n      \"options\": {\n      \
-    \  \"calculate\": false,\n        \"calculation\": {\n          \"xBuckets\":\
-    \ {\n            \"value\": \"600000\"\n          },\n          \"yBuckets\":\
-    \ {\n            \"value\": \"\"\n          }\n        },\n        \"cellGap\"\
-    : 1,\n        \"cellValues\": {\n          \"unit\": \"\"\n        },\n      \
-    \  \"color\": {\n          \"exponent\": 0.5,\n          \"fill\": \"dark-orange\"\
-    ,\n          \"mode\": \"scheme\",\n          \"reverse\": false,\n          \"\
-    scale\": \"exponential\",\n          \"scheme\": \"Spectral\",\n          \"steps\"\
-    : 64\n        },\n        \"exemplars\": {\n          \"color\": \"rgba(255,0,255,0.7)\"\
-    \n        },\n        \"filterValues\": {\n          \"le\": 1e-09\n        },\n\
-    \        \"legend\": {\n          \"show\": true\n        },\n        \"rowsFrame\"\
-    : {\n          \"layout\": \"auto\"\n        },\n        \"tooltip\": {\n    \
-    \      \"mode\": \"single\",\n          \"showColorScale\": false,\n         \
-    \ \"yHistogram\": false\n        },\n        \"yAxis\": {\n          \"axisPlacement\"\
-    : \"left\",\n          \"reverse\": false,\n          \"unit\": \"bytes\"\n  \
-    \      }\n      },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n\
-    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${datasource}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"sum(increase(caddy_http_request_size_bytes_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__rate_interval])) by (le)\",\n      \
-    \    \"format\": \"heatmap\",\n          \"instant\": false,\n          \"interval\"\
-    : \"$interval\",\n          \"legendFormat\": \"{{le}}\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
-    Request size heatmap\",\n      \"type\": \"heatmap\"\n    },\n    {\n      \"\
-    datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"${datasource}\"\
-    \n      },\n      \"description\": \"Response time-to-first-byte heatmap.\",\n\
-    \      \"fieldConfig\": {\n        \"defaults\": {\n          \"custom\": {\n\
-    \            \"hideFrom\": {\n              \"legend\": false,\n             \
-    \ \"tooltip\": false,\n              \"viz\": false\n            },\n        \
-    \    \"scaleDistribution\": {\n              \"type\": \"linear\"\n          \
-    \  }\n          }\n        },\n        \"overrides\": []\n      },\n      \"gridPos\"\
-    : {\n        \"h\": 10,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\"\
-    : 53\n      },\n      \"id\": 17,\n      \"options\": {\n        \"calculate\"\
-    : false,\n        \"calculation\": {\n          \"xBuckets\": {\n            \"\
-    value\": \"600000\"\n          },\n          \"yBuckets\": {\n            \"value\"\
-    : \"\"\n          }\n        },\n        \"cellGap\": 1,\n        \"cellValues\"\
-    : {\n          \"unit\": \"\"\n        },\n        \"color\": {\n          \"\
-    exponent\": 0.5,\n          \"fill\": \"dark-orange\",\n          \"mode\": \"\
-    scheme\",\n          \"reverse\": false,\n          \"scale\": \"exponential\"\
-    ,\n          \"scheme\": \"Spectral\",\n          \"steps\": 64\n        },\n\
-    \        \"exemplars\": {\n          \"color\": \"rgba(255,0,255,0.7)\"\n    \
-    \    },\n        \"filterValues\": {\n          \"le\": 1e-09\n        },\n  \
-    \      \"legend\": {\n          \"show\": true\n        },\n        \"rowsFrame\"\
-    : {\n          \"layout\": \"auto\"\n        },\n        \"tooltip\": {\n    \
-    \      \"mode\": \"single\",\n          \"showColorScale\": false,\n         \
-    \ \"yHistogram\": false\n        },\n        \"yAxis\": {\n          \"axisPlacement\"\
-    : \"left\",\n          \"reverse\": false,\n          \"unit\": \"s\"\n      \
-    \  }\n      },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n \
-    \       {\n          \"datasource\": {\n            \"type\": \"prometheus\",\n\
-    \            \"uid\": \"${datasource}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"expr\": \"sum(increase(caddy_http_response_duration_seconds_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__rate_interval])) by (le)\",\n      \
-    \    \"format\": \"heatmap\",\n          \"instant\": false,\n          \"interval\"\
-    : \"$interval\",\n          \"legendFormat\": \"{{le}}\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
-    Response duration heatmap\",\n      \"type\": \"heatmap\"\n    },\n    {\n   \
-    \   \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"\
-    ${datasource}\"\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n\
-    \          \"custom\": {\n            \"hideFrom\": {\n              \"legend\"\
-    : false,\n              \"tooltip\": false,\n              \"viz\": false\n  \
-    \          },\n            \"scaleDistribution\": {\n              \"type\": \"\
-    linear\"\n            }\n          }\n        },\n        \"overrides\": []\n\
-    \      },\n      \"gridPos\": {\n        \"h\": 10,\n        \"w\": 12,\n    \
-    \    \"x\": 12,\n        \"y\": 53\n      },\n      \"id\": 18,\n      \"options\"\
-    : {\n        \"calculate\": false,\n        \"calculation\": {\n          \"xBuckets\"\
-    : {\n            \"value\": \"600000\"\n          },\n          \"yBuckets\":\
-    \ {\n            \"value\": \"\"\n          }\n        },\n        \"cellGap\"\
-    : 1,\n        \"cellValues\": {\n          \"unit\": \"\"\n        },\n      \
-    \  \"color\": {\n          \"exponent\": 0.5,\n          \"fill\": \"dark-orange\"\
-    ,\n          \"mode\": \"scheme\",\n          \"reverse\": false,\n          \"\
-    scale\": \"exponential\",\n          \"scheme\": \"Spectral\",\n          \"steps\"\
-    : 64\n        },\n        \"exemplars\": {\n          \"color\": \"rgba(255,0,255,0.7)\"\
-    \n        },\n        \"filterValues\": {\n          \"le\": 1e-09\n        },\n\
-    \        \"legend\": {\n          \"show\": true\n        },\n        \"rowsFrame\"\
-    : {\n          \"layout\": \"auto\"\n        },\n        \"tooltip\": {\n    \
-    \      \"mode\": \"single\",\n          \"showColorScale\": false,\n         \
-    \ \"yHistogram\": false\n        },\n        \"yAxis\": {\n          \"axisPlacement\"\
-    : \"left\",\n          \"reverse\": false,\n          \"unit\": \"bytes\"\n  \
-    \      }\n      },\n      \"pluginVersion\": \"11.5.1\",\n      \"targets\": [\n\
-    \        {\n          \"datasource\": {\n            \"type\": \"prometheus\"\
-    ,\n            \"uid\": \"${datasource}\"\n          },\n          \"editorMode\"\
-    : \"code\",\n          \"exemplar\": false,\n          \"expr\": \"sum(increase(caddy_http_response_size_bytes_bucket{job=\\\
-    \"$job\\\",instance=\\\"$instance\\\"}[$__rate_interval])) by (le)\",\n      \
-    \    \"format\": \"heatmap\",\n          \"instant\": false,\n          \"interval\"\
-    : \"$interval\",\n          \"legendFormat\": \"{{le}}\",\n          \"range\"\
-    : true,\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"\
-    Response size heatmap\",\n      \"type\": \"heatmap\"\n    }\n  ],\n  \"refresh\"\
-    : \"1m\",\n  \"schemaVersion\": 40,\n  \"tags\": [],\n  \"templating\": {\n  \
-    \  \"list\": [\n      {\n        \"current\": {\n          \"text\": \"VictoriaMetrics\"\
-    ,\n          \"value\": \"victoriametrics\"\n        },\n        \"label\": \"\
-    Datasource\",\n        \"name\": \"datasource\",\n        \"options\": [],\n \
-    \       \"query\": \"prometheus\",\n        \"refresh\": 1,\n        \"regex\"\
-    : \"\",\n        \"type\": \"datasource\"\n      },\n      {\n        \"current\"\
-    : {},\n        \"datasource\": {\n          \"type\": \"prometheus\",\n      \
-    \    \"uid\": \"${datasource}\"\n        },\n        \"definition\": \"label_values(caddy_http_requests_total,job)\"\
-    ,\n        \"label\": \"Job\",\n        \"name\": \"job\",\n        \"options\"\
-    : [],\n        \"query\": {\n          \"qryType\": 1,\n          \"query\": \"\
-    label_values(caddy_http_requests_total,job)\",\n          \"refId\": \"PrometheusVariableQueryEditor-VariableQuery\"\
-    \n        },\n        \"refresh\": 1,\n        \"regex\": \"\",\n        \"type\"\
-    : \"query\"\n      },\n      {\n        \"current\": {},\n        \"datasource\"\
-    : {\n          \"type\": \"prometheus\",\n          \"uid\": \"${datasource}\"\
-    \n        },\n        \"definition\": \"label_values(up{job=\\\"$job\\\"},instance)\"\
-    ,\n        \"description\": \"\",\n        \"label\": \"Instance\",\n        \"\
-    name\": \"instance\",\n        \"options\": [],\n        \"query\": {\n      \
-    \    \"qryType\": 1,\n          \"query\": \"label_values(up{job=\\\"$job\\\"\
-    },instance)\",\n          \"refId\": \"PrometheusVariableQueryEditor-VariableQuery\"\
-    \n        },\n        \"refresh\": 1,\n        \"regex\": \"\",\n        \"type\"\
-    : \"query\"\n      },\n      {\n        \"auto\": false,\n        \"auto_count\"\
-    : 300,\n        \"auto_min\": \"10s\",\n        \"current\": {\n          \"text\"\
-    : \"10m\",\n          \"value\": \"10m\"\n        },\n        \"label\": \"Interval\"\
-    ,\n        \"name\": \"interval\",\n        \"options\": [\n          {\n    \
-    \        \"selected\": false,\n            \"text\": \"30s\",\n            \"\
-    value\": \"30s\"\n          },\n          {\n            \"selected\": false,\n\
-    \            \"text\": \"1m\",\n            \"value\": \"1m\"\n          },\n\
-    \          {\n            \"selected\": false,\n            \"text\": \"5m\",\n\
-    \            \"value\": \"5m\"\n          },\n          {\n            \"selected\"\
-    : true,\n            \"text\": \"10m\",\n            \"value\": \"10m\"\n    \
-    \      },\n          {\n            \"selected\": false,\n            \"text\"\
-    : \"15m\",\n            \"value\": \"15m\"\n          },\n          {\n      \
-    \      \"selected\": false,\n            \"text\": \"30m\",\n            \"value\"\
-    : \"30m\"\n          },\n          {\n            \"selected\": false,\n     \
-    \       \"text\": \"1h\",\n            \"value\": \"1h\"\n          }\n      \
-    \  ],\n        \"query\": \"30s,1m,5m,10m,15m,30m,1h\",\n        \"refresh\":\
-    \ 2,\n        \"type\": \"interval\"\n      }\n    ]\n  },\n  \"time\": {\n  \
-    \  \"from\": \"now-24h\",\n    \"to\": \"now\"\n  },\n  \"timepicker\": {},\n\
-    \  \"timezone\": \"browser\",\n  \"title\": \"Caddy\",\n  \"uid\": \"fed94ifiv8h6oc\"\
-    ,\n  \"version\": 11,\n  \"weekStart\": \"\",\n  \"gnetId\": 22870\n}\n"
+  caddy-dashboard.json: |
+    {
+      "__elements": {
+      },
+      "__requires": [
+        {
+          "type": "grafana",
+          "id": "grafana",
+          "name": "Grafana",
+          "version": "11.5.1"
+        },
+        {
+          "type": "panel",
+          "id": "heatmap",
+          "name": "Heatmap",
+          "version": ""
+        },
+        {
+          "type": "panel",
+          "id": "piechart",
+          "name": "Pie chart",
+          "version": ""
+        },
+        {
+          "type": "datasource",
+          "id": "prometheus",
+          "name": "Prometheus",
+          "version": "1.0.0"
+        },
+        {
+          "type": "panel",
+          "id": "stat",
+          "name": "Stat",
+          "version": ""
+        },
+        {
+          "type": "panel",
+          "id": "timeseries",
+          "name": "Time series",
+          "version": ""
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "Caddy HTTP server monitoring.",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [
+
+      ],
+      "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 8,
+          "panels": [
+
+          ],
+          "title": "Summary",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "The number of requests currently being handled by the server.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 0,
+            "y": 1
+          },
+          "id": 7,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(caddy_http_requests_in_flight{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"})",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Requests in flight",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Total requests handled in the selected time range.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 4,
+            "y": 1
+          },
+          "id": 1,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range]))",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Total requests",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Rate of requests handled per second in the selected time range.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 8,
+            "y": 1
+          },
+          "id": 2,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range]))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Requests per second",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Median round-trip request duration for the selected time range.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 12,
+            "y": 1
+          },
+          "id": 3,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range])) by (le))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Median request duration",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Median time-to-first-byte response duration for the selected time range.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 16,
+            "y": 1
+          },
+          "id": 20,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum(rate(caddy_http_response_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range])) by (le))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Median response duration",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "A number of middleware errors encountered while handling requests in the selected time range.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "decimals": 0,
+              "mappings": [
+
+              ],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 20,
+            "y": 1
+          },
+          "id": 5,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_request_errors_total{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range]))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total middleware errors",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Median request (estimated) size in bytes in the selected time range. Includes body.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 0,
+            "y": 6
+          },
+          "id": 4,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum(rate(caddy_http_request_size_bytes_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range])) by (le))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Median request size",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Median returned response body size in bytes in the selected time range.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 4,
+            "y": 6
+          },
+          "id": 21,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum(rate(caddy_http_response_size_bytes_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range])) by (le))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Median response size",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Sum of the sizes of all received requests in the selected time range.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 8,
+            "y": 6
+          },
+          "id": 22,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_request_size_bytes_sum{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range]))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total requests size",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Sum of sizes of all response bodies in the selected time range.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 12,
+            "y": 6
+          },
+          "id": 23,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_response_size_bytes_sum{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range]))",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Total responses size",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Percentage of responses with 4xx status code in all responses.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "noValue": "0%",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 16,
+            "y": 6
+          },
+          "id": 24,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_response_duration_seconds_count{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\", code=~\"4..\"}[$__range])) / sum(increase(caddy_http_response_duration_seconds_count{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range]))",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "4xx response percentage",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Percentage of responses with 4xx status code in all responses.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "noValue": "0%",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 20,
+            "y": 6
+          },
+          "id": 25,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_response_duration_seconds_count{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\", code=~\"5..\"}[$__range])) / sum(increase(caddy_http_response_duration_seconds_count{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range]))",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "5xx response percentage",
+          "type": "stat"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 11
+          },
+          "id": 11,
+          "panels": [
+
+          ],
+          "title": "Detailed metrics",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^2\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^3\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "blue",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^4\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^5\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 12
+          },
+          "id": 26,
+          "options": {
+            "legend": {
+              "calcs": [
+
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(caddy_http_request_duration_seconds_count{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval])) by (method)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Rate of requests by HTTP method (stacked)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+
+              ]
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^2\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^3\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "blue",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^4\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^5\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 6,
+            "x": 12,
+            "y": 12
+          },
+          "id": 15,
+          "options": {
+            "displayLabels": [
+
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_request_duration_seconds_count{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range])) by (code)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "HTTP status breakdown",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "mappings": [
+
+              ]
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 6,
+            "x": 18,
+            "y": 12
+          },
+          "id": 16,
+          "options": {
+            "displayLabels": [
+
+            ],
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "values": [
+                "value",
+                "percent"
+              ]
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_request_duration_seconds_count{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__range])) by (method)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "HTTP method breakdown",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 22
+          },
+          "id": 10,
+          "options": {
+            "legend": {
+              "calcs": [
+
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval])) by (le))",
+              "instant": false,
+              "legendFormat": "0.99",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval])) by (le))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "0.95",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.90, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval])) by (le))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "0.90",
+              "range": true,
+              "refId": "C"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.75, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval])) by (le))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "0.75",
+              "range": true,
+              "refId": "D"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.5, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval])) by (le))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "0.5",
+              "range": true,
+              "refId": "E"
+            }
+          ],
+          "title": "Request duration percentiles",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^2\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "green",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^3\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "blue",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^4\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "orange",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byRegexp",
+                  "options": "^5\\d\\d$"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "shades"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 22
+          },
+          "id": 27,
+          "options": {
+            "legend": {
+              "calcs": [
+
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(caddy_http_request_size_bytes_sum{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval]))",
+              "instant": false,
+              "legendFormat": "request",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "-sum(rate(caddy_http_response_size_bytes_sum{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval]))",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "response",
+              "range": true,
+              "refId": "B"
+            }
+          ],
+          "title": "Data transfer rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 32
+          },
+          "id": 9,
+          "options": {
+            "legend": {
+              "calcs": [
+
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(rate(caddy_http_request_duration_seconds_count{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\", code=~\"4..|5..\"}[$interval])) by (code)",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Rate of 4xx and 5xx responses",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 20,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 32
+          },
+          "id": 14,
+          "options": {
+            "legend": {
+              "calcs": [
+
+              ],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "rate(caddy_http_request_errors_total{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$interval])",
+              "instant": false,
+              "legendFormat": "errors",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Middleware error rate",
+          "type": "timeseries"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 42
+          },
+          "id": 19,
+          "panels": [
+
+          ],
+          "title": "Heatmaps",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Round-trip request duration heatmap.",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 43
+          },
+          "id": 12,
+          "options": {
+            "calculate": false,
+            "calculation": {
+              "xBuckets": {
+                "value": "600000"
+              },
+              "yBuckets": {
+                "value": ""
+              }
+            },
+            "cellGap": 1,
+            "cellValues": {
+              "unit": ""
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "dark-orange",
+              "mode": "scheme",
+              "reverse": false,
+              "scale": "exponential",
+              "scheme": "Spectral",
+              "steps": 64
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1.0e-09
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "tooltip": {
+              "mode": "single",
+              "showColorScale": false,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisPlacement": "left",
+              "reverse": false,
+              "unit": "s"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_request_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__rate_interval])) by (le)",
+              "format": "heatmap",
+              "instant": false,
+              "interval": "$interval",
+              "legendFormat": "{{le}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Request duration heatmap",
+          "type": "heatmap"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 43
+          },
+          "id": 13,
+          "options": {
+            "calculate": false,
+            "calculation": {
+              "xBuckets": {
+                "value": "600000"
+              },
+              "yBuckets": {
+                "value": ""
+              }
+            },
+            "cellGap": 1,
+            "cellValues": {
+              "unit": ""
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "dark-orange",
+              "mode": "scheme",
+              "reverse": false,
+              "scale": "exponential",
+              "scheme": "Spectral",
+              "steps": 64
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1.0e-09
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "tooltip": {
+              "mode": "single",
+              "showColorScale": false,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisPlacement": "left",
+              "reverse": false,
+              "unit": "bytes"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(increase(caddy_http_request_size_bytes_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__rate_interval])) by (le)",
+              "format": "heatmap",
+              "instant": false,
+              "interval": "$interval",
+              "legendFormat": "{{le}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Request size heatmap",
+          "type": "heatmap"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Response time-to-first-byte heatmap.",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 53
+          },
+          "id": 17,
+          "options": {
+            "calculate": false,
+            "calculation": {
+              "xBuckets": {
+                "value": "600000"
+              },
+              "yBuckets": {
+                "value": ""
+              }
+            },
+            "cellGap": 1,
+            "cellValues": {
+              "unit": ""
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "dark-orange",
+              "mode": "scheme",
+              "reverse": false,
+              "scale": "exponential",
+              "scheme": "Spectral",
+              "steps": 64
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1.0e-09
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "tooltip": {
+              "mode": "single",
+              "showColorScale": false,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisPlacement": "left",
+              "reverse": false,
+              "unit": "s"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "sum(increase(caddy_http_response_duration_seconds_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__rate_interval])) by (le)",
+              "format": "heatmap",
+              "instant": false,
+              "interval": "$interval",
+              "legendFormat": "{{le}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Response duration heatmap",
+          "type": "heatmap"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 53
+          },
+          "id": 18,
+          "options": {
+            "calculate": false,
+            "calculation": {
+              "xBuckets": {
+                "value": "600000"
+              },
+              "yBuckets": {
+                "value": ""
+              }
+            },
+            "cellGap": 1,
+            "cellValues": {
+              "unit": ""
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "dark-orange",
+              "mode": "scheme",
+              "reverse": false,
+              "scale": "exponential",
+              "scheme": "Spectral",
+              "steps": 64
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1.0e-09
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "tooltip": {
+              "mode": "single",
+              "showColorScale": false,
+              "yHistogram": false
+            },
+            "yAxis": {
+              "axisPlacement": "left",
+              "reverse": false,
+              "unit": "bytes"
+            }
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum(increase(caddy_http_response_size_bytes_bucket{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"}[$__rate_interval])) by (le)",
+              "format": "heatmap",
+              "instant": false,
+              "interval": "$interval",
+              "legendFormat": "{{le}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Response size heatmap",
+          "type": "heatmap"
+        }
+      ],
+      "refresh": "1m",
+      "schemaVersion": 40,
+      "tags": [
+
+      ],
+      "templating": {
+        "list": [
+          {
+            "current": {
+            },
+            "label": "Datasource",
+            "name": "datasource",
+            "options": [
+
+            ],
+            "query": "prometheus",
+            "refresh": 1,
+            "regex": "",
+            "type": "datasource"
+          },
+          {
+            "name": "environment",
+            "label": "Environment",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(caddy_http_requests_total,environment)",
+            "query": {
+              "qryType": 1,
+              "query": "label_values(caddy_http_requests_total,environment)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "current": {
+            },
+            "options": [
+
+            ],
+            "includeAll": true,
+            "multi": true,
+            "allValue": ".*"
+          },
+          {
+            "name": "cluster",
+            "label": "Cluster",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(caddy_http_requests_total{environment=~\"$environment\"},cluster)",
+            "query": {
+              "qryType": 1,
+              "query": "label_values(caddy_http_requests_total{environment=~\"$environment\"},cluster)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "current": {
+            },
+            "options": [
+
+            ],
+            "includeAll": true,
+            "multi": true,
+            "allValue": ".*"
+          },
+          {
+            "name": "service",
+            "label": "Service",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\"},service)",
+            "query": {
+              "qryType": 1,
+              "query": "label_values(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\"},service)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "current": {
+            },
+            "options": [
+
+            ],
+            "includeAll": true,
+            "multi": true,
+            "allValue": ".*"
+          },
+          {
+            "name": "instance",
+            "label": "Instance",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${datasource}"
+            },
+            "definition": "label_values(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\"},instance)",
+            "query": {
+              "qryType": 1,
+              "query": "label_values(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\"},instance)",
+              "refId": "PrometheusVariableQueryEditor-VariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "current": {
+            },
+            "options": [
+
+            ],
+            "includeAll": true,
+            "multi": true,
+            "allValue": ".*"
+          },
+          {
+            "auto": false,
+            "auto_count": 300,
+            "auto_min": "10s",
+            "current": {
+              "text": "10m",
+              "value": "10m"
+            },
+            "label": "Interval",
+            "name": "interval",
+            "options": [
+              {
+                "selected": false,
+                "text": "30s",
+                "value": "30s"
+              },
+              {
+                "selected": false,
+                "text": "1m",
+                "value": "1m"
+              },
+              {
+                "selected": false,
+                "text": "5m",
+                "value": "5m"
+              },
+              {
+                "selected": true,
+                "text": "10m",
+                "value": "10m"
+              },
+              {
+                "selected": false,
+                "text": "15m",
+                "value": "15m"
+              },
+              {
+                "selected": false,
+                "text": "30m",
+                "value": "30m"
+              },
+              {
+                "selected": false,
+                "text": "1h",
+                "value": "1h"
+              }
+            ],
+            "query": "30s,1m,5m,10m,15m,30m,1h",
+            "refresh": 2,
+            "type": "interval"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-24h",
+        "to": "now"
+      },
+      "timepicker": {
+      },
+      "timezone": "browser",
+      "title": "Caddy",
+      "uid": "fed94ifiv8h6oc",
+      "version": 11,
+      "weekStart": "",
+      "gnetId": 22870
+    }

@@ -56,6 +56,7 @@ telemetry:
       labels:
         cluster: web-saas-k3s-v5
         environment: prod
+        service: web-saas-caddy
   - job_name: node-exporter
     scrape_interval: 15s
     kubernetes_sd_configs:
