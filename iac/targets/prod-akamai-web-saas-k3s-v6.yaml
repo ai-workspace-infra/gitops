@@ -26,12 +26,13 @@ targets:
         cli_workspace: default
       owners:
       - module.compute_web_saas_k3s_v6
+      - module.volume_web_saas_k3s_v6
       - linode_firewall.fw_web_saas_k3s_v6
       protected: []
       ownership_reviewed: true
       requires_existing_state: false
       destroy_allowed: false
-      reason: New isolated V6 validation cluster; g6-standard-4 is a capacity-based proposal pending Tokyo quota preflight; no V5 resources or canonical DNS may change.
+      reason: New isolated V6 validation cluster with an independent 100 GB data volume; capacity, volume protection and CMDB/mount contracts require preflight; no V5 resources or canonical DNS may change.
   namespace: web-saas-k3s-v6
   lifecycle:
     status: active

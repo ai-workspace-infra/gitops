@@ -21,6 +21,10 @@ This follows [GitOps PR #648](https://github.com/ai-workspace-infra/gitops/pull/
 That PR is merged and declared only the isolated Akamai target/state; this follow-up
 defines the V6 release units and validation order.
 
+The [node, data-volume and cluster preflight](prod-k3s-v6-node-cluster-preflight.md)
+records the current provisioning proposal and source-verified execution gaps. It is
+the preparation checklist before any resource creation or cluster bootstrap.
+
 ## Current V5 evidence and V6 boundary
 
 The approved read-only check of PROD V5 on 2026-10-29 confirmed the supplied diagram:
@@ -51,9 +55,17 @@ change. Set hostname `web-saas-k3s-v6`; verify a newly generated, unique machine
 after creation. Retain `prevent_destroy: true` and the independent state key
 `terraform/prod/svc.plus/akamai-cloud/manbuzhe2026/web-saas-k3s-v6/terraform.tfstate`.
 
-The V6 SSH firewall allowlist is empty until the approved operations source CIDR is
-declared; public SSH and public K3s API access are not acceptable defaults. This is a
-preflight blocker, not a request to open those ports broadly.
+The user approved temporary IPv4 SSH ingress from `0.0.0.0/0` for bootstrap. IPv6
+SSH remains closed, as does public K3s API ingress. Use key-based operations access
+and replace the temporary IPv4 rule with the operator allowlist after bootstrap.
+
+PROD requires a separate data disk. The V6 declaration now includes one new 100 GB
+ext4 Block Storage volume in the same region, owned by the V6 state. This is distinct
+from the instance system disk. Before service deployment, verify the volume identity,
+mount it at `/data`, and route V6 persistent volumes under `/data/k3s/storage`;
+never fall back to the system disk if the data mount is missing. The current IaC
+volume-protection/CMDB and Playbooks V6 mount integration gaps remain blockers, as
+described in the linked preflight. No volume has been created or mounted.
 
 ## Five release units
 

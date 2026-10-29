@@ -34,9 +34,15 @@ hosts:
     ansible_user: root
     groups: [web_saas, prod, debian, akamai_cloud, k3s_server]
     tags: [svc-plus, prod, web-saas-k3s-v6, akamai-cloud]
+    # Independent PROD data volume; capacity is a planning candidate in provider GB.
+    # Mount/format and Kubernetes storage routing belong to Playbooks, not IaC.
+    volume:
+      label: web-saas-k3s-v6-data
+      size: 100
+      filesystem: ext4
     firewall:
-      # Fail closed until the approved operations source CIDR is declared.
-      ssh_cidrs: []
+      # Temporary user-approved bootstrap access; replace with operator CIDRs.
+      ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: []
       allow_http: true
       allow_https: true
