@@ -1,0 +1,13 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: platform-observability-prod-source
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/part-of: platform-observability
+spec:
+  interval: 1m
+  timeout: 60s
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    commit: 0d56c90e9bbeacc11fdbdec9fdd0b7392a44d448
