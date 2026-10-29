@@ -1,6 +1,14 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  name: external-secrets
+  labels:
+    platform.svc.plus/environment: prod
+    platform.svc.plus/cluster: prod-k3s-v6
+---
+apiVersion: v1
+kind: Namespace
+metadata:
   name: vault-prod
   labels:
     platform.svc.plus/environment: prod

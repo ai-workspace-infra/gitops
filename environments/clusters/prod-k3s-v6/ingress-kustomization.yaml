@@ -11,6 +11,8 @@ spec:
   timeout: 15m
   dependsOn:
     - name: vault-prod
+    - name: observability-prod
+    - name: web-saas-prod
   sourceRef:
     kind: GitRepository
     name: ingress-prod-config
