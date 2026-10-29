@@ -5,6 +5,7 @@ resources:
   - web-saas-fullstack-kustomization.yaml
   - platform-vault-kustomization.yaml
   - source.yaml
+  - platform-observability-source.yaml
   - platform-observability-kustomization.yaml
   - datakit-kustomization.yaml
   - controller-resources.yaml
