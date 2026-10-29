@@ -1,0 +1,38 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: prod-akamai-web-saas-k3s-v6
+  environment: prod
+  project: svc.plus
+  provider: akamai-cloud
+  account: manbuzhe2026
+  workspace: web-saas-k3s-v6
+  auth:
+    expected_identity: manbuzhe2026
+    vault_role: prod-akamai-iac
+    record: kv/data/CICD/prod/akamai-cloud/manbuzhe2026
+  stages:
+    bootstrap:
+      mode: verify
+      reason: Verify the existing Vault-backed account token; never create or revoke the management identity.
+    account:
+      mode: not_applicable
+      reason: Akamai namespaces use declared public keys and workload firewalls; this adapter owns no independent account resources.
+    resources:
+      mode: terraform
+      manifest: resources/svc.plus/prod/akamai/web-saas-k3s-v6.yaml
+      state:
+        key: terraform/prod/svc.plus/akamai-cloud/manbuzhe2026/web-saas-k3s-v6/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - module.compute_web_saas_k3s_v6
+      - linode_firewall.fw_web_saas_k3s_v6
+      protected: []
+      ownership_reviewed: true
+      requires_existing_state: false
+      destroy_allowed: false
+      reason: New isolated V6 validation cluster; no V5 resources or canonical DNS may change.
+  namespace: web-saas-k3s-v6
+  lifecycle:
+    status: active
+    persistent: true

@@ -1,0 +1,81 @@
+# Kubernetes PROD Web SaaS on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
+# 2 vCPU / 4 GB, Debian 13 (linode/debian13)
+# Isolated state namespace: web-saas-k3s-v6
+# New isolated V6 validation cluster; canonical production DNS is not promoted.
+global:
+  provider: akamai-cloud
+  environment: prod
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: web-saas-k3s-v6
+  state_namespace: web-saas-k3s-v6
+  region: jp-tyo-3
+  image: linode/debian13
+  type: g6-standard-2
+  name_prefix: ""
+  user_data_file: cloud-init.yaml
+  prevent_destroy: true
+
+ssh_keys:
+  - name: vault-platform-ops-deploy
+    public: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDEsuS135lzjVvlH2iNrKz23lDFr7b686xs4d2HINP2glFPmgkgx1D6Dqwisb1UbhWHZmUUzRxXeNlE8fiaO0TXN/C0dsdUxgopnQRyakcA+gfJqqb38Syx8eqdC7mQy9ygOf763dWm6d/SYZ8WgNWLldk4QF9DiZOW9K22DMtY4/1Cqe/YE/WGpOMVr9T9BwvmOjarjWp2OPbx6RVlSOd735Mze5X+cJ9QqdLaisCiSoJ3j9S6dulcxm+7ghPfATvxlJyZWSrRrVqnmV45lPbeuUHlIEyuK1PK2MS6NtUP03ZhdRYJQKZLECpR5xAO/BliOtDdRornvHV1gutYD8/n3IS8sRVzYPvN9DuOhzBnBQUgciu2++R8zMfdVoH7mSbsE8u++vMcBk3UJ1Op0Ct+trl2bsnue96cAnoiII08JKwAaczD5uZIGhdkGV8zKnChNCjzCxP0i4PV/MYW04eWmH+E8G81zq4ZsvrvPYmilBbRrkwHvvbPba3SSb2F2As= shenlan@shenlandeMacBook-Air-2.local"
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+  - name: operator-macos-ed25519
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGeMGuRKEGtIOTb9BsXMP2rD9Fpv9f3rrrABjOW7EV7s shenlan@HaitaodeMacBook-Pro.local"
+
+hosts:
+  - name: web-saas-k3s-v6
+    region: jp-tyo-3
+    type: g6-standard-2
+    image: linode/debian13
+    private_ip: true
+    ansible_user: root
+    groups: [web_saas, prod, debian, akamai_cloud, k3s_server]
+    tags: [svc-plus, prod, web-saas-k3s-v6, akamai-cloud]
+    firewall:
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: ["::/0"]
+      allow_http: true
+      allow_https: true
+      additional_tcp_ports: [6443]
+    host_vars:
+      role: primary
+      cloud_provider: akamai-cloud
+      cloud_region: jp-tyo-3
+      service_variant: k3s-v6
+      deployment_mode: kubernetes
+      k8s_cluster_name: web-saas-k3s-v6
+      k8s_namespace: web-saas-k3s-v6
+      service_domains:
+        - console-k3s-v6.svc.plus
+        - accounts-k3s-v6.svc.plus
+        - billing-k3s-v6.svc.plus
+        - content-k3s-v6.svc.plus
+        - gateway-k3s-v6.svc.plus
+        - postgresql-k3s-v6.svc.plus
+        - k3s-v6.svc.plus
+        - vault-k3s-v6.svc.plus
+        - observability-k3s-v6.svc.plus
+      # Canonical alias targets consumed by the dedicated IaC/provider owner.
+      # Bootstrap does not independently perform public DNS cutover.
+      reserved_dns_aliases: {}
+      cloudflare_dns_zone_name: svc.plus
+      cloudflare_dns_records:
+        - type: A
+          name: postgresql-k3s-v6.svc.plus
+          content: "{{ ansible_host }}"
+          ttl: 60
+          proxied: false
+        - type: A
+          name: vault-k3s-v6.svc.plus
+          content: "{{ ansible_host }}"
+          ttl: 300
+          proxied: false
+        - type: A
+          name: observability-k3s-v6.svc.plus
+          content: "{{ ansible_host }}"
+          ttl: 300
+          proxied: false
+      public_dns_cutover: false
