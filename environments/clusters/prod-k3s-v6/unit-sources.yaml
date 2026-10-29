@@ -7,7 +7,7 @@ metadata:
   name: vault-prod-config
   namespace: flux-system
 spec:
-  suspend: true
+  suspend: false
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
