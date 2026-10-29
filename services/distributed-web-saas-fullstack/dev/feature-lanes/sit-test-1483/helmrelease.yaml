@@ -51,9 +51,9 @@ spec:
           data:\n  Caddyfile: \"{\\n  admin off\\n  auto_https off\\n  http_port 8080\\\
           n  metrics\\n  servers\\\n    \\ {\\n    trusted_proxies static private_ranges\\\
           n  }\\n}\\n:9180 {\\n  metrics\\n}\\n\\\n    :8080 {\\n  respond /healthz\
-          \ \\\"ok\\\" 200\\n  respond \\\"not found\\\" 404\\n}\\nhttp://retry-sit-test-1483-sit.onwalk.net:8080\\\
-          \n    \\ {\\n  reverse_proxy web-saas-console:80\\n}\\nhttp://accounts-retry-sit-test-1483-sit.onwalk.net:8080\\\
-          \n    \\ {\\n  reverse_proxy web-saas-accounts:80\\n}\\nhttp://billing-retry-sit-test-1483-sit.onwalk.net:8080\\\
+          \ \\\"ok\\\" 200\\n  respond \\\"not found\\\" 404\\n}\\nhttp://verified-sit-test-1483-sit.onwalk.net:8080\\\
+          \n    \\ {\\n  reverse_proxy web-saas-console:80\\n}\\nhttp://accounts-verified-sit-test-1483-sit.onwalk.net:8080\\\
+          \n    \\ {\\n  reverse_proxy web-saas-accounts:80\\n}\\nhttp://billing-verified-sit-test-1483-sit.onwalk.net:8080\\\
           \n    \\ {\\n  reverse_proxy web-saas-billing:80\\n}\\n\"\n"
       - target:
           kind: NetworkPolicy

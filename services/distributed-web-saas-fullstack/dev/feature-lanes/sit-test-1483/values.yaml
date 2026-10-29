@@ -20,9 +20,9 @@ caddy:
   service:
     type: ClusterIP
   routes:
-    consoleHost: retry-sit-test-1483-sit.onwalk.net
-    accountsHost: accounts-retry-sit-test-1483-sit.onwalk.net
-    billingHost: billing-retry-sit-test-1483-sit.onwalk.net
+    consoleHost: verified-sit-test-1483-sit.onwalk.net
+    accountsHost: accounts-verified-sit-test-1483-sit.onwalk.net
+    billingHost: billing-verified-sit-test-1483-sit.onwalk.net
   resources:
     requests:
       cpu: 15m
@@ -79,13 +79,13 @@ accounts:
       POSTGRES_USER: xc_accounts_rw
       DATABASE_RUNTIME_ROLE: primary
       DATABASE_BACKGROUND_WRITERS: 'false'
-      ROOT_BOOTSTRAP_EMAIL: root@retry-sit-test-1483-sit.onwalk.net
-      XWORKMATE_SHARED_TENANT_DOMAIN: retry-sit-test-1483-sit.onwalk.net
-      XWORKMATE_SHARED_TENANT_DOMAINS: retry-sit-test-1483-sit.onwalk.net
+      ROOT_BOOTSTRAP_EMAIL: root@verified-sit-test-1483-sit.onwalk.net
+      XWORKMATE_SHARED_TENANT_DOMAIN: verified-sit-test-1483-sit.onwalk.net
+      XWORKMATE_SHARED_TENANT_DOMAINS: verified-sit-test-1483-sit.onwalk.net
       STRIPE_MODE: test
-      OAUTH_FRONTEND_URL: https://retry-sit-test-1483-sit.onwalk.net
-      OAUTH_GITHUB_REDIRECT_URL: https://accounts-retry-sit-test-1483-sit.onwalk.net/api/auth/github/callback
-      OAUTH_GOOGLE_REDIRECT_URL: https://accounts-retry-sit-test-1483-sit.onwalk.net/api/auth/google/callback
+      OAUTH_FRONTEND_URL: https://verified-sit-test-1483-sit.onwalk.net
+      OAUTH_GITHUB_REDIRECT_URL: https://accounts-verified-sit-test-1483-sit.onwalk.net/api/auth/github/callback
+      OAUTH_GOOGLE_REDIRECT_URL: https://accounts-verified-sit-test-1483-sit.onwalk.net/api/auth/google/callback
       SMTP_HOST: smtp.gmail.com
       SMTP_PORT: '587'
       SMTP_TLS_MODE: starttls
@@ -126,17 +126,17 @@ console:
       RUNTIME_ENV: sit
       NEXT_PUBLIC_RUNTIME_ENVIRONMENT: sit
       ACCOUNT_SERVICE_URL: http://web-saas-accounts.feature-sit-test-1483-sit.svc.cluster.local
-      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: https://accounts-retry-sit-test-1483-sit.onwalk.net
-      RUNTIME_AUTH_URL: https://accounts-retry-sit-test-1483-sit.onwalk.net
+      NEXT_PUBLIC_ACCOUNT_SERVICE_URL: https://accounts-verified-sit-test-1483-sit.onwalk.net
+      RUNTIME_AUTH_URL: https://accounts-verified-sit-test-1483-sit.onwalk.net
       SERVER_SERVICE_URL: http://web-saas-accounts.feature-sit-test-1483-sit.svc.cluster.local
       SERVER_SERVICE_INTERNAL_URL: http://web-saas-accounts.feature-sit-test-1483-sit.svc.cluster.local
       DOCS_SERVICE_URL: http://web-saas-content.feature-sit-test-1483-sit.svc.cluster.local
       DOCS_SERVICE_INTERNAL_URL: http://web-saas-content.feature-sit-test-1483-sit.svc.cluster.local
       BILLING_SERVICE_URL: http://web-saas-billing.feature-sit-test-1483-sit.svc.cluster.local
       BRIDGE_SERVER_URL: http://bridge-disabled.invalid
-      APP_BASE_URL: https://retry-sit-test-1483-sit.onwalk.net
-      NEXT_PUBLIC_APP_BASE_URL: https://retry-sit-test-1483-sit.onwalk.net
-      NEXT_PUBLIC_SITE_URL: https://retry-sit-test-1483-sit.onwalk.net
+      APP_BASE_URL: https://verified-sit-test-1483-sit.onwalk.net
+      NEXT_PUBLIC_APP_BASE_URL: https://verified-sit-test-1483-sit.onwalk.net
+      NEXT_PUBLIC_SITE_URL: https://verified-sit-test-1483-sit.onwalk.net
       SESSION_COOKIE_SECURE: 'true'
       NEXT_PUBLIC_SESSION_COOKIE_SECURE: 'true'
     secretRefs:
@@ -220,7 +220,7 @@ content:
       DOCS_SERVICE_PORT: '8080'
       KNOWLEDGE_REPO_PATH: /tmp/knowledge
       KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
-      KNOWLEDGE_REPO_REF: d105eb146b08faf17cdfa8f61d507a4df440968b
+      KNOWLEDGE_REPO_REF: aec6fcd9e890f90f6fb48ce84bf9dcffbe3ef669
     secretRefs:
     - web-saas-content-runtime
     resources:

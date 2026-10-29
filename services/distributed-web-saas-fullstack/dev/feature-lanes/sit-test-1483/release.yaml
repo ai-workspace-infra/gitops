@@ -9,10 +9,10 @@ console:
   podAnnotations:
     release.svc.plus/source_repository: ai-workspace-services/portal
     release.svc.plus/source_sha: 0ac90c55260ebef5f66ae5e02983cb060d56188b
-    release.svc.plus/image_digest: sha256:c54324adb73e10a78e82b629519033b34bfe56eb5c4688ed4a0e8d0c3233c91d
-    release.svc.plus/build_run_id: '40836064895'
+    release.svc.plus/image_digest: sha256:b4a08e446fc23519fa1ea70f759e992f907f3a5c21e3c79c493054255336b556
+    release.svc.plus/build_run_id: '40838676968'
   singleContainer:
-    image: ghcr.io/ai-workspace-services/console@sha256:c54324adb73e10a78e82b629519033b34bfe56eb5c4688ed4a0e8d0c3233c91d
+    image: ghcr.io/ai-workspace-services/console@sha256:b4a08e446fc23519fa1ea70f759e992f907f3a5c21e3c79c493054255336b556
 accounts:
   podAnnotations:
     release.svc.plus/source_repository: ai-workspace-services/accounts
