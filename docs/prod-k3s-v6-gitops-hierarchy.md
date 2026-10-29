@@ -83,8 +83,9 @@ SQL schema/数据库/业务持久状态版本转换必须去下一代新集群�
 ### 首次引导
 
 首次候选的六个 GitRepository pin 指向同一个包含完整 V6 目录的已审查 tag/commit，
-便于核对完整初始图。当前文件中的旧 `v2026.10.29.3` 只是暂停占位，尚不含 V6 目录，
-不能用于实际 bootstrap。选定正式候选时必须替换全部初始 pin 并验证解析结果。
+便于核对完整初始图。初始正式版本为 `v2026.10.29.4`，解析到已合入的
+`c74a1a5a7d3a633d4020897fbb765b3e23fb279a`；六个初始 pin 已统一固定并构建验证。
+后续各单元可独立推进版本引用，不重新执行首次全图引导。
 
 Playbooks 的 `declarative_paused` 模式从控制端固定 GitOps checkout 构建 root 与五个子路径，
 加载 source、root、子 Kustomization、chart 源及 HelmRelease；不会另外生成/调谐 `platform-root`。

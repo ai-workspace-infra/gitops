@@ -1,6 +1,8 @@
 # PROD-K3S-V6 独立节点与集群创建准备
 
-状态：规划与声明阶段，尚未执行云端 preflight、Terraform plan/apply、挂载或部署。
+状态：正式支持已合入；独立云节点、100 GB 数据盘与 firewall 已创建并验证。
+首次主机引导停在连接前指纹核验，修复版本正继续验证；尚不宣称 K3s 或业务验收完成。
+新建执行状态与证据见下文阶段表；不将暂停式引导计为业务部署或数据验收。
 升级分类遵循已合并的[技能 PR #63](https://github.com/ai-workspace-lab/xworkspace-core-skills/pull/63)。
 V6 是全新节点、全新 K3s 集群、全新数据卷；V5 保持当前服务、SQL schema 和写入权。
 
@@ -24,9 +26,9 @@ Kustomization 管理五个单元的独立 GitRepository/子 Kustomization，各�
 业务 DB、SQL schema 和其他业务持久状态转换继续使用下一代新集群。
 单节点 Caddy 使用 hostPort 80/443 时也会存在重启窗口，不能承诺零停机滚动。
 
-本轮将尚未执行创建的 V6 声明标识收敛为 `prod-k3s-v6`，未执行 Terraform state 移动。
-创建前仍需核对旧 V6 声明标识是否已有云实例/后端 state；若存在，停止新增并先审查准确的
-资源身份与 state 处理方案，不能靠改名重复创建或接管旧资源。
+创建前已将 V6 声明标识收敛为 `prod-k3s-v6`；本轮在该独立 state 新建，未执行 V5 state 移动。
+旧 V6 声明的 backend key 作为只读历史来源保留在 catalog，未导入、移动或接管；不将
+声明改名当成旧状态已清空的证据。新目标使用自己的云资源与 state 归属校验。
 
 ## V6 GitOps 层级与独立更新
 
@@ -121,16 +123,17 @@ Caddy `externalBackends` 显式引用跨 namespace 上游，禁止重复部署�
 
 ## 部署所需 Vault KV 路径
 
-以下仅记录路径、字段名和消费者，未读取或写入任何密钥值。“已有引用”表示代码中已声明，
-不代表已验证远端记录存在或实际身份可读；“V6 规划”仍需 owner 创建、精确授权和拒绝路径验证。
+以下仅记录路径、字段名和消费者，不保存密钥值。IaC provider/state 路径已由正式短期身份
+在实际计划与创建中读取；V6 SSH 绑定由受审查的一次性初始化创建，运行时读取已通过。
+其余“V6 规划”路径仍需 owner 创建、精确授权和拒绝路径验证，不代表凭据已就绪。
 现有运维 Vault 用于 IaC/SSH 和 V6 Vault 的初始信任引导，不能依赖尚未初始化的 V6 Vault 自举。
 V6 服务运行凭据在新 Vault 就绪后通过其内部 SecretStore/ESO 同步，端点与信任链必须明确区分。
 
 | 阶段 / 用途 | Vault KV v2 API path | 字段名（不含值） | 消费方 / Kubernetes Secret | 状态 |
 | --- | --- | --- | --- | --- |
-| IaC 云账户 | `kv/data/CICD/prod/akamai-cloud/manbuzhe2026` | `LINODE_TOKEN` | IaC `auth.record` / `prod-akamai-iac` 对应受控身份 | 已有 V6 声明引用，未远端验证 |
-| Terraform backend | `kv/data/CICD/prod/iac_state` | `TF_STATE_ENDPOINT`、`TF_STATE_BUCKET`、`TF_STATE_REGION`、`TF_STATE_ACCESS_KEY`、`TF_STATE_SECRET_KEY` | IaC backend，仍使用 V6 独立 state key | IaC 代码默认路径，未远端验证 |
-| 主机引导 SSH | `kv/data/prod/platform/prod-k3s-v6/ssh` | `SSH_PRIVATE_KEY`，并配套受信任主机指纹来源 | Playbooks 的专用操作身份；不授予业务 Pod | V6 规划，需 caller 接线 |
+| IaC 云账户 | `kv/data/CICD/prod/akamai-cloud/manbuzhe2026` | `LINODE_TOKEN` | IaC `auth.record` / `github-actions-platform-ops-toolkit-prod-k3s-v6-iac` | 实际短期身份读取及云账户校验通过 |
+| Terraform backend | `kv/data/CICD/prod/iac_state` | `TF_STATE_ENDPOINT`、`TF_STATE_BUCKET`、`TF_STATE_REGION`、`TF_STATE_ACCESS_KEY`、`TF_STATE_SECRET_KEY` | IaC backend，仍使用 V6 独立 state key | 实际短期身份读取、独立 backend plan/apply 通过 |
+| 主机引导 SSH | `kv/data/prod/platform/prod-k3s-v6/ssh` | `SSH_PRIVATE_KEY`，并配套受信任主机指纹来源 | Playbooks 的专用操作身份；不授予业务 Pod | 已初始化，专用 OIDC caller 读取通过；主机指纹核验仍是连接前门禁 |
 | Vault server 初始 TLS | `kv/data/prod/services/vault-prod/tls/prod-k3s-v6-server` | `tls_fullchain_pem`、`tls_key_pem`、`issuer`、`expire_at` | `vault-prod/vault-server-tls`；首次来自外部可信引导面 | V6 规划，需避免 ESO/Vault 自举循环 |
 | PostgreSQL 管理/初始化 | `kv/data/prod/services/postgresql-prod/prod-k3s-v6/admin` | `POSTGRES_PASSWORD` | `postgresql-prod/postgresql-superuser`；仅管理初始化/迁移身份 | V6 规划，业务身份不得读取 |
 | Accounts DB | `kv/data/prod/services/web-saas-prod/prod-k3s-v6/accounts-db` | `POSTGRES_PASSWORD` / `DATABASE_URL`，按实际应用契约映射 | `web-saas-prod/accounts-db-runtime` | V6 规划，独立运行角色 |
@@ -182,7 +185,8 @@ V6 服务运行凭据在新 Vault 就绪后通过其内部 SecretStore/ESO 同�
    不默认云节点快照覆盖独立 Block Storage。
 
 不采用旧盘重新附加来完成代际升级，也不通过同集群另建库或复用 PVC 规避新集群要求。
-100 GB 是本轮容量候选；源数据、增长或恢复空间核算不通过时先修改声明，再创建资源。
+100 GB 是本轮独立卷创建值；源数据、增长、恢复及导入空间须在放行业务前核算。
+不通过时停止数据导入，另行评审容量变更，不自动扩容。
 
 ## 网络、身份与冷启动前提
 
@@ -201,38 +205,39 @@ V6 服务运行凭据在新 Vault 就绪后通过其内部 SecretStore/ESO 同�
 
 ## 执行入口与已核实缺口
 
-以下是 2026-10-29 对各仓库 `origin/main` 的静态检查，不是云端或运行验收结果。
+以下为已合入的正式执行版本。调用方固定各 owner SHA；后续修复经新 PR 和版本发布，
+不修改已发布 tag，也不临时改工作流绕过门禁。
 
-| Owner / 固定检查点 | 已有能力 | V6 放行前需补齐 |
+| Owner / 固定版本 | 已合入能力 | 验证与边界 |
 | --- | --- | --- |
-| IaC `3cfc12d95578885ecd267d7d09e049919ff10464` | Akamai renderer 支持 `hosts[].volume`，并生成 `module.volume_prod_k3s_v6`；compute_protected 保护节点 | storage 模块尚无 `prevent_destroy`；`cmdb_runtime`/inventory 尚不携带卷身份与设备信息。需 owner PR 补齐卷保护、权威输出及重跑验证，不能以 global 的节点保护代替卷保护 |
-| Playbooks `e18f112536ce293532dee7b6f7ce0df21b1d7b8f` | 已有 `web_saas_data_volume` 空盘检查与 UUID 挂载角色 | 角色当前只接受特定 Web SaaS/恢复主机，不接受当前 V6 inventory 身份；需基于 CMDB 的最小 V6 接入、挂载前置、持久卷供给路径及重启验证，不能靠伪造旧主机别名绕过 |
-| 同一 Playbooks bootstrap | K3s/Flux 安装及固定 Git commit 输入 | 本轮 owner 分支新增 `declarative_paused`：从固定 checkout 加载完整声明图、验证初始全部暂停并跳过 reconcile；需完成 PR/固定 owner SHA 后使用。V6 声明已显式选 0600 和专属 root/source 名 |
-| Platform-Orchestrator `33fe2bbfcb73283fa4092498f18b37e5b5a8811a` | `iac-orchestrator.yml` 可选 prod、目标 manifest 和 resources stage | 精确固定 V6 target 与资源路径、IaC SHA、GitOps release ref、受保护 PROD 入口和 OIDC 身份；本次未验证实际权限和云 API 可达性 |
-| 同一控制面 `web-saas-k3s-orchestrator.yml` | 现有 K3s UAT/V5 调度链 | 文件强制 V5 namespace，使用 UAT 环境/凭据且默认开启测试 DNS；不能仅修改 target 输入用于 PROD V6。需独立审查 V6 调度契约或采用已授权的固定 Playbooks 路径 |
-| Artifacts 的 fullstack chart | 单包内 PostgreSQL、Caddy 和业务组件均有启用开关 | 三 HelmRelease 使用同包；独立 Caddy 跨 namespace 契约需合并、发布 0.2.10 候选并固定新 digest，旧 pin 不具备该契约 |
+| IaC `83b7379e4e7cdc18b1d83c5c7c4b618f6f1be5c9`，[PR #493](https://github.com/ai-workspace-infra/iac_modules/pull/493) | 节点及独立卷 prevent_destroy；create_only 计划校验；卷 ID、挂载设备及节点归属进入 CMDB；provider console 主机密钥证明；[PR #494](https://github.com/ai-workspace-infra/iac_modules/pull/494) 补充二进制帧解码 | IaC 测试、provider validate 和 CI 通过；实际 plan 只新增节点、卷、firewall，无修改/删除 |
+| Playbooks `71d253091621ff64e6526f5db011cb01287e2a50`，[PR #854](https://github.com/ai-workspace-infra/playbooks/pull/854) | 精确 CMDB 动态 inventory；空盘 ext4、UUID 挂载、K3s mount 依赖；固定 K3s/Flux；全图暂停加载；独立审计身份 | 角色测试、Linux 空盘测试和 CI 通过；真实节点/集群/挂载与审计允许/拒绝在引导时验证 |
+| 身份初始化 `f6474939b1156b2eac48292f6a48bc9d03bab935`，[PR #857](https://github.com/ai-workspace-infra/playbooks/pull/857) | 管理员一次性初始化精确 V6 Vault role/policy 与 SSH KV 绑定；同环境原 Key 公钥校验，CAS=0 新建，密钥仅内存传递 | 真实临时密钥与禁止错误 Key 写入测试通过；初始化已完成。不是 CI 管理员 token 兜底 |
+| Orchestrator `076492416810c71af33cbd60cf4068d64bd0dd1c` / `v6.0.0-bootstrap.2`，[PR #1536](https://github.com/ai-workspace-infra/Platform-Orchestrator/pull/1536) | 指定 Selfhost 入口的独立 V6 四阶段；固定 owner；关联 IaC 回执/校验和；受保护 tag 与 PROD OIDC；终态证据门禁 | CI 通过；旧 UAT/V5 路径不用于 V6；拒绝迁移、初始化业务库、destroy、DNS 切换及外部节点 |
+| GitOps `c74a1a5a7d3a633d4020897fbb765b3e23fb279a` / `v2026.10.29.4`，[PR #658](https://github.com/ai-workspace-infra/gitops/pull/658) | 六独立配置源、唯一根/五子 Kustomization、七 HelmRelease，初始全部暂停 | 完整固定 tag 构建验证通过；后续单元 source/HR pin 独立 |
+| Artifacts `a7b791e2d80b203e31b9671885c9f07152f0a2fd`，[PR #246](https://github.com/ai-workspace-infra/artifacts/pull/246) | fullstack chart 0.2.10 的三个独立发布 profile，Caddy 显式跨 namespace 上游 | 发布成功，实际 OCI digest 与三处 V6 pin 一致；不能据此声称业务已部署 |
 
 已修正 V6 设计：root.yaml 进入根资源列表，五个子单元改用各自独立 GitRepository。
-与之配套的 Playbooks owner 分支通过 `declarative_paused` 模式加载 source、root、
+已合入的 Playbooks owner 通过 `declarative_paused` 模式加载 source、root、
 子 Kustomization、chart source 和 HelmRelease，不生成或 reconcile `platform-root`。
 首次 source/root/子 Kustomization/HelmRelease 全部暂停；后续按根声明与单元配置声明
 逐层放行。旧 generated 模式只保留既有调用兼容，V6 不选择它。
 只解除子 Kustomization 暂停不会自动解除 HelmRelease 暂停；具体步骤和最小依赖见层级文档。
 
 本地其他 owner checkout 存在无关修改，已保留；Playbooks 改动在独立 worktree 中完成。
-K3s、Flux、Helm 及所有 chart/image 候选还需核实官方发布、校验和、chart values 和依赖兼容性；
-仓库默认值不能替代该项验证。业务目标库名、PostgreSQL 17 及 Accounts/Billing schema
+K3s、Flux、Helm 的固定官方版本已核实存在，fullstack chart 已拉取核对 digest 和独立 values；
+各业务 chart/image 的运行、资源预算、网络、Secret 与兼容性仍须逐单元验证。业务目标库名、PostgreSQL 17 及 Accounts/Billing schema
 checkpoint 按实际 `migratectl` 固定版本的要求由迁移 owner 创建与验证。
 
 ## 进入创建阶段的顺序与放行结果
 
 | 阶段 | 完成条件 | 当前状态 |
 | --- | --- | --- |
-| 0 声明与候选固定 | 六 GitRepository、唯一根/五子 Kustomization、七 HelmRelease、独立节点/卷及目标/state 审查通过；发布标签包含 V6 路径 | 本地声明已准备，正式 release ref 未选择 |
-| 1 创建前检查 | 账户、region、plan、image、卷容量/费用、源数据量、预算、受控入口通过；上述 owner 缺口关闭 | BLOCKED，尚未做云端 preflight |
-| 2 云资源 plan | 只新增 V6 节点、独立卷及 firewall；无 V5、DNS、共享 SSH key 变更，无修改/删除/替换既有资源 | NOT_RUN |
-| 3 IaC 创建 | 依已审查的同一 plan 执行，输出并核验 CMDB、节点和卷身份 | NOT_RUN；创建另按任务授权执行 |
-| 4 主机/存储/集群 | 安全身份、空盘核验、UUID 挂载、供给路径、固定版本 K3s/Flux 和暂停声明验证 | NOT_RUN |
+| 0 声明与候选固定 | 六 GitRepository、唯一根/五子 Kustomization、七 HelmRelease、独立节点/卷及目标/state 审查通过；发布标签包含 V6 路径 | PASS；正式 GitOps tag 与独立 owner SHA 已固定 |
+| 1 创建前检查 | 账户、region、plan、image、卷容量/费用、源数据量、预算、受控入口通过；上述 owner 缺口关闭 | 创建所需身份与正式入口已验证；全业务容量、源数据及恢复空间另在放行前验收 |
+| 2 云资源 plan | 只新增 V6 节点、独立卷及 firewall；无 V5、DNS、共享 SSH key 变更，无修改/删除/替换既有资源 | PASS；3 create、0 update、0 delete，运行 [40838341949](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838341949)，IaC 子运行 [40838376523](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838376523) |
+| 3 IaC 创建 | 使用同一固定声明重新生成、核验并 apply 保存计划，输出 CMDB 与卷身份 | PASS；3 create、0 update、0 delete；IaC 子运行 [40838673674](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838673674)，provider 收敛、节点/卷归属与 CMDB 验证通过 |
+| 4 主机/存储/集群 | 先核对完整受信主机指纹，再做空盘、UUID、固定版本与暂停声明验收 | 首次运行 [40838640119](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838640119) 在 SSH 前停止；修复后运行 [40840386197](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40840386197) 验证中 |
 | 5 五单元冷启动 | Vault → PostgreSQL → Ingress → Observability → Web SaaS，逐单元准备依赖并验收；业务独立写者暂停 | NOT_RUN |
 | 6 核心数据与恢复验收 | 备份/恢复、`migratectl` 预览及审查后的复制、差异/回归、含业务数据的隔离恢复和观察 | NOT_RUN；数据写入另按任务授权执行 |
 | 7 待切换报告 | 列出未完成项、最终追齐及写入权/流量交接方案 | NOT_RUN；V5 不切换、不退役 |
@@ -244,7 +249,7 @@ V6 容量验收结果。按当前规格创建节点与后续放行全部业务�
 
 云费用按节点、独立卷、备份/对象存储、恢复演练容量和双代并行窗口分别核算。
 按已选择的 Shared 4 GB / 2 vCPU 重新核实实际 Tokyo 账户报价、税费及 Block Storage 单价；
-旧 8 GB 方案的参考价不适用于本轮。本轮不声称已完成 provider preflight。
+旧 8 GB 方案的参考价不适用于本轮。只读 plan 已验证账户身份与创建计划；尚不代表全部业务的性能容量或恢复空间验收。
 
 来源：[Akamai 亚太价格](https://www.akamai.com/cloud/pricing/asia-pacific)、
 [Block Storage](https://techdocs.akamai.com/cloud-computing/docs/block-storage)、
@@ -272,8 +277,18 @@ SQL schema 变更、业务恢复、DNS、源写者停用或写入权交接。
 独立卷挂载 `/data`，local-path provisioner 使用 `/data/k3s/storage`；K3s systemd
 依赖该挂载，不允许在丢失挂载时向系统盘的同名目录写入。
 
-IaC 角色 `prod-k3s-v6-iac` 仅能读取 provider 与 state 凭据，Bootstrap 角色
-`prod-k3s-v6-bootstrap` 仅读取本集群 SSH 绑定与 provider 主机密钥核验凭据。
-两者仅接受正式发布 tag 下相应固定 workflow 的 PROD OIDC 身份。系统管理员首次
+IaC 角色 `github-actions-platform-ops-toolkit-prod-k3s-v6-iac` 仅能读取 provider 与 state 凭据，Bootstrap 角色
+`github-actions-platform-ops-toolkit-prod-k3s-v6-bootstrap` 仅读取本集群 SSH 绑定与 provider 主机密钥核验凭据。
+两者仅接受受保护 `v6.*` tag 下相应固定 workflow 的 PROD OIDC 身份。系统管理员首次
 配置专用角色和 SSH KV 绑定；不把管理员 Vault token 放入 CI 或业务。
 实际云端 plan/apply、节点/集群身份、挂载 UUID 和暂停声明回执仍需运行证明。
+
+## 保留节点后的修复验证
+
+首次失败未执行 SSH、格式化、K3s 安装、业务发布或数据迁移。节点和独立卷按保护策略
+保留。IaC 控制台解码修复经 PR 合入，控制面以 [PR #1543](https://github.com/ai-workspace-infra/Platform-Orchestrator/pull/1543)
+固定新 owner，再发布新的不可变 tag；原 tag 未移动。
+第二次只读 [plan 40840089376](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40840089376)
+及 [IaC 子运行 40840131815](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40840131815)
+验证为 **0 create、0 update、0 delete**，才继续同一节点的引导。完整指纹、精确 CMDB、
+空盘和全部暂停等门禁不因重试而放宽。

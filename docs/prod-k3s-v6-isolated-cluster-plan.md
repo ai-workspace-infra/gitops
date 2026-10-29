@@ -46,8 +46,8 @@ The approved read-only check of PROD V5 on 2026-10-29 confirmed the supplied dia
 V6 is a separate cluster and state namespace (`prod-k3s-v6`). One cluster-local
 bootstrap GitRepository `config-prod` manages its root, and five additional
 unit GitRepositories independently pin configuration versions from the same GitOps
-repository. All six stay suspended at the current `v2026.10.29.3` placeholder until a
-reviewed production tag containing these V6 paths is selected. They cannot change
+repository. All six initially pin reviewed tag `v2026.10.29.4` at merged commit
+`c74a1a5a7d3a633d4020897fbb765b3e23fb279a` and remain suspended. They cannot change
 V5's objects. Never point production Flux at this feature branch.
 
 The user selected Akamai account `manbuzhe2026`, region `jp-tyo-3`, and
