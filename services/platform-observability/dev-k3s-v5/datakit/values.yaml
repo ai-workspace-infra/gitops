@@ -44,6 +44,7 @@ dkconfig:
         [inputs.prom.tags]
           cluster = "dev-k3s-v5-sit"
           env = "sit"
+          environment = "sit"
           service = "web-saas-caddy"
   - name: postgresql-exporter.conf
     path: /usr/local/datakit/conf.d/prom/postgresql-exporter.conf
