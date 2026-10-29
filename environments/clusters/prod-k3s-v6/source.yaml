@@ -1,14 +1,13 @@
-# Separate Flux object on V6; same GitOps repository as V5, independent cluster state.
-# The V6 graph uses its own reviewed immutable release. Keep it suspended until
-# the release-pin commit is published and bootstrap/identity gates pass.
+# V6 management source. Its immutable release activates only the management root;
+# every workload source, child Kustomization and HelmRelease remains independently paused.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: config-prod
   namespace: flux-system
 spec:
-  suspend: true
+  suspend: false
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.8
+    tag: v2026.10.29.9

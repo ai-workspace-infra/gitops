@@ -1,12 +1,12 @@
-# Planning entrypoint only. Keep suspended until an approved production release tag
-# contains this V6 topology and the node has been separately provisioned.
+# Management graph root. It applies only namespaces, sources and paused child gates;
+# workload reconciliation is released separately by each declared child Kustomization.
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: prod-k3s-v6
   namespace: flux-system
 spec:
-  suspend: true
+  suspend: false
   interval: 5m
   prune: false
   # The root applies the management graph only. Child Kustomizations intentionally
