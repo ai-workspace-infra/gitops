@@ -10,4 +10,4 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.10
+    tag: v2026.10.29.11
