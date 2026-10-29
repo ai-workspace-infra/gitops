@@ -52,3 +52,35 @@ Owner changes: Playbooks PR760, Artifacts PR216 and PR217. Deployment declaratio
 The former Observability host was deleted. The existing `observability.svc.plus` A record pointing at `35.221.181.68` does not provide a usable rollback target. Before any public DNS cutover, provide and verify a target-side maintenance/repair procedure or an independent healthy fallback endpoint. Until then, DNS cutover is BLOCKED by rollback risk. If a cutover is later approved, rollback must not point to the deleted host.
 
 Status: archived inventory available; target endpoint/process health PASSED; authenticated login, datasource queries, dashboard/folder/variable/plugin runtime verification and Flux idempotence NOT_RUN; source writes and historical-data migration NOT_RUN; DNS and traffic cutover NOT_RUN. DNS cutover remains BLOCKED until the target-side recovery gate above is satisfied.
+
+## PostgreSQL Mixin candidate (draft)
+
+The candidate is adapted from [postgres_exporter Postgres Mixin](https://github.com/prometheus-community/postgres_exporter/tree/281cf032091aaaffded97f7df29b8ab29be051bd/postgres_mixin), commit `281cf032091aaaffded97f7df29b8ab29be051bd`, licensed under [Apache-2.0](https://github.com/prometheus-community/postgres_exporter/blob/281cf032091aaaffded97f7df29b8ab29be051bd/LICENSE). Its existing panel layout is retained; QPS is renamed TPS because the query measures committed and rolled-back transactions. The selector chain is datasource → environment → cluster → service → instance → database; bgwriter metrics are instance-scoped and therefore cannot be filtered by database.
+
+For PostgreSQL 17.11 with postgres_exporter 0.17.1, field evidence supplied for this task reports that `pg_stat_bgwriter_buffers_checkpoint_total`, `pg_stat_bgwriter_buffers_backend_total`, and `pg_stat_bgwriter_buffers_backend_fsync_total` are absent; those targets are omitted, not replaced by zeroes. `pg_stat_bgwriter_buffers_alloc_total` and `pg_stat_bgwriter_buffers_clean_total` were reported present. These reports are not independent verification of the candidate dashboard queries.
+
+This is a draft pending the coordinated Playbooks canonical dashboard source and a byte-for-byte comparison of the ConfigMap data with that source. The following candidate queries all require online validation against the intended datasource and selected labels; no candidate PromQL has been verified online in this worktree. A successful kustomize build does not validate data or Grafana rendering.
+
+- TPS: NOT_RUN — `sum(irate(pg_stat_database_xact_commit{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval])) + sum(irate(pg_stat_database_xact_rollback{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval]))`
+
+- Rows: NOT_RUN — `sum(irate(pg_stat_database_tup_fetched{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval]))`
+
+- Rows: NOT_RUN — `sum(irate(pg_stat_database_tup_returned{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval]))`
+
+- Rows: NOT_RUN — `sum(irate(pg_stat_database_tup_inserted{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval]))`
+
+- Rows: NOT_RUN — `sum(irate(pg_stat_database_tup_updated{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval]))`
+
+- Rows: NOT_RUN — `sum(irate(pg_stat_database_tup_deleted{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval]))`
+
+- Buffers: NOT_RUN — `irate(pg_stat_bgwriter_buffers_alloc_total{environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval])`
+
+- Buffers: NOT_RUN — `irate(pg_stat_bgwriter_buffers_clean_total{environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval])`
+
+- Conflicts/Deadlocks: NOT_RUN — `sum(pg_stat_database_deadlocks{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"})`
+
+- Conflicts/Deadlocks: NOT_RUN — `sum(pg_stat_database_conflicts{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"})`
+
+- Cache hit ratio: NOT_RUN — `round(sum by (datname) (rate(pg_stat_database_blks_hit{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval])) / (sum by (datname)(rate(pg_stat_database_blks_hit{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval])) + sum by (datname)(rate(pg_stat_database_blks_read{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}[$__rate_interval])))*100,0.001)`
+
+- Number of active connections: NOT_RUN — `pg_stat_database_numbackends{datname=~"${database:regex}",environment=~"${environment:regex}",cluster=~"${cluster:regex}",service=~"${service:regex}",instance=~"${instance:regex}"}`
