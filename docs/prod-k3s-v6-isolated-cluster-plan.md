@@ -125,13 +125,19 @@ in-place business/database schema changes.
    Preserve the verified provider/state, firewall, hostname, machine ID and storage
    evidence; finish rendered capacity review before releasing workloads.
 2. The node, K3s, Flux and data mount are already verified. Release the root graph, then
-   enable only ESO `2.14.0`; wait for CRDs and the controller to be Ready. Configure the
-   existing public Vault's JWT auth mount/role/policy for the V6 TLS reader identity;
-   bind its audience and service account, validate the K3s issuer/signing key, and grant
-   read access only to `kv/data/CICD/domains/svc.plus`. Disable ESO's blanket TokenRequest
-   permission and retain the resourceName-scoped RoleBinding. Do not open public K3s API
-   ingress or inject a static Vault token.
-3. Release `vault-tls-identity` and verify real workload access: the exact certificate record is readable, adjacent records are denied, and wrong service account or audience cannot log in. Keep `vault-tls-bootstrap` suspended until that evidence passes; Flux dependency readiness alone does not prove authorization.
+   enable only ESO `2.14.0`; wait for CRDs and the controller to be Ready. Keep all
+   identity, TLS, and service workloads suspended during this step.
+3. Release `vault-tls-identity` so GitOps creates `vault-prod/vault-tls-reader`, the
+   resourceName-scoped TokenRequest Role, and its ESO RoleBinding. Verify these exact
+   objects are present with the declared scope before configuring the existing public Vault's V6 JWT
+   auth mount, role, and read-only policy. Bind the declared audience and service
+   account, validate the K3s issuer/signing key, and allow only
+   `kv/data/CICD/domains/svc.plus`. Then verify the certificate record is readable,
+   adjacent paths are denied, and wrong service account or audience cannot log in.
+   Disable ESO's blanket TokenRequest permission and retain the scoped RoleBinding.
+   Keep `vault-tls-bootstrap` suspended until that allow/deny evidence passes. Do not
+   open public K3s API ingress or inject a static Vault token; Flux dependency readiness
+   alone does not prove authorization.
 4. Enable `vault-tls-bootstrap`; wait for ExternalSecret `Ready=True`, then verify the
    generated `vault-prod/vault-server-tls` Secret type/keys and certificate metadata
    without printing secret bytes. Confirm cert/key match, validity and SAN for
