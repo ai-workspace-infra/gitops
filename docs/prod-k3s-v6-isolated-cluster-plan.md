@@ -24,7 +24,7 @@ That PR is merged and declared only the isolated Akamai target/state; this follo
 defines the V6 release units and validation order.
 
 The [V6-specific GitOps hierarchy](prod-k3s-v6-gitops-hierarchy.md) is authoritative
-for the root, six Git sources, five business-unit Kustomizations, two platform-prerequisite
+for the root, six Git sources, five business-unit Kustomizations, three platform-prerequisite
 Kustomizations, seven business HelmReleases and the ESO controller HelmRelease.
 
 The [node, data-volume and cluster preflight](prod-k3s-v6-node-cluster-preflight.md)
@@ -71,7 +71,7 @@ and mounted at `/data`; its UUID is verified. V6 persistent volumes must use
 ## Five release units
 
 The V6 root uses its bootstrap GitRepository and manages five independently pinned
-unit GitRepositories plus the five business child Kustomizations below. Two additional
+unit GitRepositories plus the five business child Kustomizations below. Three additional
 root-managed prerequisites install ESO and synchronize Vault's server TLS. Each unit has its own reconciliation path and
 one or more HelmReleases whose chart version or artifact digest can be selected
 independently. The observability unit has separate
@@ -83,10 +83,11 @@ frontend/API fixes follow the explicit in-place exceptions above.
 | Order | Flux Kustomization / namespace | Managed release and V6 pin | V5 comparison / validation purpose |
 |---:|---|---|---|
 | Prerequisite A | `external-secrets` / `external-secrets` | ESO Helm chart `2.14.0` | Installs ESO CRDs/controller after Flux; K3s `1.37` is in the upstream support matrix. Not one of the five business units. |
-| Prerequisite B | `vault-tls-bootstrap` / `vault-prod` | ESO `SecretStore` + `ExternalSecret` → `vault-server-tls` | Reads `kv/data/CICD/domains/svc.plus` from public `https://vault.svc.plus`; requires a V6 JWT auth role/policy with read-only access to this one record. Verify SAN `vault-k3s-v6.svc.plus`; no local certificate issuance or public DNS change. |
+| Prerequisite B | `vault-tls-identity` / `vault-prod` | Dedicated ServiceAccount and scoped TokenRequest RBAC | Apply before testing the real workload identity; leaves certificate synchronization suspended. |
+| Prerequisite C | `vault-tls-bootstrap` / `vault-prod` | ESO `SecretStore` + `ExternalSecret` → `vault-server-tls` | Reads `kv/data/CICD/domains/svc.plus` from public `https://vault.svc.plus`; requires a V6 JWT auth role/policy with read-only access to this one record. Verify SAN `vault-k3s-v6.svc.plus`; no local certificate issuance or public DNS change. |
 | 1 | `vault-prod` | HashiCorp Vault Helm chart `0.32.0`; server image `1.21.4` | Fresh V6 Raft store; same Vault server version as V5 while validating chart ownership. Do not copy V5 Raft data or recovery keys. |
 | 2 | `postgresql-prod` | Shared `distributed-web-saas-fullstack` OCI package; independent `postgresql` HelmRelease | Fresh empty database/PVC and reviewed target SQL schema. Deploy does not import data; core data is copied later with the approved `migratectl` workflow. |
-| 3 | `observability-prod` | Stack OCI digest `sha256:61e414722d21bbf4ace63d54c7236de30af5ff54d3878dcb5c8da8999894c706`; agent OCI digest `sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12`; DataKit chart `2.16.1` | Independent monitoring can follow Vault and run in parallel with PostgreSQL. Its data remains fresh; monitor storage changes retain their own recovery evidence. |
+| 3 | `observability-prod` | Stack OCI digest `sha256:61e414722d21bbf4ace63d54c7236de30af5ff54d3878dcb5c8da8999894c706`; agent OCI digest `sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12`; DataKit chart `2.16.1` | Release monitoring after PostgreSQL has passed its initial health checks. Its data remains fresh; monitor storage changes retain their own recovery evidence. |
 | 4 | `web-saas-prod` | Full-stack OCI digest `sha256:6336235445e389958660cc344eead488ad3a50cf67afb1301fd35f6793720f27` | Depends on Vault and PostgreSQL; embedded PostgreSQL and app-bundled Caddy remain disabled. This is a compatibility baseline, not an app artifact upgrade. |
 | 5 | `ingress-prod` | Shared `distributed-web-saas-fullstack` OCI package; independent `caddy-ingress` HelmRelease | Last service unit, after Vault, Observability, and Web SaaS are Ready. Validate V6-only hosts while public DNS stays unchanged. |
 
@@ -118,7 +119,7 @@ in-place business/database schema changes.
 
 ## Cold start, data migration, then next-generation validation
 
-1. Keep the V6 root, two prerequisites, all five business child Kustomizations and
+1. Keep the V6 root, three prerequisites, all five business child Kustomizations and
    their HelmReleases suspended. Select an immutable production tag containing these
    paths for V6's cluster-local `config-prod`; V5 remains pinned at its own tag.
    Preserve the verified provider/state, firewall, hostname, machine ID and storage
@@ -130,23 +131,23 @@ in-place business/database schema changes.
    read access only to `kv/data/CICD/domains/svc.plus`. Disable ESO's blanket TokenRequest
    permission and retain the resourceName-scoped RoleBinding. Do not open public K3s API
    ingress or inject a static Vault token.
-3. Enable `vault-tls-bootstrap`; wait for ExternalSecret `Ready=True`, then verify the
+3. Release `vault-tls-identity` and verify real workload access: the exact certificate record is readable, adjacent records are denied, and wrong service account or audience cannot log in. Keep `vault-tls-bootstrap` suspended until that evidence passes; Flux dependency readiness alone does not prove authorization.
+4. Enable `vault-tls-bootstrap`; wait for ExternalSecret `Ready=True`, then verify the
    generated `vault-prod/vault-server-tls` Secret type/keys and certificate metadata
    without printing secret bytes. Confirm cert/key match, validity and SAN for
    `vault-k3s-v6.svc.plus`. Only then release Vault, initialize/unseal its fresh
    Raft store via the owner path, and configure the separate V6-internal ESO identity.
    Never use the uninitialized V6 Vault to source its own initial TLS.
-4. After Vault and its internal SecretStore are healthy, release PostgreSQL and
-   Observability independently (they may reconcile in parallel), then Web SaaS after
-   PostgreSQL. Keep business writes/background workers paused. Release Ingress last;
+5. After Vault and its internal SecretStore are healthy, release PostgreSQL, then
+   Observability, and then Web SaaS. Keep business writes/background workers paused. Release Ingress last;
    test its V6-only routes without changing public DNS. Start observability storage
    fresh; moving historical telemetry requires its own reviewed backup/restore plan.
-5. Before migrating data, pin the exact Accounts `migratectl` binary/source, image
+6. Before migrating data, pin the exact Accounts `migratectl` binary/source, image
    digest, Accounts schema checksum, Billing schema checksum, source checkpoint and
    target baseline. Create an encrypted target backup and prove it restores into an
    isolated database. Obtain a source read-only credential through the owning secret
    path; never place DSNs or credential values in Git, argv, or receipts.
-6. Keep all V6 business writers and background workers paused before any full-business
+7. Keep all V6 business writers and background workers paused before any full-business
    compare, dry run, or apply. Run `migratectl compare-full-business` (read-only)
    against V5 and the empty V6 target; review its privacy-safe diff and schema/version
    preconditions. Then invoke `migratectl copy-full-business` in dry-run mode and
@@ -155,12 +156,12 @@ in-place business/database schema changes.
    table list covers every required core owner before applying. Accounts
    `migratectl diff` alone compares core user identity fields and is not a
    full-business migration.
-7. Apply the reviewed migration only through its execution-owning Playbooks/Toolkit
+8. Apply the reviewed migration only through its execution-owning Playbooks/Toolkit
    path, with target writers independently confirmed paused and the tool's required
    write gate present. The source connection remains read-only. Do not treat the
    initial snapshot as zero-lag synchronization while V5 continues to write. Record
    the exact source snapshot boundary and candidate receipt.
-8. Validate counts and checksums/identity-level diffs, schema checkpoints, permissions,
+9. Validate counts and checksums/identity-level diffs, schema checkpoints, permissions,
    application reads, and incident regressions. Take a populated V6 backup, restore it
    into an isolated target, and verify the restored data and app connection. The
    full-business apply requires an empty target and is not a repeatable import into a
@@ -170,7 +171,7 @@ in-place business/database schema changes.
    tables remain empty. Missing table owners, conflicts, restore failures,
    source/target drift, or unexplained writes are blockers; do not reset the target or
    overwrite source-only facts.
-9. The five V6 business units are deployed in the staged cold-start order above. This staged
+10. The five V6 business units are deployed in the staged cold-start order above. This staged
    order is the V6 release rollout; it does not upgrade V5 in place. Once V6 cold
    deployment and migration acceptance are complete, freeze its accepted pins and
    evidence as the source-generation baseline. After that, a small frontend/API
@@ -178,7 +179,7 @@ in-place business/database schema changes.
    update its own HelmRelease pin in place, with pre/post health and regression
    evidence and a known artifact rollback pin. Do not combine those updates with SQL
    schema changes or business/billing data-format migrations.
-10. Validate the next application/platform version on a separate fresh target cluster
+11. Validate the next application/platform version on a separate fresh target cluster
    (for example, a future V7), with its own IaC state, cluster-local Flux source pin,
    five independently pinned release units, and unique identity. Deploy that target
    from cold state one unit at a time, then run the approved `migratectl` data-copy
@@ -192,7 +193,7 @@ in-place business/database schema changes.
    before `migratectl`; do not mutate the prior generation's schema to perform the
    upgrade. Each generation needs a fixed immutable source tag and artifact digests
    before deployment; a shared Git repository is still acceptable.
-11. The current Web SaaS chart digest matches V5, so its V6 cold deployment is a
+12. The current Web SaaS chart digest matches V5, so its V6 cold deployment is a
    compatibility baseline, not a Web SaaS artifact upgrade. Do not report an app
    version upgrade as passed until a newer immutable producer digest is available and
    validated on a fresh target generation. Keep V5 serving and keep canonical

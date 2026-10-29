@@ -38,11 +38,11 @@ Kustomization 管理五个单元的独立 GitRepository/子 Kustomization，各�
 | 根 Flux Kustomization | `flux-system/prod-k3s-v6` | 1 | `root.yaml` 也进入根 `kustomization.yaml`；仅应用管理图，`wait: false` 使暂停子对象独立报告状态 |
 | 单元 GitRepository | `<unit>-config`，均在 `flux-system` | 5 | `unit-sources.yaml`；同一 Git 仓库、每单元独立 tag/commit |
 | 业务子 Flux Kustomization | `<unit>`，均在 `flux-system` | 5 | 每个单元独立 sourceRef、`services/prod-k3s-v6/<unit>` 路径及暂停/健康等待状态 |
-| 集群前置 Flux Kustomization | `external-secrets`、`vault-tls-bootstrap` | 2 | ESO controller/CRD 与 Vault server TLS Secret 引导；不增加业务发布单元 |
+| 集群前置 Flux Kustomization | `external-secrets`、`vault-tls-identity`、`vault-tls-bootstrap` | 3 | ESO controller/CRD、身份预置与 Vault server TLS Secret 引导；不增加业务发布单元 |
 | Chart 源 | 服务 namespace 中 HelmRepository / OCIRepository | 3 / 5 | ESO/Vault/DataKit 用 HelmRepository；数据库/入口/业务三个 release 使用同一个 fullstack chart 包，各自保留本 namespace 的 OCI source |
 | HelmRelease | 下表列出的发布对象 | 8 | 七个业务 release 加一个 ESO controller release；每个 release 独立 chart/values/版本与暂停状态 |
 
-总计为 **6 个 GitRepository、1 个根 + 5 个业务 + 2 个前置 Flux Kustomization、8 个 HelmRelease**。
+总计为 **6 个 GitRepository、1 个根 + 5 个业务 + 3 个前置 Flux Kustomization、8 个 HelmRelease**。
 八个 HelmRelease 包含五单元的七个业务 release 和独立的 ESO controller release。五个发布单元继续
 共用一个 GitOps 仓库，不要求拆仓库；监控使用三个已有 chart，因此有三个业务 HelmRelease。
 
@@ -58,6 +58,7 @@ namespace，HelmRelease 也在该 namespace。**所有 Flux Kustomization 和 Gi
 | --- | --- | --- | --- | --- | --- | --- |
 | PROD | **PROD-K3S-V6** | `flux-system`（控制层） | `prod-k3s-v6` | —（根不直接发布 chart） | `config-prod` | `./environments/clusters/prod-k3s-v6` |
 | PROD | **PROD-K3S-V6** | `external-secrets` | `external-secrets` | `external-secrets` | `config-prod` | `./services/prod-k3s-v6/cluster-prerequisites/external-secrets` |
+| PROD | **PROD-K3S-V6** | `vault-prod`（身份前置） | `vault-tls-identity` | —（ServiceAccount / RBAC） | `vault-prod-config` | `./services/prod-k3s-v6/vault-prod/tls-identity` |
 | PROD | **PROD-K3S-V6** | `vault-prod`（TLS 前置） | `vault-tls-bootstrap` | —（ESO ExternalSecret） | `vault-prod-config` | `./services/prod-k3s-v6/vault-prod/tls-bootstrap` |
 | PROD | **PROD-K3S-V6** | `vault-prod` | `vault-prod` | `vault` | `vault-prod-config` | `./services/prod-k3s-v6/vault-prod` |
 | PROD | **PROD-K3S-V6** | `postgresql-prod` | `postgresql-prod` | `postgresql` | `postgresql-prod-config` | `./services/prod-k3s-v6/postgresql-prod` |
@@ -116,9 +117,9 @@ Caddy `externalBackends` 显式引用跨 namespace 上游，禁止重复部署�
 | 阶段 | Source / Kustomization / HelmRelease 状态 | 执行约束 |
 | --- | --- | --- |
 | 首次加载 | 六 GitRepository、八 Flux Kustomization、八 HelmRelease 全部 `suspend: true` | Playbooks 从固定 checkout 校验并加载完整声明，不另外生成 `platform-root`，不主动 reconcile |
-| 管理图放行 | 先启用引导 GitRepository 和根 Kustomization | 五个业务单元及两个前置 Kustomization/HelmRelease 仍保持暂停 |
+| 管理图放行 | 先启用引导 GitRepository 和根 Kustomization | 五个业务单元及三个前置 Kustomization/HelmRelease 仍保持暂停 |
 | ESO 与 Vault TLS 前置 | 先放行 ESO controller/CRD；准备公共 Vault JWT auth 只读角色；再同步 `vault-server-tls` | Secret Ready、证书/私钥匹配、SAN 和有效期验收通过后，才放行 Vault HelmRelease |
-| 单元冷启动 | Vault → PostgreSQL 与 Observability（可并行）→ Web SaaS → Ingress | Vault 完成初始化与内部 SecretStore 后逐单元放行；Ingress 最后，公共 DNS 保持不变 |
+| 单元冷启动 | Vault → PostgreSQL → Observability → Web SaaS → Ingress | Vault 完成初始化与内部 SecretStore 后逐单元放行；Ingress 最后，公共 DNS 保持不变 |
 | 单元独立维护 | 保持正常运行单元状态，仅修改被选中单元的声明与 pin | 所有暂停状态在权威 GitOps 声明中维护；不靠现场 resume 对抗父级旧声明 |
 | 健康验收 | source/子 Kustomization/HelmRelease 与目标 revision 一致，再检查实际链路 | 暂停 HR 不会因解除子 Kustomization 暂停而自动运行；`wait: true` 须与 HR 放行配套，Ready 不等于数据或业务验收 |
 
@@ -173,6 +174,9 @@ data path `kv/data/CICD/domains/svc.plus` 的权限。Vault JWT verifier 必须�
 签名公钥和 issuer；ESO chart 关闭默认全局 TokenRequest 权限，仅 RoleBinding 授予它对该 SA 的
 `serviceaccounts/token` 创建权限。选择 JWT auth 是为了避免公共 Vault 反向访问 V6 K3s API；不得为
 此用途开放公网 6443，也不得在集群中保存静态 Vault token。
+
+先单独放行 `vault-tls-identity` 创建 ServiceAccount，验证实际身份的允许/拒绝访问；
+`vault-tls-bootstrap` 必须等验收通过后才放行。Flux 依赖不自动验证 Vault 授权。
 
 ExternalSecret 每 5 分钟刷新，删除策略 `Retain`。放行 Vault HelmRelease 前必须确认
 ExternalSecret `Ready=True`、Secret 存在且类型/键名符合 chart contract，证书与私钥匹配、有效期

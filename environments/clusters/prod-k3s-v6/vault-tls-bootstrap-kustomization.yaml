@@ -13,6 +13,7 @@ spec:
   timeout: 15m
   dependsOn:
     - name: external-secrets
+    - name: vault-tls-identity
   healthChecks:
     - apiVersion: external-secrets.io/v1
       kind: ExternalSecret
