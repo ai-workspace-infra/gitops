@@ -32,11 +32,9 @@ spec:
           type: RuntimeDefault
       containers:
       - name: mcp-grafana
-        image: grafana/mcp-grafana:latest
+        image: grafana/mcp-grafana@sha256:71a3f4e6f412d253611314233df709ec2571fb50e39742d23fa2940f670646dc
         imagePullPolicy: IfNotPresent
-        command:
-        - "-t"
-        - "sse"
+        args:
         - "--base-path"
         - "/v1/grafana"
         - "--disable-write"
@@ -54,12 +52,18 @@ spec:
           httpGet:
             path: /healthz
             port: 8000
+            httpHeaders:
+            - name: Host
+              value: localhost
           initialDelaySeconds: 10
           periodSeconds: 15
         readinessProbe:
           httpGet:
             path: /healthz
             port: 8000
+            httpHeaders:
+            - name: Host
+              value: localhost
           initialDelaySeconds: 5
           periodSeconds: 10
         resources:
