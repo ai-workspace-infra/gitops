@@ -52,3 +52,44 @@ Owner changes: Playbooks PR760, Artifacts PR216 and PR217. Deployment declaratio
 The former Observability host was deleted. The existing `observability.svc.plus` A record pointing at `35.221.181.68` does not provide a usable rollback target. Before any public DNS cutover, provide and verify a target-side maintenance/repair procedure or an independent healthy fallback endpoint. Until then, DNS cutover is BLOCKED by rollback risk. If a cutover is later approved, rollback must not point to the deleted host.
 
 Status: archived inventory available; target endpoint/process health PASSED; authenticated login, datasource queries, dashboard/folder/variable/plugin runtime verification and Flux idempotence NOT_RUN; source writes and historical-data migration NOT_RUN; DNS and traffic cutover NOT_RUN. DNS cutover remains BLOCKED until the target-side recovery gate above is satisfied.
+
+
+## PostgreSQL Mixin dashboard
+
+The dashboard is an adaptation of [postgres_exporter Postgres Mixin](https://github.com/prometheus-community/postgres_exporter/tree/281cf032091aaaffded97f7df29b8ab29be051bd/postgres_mixin), pinned to commit `281cf032091aaaffded97f7df29b8ab29be051bd` under [Apache-2.0](https://github.com/prometheus-community/postgres_exporter/blob/281cf032091aaaffded97f7df29b8ab29be051bd/LICENSE). The canonical adapted source is [Playbooks PR #847](https://github.com/ai-workspace-infra/playbooks/pull/847), head `6dbc1beb4c3bfdd44641327c1a6e9b614d5c4f1b`; the embedded JSON is byte-identical to `roles/docker/observability-server/files/postgres-community-overview.json` including its final newline. SHA-256: `2ca8ba4a388526424eaf9bad5ed40cd4c1659eb207bdb347eaa51c0dd06a40b3`.
+
+The selectors cascade datasource → environment → cluster → service → instance → database. Instance-scoped metrics cannot be filtered by database. TPS measures committed and rolled-back transactions. PostgreSQL 17.11 / postgres_exporter 0.17.1 field evidence supplied by the user reports that the legacy bgwriter checkpoint, backend and backend_fsync series are absent and alloc/clean are present; absent series are not replaced with zeroes.
+
+On 2026-10-29 the main agent, as reported by the user, queried production VictoriaMetrics over SSH with `environment=prod`, `cluster=prod-k3s-v5`, `service=postgresql`, `instance=prod-postgres-exporter.web-saas-k3s-v5.svc:9187`, `datname=account` and a 5-minute range. All 16 queries returned success: 12 returned time series, while Buffers B, C, E and F returned no series. This is reported query evidence, not an independently reproduced result; no query timestamps or raw response receipts were supplied. An empty result is not a zero value or an API error. Grafana rendering, selector interaction and deployed dashboard acceptance remain unverified.
+
+- TPS: success; series returned (reported) — `sum(irate(pg_stat_database_xact_commit{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval])) + sum(irate(pg_stat_database_xact_rollback{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval]))`
+
+- Rows: success; series returned (reported) — `sum(irate(pg_stat_database_tup_fetched{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval]))`
+
+- Rows: success; series returned (reported) — `sum(irate(pg_stat_database_tup_returned{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval]))`
+
+- Rows: success; series returned (reported) — `sum(irate(pg_stat_database_tup_inserted{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval]))`
+
+- Rows: success; series returned (reported) — `sum(irate(pg_stat_database_tup_updated{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval]))`
+
+- Rows: success; series returned (reported) — `sum(irate(pg_stat_database_tup_deleted{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval]))`
+
+- Buffers (instance-wide): success; series returned (reported) — `irate(pg_stat_bgwriter_buffers_alloc_total{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!=""}[$__rate_interval])`
+
+- Buffers (instance-wide): success; no series (reported) — `irate(pg_stat_bgwriter_buffers_backend_fsync_total{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!=""}[$__rate_interval])`
+
+- Buffers (instance-wide): success; no series (reported) — `irate(pg_stat_bgwriter_buffers_backend_total{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!=""}[$__rate_interval])`
+
+- Buffers (instance-wide): success; series returned (reported) — `irate(pg_stat_bgwriter_buffers_clean_total{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!=""}[$__rate_interval])`
+
+- Buffers (instance-wide): success; no series (reported) — `irate(pg_stat_bgwriter_buffers_checkpoint_total{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!=""}[$__rate_interval])`
+
+- Buffers (instance-wide): success; no series (reported) — `irate(pg_stat_checkpointer_buffers_written_total{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!=""}[$__rate_interval])`
+
+- Conflicts/Deadlocks: success; series returned (reported) — `sum(pg_stat_database_deadlocks{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""})`
+
+- Conflicts/Deadlocks: success; series returned (reported) — `sum(pg_stat_database_conflicts{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""})`
+
+- Cache hit ratio: success; series returned (reported) — `round(sum by (datname) (rate(pg_stat_database_blks_hit{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval])) / (sum by (datname)(rate(pg_stat_database_blks_hit{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval])) + sum by (datname)(rate(pg_stat_database_blks_read{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}[$__rate_interval])))*100,0.001)`
+
+- Number of active connections: success; series returned (reported) — `pg_stat_database_numbackends{environment=~"${environment:regex}",environment!="",cluster=~"${cluster:regex}",cluster!="",service=~"${service:regex}",service!="",instance=~"${instance:regex}",instance!="",datname=~"${datname:regex}",datname!=""}`

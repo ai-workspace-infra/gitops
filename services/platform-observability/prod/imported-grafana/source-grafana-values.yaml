@@ -4,9 +4,24 @@ metadata:
   name: source-grafana-values
   namespace: platform-observability
 data:
-  values.yaml: "grafana:\n  datasourcesConfigMap: source-grafana-datasources\n  appsConfigMap:\
-    \ source-grafana-apps\n  dashboardProviders:\n  - name: import-general\n    folder:\
-    \ ''\n    folderUid: ''\n    path: general\n    configMaps:\n    - source-grafana-general-0\n\
-    \    - starsl-k8s-dashboard\n    - caddy-dashboard\n  - name: import-b3e84e3d474a\n\
-    \    folder: Observability Alerts\n    folderUid: dfzrqnab9cpa8e\n    path: b3e84e3d474a\n\
-    \    configMaps:\n    - source-grafana-b3e84e3d474a-0\n  bundleChecksum: f0623f05357dfc0116bec27097c8b027fc86aad4db961a46c399d706dc77fb24\n"
+  values.yaml: |
+    grafana:
+      datasourcesConfigMap: source-grafana-datasources
+      appsConfigMap: source-grafana-apps
+      dashboardProviders:
+      - name: import-general
+        folder: ''
+        folderUid: ''
+        path: general
+        configMaps:
+        - source-grafana-general-0
+        - starsl-k8s-dashboard
+        - caddy-dashboard
+        - postgres-mixin-dashboard
+      - name: import-b3e84e3d474a
+        folder: Observability Alerts
+        folderUid: dfzrqnab9cpa8e
+        path: b3e84e3d474a
+        configMaps:
+        - source-grafana-b3e84e3d474a-0
+      bundleChecksum: f0623f05357dfc0116bec27097c8b027fc86aad4db961a46c399d706dc77fb24
