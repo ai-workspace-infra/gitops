@@ -58,7 +58,7 @@ console:
   enabled: true
   deploymentProfile: single-container
   singleContainer:
-    image: ghcr.io/ai-workspace-services/console:v2026.10.29.1@sha256:0e87f37fd1af5b80b82c9a9d9753a94bbdef1b42e56a237241ffa4770c686a51
+    image: ghcr.io/ai-workspace-services/console:v2026.10.29.2@sha256:3ae076cac3cb79a38a7739f1a726087f8900b8964a7f5ef7833e7cd8e3623ed3
     port: 8080
     command:
     - /bin/bash
