@@ -83,8 +83,9 @@ SQL schema/数据库/业务持久状态版本转换必须去下一代新集群�
 ### 首次引导
 
 首次候选的六个 GitRepository pin 指向同一个包含完整 V6 目录的已审查 tag/commit，
-便于核对完整初始图。当前文件中的旧 `v2026.10.29.3` 只是暂停占位，尚不含 V6 目录，
-不能用于实际 bootstrap。选定正式候选时必须替换全部初始 pin 并验证解析结果。
+便于核对完整初始图。初始正式版本为 `v2026.10.29.4`，解析到已合入的
+`c74a1a5a7d3a633d4020897fbb765b3e23fb279a`；六个初始 pin 已统一固定并构建验证。
+后续各单元可独立推进版本引用，不重新执行首次全图引导。
 
 Playbooks 的 `declarative_paused` 模式从控制端固定 GitOps checkout 构建 root 与五个子路径，
 加载 source、root、子 Kustomization、chart 源及 HelmRelease；不会另外生成/调谐 `platform-root`。
@@ -137,5 +138,4 @@ environments/clusters/prod-k3s-v6/
 services/prod-k3s-v6/<unit>/       # 各单元自己的 Kustomize、chart source、HelmRelease
 ```
 
-这套声明需要与固定版本的 Playbooks paused bootstrap 配套使用。代码/离线构建通过仅证明
-声明图及引导契约，不代表云节点已创建、引导已执行、chart 已验收或数据已迁移。
+这套声明已由固定版本 Playbooks 在 [V6 引导运行 40851530314](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40851530314) 加载到新集群；实际 6 个 GitRepository、6 个 Flux Kustomization、7 个 HelmRelease 全部暂停。节点和暂停图已验收，chart 工作负载、业务和数据迁移尚未验收；详见[创建准备与实机证据](prod-k3s-v6-node-cluster-preflight.md)。

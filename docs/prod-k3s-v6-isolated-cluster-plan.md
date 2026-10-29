@@ -46,8 +46,8 @@ The approved read-only check of PROD V5 on 2026-10-29 confirmed the supplied dia
 V6 is a separate cluster and state namespace (`prod-k3s-v6`). One cluster-local
 bootstrap GitRepository `config-prod` manages its root, and five additional
 unit GitRepositories independently pin configuration versions from the same GitOps
-repository. All six stay suspended at the current `v2026.10.29.3` placeholder until a
-reviewed production tag containing these V6 paths is selected. They cannot change
+repository. All six initially pin reviewed tag `v2026.10.29.4` at merged commit
+`c74a1a5a7d3a633d4020897fbb765b3e23fb279a` and remain suspended. They cannot change
 V5's objects. Never point production Flux at this feature branch.
 
 The user selected Akamai account `manbuzhe2026`, region `jp-tyo-3`, and
@@ -260,3 +260,7 @@ cutover needs its own reviewed data recovery and change plan.
 Production writer transfer, canonical DNS changes, V5 service retirement, and the V5
 monitoring publication handled by the original task are outside this validation. A
 later cutover requires its own approval and evidence record.
+
+## Automatic post-IaC host preparation
+
+The reviewed V6 caller runs Playbooks `vhosts/common` after verified IaC output for both `infra` and `deploy`. `infra` requests common-only without initializing storage or installing K3s; `deploy` must pass the same node identity and audit checks before storage and paused-cluster bootstrap. `plan` does not connect to the host. Existing K3s identity, PV hostname affinity or active Flux conflicts stop the operation; no automatic node rename or PV rebinding is allowed. Canonical CMDB/inventory, OS and K3s identity is `prod-k3s-v6`; service FQDNs are aliases. Fixed owners and actual execution results are recorded in the [preparation evidence](prod-k3s-v6-node-cluster-preflight.md).
