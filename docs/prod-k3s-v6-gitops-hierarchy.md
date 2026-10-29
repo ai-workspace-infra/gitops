@@ -138,5 +138,4 @@ environments/clusters/prod-k3s-v6/
 services/prod-k3s-v6/<unit>/       # 各单元自己的 Kustomize、chart source、HelmRelease
 ```
 
-这套声明需要与固定版本的 Playbooks paused bootstrap 配套使用。代码/离线构建通过仅证明
-声明图及引导契约，不代表云节点已创建、引导已执行、chart 已验收或数据已迁移。
+这套声明已由固定版本 Playbooks 在 [V6 引导运行 40851530314](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40851530314) 加载到新集群；实际 6 个 GitRepository、6 个 Flux Kustomization、7 个 HelmRelease 全部暂停。节点和暂停图已验收，chart 工作负载、业务和数据迁移尚未验收；详见[创建准备与实机证据](prod-k3s-v6-node-cluster-preflight.md)。

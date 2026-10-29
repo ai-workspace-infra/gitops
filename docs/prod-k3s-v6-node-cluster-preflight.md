@@ -1,7 +1,7 @@
 # PROD-K3S-V6 独立节点与集群创建准备
 
 状态：正式支持已合入；独立云节点、100 GB 数据盘与 firewall 已创建并验证。
-首次主机引导停在连接前指纹核验，修复版本正继续验证；尚不宣称 K3s 或业务验收完成。
+IaC 后自动 common、独立盘挂载和 K3s/Flux 暂停式集群引导均已通过；业务发布和数据验收尚未执行。
 新建执行状态与证据见下文阶段表；不将暂停式引导计为业务部署或数据验收。
 升级分类遵循已合并的[技能 PR #63](https://github.com/ai-workspace-lab/xworkspace-core-skills/pull/63)。
 V6 是全新节点、全新 K3s 集群、全新数据卷；V5 保持当前服务、SQL schema 和写入权。
@@ -119,7 +119,7 @@ Caddy `externalBackends` 显式引用跨 namespace 上游，禁止重复部署�
 根、Vault/PostgreSQL/监控子 Kustomization 已设置 `prune: false`，保留数据相关对象；
 仍须验证 Helm 自身删除行为、PVC `Retain`、云卷保护和备份，不能把 prune 关闭当作完整数据保护。
 首次六个 Git source pin 必须共同指向包含 V6 目录的正式候选，后续才各自推进。
-现有暂停占位 tag 不含 V6 路径，创建/部署放行前需替换并核验。
+首次占位 tag 已替换为包含 V6 路径的正式 `v2026.10.29.4`，六源 pin 和固定 checkout 已核验。
 
 ## 部署所需 Vault KV 路径
 
@@ -210,10 +210,10 @@ V6 服务运行凭据在新 Vault 就绪后通过其内部 SecretStore/ESO 同�
 
 | Owner / 固定版本 | 已合入能力 | 验证与边界 |
 | --- | --- | --- |
-| IaC `83b7379e4e7cdc18b1d83c5c7c4b618f6f1be5c9`，[PR #493](https://github.com/ai-workspace-infra/iac_modules/pull/493) | 节点及独立卷 prevent_destroy；create_only 计划校验；卷 ID、挂载设备及节点归属进入 CMDB；provider console 主机密钥证明；[PR #494](https://github.com/ai-workspace-infra/iac_modules/pull/494) 补充二进制帧解码 | IaC 测试、provider validate 和 CI 通过；实际 plan 只新增节点、卷、firewall，无修改/删除 |
-| Playbooks `71d253091621ff64e6526f5db011cb01287e2a50`，[PR #854](https://github.com/ai-workspace-infra/playbooks/pull/854) | 精确 CMDB 动态 inventory；空盘 ext4、UUID 挂载、K3s mount 依赖；固定 K3s/Flux；全图暂停加载；独立审计身份 | 角色测试、Linux 空盘测试和 CI 通过；真实节点/集群/挂载与审计允许/拒绝在引导时验证 |
+| IaC `adf9c140cd2c120361012917cddcde1e58876c6c`，[PR #493](https://github.com/ai-workspace-infra/iac_modules/pull/493) | 节点及独立卷 prevent_destroy；create_only 计划校验；卷 ID、挂载设备及节点归属进入 CMDB；provider console 主机密钥证明；[PR #494](https://github.com/ai-workspace-infra/iac_modules/pull/494) 补充二进制帧解码；[PR #495](https://github.com/ai-workspace-infra/iac_modules/pull/495)、[PR #496](https://github.com/ai-workspace-infra/iac_modules/pull/496)、[PR #497](https://github.com/ai-workspace-infra/iac_modules/pull/497) 补充只读控制台回看、终端渲染、完整管道输出与 V6 规范节点 inventory key | IaC 测试、provider validate 和 CI 通过；实际 plan 只新增节点、卷、firewall，无修改/删除 |
+| Playbooks `5c0948ce9f6e451a179952d156705034ce1c5a6b`，[PR #854](https://github.com/ai-workspace-infra/playbooks/pull/854) | 精确 CMDB 动态 inventory；空盘 ext4、UUID 挂载、K3s mount 依赖；固定 K3s/Flux；全图暂停加载；独立审计身份；[PR #862](https://github.com/ai-workspace-infra/playbooks/pull/862)、[PR #863](https://github.com/ai-workspace-infra/playbooks/pull/863) 增加先行 common 与 common-only 阶段 | 角色测试、Linux 空盘测试和 CI 通过；真实节点/挂载/暂停图及实际审计允许/拒绝检查通过 |
 | 身份初始化 `f6474939b1156b2eac48292f6a48bc9d03bab935`，[PR #857](https://github.com/ai-workspace-infra/playbooks/pull/857) | 管理员一次性初始化精确 V6 Vault role/policy 与 SSH KV 绑定；同环境原 Key 公钥校验，CAS=0 新建，密钥仅内存传递 | 真实临时密钥与禁止错误 Key 写入测试通过；初始化已完成。不是 CI 管理员 token 兜底 |
-| Orchestrator `076492416810c71af33cbd60cf4068d64bd0dd1c` / `v6.0.0-bootstrap.2`，[PR #1536](https://github.com/ai-workspace-infra/Platform-Orchestrator/pull/1536) | 指定 Selfhost 入口的独立 V6 四阶段；固定 owner；关联 IaC 回执/校验和；受保护 tag 与 PROD OIDC；终态证据门禁 | CI 通过；旧 UAT/V5 路径不用于 V6；拒绝迁移、初始化业务库、destroy、DNS 切换及外部节点 |
+| Orchestrator `1b73eb3d07791d38e1af9d6d50964ff72181fac6` / `v6.0.0-bootstrap.4`，[PR #1536](https://github.com/ai-workspace-infra/Platform-Orchestrator/pull/1536) | 指定 Selfhost 入口的独立 V6 四阶段；固定 owner；关联 IaC 回执/校验和；受保护 tag 与 PROD OIDC；终态证据门禁；[PR #1547](https://github.com/ai-workspace-infra/Platform-Orchestrator/pull/1547) 保证 infra/deploy 都运行 common | CI 通过；旧 UAT/V5 路径不用于 V6；拒绝迁移、初始化业务库、destroy、DNS 切换及外部节点 |
 | GitOps `c74a1a5a7d3a633d4020897fbb765b3e23fb279a` / `v2026.10.29.4`，[PR #658](https://github.com/ai-workspace-infra/gitops/pull/658) | 六独立配置源、唯一根/五子 Kustomization、七 HelmRelease，初始全部暂停 | 完整固定 tag 构建验证通过；后续单元 source/HR pin 独立 |
 | Artifacts `a7b791e2d80b203e31b9671885c9f07152f0a2fd`，[PR #246](https://github.com/ai-workspace-infra/artifacts/pull/246) | fullstack chart 0.2.10 的三个独立发布 profile，Caddy 显式跨 namespace 上游 | 发布成功，实际 OCI digest 与三处 V6 pin 一致；不能据此声称业务已部署 |
 
@@ -237,7 +237,7 @@ checkpoint 按实际 `migratectl` 固定版本的要求由迁移 owner 创建与
 | 1 创建前检查 | 账户、region、plan、image、卷容量/费用、源数据量、预算、受控入口通过；上述 owner 缺口关闭 | 创建所需身份与正式入口已验证；全业务容量、源数据及恢复空间另在放行前验收 |
 | 2 云资源 plan | 只新增 V6 节点、独立卷及 firewall；无 V5、DNS、共享 SSH key 变更，无修改/删除/替换既有资源 | PASS；3 create、0 update、0 delete，运行 [40838341949](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838341949)，IaC 子运行 [40838376523](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838376523) |
 | 3 IaC 创建 | 使用同一固定声明重新生成、核验并 apply 保存计划，输出 CMDB 与卷身份 | PASS；3 create、0 update、0 delete；IaC 子运行 [40838673674](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838673674)，provider 收敛、节点/卷归属与 CMDB 验证通过 |
-| 4 主机/存储/集群 | 先核对完整受信主机指纹，再做空盘、UUID、固定版本与暂停声明验收 | 首次运行 [40838640119](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838640119) 在 SSH 前停止；修复后运行 [40840386197](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40840386197) 验证中 |
+| 4 主机/存储/集群 | 先核对完整受信主机指纹，再做空盘、UUID、固定版本与暂停声明验收 | 首次运行 [40838640119](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838640119) 在 SSH 前停止；第二、三次运行仍停在指纹核验；PASS；[40851530314](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40851530314) 自动 common、独立盘、K3s/Flux 与审计检查全部通过，最终回执 `PAUSED_BOOTSTRAP_VERIFIED` |
 | 5 五单元冷启动 | Vault → PostgreSQL → Ingress → Observability → Web SaaS，逐单元准备依赖并验收；业务独立写者暂停 | NOT_RUN |
 | 6 核心数据与恢复验收 | 备份/恢复、`migratectl` 预览及审查后的复制、差异/回归、含业务数据的隔离恢复和观察 | NOT_RUN；数据写入另按任务授权执行 |
 | 7 待切换报告 | 列出未完成项、最终追齐及写入权/流量交接方案 | NOT_RUN；V5 不切换、不退役 |
@@ -256,32 +256,33 @@ V6 容量验收结果。按当前规格创建节点与后续放行全部业务�
 [卷挂载说明](https://techdocs.akamai.com/cloud-computing/docs/configure-and-mount-a-volume)、
 [K3s 要求](https://docs.k3s.io/installation/requirements)。
 
-## 本轮离线检查
+## 初始离线检查（创建前）
 
 - 从上述 IaC main SHA 导出到临时目录，使用正式 Akamai `generate.py render` 消费 V6
   声明：通过，生成独立节点、firewall 和 100 GB 数据卷模块，包含 Terraform fmt。
 - 五个服务目录及 V6 集群目录分别执行 `kubectl kustomize`：6 项通过。该检查不渲染远端
   Helm chart，不能证明 chart values、镜像、Ingress/TLS、数据库连接或实际部署有效。
-- 未执行 Terraform init/plan/apply、云 API 调用、SSH、格式化/挂载、数据库操作或 workflow dispatch。
+- 此离线检查阶段未执行 Terraform init/plan/apply、云 API 调用、SSH、格式化/挂载、数据库操作或 workflow dispatch；后续实际执行见阶段表。
   临时生成的 HCL、运行配置和构建输出均在仓库外，不作为运行 CMDB 或执行回执提交。
 
 ## 正式冷启动执行边界
 
 Selfhost Orchestrator 的 `prod-v6` 专用路径消费此声明，支持 `plan`、`infra`、
-`deploy`。`deploy` 创建独立资源并执行 K3s/Flux 暂停式引导；全部 6 个配置源、
+`deploy`。`infra` 在 IaC 完成后自动执行 `vhosts/common`，仅检查主机、不初始化数据盘或安装 K3s；
+`deploy` 在同一 common 门禁通过后才进入独立盘和 K3s/Flux 暂停式引导；全部 6 个配置源、
 6 个 Flux Kustomization、7 个 HelmRelease 仍为 suspend=true。它不执行 migratectl、
 SQL schema 变更、业务恢复、DNS、源写者停用或写入权交接。
 
 初始配置 tag 为 `v2026.10.29.4`，必须发布于包含本声明的合入提交，才可调度。
 固定安装版本：K3s `v1.37.1+k3s1`、Flux `2.9.6`、Helm `v3.22.1`。
-独立卷挂载 `/data`，local-path provisioner 使用 `/data/k3s/storage`；K3s systemd
+独立卷目标挂载 `/data`，local-path provisioner 目标使用 `/data/k3s/storage`；K3s systemd
 依赖该挂载，不允许在丢失挂载时向系统盘的同名目录写入。
 
 IaC 角色 `github-actions-platform-ops-toolkit-prod-k3s-v6-iac` 仅能读取 provider 与 state 凭据，Bootstrap 角色
 `github-actions-platform-ops-toolkit-prod-k3s-v6-bootstrap` 仅读取本集群 SSH 绑定与 provider 主机密钥核验凭据。
 两者仅接受受保护 `v6.*` tag 下相应固定 workflow 的 PROD OIDC 身份。系统管理员首次
 配置专用角色和 SSH KV 绑定；不把管理员 Vault token 放入 CI 或业务。
-实际云端 plan/apply、节点/集群身份、挂载 UUID 和暂停声明回执仍需运行证明。
+实际云端 plan/apply 已有回执；集群身份、挂载 UUID 和暂停声明回执已在引导运行及独立实机读取中验证；运行事实只保存在受控回执，不回填为部署输入。
 
 ## 保留节点后的修复验证
 
@@ -292,3 +293,37 @@ IaC 角色 `github-actions-platform-ops-toolkit-prod-k3s-v6-iac` 仅能读取 pr
 及 [IaC 子运行 40840131815](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40840131815)
 验证为 **0 create、0 update、0 delete**，才继续同一节点的引导。完整指纹、精确 CMDB、
 空盘和全部暂停等门禁不因重试而放宽。
+
+## IaC 后自动 common 门禁
+
+[V6 第三阶段](https://github.com/ai-workspace-infra/Platform-Orchestrator/pull/1547) 必须依赖成功的 IaC 回执，校验 GitOps/owner SHA、CMDB 校验和、实例归属及受信 SSH 主机密钥后，调用 Playbooks 的 `vhosts/common/tasks/node_bootstrap.yml`。
+
+| 操作 | IaC 之后自动执行 | 继续条件 |
+| --- | --- | --- |
+| `plan` | 不连接主机 | 只产生计划回执 |
+| `infra` | common-only；规范 hostname、cloud-init 保留、hosts 解析、独立只读审计账户 | 必须获得 `COMMON_NODE_VERIFIED`；common 失败则整体失败 |
+| `deploy` | 同一 common 门禁，再初始化核实为空的新卷、安装 K3s/Flux 并加载暂停声明 | 必须获得 `PAUSED_BOOTSTRAP_VERIFIED`，不能仅看 workflow 绿色 |
+
+CMDB/inventory 主键、`host.name` 和 K3s node name 必须一致为 `prod-k3s-v6`；业务域名保留为别名，不能代替节点身份。common 在改 hostname 前检查已有 K3s 节点、PV hostname affinity 和 Flux 对象；发现不同节点名、PV 绑定冲突或已激活 Flux 时停止，不自动改绑或重命名已有集群。
+
+本轮在尚未安装 K3s、尚无 PV 时，已通过既有操作员受信 SSH 连接调用审查后的 common hostname 任务，将 runtime/static hostname、cloud-init 和 hosts 同步为 `prod-k3s-v6`。随后按固定 Playbooks SHA 执行 common-only：22 项成功、0 项失败，回执 `COMMON_NODE_VERIFIED`；实际审计身份允许读取状态、拒绝系统配置写入。此手动验证与自动流水线结果分开记录。
+
+本次 [IaC 40851581630](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40851581630) 回执为 `applied_verified`，**0 create、0 update、0 delete**，云实例/独立卷归属与前次一致；产出的 inventory 主键已核实为 `prod-k3s-v6`。未重建节点或卷。
+
+## 暂停式引导验收结果（2026-10-29）
+
+[Selfhost 40851530314](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40851530314) 的四个 V6 阶段全部成功。下载并检查本次 `prod-k3s-v6-bootstrap-40851530314-1` artifact 中的 `v6-bootstrap-receipt.json`，同时经既有受信 SSH 独立读取节点、挂载、Flux Deployment 和全部发布对象。
+
+| 验收项 | 实际结果 |
+| --- | --- |
+| IaC 归属及无漂移 | `applied_verified`；0 create、0 update、0 delete；保留同一受保护实例和卷 |
+| 自动 common | `COMMON_NODE_VERIFIED`；在存储/K3s 前检查；CMDB、OS/K3s 节点名均为 `prod-k3s-v6` |
+| 规范 hostname | runtime、`/etc/hostname`、cloud-init 保留、hosts 解析一致 |
+| 新独立盘 | `/data` 为 ext4，回执 UUID 与实际 `findmnt` 一致；未复用 V5 卷 |
+| K3s | `prod-k3s-v6` Ready，`v1.37.1+k3s1`；节点与集群 UID 已记录在运行回执 |
+| Flux 控制器 | source、kustomize、helm、notification 四个 Deployment 均 1/1 Ready |
+| 声明加载 | 6 GitRepository、6 Flux Kustomization、7 HelmRelease，实际全部 `suspend: true` |
+| 独立审计身份 | `AUDIT_ALLOW_DENY_VERIFIED`；实际身份可读系统/节点/namespace 状态，拒绝管理员 kubeconfig、系统/数据写入、Secret、node proxy 和 namespace 写入 dry-run |
+| 业务与数据边界 | 五个单元尚未放行；未执行 SQL schema、数据迁移、DNS 或写者切换；V5 保留 |
+
+该结果仅验收独立节点及暂停式控制面。尚未验收各 chart 的实际工作负载、Secret/ESO 接线、应用 UID/DB 身份、业务容量、备份恢复或核心数据；不得将其标记为全业务生产上线完成。

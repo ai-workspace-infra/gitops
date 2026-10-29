@@ -260,3 +260,7 @@ cutover needs its own reviewed data recovery and change plan.
 Production writer transfer, canonical DNS changes, V5 service retirement, and the V5
 monitoring publication handled by the original task are outside this validation. A
 later cutover requires its own approval and evidence record.
+
+## Automatic post-IaC host preparation
+
+The reviewed V6 caller runs Playbooks `vhosts/common` after verified IaC output for both `infra` and `deploy`. `infra` requests common-only without initializing storage or installing K3s; `deploy` must pass the same node identity and audit checks before storage and paused-cluster bootstrap. `plan` does not connect to the host. Existing K3s identity, PV hostname affinity or active Flux conflicts stop the operation; no automatic node rename or PV rebinding is allowed. Canonical CMDB/inventory, OS and K3s identity is `prod-k3s-v6`; service FQDNs are aliases. Fixed owners and actual execution results are recorded in the [preparation evidence](prod-k3s-v6-node-cluster-preflight.md).
