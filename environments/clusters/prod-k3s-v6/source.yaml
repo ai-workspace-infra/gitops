@@ -1,6 +1,6 @@
 # Separate Flux object on V6; same GitOps repository as V5, independent cluster state.
-# This pin predates the V6 paths. Keep it suspended until a reviewed production tag
-# containing this topology is selected in a release-pin change.
+# The V6 graph uses its own reviewed immutable release. Keep it suspended until
+# the release-pin commit is published and bootstrap/identity gates pass.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -11,4 +11,4 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.4
+    tag: v2026.10.29.8
