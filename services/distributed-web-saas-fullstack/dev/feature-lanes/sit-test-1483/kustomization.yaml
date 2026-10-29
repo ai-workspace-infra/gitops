@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: feature-sit-test-1483-sit
+resources:
+- oci-repository.yaml
+- helmrelease.yaml
+- network-policy.yaml
+- ingress-http.yaml
+configMapGenerator:
+- name: web-saas-fullstack-values
+  files:
+  - values.yaml=values.yaml
+- name: web-saas-fullstack-release
+  files:
+  - release.yaml=release.yaml
+- name: web-saas-accounts-template
+  files:
+  - account.yaml=account.yaml
+- name: web-saas-console-nginx
+  files:
+  - nginx.conf=nginx.conf
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    reconcile.fluxcd.io/watch: Enabled
