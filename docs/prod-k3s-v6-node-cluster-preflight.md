@@ -35,14 +35,16 @@ Kustomization 管理五个单元的独立 GitRepository/子 Kustomization，各�
 | 层级 | V6 对象 | 数量 | 声明位置与职责 |
 | --- | --- | --- | --- |
 | 引导 GitRepository | `flux-system/config-prod` | 1 | `source.yaml`；固定 V6 根管理图版本 |
-| 根 Flux Kustomization | `flux-system/prod-k3s-v6` | 1 | `root.yaml` 也进入根 `kustomization.yaml`；管理 namespace、五个单元源和五个子 Kustomization |
+| 根 Flux Kustomization | `flux-system/prod-k3s-v6` | 1 | `root.yaml` 也进入根 `kustomization.yaml`；仅应用管理图，`wait: false` 使暂停子对象独立报告状态 |
 | 单元 GitRepository | `<unit>-config`，均在 `flux-system` | 5 | `unit-sources.yaml`；同一 Git 仓库、每单元独立 tag/commit |
-| 子 Flux Kustomization | `<unit>`，均在 `flux-system` | 5 | 每个单元独立 sourceRef、`services/prod-k3s-v6/<unit>` 路径及暂停/健康等待状态 |
-| Chart 源 | 服务 namespace 中 HelmRepository / OCIRepository | 2 / 5 | Vault/DataKit 用 HelmRepository；数据库/入口/业务三个 release 使用同一个 fullstack chart 包，各自保留本 namespace 的 OCI source |
-| HelmRelease | 下表列出的发布对象 | 7 | 每个 release 独立 chart/values/版本与暂停状态；服务资源由 Helm controller 管理 |
+| 业务子 Flux Kustomization | `<unit>`，均在 `flux-system` | 5 | 每个单元独立 sourceRef、`services/prod-k3s-v6/<unit>` 路径及暂停/健康等待状态 |
+| 集群前置 Flux Kustomization | `external-secrets`、`vault-tls-bootstrap` | 2 | ESO controller/CRD 与 Vault server TLS Secret 引导；不增加业务发布单元 |
+| Chart 源 | 服务 namespace 中 HelmRepository / OCIRepository | 3 / 5 | ESO/Vault/DataKit 用 HelmRepository；数据库/入口/业务三个 release 使用同一个 fullstack chart 包，各自保留本 namespace 的 OCI source |
+| HelmRelease | 下表列出的发布对象 | 8 | 七个业务 release 加一个 ESO controller release；每个 release 独立 chart/values/版本与暂停状态 |
 
-总计为 **6 个 GitRepository、1 个根和 5 个子 Flux Kustomization、7 个 HelmRelease**。
-五个发布单元继续共用一个 GitOps 仓库，不要求拆仓库；监控使用三个已有 chart，因此有三个 HelmRelease。
+总计为 **6 个 GitRepository、1 个根 + 5 个业务 + 2 个前置 Flux Kustomization、8 个 HelmRelease**。
+八个 HelmRelease 包含五单元的七个业务 release 和独立的 ESO controller release。五个发布单元继续
+共用一个 GitOps 仓库，不要求拆仓库；监控使用三个已有 chart，因此有三个业务 HelmRelease。
 
 ### 环境、集群及 GitOps 对象关联表
 
@@ -55,6 +57,8 @@ namespace，HelmRelease 也在该 namespace。**所有 Flux Kustomization 和 Gi
 | 环境 | 集群 | namespace | Kustomization（flux-system） | HelmRelease | GitRepository（flux-system） | source path |
 | --- | --- | --- | --- | --- | --- | --- |
 | PROD | **PROD-K3S-V6** | `flux-system`（控制层） | `prod-k3s-v6` | —（根不直接发布 chart） | `config-prod` | `./environments/clusters/prod-k3s-v6` |
+| PROD | **PROD-K3S-V6** | `external-secrets` | `external-secrets` | `external-secrets` | `config-prod` | `./services/prod-k3s-v6/cluster-prerequisites/external-secrets` |
+| PROD | **PROD-K3S-V6** | `vault-prod`（TLS 前置） | `vault-tls-bootstrap` | —（ESO ExternalSecret） | `vault-prod-config` | `./services/prod-k3s-v6/vault-prod/tls-bootstrap` |
 | PROD | **PROD-K3S-V6** | `vault-prod` | `vault-prod` | `vault` | `vault-prod-config` | `./services/prod-k3s-v6/vault-prod` |
 | PROD | **PROD-K3S-V6** | `postgresql-prod` | `postgresql-prod` | `postgresql` | `postgresql-prod-config` | `./services/prod-k3s-v6/postgresql-prod` |
 | PROD | **PROD-K3S-V6** | `ingress-prod` | `ingress-prod` | `caddy-ingress` | `ingress-prod-config` | `./services/prod-k3s-v6/ingress-prod` |
@@ -93,11 +97,12 @@ Caddy `externalBackends` 显式引用跨 namespace 上游，禁止重复部署�
 
 | 发布单元 | 最小单元依赖 | 独立发布说明 |
 | --- | --- | --- |
-| Vault | 无 | TLS/初始化/unseal 为外部引导前置 |
+| ESO + Vault TLS 引导 | Flux 已就绪 | 仅读取公共 Vault 的单一域名证书 KV；Role/Policy 需独立就绪 |
+| Vault | ESO 与 `vault-tls-bootstrap` | 只在 TLS Secret Ready 后安装；初始化/unseal 仍由 Vault owner 执行 |
 | PostgreSQL | Vault | 不依赖 Ingress 或监控 |
-| Ingress | Vault | 不依赖 PostgreSQL |
 | Observability | Vault | 不依赖 Ingress 或业务 |
 | Web SaaS | Vault、PostgreSQL | 不依赖独立监控/Ingress 的发布健康；业务对外验收仍检查入口和观测链路 |
+| Ingress | Vault、Observability、Web SaaS | 最后放行以便 V6-only 路由/TLS 验收；公共 DNS 不在本阶段切换 |
 
 | 更新类型 | 修改与生效路径 | 其他单元影响及限制 |
 | --- | --- | --- |
@@ -110,9 +115,10 @@ Caddy `externalBackends` 显式引用跨 namespace 上游，禁止重复部署�
 
 | 阶段 | Source / Kustomization / HelmRelease 状态 | 执行约束 |
 | --- | --- | --- |
-| 首次加载 | 六 GitRepository、六 Flux Kustomization、七 HelmRelease 全部 `suspend: true` | Playbooks 从固定 checkout 校验并加载完整声明，不另外生成 `platform-root`，不主动 reconcile |
-| 管理图放行 | 先启用引导 GitRepository 和根 Kustomization | 单元配置源、子 Kustomization、HelmRelease 仍保持暂停 |
-| 单元冷启动 | 按选中单元依次放行其 GitRepository、子 Kustomization、相应 HelmRelease | 冷启动顺序为 Vault → PostgreSQL → Ingress → Observability → Web SaaS；该人工顺序不等于全部写成 dependsOn |
+| 首次加载 | 六 GitRepository、八 Flux Kustomization、八 HelmRelease 全部 `suspend: true` | Playbooks 从固定 checkout 校验并加载完整声明，不另外生成 `platform-root`，不主动 reconcile |
+| 管理图放行 | 先启用引导 GitRepository 和根 Kustomization | 五个业务单元及两个前置 Kustomization/HelmRelease 仍保持暂停 |
+| ESO 与 Vault TLS 前置 | 先放行 ESO controller/CRD；准备公共 Vault JWT auth 只读角色；再同步 `vault-server-tls` | Secret Ready、证书/私钥匹配、SAN 和有效期验收通过后，才放行 Vault HelmRelease |
+| 单元冷启动 | Vault → PostgreSQL 与 Observability（可并行）→ Web SaaS → Ingress | Vault 完成初始化与内部 SecretStore 后逐单元放行；Ingress 最后，公共 DNS 保持不变 |
 | 单元独立维护 | 保持正常运行单元状态，仅修改被选中单元的声明与 pin | 所有暂停状态在权威 GitOps 声明中维护；不靠现场 resume 对抗父级旧声明 |
 | 健康验收 | source/子 Kustomization/HelmRelease 与目标 revision 一致，再检查实际链路 | 暂停 HR 不会因解除子 Kustomization 暂停而自动运行；`wait: true` 须与 HR 放行配套，Ready 不等于数据或业务验收 |
 
@@ -134,7 +140,7 @@ V6 服务运行凭据在新 Vault 就绪后通过其内部 SecretStore/ESO 同�
 | IaC 云账户 | `kv/data/CICD/prod/akamai-cloud/manbuzhe2026` | `LINODE_TOKEN` | IaC `auth.record` / `github-actions-platform-ops-toolkit-prod-k3s-v6-iac` | 实际短期身份读取及云账户校验通过 |
 | Terraform backend | `kv/data/CICD/prod/iac_state` | `TF_STATE_ENDPOINT`、`TF_STATE_BUCKET`、`TF_STATE_REGION`、`TF_STATE_ACCESS_KEY`、`TF_STATE_SECRET_KEY` | IaC backend，仍使用 V6 独立 state key | 实际短期身份读取、独立 backend plan/apply 通过 |
 | 主机引导 SSH | `kv/data/prod/platform/prod-k3s-v6/ssh` | `SSH_PRIVATE_KEY`，并配套受信任主机指纹来源 | Playbooks 的专用操作身份；不授予业务 Pod | 已初始化，专用 OIDC caller 读取通过；主机指纹核验仍是连接前门禁 |
-| Vault server 初始 TLS | `kv/data/prod/services/vault-prod/tls/prod-k3s-v6-server` | `tls_fullchain_pem`、`tls_key_pem`、`issuer`、`expire_at` | `vault-prod/vault-server-tls`；首次来自外部可信引导面 | V6 规划，需避免 ESO/Vault 自举循环 |
+| V6 Vault server 初始 TLS | `kv/data/CICD/domains/svc.plus` | `tls_fullchain_pem_b64`、`tls_key_pem_b64`；只读 | 公共 `https://vault.svc.plus` → ESO → `vault-prod/vault-server-tls`（`kubernetes.io/tls`） | GitOps/ESO 声明已补；共享 Vault JWT auth mount/role 和精确只读 policy 仍须 owner 配置并验证 |
 | PostgreSQL 管理/初始化 | `kv/data/prod/services/postgresql-prod/prod-k3s-v6/admin` | `POSTGRES_PASSWORD` | `postgresql-prod/postgresql-superuser`；仅管理初始化/迁移身份 | V6 规划，业务身份不得读取 |
 | Accounts DB | `kv/data/prod/services/web-saas-prod/prod-k3s-v6/accounts-db` | `POSTGRES_PASSWORD` / `DATABASE_URL`，按实际应用契约映射 | `web-saas-prod/accounts-db-runtime` | V6 规划，独立运行角色 |
 | Billing DB | `kv/data/prod/services/web-saas-prod/prod-k3s-v6/billing-db` | `POSTGRES_PASSWORD` / `DATABASE_URL`，按实际应用契约映射 | `web-saas-prod/billing-db-runtime` | V6 规划，不共享 Accounts 写角色 |
@@ -155,15 +161,25 @@ V6 服务运行凭据在新 Vault 就绪后通过其内部 SecretStore/ESO 同�
 | --- | --- |
 | Vault CLI path | 例如 `kv/prod/services/ingress-prod/tls/prod-k3s-v6-console`；CLI 自动处理 KV v2 的 `/data/` |
 | API / policy path | 对应 `kv/data/prod/services/ingress-prod/tls/prod-k3s-v6-console`；按具体记录授予读取权限，不给跨环境/跨单元通配权限 |
-| ESO remoteRef.key | `SecretStore.path: kv`、`version: v2` 时填 `prod/services/ingress-prod/tls/prod-k3s-v6-console`，不重复加 `kv/` 或 `data/` |
-| TLS 字段映射 | ESO 将 `tls_fullchain_pem` / `tls_key_pem` 映射为标准 `kubernetes.io/tls` Secret 的 `tls.crt` / `tls.key`，Secret 位于消费 Pod 的 namespace |
+| ESO remoteRef.key | 此公共证书记录使用 `SecretStore.path: kv`、`version: v2` 与 `remoteRef.key: CICD/domains/svc.plus`；不写 `kv/` 或 `data/` 前缀 |
+| TLS 字段映射 | ESO 对 `tls_fullchain_pem_b64` / `tls_key_pem_b64` 使用 `decodingStrategy: Base64`，映射成 `tls.crt` / `tls.key` 并生成 `kubernetes.io/tls` Secret |
 | V6 workload auth | Kubernetes auth mount 规划为 `kubernetes-prod-k3s-v6`；各 namespace/服务独立 SA、Vault role 和 audience，禁止业务身份读取 IaC/SSH/数据库管理记录 |
 | Vault 恢复材料 | unseal/recovery/root 初始化材料由安全 owner 保存在集群外独立受保护恢复存储；不放入依赖该 V6 Vault 自身解锁的业务 KV，不提交 Git/artifact |
 | 现有 V5 路径 | 不将 V5 的 `web-saas-k3s-v5` 记录当作 V6 缺值兜底；必要的认证/会话连续性由 owner 逐字段审查，而非自动轮换或批量复制 |
 
-新规划路径必须形成 GitOps SecretStore/ExternalSecret 声明与 owner 的 Vault policy/auth 变更，
-验证准确映射到 chart 的 Secret 名称/字段后才可解除相应 HelmRelease 暂停。以上规划表不是授权
-执行 KV 写入、凭据轮换或数据迁移，也不代表这些 ExternalSecret 已创建或同步成功。
+公共证书同步使用独立 JWT auth mount `jwt-prod-k3s-v6`、role `prod-k3s-v6-vault-tls-reader`，
+专用受众 `vault-prod-k3s-v6-eso`，绑定 `vault-prod/vault-tls-reader`；只授予读取单一 KV v2
+data path `kv/data/CICD/domains/svc.plus` 的权限。Vault JWT verifier 必须信任 V6 K3s service-account
+签名公钥和 issuer；ESO chart 关闭默认全局 TokenRequest 权限，仅 RoleBinding 授予它对该 SA 的
+`serviceaccounts/token` 创建权限。选择 JWT auth 是为了避免公共 Vault 反向访问 V6 K3s API；不得为
+此用途开放公网 6443，也不得在集群中保存静态 Vault token。
+
+ExternalSecret 每 5 分钟刷新，删除策略 `Retain`。放行 Vault HelmRelease 前必须确认
+ExternalSecret `Ready=True`、Secret 存在且类型/键名符合 chart contract，证书与私钥匹配、有效期
+与 SAN 覆盖 V6 专属 `vault-k3s-v6.svc.plus`。需要集群内消费者用该主机名访问 Vault 时，后续
+配置只作用于 V6 的内部 DNS 映射至 Vault ClusterIP；不创建或修改公网 DNS。证书/私钥值不进入 Git、日志、工单或执行回执。
+共享 Vault JWT mount/role/policy 尚未证明可用前，保持相关 Kustomization 和 HelmRelease 暂停；
+本次文档/声明变更不执行共享 Vault 写入、凭据轮换、业务迁移或 DNS 修改。
 
 ## 独立数据盘与 Kubernetes 持久化
 
@@ -198,10 +214,10 @@ V6 服务运行凭据在新 Vault 就绪后通过其内部 SecretStore/ESO 同�
   确定 Pod/Service CIDR；多节点扩展另行规划。`private_ip: true` 不等于已建立隔离 VPC。
 - 系统管理、各业务服务、只读审计身份分开。管理员 kubeconfig 强制 0600，审计不读取该凭据。
   Bootstrap 的 root 仅管理节点；应用实际 UID、Kubernetes RBAC 和 DB 角色分别验证。
-- 独立 Vault TLS、初始化和 unseal 由外部可信引导路径完成，恢复材料放在集群外受保护位置；
-  不依赖尚未初始化的 V6 Vault 为自身引导提供密钥。不复制 V5 Raft 或 recovery key。
-- ESO/其他必要控制器由 Playbooks 的受审查 bootstrap 路径先安装并固定版本，不把它们隐藏
-  在业务 chart 升级中。V6 SecretStore/身份绑定必须指向已准备好的可信 Vault 路径。
+- 独立 Vault TLS 由 GitOps 管理的 ESO 从既有公共 Vault KV 读取并同步，不在节点签发证书；
+  Vault 初始化/unseal 由外部受控路径完成，恢复材料放在集群外受保护位置。不复制 V5 Raft 或 recovery key。
+- Playbooks 已安装 K3s `v1.37.1+k3s1` 和 Flux core；ESO 作为 cluster prerequisite 由 GitOps HelmRelease
+  固定在 2.14.0。先完成公共 Vault JWT auth 只读身份，再启用 TLS ExternalSecret 和 Vault HelmRelease。
 
 ## 执行入口与已核实缺口
 
@@ -214,7 +230,7 @@ V6 服务运行凭据在新 Vault 就绪后通过其内部 SecretStore/ESO 同�
 | Playbooks `5c0948ce9f6e451a179952d156705034ce1c5a6b`，[PR #854](https://github.com/ai-workspace-infra/playbooks/pull/854) | 精确 CMDB 动态 inventory；空盘 ext4、UUID 挂载、K3s mount 依赖；固定 K3s/Flux；全图暂停加载；独立审计身份；[PR #862](https://github.com/ai-workspace-infra/playbooks/pull/862)、[PR #863](https://github.com/ai-workspace-infra/playbooks/pull/863) 增加先行 common 与 common-only 阶段 | 角色测试、Linux 空盘测试和 CI 通过；真实节点/挂载/暂停图及实际审计允许/拒绝检查通过 |
 | 身份初始化 `f6474939b1156b2eac48292f6a48bc9d03bab935`，[PR #857](https://github.com/ai-workspace-infra/playbooks/pull/857) | 管理员一次性初始化精确 V6 Vault role/policy 与 SSH KV 绑定；同环境原 Key 公钥校验，CAS=0 新建，密钥仅内存传递 | 真实临时密钥与禁止错误 Key 写入测试通过；初始化已完成。不是 CI 管理员 token 兜底 |
 | Orchestrator `1b73eb3d07791d38e1af9d6d50964ff72181fac6` / `v6.0.0-bootstrap.4`，[PR #1536](https://github.com/ai-workspace-infra/Platform-Orchestrator/pull/1536) | 指定 Selfhost 入口的独立 V6 四阶段；固定 owner；关联 IaC 回执/校验和；受保护 tag 与 PROD OIDC；终态证据门禁；[PR #1547](https://github.com/ai-workspace-infra/Platform-Orchestrator/pull/1547) 保证 infra/deploy 都运行 common | CI 通过；旧 UAT/V5 路径不用于 V6；拒绝迁移、初始化业务库、destroy、DNS 切换及外部节点 |
-| GitOps `c74a1a5a7d3a633d4020897fbb765b3e23fb279a` / `v2026.10.29.4`，[PR #658](https://github.com/ai-workspace-infra/gitops/pull/658) | 六独立配置源、唯一根/五子 Kustomization、七 HelmRelease，初始全部暂停 | 完整固定 tag 构建验证通过；后续单元 source/HR pin 独立 |
+| GitOps 已部署 `c74a1a5a7d3a633d4020897fbb765b3e23fb279a` / `v2026.10.29.4`，[PR #658](https://github.com/ai-workspace-infra/gitops/pull/658) | 六独立配置源、唯一根/五业务子 Kustomization、七业务 HelmRelease，初始全部暂停 | 完整固定 tag 构建验证通过；ESO/TLS 前置由本次新增声明引入，需新的稳定 tag |
 | Artifacts `a7b791e2d80b203e31b9671885c9f07152f0a2fd`，[PR #246](https://github.com/ai-workspace-infra/artifacts/pull/246) | fullstack chart 0.2.10 的三个独立发布 profile，Caddy 显式跨 namespace 上游 | 发布成功，实际 OCI digest 与三处 V6 pin 一致；不能据此声称业务已部署 |
 
 已修正 V6 设计：root.yaml 进入根资源列表，五个子单元改用各自独立 GitRepository。
@@ -322,8 +338,8 @@ CMDB/inventory 主键、`host.name` 和 K3s node name 必须一致为 `prod-k3s-
 | 新独立盘 | `/data` 为 ext4，回执 UUID 与实际 `findmnt` 一致；未复用 V5 卷 |
 | K3s | `prod-k3s-v6` Ready，`v1.37.1+k3s1`；节点与集群 UID 已记录在运行回执 |
 | Flux 控制器 | source、kustomize、helm、notification 四个 Deployment 均 1/1 Ready |
-| 声明加载 | 6 GitRepository、6 Flux Kustomization、7 HelmRelease，实际全部 `suspend: true` |
+| 声明加载 | 已部署图：6 GitRepository、6 Flux Kustomization、7 HelmRelease，实际全部 `suspend: true`；新增 ESO/TLS 声明尚未加载 |
 | 独立审计身份 | `AUDIT_ALLOW_DENY_VERIFIED`；实际身份可读系统/节点/namespace 状态，拒绝管理员 kubeconfig、系统/数据写入、Secret、node proxy 和 namespace 写入 dry-run |
 | 业务与数据边界 | 五个单元尚未放行；未执行 SQL schema、数据迁移、DNS 或写者切换；V5 保留 |
 
-该结果仅验收独立节点及暂停式控制面。尚未验收各 chart 的实际工作负载、Secret/ESO 接线、应用 UID/DB 身份、业务容量、备份恢复或核心数据；不得将其标记为全业务生产上线完成。
+该结果仅验收独立节点及暂停式控制面。ESO 尚未安装，新增 GitOps ESO/TLS 声明尚未加载；尚未验收各 chart 的实际工作负载、Secret 同步、应用 UID/DB 身份、业务容量、备份恢复或核心数据；不得将其标记为全业务生产上线完成。

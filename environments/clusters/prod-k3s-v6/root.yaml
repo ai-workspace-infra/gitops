@@ -9,7 +9,9 @@ spec:
   suspend: true
   interval: 5m
   prune: false
-  wait: true
+  # The root applies the management graph only. Child Kustomizations intentionally
+  # start suspended and report readiness independently, so the root must not wait on them.
+  wait: false
   timeout: 15m
   sourceRef:
     kind: GitRepository

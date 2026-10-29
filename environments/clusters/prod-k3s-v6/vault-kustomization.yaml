@@ -9,6 +9,8 @@ spec:
   prune: false
   wait: true
   timeout: 15m
+  dependsOn:
+    - name: vault-tls-bootstrap
   sourceRef:
     kind: GitRepository
     name: vault-prod-config
