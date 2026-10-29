@@ -12,7 +12,11 @@ flowchart TD
   Root --> NS[5 个服务 namespace + external-secrets]
   Root --> ESO[Kustomization: external-secrets]
   ESO --> EHR[HelmRelease: external-secrets 2.14.0]
+  Root --> ID[Kustomization: vault-tls-identity]
+  ID --> SA[ServiceAccount + scoped TokenRequest RBAC]
+  ID -. dependsOn .-> ESO
   Root --> TLS[Kustomization: vault-tls-bootstrap]
+  TLS -. dependsOn .-> ID
   TLS --> Ext[SecretStore + ExternalSecret]
   Ext --> TSecret[Secret: vault-prod/vault-server-tls]
   TLS -. dependsOn .-> ESO
@@ -39,11 +43,12 @@ flowchart TD
 | 单元配置源 | 5 个 `flux-system/<unit>-config` | 同仓库中该单元配置的独立 tag/commit | 只推进被选中单元；其他四个 pin 保留 |
 | 子 Kustomization | 5 个 `flux-system/<unit>` | `services/prod-k3s-v6/<unit>` | 独立 sourceRef、path、暂停状态、健康等待及最小依赖 |
 | 控制器前置 | `flux-system/external-secrets` | `services/prod-k3s-v6/cluster-prerequisites/external-secrets` | ESO 2.14.0、CRD 与控制器；不属于五个业务发布单元 |
+| Vault TLS 身份 Kustomization | `flux-system/vault-tls-identity` | `services/prod-k3s-v6/vault-prod/tls-identity` | 仅创建读取身份和范围限定的 TokenRequest 授权，供 Vault 身份验收 |
 | Vault TLS 引导 Kustomization | `flux-system/vault-tls-bootstrap` | `services/prod-k3s-v6/vault-prod/tls-bootstrap` | 读取现有公共 Vault 域名证书，并在 Vault chart 前生成 TLS Secret |
 | Chart 源 | 各服务 namespace 的 HelmRepository/OCIRepository | chart 来源及固定版本/digest | chart 源与配置 GitRepository 是两个不同层次 |
 | HelmRelease | 各服务 namespace | chart values、chartRef、运行版本及 release 生命周期 | 可以独立固定版本；受 UI/API/DB 升级规则约束 |
 
-V6 首次图为 **6 个 GitRepository、1 个根 + 5 个业务单元 + 2 个前置 Flux Kustomization、8 个 HelmRelease**。
+V6 首次图为 **6 个 GitRepository、1 个根 + 5 个业务单元 + 3 个前置 Flux Kustomization、8 个 HelmRelease**。
 其中七个 HelmRelease 属于五个业务单元，新增的 ESO HelmRelease 是集群控制器前置。
 观测单元含三个独立发布的 chart，因此“五单元”不强制合并为“五个 HelmRelease”。
 
@@ -99,7 +104,7 @@ SQL schema/数据库/业务持久状态版本转换必须去下一代新集群�
 
 Playbooks 的 `declarative_paused` 模式从控制端固定 GitOps checkout 构建 root 与所有前置/业务路径，
 加载 source、root、子 Kustomization、chart 源及 HelmRelease；不会另外生成/调谐 `platform-root`。
-六个 GitRepository、八个 Flux Kustomization 和八个 HelmRelease 均要求 `suspend: true`。
+六个 GitRepository、九个 Flux Kustomization 和八个 HelmRelease 均要求 `suspend: true`。
 ExternalSecret 本身没有 `suspend` 字段；它由暂停的 `vault-tls-bootstrap` Kustomization 隔离，不会在放行前调谐。
 所有对象已加载不等于 release 已安装，更不等于业务健康或数据验收通过。
 
@@ -112,15 +117,18 @@ ExternalSecret 本身没有 `suspend` 字段；它由暂停的 `vault-tls-bootst
    Flux source/kustomize/helm/notification controller 均 `1/1 Ready`；不重复安装。
 2. 节点、独立数据卷 `/data`、PV 供给路径、hostname/身份及 Flux 暂停式声明加载完成。
    在权威声明中启用根 GitRepository 和根 Kustomization，仅使管理图开始调谐；root `wait: false`
-   只确认管理对象成功应用，五个业务单元和两个前置各自报告状态并仍保持暂停。
+   只确认管理对象成功应用，五个业务单元和三个前置各自报告状态并仍保持暂停。
 3. 单独放行 `external-secrets` Kustomization 与 HelmRelease，等待 ESO controller 和 CRD Ready。
    ESO 固定 Helm chart `2.14.0`；V6 K3s `1.37` 在该版本上游支持矩阵内。禁用 chart 默认的全局
    `serviceaccounts/token` 创建权限，只授予 ESO 对 `vault-prod/vault-tls-reader` 的命名空间级、
    resourceName 限定 TokenRequest 权限。
-4. 启用 `vault-tls-bootstrap` 前，由共享公共 Vault 的 owner 配置独立 JWT auth mount/role：只接受
+4. 放行 `vault-tls-identity`，创建专用 ServiceAccount 与限定 TokenRequest 权限；保持 `vault-tls-bootstrap` 暂停。
+   由共享公共 Vault 的 owner 配置独立 JWT auth mount/role：只接受
    V6 专用 service account、专用 audience，并仅能读取 `kv/data/CICD/domains/svc.plus`。
    Vault JWT verifier 必须信任 V6 K3s service-account 签名公钥与 issuer；不开放公网 K3s API 供
-   Vault TokenReview，也不存静态 Vault token。此角色与 V6 Vault 启动后的内部 Vault auth 完全分开。
+   Vault TokenReview，也不存静态 Vault token。使用真实 ServiceAccount 验证指定记录可读、相邻记录被拒绝、
+   错误 audience 和错误 ServiceAccount 登录被拒绝，记录脱敏证据。此角色与 V6 Vault 启动后的内部 Vault auth 完全分开。
+   Flux dependsOn 仅验证身份对象已应用；授权验收是独立的放行门禁，不由 dependsOn 自动证明。
 5. 放行 `vault-tls-bootstrap` 后等待其 ExternalSecret `Ready=True`，检查目标 Secret 名称/类型、证书
    与私钥匹配、有效期及 SAN `vault-k3s-v6.svc.plus`；敏感值不得写入日志。ExternalSecret 每 5 分钟读取公共 Vault 中
    `tls_fullchain_pem_b64` / `tls_key_pem_b64`，解码后生成 `vault-prod/vault-server-tls`。
@@ -128,7 +136,7 @@ ExternalSecret 本身没有 `suspend` 字段；它由暂停的 `vault-tls-bootst
 6. 只有 Secret 同步与证书校验通过后，才放行 Vault 子 Kustomization/HelmRelease；之后由 Vault owner
    独立执行初始化、unseal、恢复材料保管及 V6 内部 auth 准备。不可让尚未初始化的 V6 Vault
    为自身 TLS 或首次凭据提供来源。
-7. Vault Ready 并且内部 ESO/SecretStore 可用后，PostgreSQL 与 Observability 可各自独立放行；
+7. Vault Ready 并且内部 ESO/SecretStore 可用后，按 PostgreSQL、Observability 的顺序各自放行；
    Web SaaS 等 Vault 与 PostgreSQL。数据迁移前目标业务写者/后台任务保持暂停。
 8. Ingress 按用户要求最后放行，并依赖 Vault、Observability、Web SaaS。先用 V6 专属域名做受控
    路由和 TLS 验证；公共 DNS 变更保持为单独、后续评审步骤。
@@ -143,9 +151,9 @@ ExternalSecret 本身没有 `suspend` 字段；它由暂停的 `vault-tls-bootst
 
 `dependsOn` 编码会导致 reconcile 失败或不可用的硬前置；人工/数据验收仍是额外门禁：
 
-- `external-secrets` Kustomization 安装 ESO chart/CRD；`vault-tls-bootstrap` dependsOn ESO。
+- `external-secrets` Kustomization 安装 ESO chart/CRD；`vault-tls-identity` dependsOn ESO；`vault-tls-bootstrap` dependsOn 两者。
 - Vault 子 Kustomization dependsOn `vault-tls-bootstrap`；TLS ExternalSecret Ready 是 Vault HelmRelease 的硬门禁。
-- PostgreSQL 和 Observability 分别依赖 Vault；两者可在 Vault 及其所需 Secret Ready 后并行放行。
+- PostgreSQL 和 Observability 分别依赖 Vault；首次部署按 PostgreSQL、Observability 顺序放行。
 - Web SaaS 依赖 Vault 与 PostgreSQL；它不依赖独立监控或 Ingress。
 - Ingress 依赖 Vault、Observability 与 Web SaaS，依照部署安排最后放行；公网 DNS 仍单独评审。
 - 依赖状态 Ready 不代替证书 SAN/有效期、应用链路、PVC/备份恢复和业务验收。
@@ -163,11 +171,13 @@ environments/clusters/prod-k3s-v6/
   root.yaml                       # 唯一 V6 根 Flux Kustomization
   unit-sources.yaml               # 五个独立单元配置源
   external-secrets-kustomization.yaml
+  vault-tls-identity-kustomization.yaml
   vault-tls-bootstrap-kustomization.yaml
   namespaces.yaml
   platform-*-kustomization.yaml    # 四个平台子单元
   web-saas-kustomization.yaml
 services/prod-k3s-v6/cluster-prerequisites/external-secrets/ # ESO chart/controller
+services/prod-k3s-v6/vault-prod/tls-identity/ # 仅 SA 和 TokenRequest RBAC
 services/prod-k3s-v6/vault-prod/tls-bootstrap/ # 公共 Vault → ESO → vault-server-tls
 services/prod-k3s-v6/<unit>/       # 五个业务单元自己的 Kustomize、chart source、HelmRelease
 ```

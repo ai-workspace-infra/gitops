@@ -6,6 +6,7 @@ resources:
   - unit-sources.yaml
   - namespaces.yaml
   - external-secrets-kustomization.yaml
+  - vault-tls-identity-kustomization.yaml
   - vault-tls-bootstrap-kustomization.yaml
   - vault-kustomization.yaml
   - postgresql-kustomization.yaml
