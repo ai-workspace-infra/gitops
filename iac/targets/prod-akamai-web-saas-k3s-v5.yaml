@@ -9,7 +9,7 @@ targets:
   workspace: web-saas-k3s-v5
   auth:
     expected_identity: manbuzhe2026
-    vault_role: github-actions-platform-ops-toolkit-prod-akamai-oidc-bootstrap-manbuzhe2026
+    vault_role: prod-akamai-iac
     record: kv/data/CICD/prod/akamai-cloud/manbuzhe2026
   stages:
     bootstrap:
