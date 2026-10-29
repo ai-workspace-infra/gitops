@@ -10,24 +10,24 @@ auth:
     accessExpiry: 1h
     refreshExpiry: 168h
   oauth:
-    frontendUrl: https://smoke-sit-test-1483-sit.onwalk.net
+    frontendUrl: https://retry-sit-test-1483-sit.onwalk.net
     github:
       clientId: ${GITHUB_CLIENT_ID}
       clientSecret: ${GITHUB_CLIENT_SECRET}
-      redirectUrl: https://accounts-smoke-sit-test-1483-sit.onwalk.net/api/auth/github/callback
+      redirectUrl: https://accounts-retry-sit-test-1483-sit.onwalk.net/api/auth/github/callback
     google:
       clientId: ${GOOGLE_CLIENT_ID}
       clientSecret: ${GOOGLE_CLIENT_SECRET}
-      redirectUrl: https://accounts-smoke-sit-test-1483-sit.onwalk.net/api/auth/google/callback
+      redirectUrl: https://accounts-retry-sit-test-1483-sit.onwalk.net/api/auth/google/callback
 server:
   addr: :8080
   readTimeout: 15s
   writeTimeout: 15s
-  publicUrl: https://accounts-smoke-sit-test-1483-sit.onwalk.net
+  publicUrl: https://accounts-retry-sit-test-1483-sit.onwalk.net
   allowedOrigins:
-  - https://smoke-sit-test-1483-sit.onwalk.net
-  - https://accounts-smoke-sit-test-1483-sit.onwalk.net
-  - https://billing-smoke-sit-test-1483-sit.onwalk.net
+  - https://retry-sit-test-1483-sit.onwalk.net
+  - https://accounts-retry-sit-test-1483-sit.onwalk.net
+  - https://billing-retry-sit-test-1483-sit.onwalk.net
   tls:
     enabled: false
 store:
