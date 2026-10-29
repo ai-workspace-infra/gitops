@@ -10,3 +10,4 @@ resources:
 - starsl-k8s-dashboard.yaml
 - caddy-dashboard.yaml
 - postgres-mixin-dashboard.yaml
+- postgres-unified-dashboard.yaml
