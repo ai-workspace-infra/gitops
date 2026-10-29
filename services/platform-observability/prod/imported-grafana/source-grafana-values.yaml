@@ -18,6 +18,7 @@ data:
         - starsl-k8s-dashboard
         - caddy-dashboard
         - postgres-mixin-dashboard
+        - postgres-unified-dashboard
       - name: import-b3e84e3d474a
         folder: Observability Alerts
         folderUid: dfzrqnab9cpa8e
