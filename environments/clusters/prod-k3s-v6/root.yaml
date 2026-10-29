@@ -1,0 +1,17 @@
+# Planning entrypoint only. Keep suspended until an approved production release tag
+# contains this V6 topology and the node has been separately provisioned.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: prod-k3s-v6
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 5m
+  prune: false
+  wait: true
+  timeout: 15m
+  sourceRef:
+    kind: GitRepository
+    name: config-prod
+  path: ./environments/clusters/prod-k3s-v6
