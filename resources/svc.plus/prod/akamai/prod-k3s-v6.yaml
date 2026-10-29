@@ -1,0 +1,77 @@
+# Kubernetes PROD Web SaaS on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
+# User-selected 2 shared vCPU / 4 GB, Debian 13 (linode/debian13)
+# Isolated state namespace: prod-k3s-v6
+# New isolated V6 validation cluster; canonical production DNS is not promoted.
+global:
+  provider: akamai-cloud
+  environment: prod
+  project: svc.plus
+  account: manbuzhe2026
+  workspace: prod-k3s-v6
+  state_namespace: prod-k3s-v6
+  region: jp-tyo-3
+  image: linode/debian13
+  type: g6-standard-2
+  name_prefix: ""
+  user_data_file: cloud-init.yaml
+  prevent_destroy: true
+
+ssh_keys:
+  - name: vault-platform-ops-deploy
+    public: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDEsuS135lzjVvlH2iNrKz23lDFr7b686xs4d2HINP2glFPmgkgx1D6Dqwisb1UbhWHZmUUzRxXeNlE8fiaO0TXN/C0dsdUxgopnQRyakcA+gfJqqb38Syx8eqdC7mQy9ygOf763dWm6d/SYZ8WgNWLldk4QF9DiZOW9K22DMtY4/1Cqe/YE/WGpOMVr9T9BwvmOjarjWp2OPbx6RVlSOd735Mze5X+cJ9QqdLaisCiSoJ3j9S6dulcxm+7ghPfATvxlJyZWSrRrVqnmV45lPbeuUHlIEyuK1PK2MS6NtUP03ZhdRYJQKZLECpR5xAO/BliOtDdRornvHV1gutYD8/n3IS8sRVzYPvN9DuOhzBnBQUgciu2++R8zMfdVoH7mSbsE8u++vMcBk3UJ1Op0Ct+trl2bsnue96cAnoiII08JKwAaczD5uZIGhdkGV8zKnChNCjzCxP0i4PV/MYW04eWmH+E8G81zq4ZsvrvPYmilBbRrkwHvvbPba3SSb2F2As= shenlan@shenlandeMacBook-Air-2.local"
+  - name: github-actions-cloud-neutral-toolkit
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPrlas7Hf97Llzj0enKLhkezOkxP+fjQr/AwPzNSS25w github-actions@cloud-neutral-toolkit"
+
+  - name: operator-macos-ed25519
+    public: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGeMGuRKEGtIOTb9BsXMP2rD9Fpv9f3rrrABjOW7EV7s shenlan@HaitaodeMacBook-Pro.local"
+
+hosts:
+  - name: prod-k3s-v6
+    region: jp-tyo-3
+    type: g6-standard-2
+    image: linode/debian13
+    private_ip: true
+    ansible_user: root
+    groups: [web_saas, prod, debian, akamai_cloud, k3s_server]
+    tags: [svc-plus, prod, prod-k3s-v6, akamai-cloud]
+    # Independent PROD data volume; capacity is a planning candidate in provider GB.
+    # Mount/format and Kubernetes storage routing belong to Playbooks, not IaC.
+    volume:
+      label: prod-k3s-v6-data
+      size: 100
+      filesystem: ext4
+    firewall:
+      # Temporary user-approved bootstrap access; replace with operator CIDRs.
+      ssh_cidrs: ["0.0.0.0/0"]
+      ssh_ipv6_cidrs: []
+      allow_http: true
+      allow_https: true
+      # K3s API is private; no public 6443 listener.
+      additional_tcp_ports: []
+    host_vars:
+      role: primary
+      cloud_provider: akamai-cloud
+      cloud_region: jp-tyo-3
+      service_variant: k3s-v6
+      deployment_mode: kubernetes
+      k8s_cluster_name: PROD-K3S-V6
+      k3s_platform_flux_namespace: flux-system
+      k3s_platform_cluster_name: PROD-K3S-V6
+      k3s_platform_node_name: prod-k3s-v6
+      k3s_platform_write_kubeconfig_mode: "0600"
+      k3s_platform_flux_bootstrap_mode: declarative_paused
+      k3s_platform_git_url: https://github.com/ai-workspace-infra/gitops.git
+      k3s_platform_flux_source_name: config-prod
+      k3s_platform_flux_root_name: prod-k3s-v6
+      k3s_platform_flux_root_path: ./environments/clusters/prod-k3s-v6
+      service_domains:
+        - console-k3s-v6.svc.plus
+        - accounts-k3s-v6.svc.plus
+        - billing-k3s-v6.svc.plus
+        - content-k3s-v6.svc.plus
+        - vault-k3s-v6.svc.plus
+        - observability-k3s-v6.svc.plus
+      # Canonical alias targets consumed by the dedicated IaC/provider owner.
+      # Bootstrap does not independently perform public DNS cutover.
+      reserved_dns_aliases: {}
+      public_dns_cutover: false

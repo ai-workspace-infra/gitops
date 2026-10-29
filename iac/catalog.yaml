@@ -3,7 +3,7 @@ kind: IaCTargetCatalog
 target_manifests:
 - iac/targets/dev-akamai-dev-k3s-v5.yaml
 - iac/targets/prod-akamai-web-saas-k3s-v5.yaml
-- iac/targets/prod-akamai-web-saas-k3s-v6.yaml
+- iac/targets/prod-akamai-k3s-v6.yaml
 - iac/targets/prod-akamai-web-saas-prod-v5.yaml
 - iac/targets/prod-gcp-identity.yaml
 - iac/targets/prod-gcp-web-saas.yaml

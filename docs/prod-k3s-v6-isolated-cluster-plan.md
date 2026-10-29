@@ -21,6 +21,9 @@ This follows [GitOps PR #648](https://github.com/ai-workspace-infra/gitops/pull/
 That PR is merged and declared only the isolated Akamai target/state; this follow-up
 defines the V6 release units and validation order.
 
+The [V6-specific GitOps hierarchy](prod-k3s-v6-gitops-hierarchy.md) is authoritative
+for the root, six Git sources, five unit Kustomizations and seven HelmReleases.
+
 The [node, data-volume and cluster preflight](prod-k3s-v6-node-cluster-preflight.md)
 records the current provisioning proposal and source-verified execution gaps. It is
 the preparation checklist before any resource creation or cluster bootstrap.
@@ -29,7 +32,7 @@ the preparation checklist before any resource creation or cluster bootstrap.
 
 The approved read-only check of PROD V5 on 2026-10-29 confirmed the supplied diagram:
 
-- Its single Flux `GitRepository` is `platform-config-prod`, polling every minute,
+- Its single Flux `GitRepository` is `config-prod`, polling every minute,
   pinned to tag `v2026.10.28.5` at commit `ede6e0ebd91df03c24eec55967ea94d1b1aa7b18`.
 - The V5 root Kustomization and its Vault, observability, DataKit, and Web SaaS child
   Kustomizations report Ready. They all use that same source and tag. Keep them and
@@ -38,22 +41,22 @@ The approved read-only check of PROD V5 on 2026-10-29 confirmed the supplied dia
   historical V5 value. These are V5 observations, not V6 identity evidence.
 - V5 has 2 vCPU and 4,015,960 Ki allocatable memory. At the read time, node memory
   use was 3,239 MiB (82%) and declared Pod memory requests were about 3,340 MiB.
-  A parallel copy of this stack should not use the draft 2 vCPU / 4 GB shape.
+  These historical figures are a capacity observation, not acceptance for V6.
 
-V6 is a separate cluster and state namespace (`web-saas-k3s-v6`), but initially uses
-the same GitOps repository and root/child Flux pattern. Its own cluster-local
-`GitRepository` has the same name, `platform-config-prod`, and an independent tag
-pin; it cannot change V5's source object. The V6 source stays suspended at the current
-`v2026.10.29.3` baseline until a reviewed production tag containing these V6 paths is
-selected. Never point production Flux at this feature branch.
+V6 is a separate cluster and state namespace (`prod-k3s-v6`). One cluster-local
+bootstrap GitRepository `config-prod` manages its root, and five additional
+unit GitRepositories independently pin configuration versions from the same GitOps
+repository. All six stay suspended at the current `v2026.10.29.3` placeholder until a
+reviewed production tag containing these V6 paths is selected. They cannot change
+V5's objects. Never point production Flux at this feature branch.
 
-Use Akamai account `manbuzhe2026`, region `jp-tyo-3`, and `g6-standard-4` (4 vCPU / 8
-GB) as the capacity-based candidate. Confirm current region capacity, account quota,
+The user selected Akamai account `manbuzhe2026`, region `jp-tyo-3`, and
+`g6-standard-2` (2 shared vCPU / 4 GB). Confirm current region capacity, account quota,
 price, disk requirements, and the rendered V6 request/limit budget in provider preflight
 before creating a node. Those provider facts have not been checked in this planning
-change. Set hostname `web-saas-k3s-v6`; verify a newly generated, unique machine ID
+change. Set hostname `prod-k3s-v6`; verify a newly generated, unique machine ID
 after creation. Retain `prevent_destroy: true` and the independent state key
-`terraform/prod/svc.plus/akamai-cloud/manbuzhe2026/web-saas-k3s-v6/terraform.tfstate`.
+`terraform/prod/svc.plus/akamai-cloud/manbuzhe2026/prod-k3s-v6/terraform.tfstate`.
 
 The user approved temporary IPv4 SSH ingress from `0.0.0.0/0` for bootstrap. IPv6
 SSH remains closed, as does public K3s API ingress. Use key-based operations access
@@ -69,8 +72,8 @@ described in the linked preflight. No volume has been created or mounted.
 
 ## Five release units
 
-The V6 root uses the one GitRepository source in its own cluster. It creates the five
-independent child Kustomizations below. Each unit has its own reconciliation path and
+The V6 root uses its bootstrap GitRepository and manages five independently pinned
+unit GitRepositories plus the five child Kustomizations below. Each unit has its own reconciliation path and
 one or more HelmReleases whose chart version or artifact digest can be selected
 independently. The observability unit has separate
 HelmReleases for its stack, reusable agent, and DataKit because these are separately
@@ -80,19 +83,19 @@ frontend/API fixes follow the explicit in-place exceptions above.
 
 | Order | Flux Kustomization / namespace | Managed release and V6 pin | V5 comparison / validation purpose |
 |---:|---|---|---|
-| 1 | `platform-vault-prod` | HashiCorp Vault Helm chart `0.32.0`; server image `1.21.4` | Fresh V6 Raft store; same Vault server version as V5 while validating chart ownership. Do not copy V5 Raft data or recovery keys. |
-| 2 | `platform-postgresql-prod` | PostgreSQL chart `1.0.0`; independent HelmRelease | Fresh empty database/PVC and reviewed target SQL schema. Deploy does not import data; core data is copied later with the approved `migratectl` workflow. |
-| 3 | `platform-ingress-prod` | Caddy ingress chart `1.3.0` | Dedicated Caddy controller and V6-only routes; validate TLS and backend health before any DNS publication. |
-| 4 | `platform-observability-prod` | Stack OCI digest `sha256:61e414722d21bbf4ace63d54c7236de30af5ff54d3878dcb5c8da8999894c706`; agent OCI digest `sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12`; DataKit chart `2.16.1` | The stack digest is the newer main-branch pin; compare with V5's live digest `sha256:6cf607b36fa0c92fd14f06d4db5186242dba85b7171757257242c0c6f90162a0`. Agent and DataKit remain on their current pins until newer artifacts are selected. |
+| 1 | `vault-prod` | HashiCorp Vault Helm chart `0.32.0`; server image `1.21.4` | Fresh V6 Raft store; same Vault server version as V5 while validating chart ownership. Do not copy V5 Raft data or recovery keys. |
+| 2 | `postgresql-prod` | Shared `distributed-web-saas-fullstack` OCI package; independent `postgresql` HelmRelease | Fresh empty database/PVC and reviewed target SQL schema. Deploy does not import data; core data is copied later with the approved `migratectl` workflow. |
+| 3 | `ingress-prod` | Shared `distributed-web-saas-fullstack` OCI package; independent `caddy-ingress` HelmRelease | Caddy-only reverse proxy with explicit cross-namespace upstreams; new producer contract/digest required before activation. |
+| 4 | `observability-prod` | Stack OCI digest `sha256:61e414722d21bbf4ace63d54c7236de30af5ff54d3878dcb5c8da8999894c706`; agent OCI digest `sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12`; DataKit chart `2.16.1` | The stack digest is the newer main-branch pin; compare with V5's live digest `sha256:6cf607b36fa0c92fd14f06d4db5186242dba85b7171757257242c0c6f90162a0`. Agent and DataKit remain on their current pins until newer artifacts are selected. |
 | 5 | `web-saas-prod` | Full-stack OCI digest `sha256:6336235445e389958660cc344eead488ad3a50cf67afb1301fd35f6793720f27` | Current V5 chart baseline; embedded PostgreSQL and app-bundled Caddy are disabled in favor of the separate units. This validates V6 compatibility, not a Web SaaS artifact upgrade; advance only after a newer producer digest is published and reviewed. |
 
 The unit boundaries follow the requested ownership: Vault and its identity/storage;
 collectors, monitoring storage, dashboards and probes; Caddy/TLS references/routing;
 PostgreSQL and its Service/PVC/configuration; then business Deployments/Services/app
 configuration. All five live in the same GitOps repository. The selected chart pins
-above are explicit candidates. A shared GitRepository tag change may cause each child
-Kustomization to observe the new commit, but only the changed unit's path should
-change desired state. Independent pins allow a release unit to be updated without
+above are explicit candidates. A root configuration tag selects the management graph;
+each unit configuration source retains its own tag until explicitly advanced.
+Independent configuration and artifact pins allow a release unit to be updated without
 changing the other units. Use the in-place exceptions only for the frontend/API
 code-only patch or the independent monitoring service; business state, billing state,
 SQL schema transitions, and persistent workloads outside those exceptions require a
@@ -116,7 +119,7 @@ in-place business/database schema changes.
 
 1. Keep the V6 root and all five child Kustomizations suspended. Select an immutable
    production tag that contains these paths for V6's cluster-local
-   `platform-config-prod`; V5 remains pinned at its own tag. Complete provider/state,
+   `config-prod`; V5 remains pinned at its own tag. Complete provider/state,
    firewall, hostname, machine ID, storage, and rendered capacity preflight.
 2. After the separate IaC provisioning approval, cold-start V6. Establish the three
    identity classes, initialize fresh Vault Raft storage and an empty PostgreSQL
@@ -218,19 +221,19 @@ Reserve only V6-specific test names: `console-k3s-v6.svc.plus`,
 canonical aliases (`console.svc.plus`, `accounts.svc.plus`, `billing.svc.plus`,
 `vault.svc.plus`, `observability.svc.plus`) for V6.
 
-Caddy in `platform-ingress-prod` is the only public HTTP(S) entry point. Create
-namespace-local Ingress objects with `ingressClassName: caddy-v6`; the controller
-routes their V6 hosts to namespace-local ClusterIP Services, resolving cross-namespace
-targets by full service DNS names such as
-`web-saas-accounts.web-saas-prod.svc.cluster.local` and
-`platform-observability-observability-stack.platform-observability-prod.svc.cluster.local`.
-Vault is routed to its V6 service in `platform-vault-prod`. Keep each TLS Secret in the
-same namespace as its Ingress and populate it through the approved Vault/ACME flow;
-never copy V5 certificates. Limit the controller to the approved V6 route class and
-required namespace access.
+Caddy in `ingress-prod` is the public HTTP(S) reverse proxy, deployed through the
+same `distributed-web-saas-fullstack` chart package as PostgreSQL and Web SaaS.
+Its independent `caddy-ingress` HelmRelease enables only Caddy, with explicit
+cross-namespace upstream FQDNs in `caddy.externalBackends`; it does not install
+an Ingress API controller or route by `ingressClassName`. TLS Secrets remain in
+`ingress-prod` and are synchronized by ESO from the reviewed V6 Vault paths.
+Vault and observability routes use the chart's explicit additional-host upstream
+contract, with verified backend ports and CA trust before activation. Do not copy
+V5 certificates. The standalone-Caddy producer change must be released and pinned
+before this release is enabled.
 
 PostgreSQL has no public hostname, LoadBalancer, or Ingress. Applications connect
-over TLS to `postgresql.platform-postgresql-prod.svc.cluster.local:5432` using their
+over TLS to `postgresql-postgresql.postgresql-prod.svc.cluster.local:5432` using their
 own roles. Future remote administration requires an approved private XConnect/stunnel
 route and a separate operations identity. IaC owns any later V6 DNS records and
 firewall exposure. This plan declares no DNS records and does not switch canonical

@@ -1,0 +1,73 @@
+# Requires the reviewed standalone-Caddy chart contract; keep suspended until its new OCI digest is published and pinned.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: caddy-ingress
+  namespace: ingress-prod
+spec:
+  suspend: true
+  interval: 5m
+  releaseName: caddy-ingress
+  targetNamespace: ingress-prod
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  install:
+    remediation:
+      retries: 0
+  upgrade:
+    remediation:
+      retries: 0
+  values:
+    console:
+      enabled: false
+    accounts:
+      enabled: false
+    billing:
+      enabled: false
+    content:
+      enabled: false
+    edgeGateway:
+      enabled: false
+    postgresql:
+      enabled: false
+    caddy:
+      enabled: true
+      image: ghcr.io/ai-workspace-infra/caddy-cloudflare:959d6c8@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf
+      service:
+        type: ClusterIP
+      nodeSelector:
+        kubernetes.io/hostname: prod-k3s-v6
+      externalBackends:
+        enabled: true
+        accounts: web-saas-accounts.web-saas-prod.svc.cluster.local:80
+        frontend: web-saas-console.web-saas-prod.svc.cluster.local:80
+        billing: web-saas-billing.web-saas-prod.svc.cluster.local:80
+      routes:
+        consoleHost: console-k3s-v6.svc.plus
+        accountsHost: accounts-k3s-v6.svc.plus
+        billingHost: billing-k3s-v6.svc.plus
+      tls:
+        consoleSecret: console-tls
+        accountsSecret: accounts-tls
+        billingSecret: billing-tls
+    stunnelClient:
+      enabled: false
+    stunnelServer:
+      enabled: false
+    global:
+      environment: prod
+      expectedNamespace: ingress-prod
+  postRenderers:
+  - kustomize:
+      patches:
+      - target:
+          kind: Deployment
+          name: caddy-ingress-caddy
+        patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: caddy-ingress-caddy\n\
+          spec:\n  strategy:\n    type: Recreate\n    rollingUpdate: null\n  template:\n\
+          \    spec:\n      containers:\n        - name: caddy\n          ports:\n\
+          \            - name: http\n              containerPort: 8080\n         \
+          \     hostPort: 80\n              protocol: TCP\n            - name: https\n\
+          \              containerPort: 8443\n              hostPort: 443\n      \
+          \        protocol: TCP\n"

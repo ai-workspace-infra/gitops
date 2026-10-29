@@ -1,0 +1,61 @@
+# Same repository, independent immutable configuration pins per release unit.
+# Initial placeholder pins predate V6 paths; all stay suspended until reviewed.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: vault-prod-config
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    tag: v2026.10.29.3
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: postgresql-prod-config
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    tag: v2026.10.29.3
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: ingress-prod-config
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    tag: v2026.10.29.3
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: observability-prod-config
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    tag: v2026.10.29.3
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: web-saas-prod-config
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    tag: v2026.10.29.3

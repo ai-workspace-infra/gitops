@@ -1,8 +1,0 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: caddyserver
-  namespace: platform-ingress-prod
-spec:
-  interval: 1h
-  url: https://caddyserver.github.io/ingress/

@@ -1,7 +1,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: distributed-web-saas-fullstack
+  name: web-saas-prod
   namespace: web-saas-prod
 spec:
   suspend: true
@@ -21,25 +21,42 @@ spec:
       enabled: false
     console:
       enabled: true
+      deploymentProfile: single-container
+      singleContainer:
+        image: ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666
     accounts:
       enabled: true
       workload:
         env:
-          DB_HOST: postgresql.platform-postgresql-prod.svc.cluster.local
-          DB_PORT: "5432"
+          DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
+          DB_PORT: '5432'
           POSTGRES_USER: accounts_runtime
-          DB_NAME: web_saas
+          DB_NAME: account
         secretRefs:
-          - accounts-db-runtime
+        - accounts-runtime
+        - accounts-db-runtime
+        image: ghcr.io/ai-workspace-services/accounts:sha-3ef09c82f46152096bfc16edc9ba767f128a197f@sha256:b5bf111a64ca2f2ed5e74d2ab1f87e0e164d09869a32832368fb43e577fdf37b
     billing:
       enabled: true
       workload:
         env:
-          DB_HOST: postgresql.platform-postgresql-prod.svc.cluster.local
-          DB_PORT: "5432"
+          DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
+          DB_PORT: '5432'
           POSTGRES_USER: billing_runtime
-          DB_NAME: web_saas
+          DB_NAME: account
         secretRefs:
-          - billing-db-runtime
+        - billing-runtime
+        - billing-db-runtime
+        image: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
     content:
       enabled: true
+      workload:
+        image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
+        secretRefs:
+        - content-runtime
+    edgeGateway:
+      enabled: false
+    stunnelClient:
+      enabled: false
+    stunnelServer:
+      enabled: false

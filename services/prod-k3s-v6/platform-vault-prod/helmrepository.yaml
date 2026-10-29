@@ -1,8 +1,0 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
-metadata:
-  name: hashicorp
-  namespace: platform-vault-prod
-spec:
-  interval: 1h
-  url: https://helm.releases.hashicorp.com
