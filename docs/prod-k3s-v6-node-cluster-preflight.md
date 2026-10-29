@@ -126,7 +126,10 @@ Caddy `externalBackends` 显式引用跨 namespace 上游，禁止重复部署�
 根、Vault/PostgreSQL/监控子 Kustomization 已设置 `prune: false`，保留数据相关对象；
 仍须验证 Helm 自身删除行为、PVC `Retain`、云卷保护和备份，不能把 prune 关闭当作完整数据保护。
 首次六个 Git source pin 必须共同指向包含 V6 目录的正式候选，后续才各自推进。
-首次占位 tag 已替换为包含 V6 路径的正式 `v2026.10.29.4`，六源 pin 和固定 checkout 已核验。
+TLS identity 分门禁已合并到 GitOps 主干。当前 V6 源需要一份新的固定发布：六个 GitRepository
+首发均指向 `v2026.10.29.8`，保持暂停；发布 tag 后再用 Playbooks 的暂停图校验器验证六个源
+都解析到同一个已审查提交。后续允许逐个更新单元源 pin 和对应 Kustomization/HelmRelease，
+其他单元继续固定原版本。公共 DNS 在本次 V6 冷启动与验收期间保持不启用、不修改。
 
 ## 部署所需 Vault KV 路径
 
@@ -258,7 +261,7 @@ checkpoint 按实际 `migratectl` 固定版本的要求由迁移 owner 创建与
 | 2 云资源 plan | 只新增 V6 节点、独立卷及 firewall；无 V5、DNS、共享 SSH key 变更，无修改/删除/替换既有资源 | PASS；3 create、0 update、0 delete，运行 [40838341949](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838341949)，IaC 子运行 [40838376523](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838376523) |
 | 3 IaC 创建 | 使用同一固定声明重新生成、核验并 apply 保存计划，输出 CMDB 与卷身份 | PASS；3 create、0 update、0 delete；IaC 子运行 [40838673674](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838673674)，provider 收敛、节点/卷归属与 CMDB 验证通过 |
 | 4 主机/存储/集群 | 先核对完整受信主机指纹，再做空盘、UUID、固定版本与暂停声明验收 | 首次运行 [40838640119](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40838640119) 在 SSH 前停止；第二、三次运行仍停在指纹核验；PASS；[40851530314](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40851530314) 自动 common、独立盘、K3s/Flux 与审计检查全部通过，最终回执 `PAUSED_BOOTSTRAP_VERIFIED` |
-| 5 五单元冷启动 | Vault → PostgreSQL → Ingress → Observability → Web SaaS，逐单元准备依赖并验收；业务独立写者暂停 | NOT_RUN |
+| 5 五单元冷启动 | Vault → PostgreSQL → Observability → Web SaaS → Ingress，逐单元准备依赖并验收；业务独立写者暂停 | NOT_RUN |
 | 6 核心数据与恢复验收 | 备份/恢复、`migratectl` 预览及审查后的复制、差异/回归、含业务数据的隔离恢复和观察 | NOT_RUN；数据写入另按任务授权执行 |
 | 7 待切换报告 | 列出未完成项、最终追齐及写入权/流量交接方案 | NOT_RUN；V5 不切换、不退役 |
 
@@ -293,7 +296,7 @@ Selfhost Orchestrator 的 `prod-v6` 专用路径消费此声明，支持 `plan`�
 6 个 Flux Kustomization、7 个 HelmRelease 仍为 suspend=true。它不执行 migratectl、
 SQL schema 变更、业务恢复、DNS、源写者停用或写入权交接。
 
-初始配置 tag 为 `v2026.10.29.4`，必须发布于包含本声明的合入提交，才可调度。
+初始配置 tag 为 `v2026.10.29.8`，必须发布于包含本声明及 Vault TLS identity 门禁的合入提交，才可调度。
 固定安装版本：K3s `v1.37.1+k3s1`、Flux `2.9.6`、Helm `v3.22.1`。
 独立卷目标挂载 `/data`，local-path provisioner 目标使用 `/data/k3s/storage`；K3s systemd
 依赖该挂载，不允许在丢失挂载时向系统盘的同名目录写入。

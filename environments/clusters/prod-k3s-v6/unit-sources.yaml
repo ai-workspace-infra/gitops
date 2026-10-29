@@ -1,5 +1,6 @@
 # Same repository, independent immutable configuration pins per release unit.
-# Initial placeholder pins predate V6 paths; all stay suspended until reviewed.
+# Initially use the same reviewed V6 release; each unit can later advance its
+# own source pin independently while its Kustomization remains separately gated.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -10,7 +11,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.4
+    tag: v2026.10.29.8
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -22,7 +23,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.4
+    tag: v2026.10.29.8
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -34,7 +35,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.4
+    tag: v2026.10.29.8
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -46,7 +47,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.4
+    tag: v2026.10.29.8
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -58,4 +59,4 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.4
+    tag: v2026.10.29.8
