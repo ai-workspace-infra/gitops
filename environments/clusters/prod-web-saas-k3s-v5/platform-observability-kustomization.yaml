@@ -12,5 +12,5 @@ spec:
     - name: platform-vault-prod
   sourceRef:
     kind: GitRepository
-    name: platform-config-prod
+    name: platform-observability-prod-source
   path: ./services/platform-observability/prod
