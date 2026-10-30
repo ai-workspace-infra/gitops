@@ -44,9 +44,9 @@ spec:
         frontend: web-saas-console.web-saas-prod.svc.cluster.local:80
         billing: web-saas-billing.web-saas-prod.svc.cluster.local:80
       routes:
-        consoleHost: console-k3s-v6.svc.plus
-        accountsHost: accounts-k3s-v6.svc.plus
-        billingHost: billing-k3s-v6.svc.plus
+        consoleHost: console-selfhost-prod-v6.svc.plus
+        accountsHost: accounts-selfhost-prod-v6.svc.plus
+        billingHost: billing-selfhost-prod-v6.svc.plus
       tls:
         consoleSecret: console-tls
         accountsSecret: accounts-tls

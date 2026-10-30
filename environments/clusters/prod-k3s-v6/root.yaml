@@ -1,16 +1,16 @@
-# Management graph root. It applies only namespaces, sources and paused child gates;
-# workload reconciliation is released separately by each declared child Kustomization.
+# Initial cold bootstrap loads the complete graph paused. A reviewed release-root
+# operation later enables this environment root and its bootstrap source only.
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: prod-k3s-v6
+  name: prod-k3s
   namespace: flux-system
 spec:
-  suspend: false
+  suspend: true
   interval: 5m
   prune: false
-  # The root applies the management graph only. Child Kustomizations intentionally
-  # start suspended and report readiness independently, so the root must not wait on them.
+  # Once released, the root reconciles management objects only and does not wait
+  # for independently gated child Kustomizations.
   wait: false
   timeout: 15m
   sourceRef:
