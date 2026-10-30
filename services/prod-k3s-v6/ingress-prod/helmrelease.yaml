@@ -36,6 +36,9 @@ spec:
       image: ghcr.io/ai-workspace-infra/caddy-cloudflare:959d6c8@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf
       service:
         type: ClusterIP
+      resources:
+        requests: {cpu: 20m, memory: 48Mi}
+        limits: {cpu: 50m, memory: 80Mi}
       nodeSelector:
         kubernetes.io/hostname: prod-k3s-v6
       externalBackends:

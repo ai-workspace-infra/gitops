@@ -38,15 +38,15 @@ spec:
     kubeStateMetrics:
       enabled: true
       resources:
-        requests: {cpu: 10m, memory: 48Mi}
-        limits: {cpu: 50m, memory: 128Mi}
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {cpu: 25m, memory: 48Mi}
     processExporter:
       enabled: true
       resources:
-        requests: {cpu: 25m, memory: 48Mi}
-        limits: {cpu: 200m, memory: 128Mi}
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {cpu: 25m, memory: 48Mi}
     vector:
       enabled: false
     resources:
-      requests: {cpu: 25m, memory: 64Mi}
-      limits: {cpu: 150m, memory: 128Mi}
+      requests: {cpu: 10m, memory: 32Mi}
+      limits: {cpu: 25m, memory: 64Mi}

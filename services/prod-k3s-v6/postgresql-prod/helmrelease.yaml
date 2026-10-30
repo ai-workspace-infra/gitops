@@ -40,6 +40,12 @@ spec:
         size: 20Gi
       metrics:
         enabled: true
+        resources:
+          requests: {cpu: 10m, memory: 32Mi}
+          limits: {cpu: 25m, memory: 64Mi}
+      resources:
+        requests: {cpu: 200m, memory: 384Mi}
+        limits: {cpu: 300m, memory: 512Mi}
     caddy:
       enabled: false
     stunnelClient:

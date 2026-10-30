@@ -16,18 +16,30 @@ spec:
       image:
         repository: victoriametrics/victoria-metrics
         tag: "v1.101.0@sha256:91d0456cc064e195869175074ced2a6849d72531613b320492698e5fe935d10a"
+      resources:
+        requests: {cpu: 50m, memory: 160Mi}
+        limits: {cpu: 100m, memory: 256Mi}
     victoriaLogs:
       image:
         repository: victoriametrics/victoria-logs
         tag: "v1.52.0@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+      resources:
+        requests: {cpu: 50m, memory: 160Mi}
+        limits: {cpu: 100m, memory: 256Mi}
     victoriaTraces:
       image:
         repository: victoriametrics/victoria-traces
         tag: "v0.1.0@sha256:b3204fd598b023b4726f38689791c707803b9f34733822dd053f22d64721b3d2"
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {cpu: 30m, memory: 64Mi}
     otelCollector:
       image:
         repository: otel/opentelemetry-collector-contrib
         tag: "0.114.0@sha256:37fa87091cfaaec7234a27e4e395a40c31c2bfaea97a349a4afef6d9e9681197"
+      resources:
+        requests: {cpu: 15m, memory: 48Mi}
+        limits: {cpu: 30m, memory: 96Mi}
     telemetry:
       cluster: PROD-K3S-V6
       environment: prod
@@ -35,6 +47,12 @@ spec:
       rootUrl: https://observability-k3s-v6.svc.plus/
       existingSecret: grafana-admin
       adminPasswordKey: password
+      resources:
+        requests: {cpu: 20m, memory: 64Mi}
+        limits: {cpu: 40m, memory: 96Mi}
+      pluginInstallerResources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {cpu: 50m, memory: 96Mi}
     persistence:
       enabled: true
       size: 20Gi
