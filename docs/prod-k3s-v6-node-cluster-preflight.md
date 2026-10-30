@@ -349,4 +349,17 @@ CMDB/inventory 主键、`host.name` 和 K3s node name 必须一致为 `prod-k3s-
 | 独立审计身份 | `AUDIT_ALLOW_DENY_VERIFIED`；实际身份可读系统/节点/namespace 状态，拒绝管理员 kubeconfig、系统/数据写入、Secret、node proxy 和 namespace 写入 dry-run |
 | 业务与数据边界 | 五个单元尚未放行；未执行 SQL schema、数据迁移、DNS 或写者切换；V5 保留 |
 
-该结果仅验收独立节点及暂停式控制面。ESO 尚未安装，新增 GitOps ESO/TLS 声明尚未加载；尚未验收各 chart 的实际工作负载、Secret 同步、应用 UID/DB 身份、业务容量、备份恢复或核心数据；不得将其标记为全业务生产上线完成。
+该结果仅代表当时的独立节点及暂停式控制面验收。后续实际 Flux 状态见下方记录；尚未验收各 chart 的实际工作负载、Secret 同步、应用 UID/DB 身份、业务容量、备份恢复或核心数据，不得将其标记为全业务生产上线完成。
+
+## 2026-10-30 部署与后续升级门禁
+
+V6 在独立节点和数据盘上冷启动，按 ESO 与 Vault TLS 身份 → TLS 同步 → Vault → PostgreSQL → Observability → Web SaaS → Ingress 的顺序验收。Ingress 使用指向 V6 的受控测试方式验证；本阶段不启用或修改 V5 DNS，不转移生产流量或写入权。每个单元记录固定 source、chart 和镜像版本、实际调谐版本、Ready 状态与功能证据。
+
+| 项目 | 当前证据和下一门禁 |
+| --- | --- |
+| 公共 Vault 专用身份 | [配置运行 40980896839](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40980896839) 成功；[验收运行 40981246087](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40981246087) 验证指定记录允许、相邻路径和错误身份拒绝。 |
+| Flux 根阶段 | [运行 40982240620](https://github.com/ai-workspace-infra/Platform-Orchestrator/actions/runs/40982240620) 在 `release_live_gate_order` 停止，未执行 source/root apply。回执显示管理根、ESO、Vault source 和 TLS identity 对象已 active；active 不证明 Ready 或实际版本。先以受控只读方式核实对象版本、Ready 和来源，审查恢复路径，再按已验收阶段继续。 |
+| TLS 和五个服务单元 | TLS Secret 同步、Vault、PostgreSQL、Observability、Web SaaS 和 Ingress 的运行与业务验收尚未完成；不得因身份验收通过而跳过。 |
+| 数据与切换 | 先验证源备份及恢复，审查目标 SQL schema，在新集群空目标库使用 `migratectl` 执行已审查迁移；保留源库和原写入方。最终追平、写者交接与 DNS 切换另行评审。 |
+
+后续版本按变更分类：纯展示的无状态 UI 和向后兼容且不改 SQL schema 的 API 小修复可在 V6 滚动发布并保留旧制品；独立且非业务、非账单的监控服务可原地发布。PostgreSQL、Vault Raft、监控存储及其他持久卷工作负载的版本或状态转换，以及 SQL schema 版本变化，必须在新的独立集群和存储验证。代码回退不等于数据回滚。验收须覆盖恢复、真实回归、重复运行和观察窗口，不能以 Flux Ready 代替业务验收。
