@@ -1,12 +1,12 @@
-# Initial cold bootstrap loads the complete graph paused. A reviewed release-root
-# operation later enables this environment root and its bootstrap source only.
+# The stable environment root selects this isolated deployment batch.
+# Flux owns the active child graph; dependencies and health checks gate progress.
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: prod-k3s
   namespace: flux-system
 spec:
-  suspend: true
+  suspend: false
   interval: 5m
   prune: false
   # Once released, the root reconciles management objects only and does not wait

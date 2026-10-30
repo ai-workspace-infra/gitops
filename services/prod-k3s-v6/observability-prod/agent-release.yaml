@@ -18,7 +18,7 @@ metadata:
   name: observability-agent
   namespace: observability-prod
 spec:
-  suspend: true
+  suspend: false
   interval: 5m
   releaseName: observability-agent
   targetNamespace: observability-prod

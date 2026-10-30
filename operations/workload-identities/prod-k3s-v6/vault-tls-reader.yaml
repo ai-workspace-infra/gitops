@@ -36,33 +36,7 @@ spec:
     deniedPath: kv/data/CICD/domains/v6-authorization-denied-probe
     ttlSeconds: 600
   evidence:
-    bootstrap:
-      repository: ai-workspace-infra/Platform-Orchestrator
-      runId: 40851530314
-      attempt: 1
-      workflow: .github/workflows/selfhost-orchestrator.yml
-      event: workflow_dispatch
-      ref: v6.0.0-bootstrap.4
-      commit: 1b73eb3d07791d38e1af9d6d50964ff72181fac6
-      artifactId: 12887223723
-      artifactName: prod-k3s-v6-bootstrap-40851530314-1
-      artifactDigest: sha256:167f7650702f20c99b852c88697c433f93dd65a258f2a8bfef3afecb5903395f
-      filename: v6-bootstrap-receipt.json
-      fileSha256: fd9bde1650d637b56415b860b33955b336c79b04f456254eea2c3063c34d6c06
-      gitopsSha: c74a1a5a7d3a633d4020897fbb765b3e23fb279a
-    iac:
-      repository: ai-workspace-infra/Platform-Orchestrator
-      runId: 40851581630
-      attempt: 1
-      workflow: .github/workflows/iac-orchestrator.yml
-      event: workflow_dispatch
-      ref: v6.0.0-bootstrap.4
-      commit: 1b73eb3d07791d38e1af9d6d50964ff72181fac6
-      artifactId: 12887850662
-      artifactName: iac-summary-40851581630-1
-      artifactDigest: sha256:7c9486443e2dd049c0613e4457a327a239fbafc7011dffb7675ed8dceb0cfbbb
-      filename: summary.json
-      fileSha256: 27acdd2361d3696e520db1bd6c8e5ae26aece2dc57321edec5f4f821a7d3cebd
-      inventorySha256: e6ebb64a8fa179b0e3c2543635f45c70e7161ef7e0028b0ba0a5b0cccb5d673f
-      iacSha: adf9c140cd2c120361012917cddcde1e58876c6c
-      correlationId: '40851530314:1:prod-k3s-v6'
+    source: current-run
+    workflow: .github/workflows/selfhost-orchestrator.yml
+    # IaC receipt/checksum, instance ID and new bootstrap cluster/node UIDs are
+    # supplied by this protected run, never copied from a previous cluster.
