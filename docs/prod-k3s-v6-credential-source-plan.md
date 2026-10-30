@@ -1,6 +1,6 @@
-# PROD-K3S-V6 凭据来源核对与待确认方案
+# PROD-K3S-V6 凭据来源核对与确认方案
 
-日期：2026-10-30。状态：待用户审查；仅从固定仓库声明与文档核对路径和字段，没有读取秘密值，也没有验证 Vault 记录当前存在。
+日期：2026-10-30。状态：用户已确认下述无批次版本路径及人工初始化方案；仅从仓库声明与文档核对来源，没有读取秘密值，也没有验证目标 Vault 记录当前存在。
 
 ## 已找到的 V5 来源
 
@@ -30,34 +30,39 @@ V5 Accounts、Billing 都引用 `web-saas-secrets`，所以旧结构存在共享
 
 KV v2 API 路径在 mount 后增加 `data/`，例如 `kv/data/prod/services/...`。ESO `remoteRef.key` 不带 `kv/data/`。
 
-## V6 建议映射：待确认后实施
+## 已确认的服务 KV 路径
 
-`kv/prod/services/prod-k3s-v6` 是建议的新批次业务前缀，尚未创建。
+取消此前建议的 `kv/prod/services/prod-k3s-v6` 业务前缀。服务 KV 路径不带部署批次版本，采用下表中的完整路径。
 OS 公钥仍为 `kv/prod/security/{root,operator,auditor}`；Kubernetes 私有身份仍为
 `kv/prod/prod-k3s-v6/{root,operator,auditor}`，由新 master 生成并写入，CA 私钥留在 master。
 
-| V6 Kubernetes Secret | 建议 KV 后缀/来源 | 处理 |
+| 身份或 Kubernetes Secret | 已确认的完整 KV 路径 | 处理 |
 |---|---|---|
-| `postgresql-prod/postgresql-superuser` | `postgresql/admin` | 新目标独立密码，仅数据库初始化/管理使用 |
-| `web-saas-prod/accounts-db-runtime` | `accounts/database` | 新目标 `accounts_runtime`，只授业务所需 DML；DSN 指向 V6 |
-| `web-saas-prod/billing-db-runtime` | `billing/database` | 新目标 `billing_runtime`，不复用 Accounts 或超级用户 |
-| `web-saas-prod/accounts-runtime` | `accounts/runtime` | 分离认证/引导与业务令牌，逐字段确认 V5 来源与初始化需要 |
-| `web-saas-prod/billing-runtime` | `billing/runtime` | 冷启动默认不接真实扣款与 webhook；生产账单接入另行确认 |
-| `web-saas-prod/content-runtime` | `content/runtime` | 仅服务必需的内部令牌；共享令牌是否复用需明确消费者 |
+| PostgreSQL `admin`；`postgresql-prod/postgresql-superuser` | `kv/prod/database/postgresql/admin` | 初始化、DDL、恢复及必要管理；不注入业务工作负载 |
+| PostgreSQL `operator` | `kv/prod/database/postgresql/operator` | 日常数据库运行维护；按审查范围读写，不默认超级用户 |
+| PostgreSQL `auditor` | `kv/prod/database/postgresql/auditor` | 独立只读，用于审计及授权迁移源读取；无目标写入或提权 |
+| Accounts；`web-saas-prod/accounts-runtime`、`accounts-db-runtime` | `kv/prod/Accounts-service` | 由不同 Secret 显式映射所需字段；数据库连接指向 V6，应用数据库身份仍限定 DML |
+| Billing；`web-saas-prod/billing-runtime`、`billing-db-runtime` | `kv/prod/billing-service` | 显式映射运行与数据库字段；真实支付和 webhook 的启用不由路径确认自动放行 |
+| Content；`web-saas-prod/content-runtime` | `kv/prod/Accounts-service` | 与 Accounts 共用 KV 路径，仅映射 Content 必需字段 |
 | `vault-prod/vault-server-tls` | 公共 Vault `kv/CICD/domains/svc.plus` | 只读复用已有 TLS，验证有效期、链、key 配对与实际 SAN |
 | `ingress-prod/{console,accounts,billing}-tls` | 同上公共域名 TLS 来源 | ESO 分别生成 Secret；只有 V6 专属域名允许参与 DNS 阶段 |
+| `xworktech.com` 及其证书覆盖的品牌域名 TLS | 公共 Vault `kv/CICD/domains/xworktech.com` | 按实际路由域名/SAN 选取，单独映射 TLS Secret；源路径确认不增加公网路由或 DNS 变更 |
 
 不能将 V5 的 `database_url` 原样交付给 V6，以免新工作负载写入 V5。
+Vault KV 路径区分大小写；`Accounts-service` 保留用户指定的大写 A。表中的服务记录不增加批次目录，也不自动衍生 `/runtime`、`/database` 子记录；字段映射和记录存在性仍待实施验收。
+Content 与 Accounts 共用 Vault KV 记录时，Vault policy 的读取授权粒度是整条记录；ESO 只映射部分字段不能被描述为 Vault 字段级隔离。
+稳定路径不等于自动复用已有密码或连接目标。已有记录不得被冷启动覆盖；V5/V6 并行期间须核对实际数据库绑定和现有消费者，冲突时停止，不能将 V5 连接原地改成 V6。
 共享域名证书不能直接假定覆盖 `*.svc.cluster.local`；内部 Vault 客户端必须使用受证书覆盖的验证名称或专用内部 SAN 证书，禁止关闭证书验证。
 
-## Vault 初始化材料：未找到可直接复用的 KV 约定
+## Vault 初始化/unseal：外部安全托管、迁移过程手动初始化
 
 V5 `services/platform-vault/prod/README.md` 明确采用人工初始化/恢复及 unseal，未声明 auto-unseal。
 白皮书配套 runbook `knowledge/docs/reference/platform-ops-toolkit/04-security-vault-and-iam/manual-unseal.md`
 明确禁止 IaC/GitHub Actions 接收 root token 或 unseal shares；`vault_operator_material` 仅检查受控节点上材料文件的权限与非空状态。
 
 因此不把任何现有 KV 路径描述成已存在的 V6 unseal 材料库，也不把旧 Raft 的 shares 当作新 Vault 初始化材料。
-本次需确认：新 V6 Vault 独立初始化后的材料托管方案，以及人工 unseal 门禁或另行审查的 Transit/KMS auto-unseal 方案。
+用户已确认：Vault 初始化及 unseal 材料由外部安全托管；迁移过程中通过受控管理通道手动初始化，并手动完成所需 unseal。材料不写入以上服务 KV、Git、workflow inputs、artifact 或日志；本次不引入自动初始化或 Transit/KMS auto-unseal。
+操作前先检查 `initialized`/`sealed`：仅对未初始化的新目标执行初始化；已初始化的目标不得重复 init。新目标使用自己的初始化材料，恢复旧 Raft 数据时采用另行审查的恢复与材料流程。
 在这一门禁完成前，流水线应明确记录 `Vault sealed/uninitialized` 并停止后续服务验收，不能只等待后报告成功。
 
 ## 执行边界
