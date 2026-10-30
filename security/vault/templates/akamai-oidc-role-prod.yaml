@@ -1,0 +1,31 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultJWTAuthRoleTemplate
+metadata:
+  name: akamai-oidc-role-prod
+  description: PROD Akamai IaC GitHub OIDC role.
+  environment: prod
+  roleNameTemplate: prod-akamai-iac
+spec:
+  variables:
+  - ACCOUNT
+  - POLICY
+  role:
+    role_type: jwt
+    user_claim: sub
+    bound_audiences:
+    - vault
+    bound_claims_type: glob
+    bound_claims:
+      repository: ai-workspace-infra/Platform-Orchestrator
+      job_workflow_ref:
+      - ai-workspace-infra/Platform-Orchestrator/.github/workflows/iac-pipeline-multi-cloud-stages.yaml@refs/heads/main
+      - ai-workspace-infra/Platform-Orchestrator/.github/workflows/ai-aggregator-v1.yml@refs/heads/main
+      ref: refs/heads/main
+      environment: prod
+    token_policies:
+    - __POLICY__
+    token_no_default_policy: true
+    token_type: batch
+    token_ttl: 20m
+    token_max_ttl: 20m

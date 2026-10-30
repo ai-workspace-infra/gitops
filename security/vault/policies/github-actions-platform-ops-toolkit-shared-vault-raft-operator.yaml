@@ -1,0 +1,19 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-shared-vault-raft-operator
+  description: github-actions-platform-ops-toolkit-shared-vault-raft-operator
+spec:
+  paths:
+  - path: sys/storage/raft/configuration
+    capabilities:
+    - read
+  - path: sys/step-down
+    capabilities:
+    - update
+    - sudo
+  - path: sys/storage/raft/remove-peer
+    capabilities:
+    - update
+    - sudo

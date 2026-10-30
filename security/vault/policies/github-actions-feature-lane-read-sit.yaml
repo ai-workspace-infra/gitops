@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-feature-lane-read-sit
+  description: Dedicated read-only GitHub App; no shared CI or deployment secrets.
+spec:
+  paths:
+  - path: kv/data/sit/platform/github-app/feature-lane
+    capabilities:
+    - read

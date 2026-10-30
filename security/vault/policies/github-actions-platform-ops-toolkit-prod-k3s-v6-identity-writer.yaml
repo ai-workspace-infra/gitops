@@ -1,0 +1,20 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-prod-k3s-v6-identity-writer
+  description: Initial issuance only. CAS=0 is enforced by the Playbooks node-side writer. No update/delete/list/metadata access; no other identity policy is inherited.
+spec:
+  paths:
+  - path: kv/data/prod/prod-k3s-v6/root
+    capabilities:
+    - create
+    - read
+  - path: kv/data/prod/prod-k3s-v6/operator
+    capabilities:
+    - create
+    - read
+  - path: kv/data/prod/prod-k3s-v6/auditor
+    capabilities:
+    - create
+    - read

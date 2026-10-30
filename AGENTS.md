@@ -17,6 +17,10 @@
 域名、网络引用、非敏感配置引用和 Vault key/path 引用。GitOps 是声明源，不是 CMDB；运行时 IP、instance ID、
 Terraform 输出和执行回执必须由 IaC/控制面产生。
 
+`security/vault/` 是已批准的窄范围例外：它保存不含秘密值的 Vault ACL policy、JWT role 和模板声明，供
+`Platform-Orchestrator` 的受控 `scripts/vault` 管理入口读取；它不是 Flux/Kustomize 资源，也不由 IaC renderer
+或 Flux 自动应用。任何 Vault 写操作仍须由 Toolkit 的显式、审计化 `--apply` 调用完成。不得在该目录添加执行脚本。
+
 ## 硬禁令
 
 - 不新增 shell/Python/Ruby 执行脚本、Ansible role/playbook、Docker/systemd/service 操作；

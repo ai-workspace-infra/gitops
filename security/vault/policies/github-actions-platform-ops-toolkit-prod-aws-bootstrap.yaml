@@ -1,0 +1,20 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-prod-aws-bootstrap
+  description: github-actions-platform-ops-toolkit-prod-aws-bootstrap
+spec:
+  paths:
+  - path: kv/data/CICD/prod/aws-bootstrap
+    capabilities:
+    - read
+  - path: kv/metadata/CICD/prod/aws-bootstrap
+    capabilities:
+    - read
+  - path: kv/data/CICD/prod/iac_state
+    capabilities:
+    - read
+  - path: kv/metadata/CICD/prod/iac_state
+    capabilities:
+    - read

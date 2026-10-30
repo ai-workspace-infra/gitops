@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-prod-k3s-v6-bootstrap
+  description: github-actions-platform-ops-toolkit-prod-k3s-v6-bootstrap
+spec:
+  paths:
+  - path: kv/data/prod/platform/prod-k3s-v6/ssh
+    capabilities:
+    - read
+  - path: kv/data/CICD/prod/akamai-cloud/manbuzhe2026
+    capabilities:
+    - read

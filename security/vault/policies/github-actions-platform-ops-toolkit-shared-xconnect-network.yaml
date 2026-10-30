@@ -1,0 +1,18 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-shared-xconnect-network
+  description: Narrow shared Zero network bootstrap permissions for xconnect-zero-cloud.yaml.
+spec:
+  paths:
+  - path: kv/data/CICD/shared/xconnect
+    capabilities:
+    - read
+  - path: kv/data/CICD/github-app/daily-snapshot
+    capabilities:
+    - read
+  - path: kv/data/CICD/shared/xconnect-operator-invite/*
+    capabilities:
+    - create
+    - update

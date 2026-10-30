@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-shared-vault-snapshot
+  description: github-actions-platform-ops-toolkit-shared-vault-snapshot
+spec:
+  paths:
+  - path: sys/storage/raft/snapshot
+    capabilities:
+    - read
+  - path: kv/data/CICD/shared/vault-backup
+    capabilities:
+    - read

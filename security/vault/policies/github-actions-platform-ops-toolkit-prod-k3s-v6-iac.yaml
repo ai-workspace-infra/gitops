@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-prod-k3s-v6-iac
+  description: github-actions-platform-ops-toolkit-prod-k3s-v6-iac
+spec:
+  paths:
+  - path: kv/data/CICD/prod/akamai-cloud/manbuzhe2026
+    capabilities:
+    - read
+  - path: kv/data/CICD/prod/iac_state
+    capabilities:
+    - read
