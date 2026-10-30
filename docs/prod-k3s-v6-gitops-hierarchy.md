@@ -8,7 +8,7 @@
 ```mermaid
 flowchart TD
   Repo[同一个 GitOps 仓库] --> Bootstrap[GitRepository: config-prod]
-  Bootstrap --> Root[Kustomization: prod-k3s-v6]
+  Bootstrap --> Root[Kustomization: prod-k3s]
   Root --> NS[5 个服务 namespace + external-secrets]
   Root --> ESO[Kustomization: external-secrets]
   ESO --> EHR[HelmRelease: external-secrets 2.14.0]
@@ -39,7 +39,7 @@ flowchart TD
 | 层 | V6 对象 | 管理内容 | 更新边界 |
 | --- | --- | --- | --- |
 | 引导配置源 | `flux-system/config-prod` | V6 根目录的不可变配置 tag/commit | 仅 V6 管理图、单元 source pin 或放行状态变化时更新 |
-| 根 Kustomization | `flux-system/prod-k3s-v6` | `environments/clusters/prod-k3s-v6` | 只应用管理图；`wait: false` 不被暂停的子 Kustomization 阻塞，不由 bootstrap 另外生成 `platform-root` |
+| 根 Kustomization | `flux-system/prod-k3s` | `environments/clusters/prod-k3s-v6` | 根名按 GitOps 环境稳定；V6 批次路径隔离目录。冷启动先暂停；受审查的 `release-root` 阶段再启用管理根，`wait: false` 不等待暂停的子 Kustomization，不由 bootstrap 另外生成 `platform-root` |
 | 单元配置源 | 5 个 `flux-system/<unit>-config` | 同仓库中该单元配置的独立 tag/commit | 只推进被选中单元；其他四个 pin 保留 |
 | 子 Kustomization | 5 个 `flux-system/<unit>` | `services/prod-k3s-v6/<unit>` | 独立 sourceRef、path、暂停状态、健康等待及最小依赖 |
 | 控制器前置 | `flux-system/external-secrets` | `services/prod-k3s-v6/cluster-prerequisites/external-secrets` | ESO 2.14.0、CRD 与控制器；不属于五个业务发布单元 |
@@ -72,6 +72,55 @@ PostgreSQL、`caddy-ingress`、`web-saas-prod` 三个 HelmRelease 统一引用�
 显式跨 namespace 后端，不重复启用业务 Pod。独立 Caddy 契约仍待 producer 发布新 digest，
 旧暂停 pin 不构成可部署证据。完整 values 和 KV 路径关联见创建准备文档。
 
+## 2.1 V6 域名分配与入口边界
+
+以下是 V6 专属主机名，不代表 DNS 已创建或服务已经可访问。V5 canonical 域名保持不变；
+用户要求 V6 专属域名最终解析到新集群。先用 `curl --resolve <host>:443:<V6-IP>` 完成无 DNS
+路由检查，取得实际节点地址后新增 V6 记录。V6 证书需覆盖对应 SAN，且须核对证书/私钥匹配、有效期和链；
+不得因域名已写入配置而推定证书或 DNS 有效。
+
+Selfhost V6 继续使用 `dns_mode=none`，其作用是禁止默认更新 canonical 域名，不代表禁止
+V6 批次专属记录。六个 V6 名称需走独立 DNS owner 操作；当前 Selfhost Orchestrator 没有此 A
+记录写入阶段。初步按 DNS-only A、TTL 60 秒指向 CMDB 核实的 V6 IPv4 规划；不创建 AAAA，除非
+实际分配并验收 IPv6。该记录操作不得改写 `vault.svc.plus`、`observability.svc.plus`、
+`console.svc.plus`、`accounts.svc.plus`、`billing.svc.plus` 或 `postgresql.svc.plus`。
+
+| 服务 | 建议的 V6 域名/访问方式 | 当前声明中的候选名 | 入口与凭据规划 | 状态/门禁 |
+| --- | --- | --- | --- | --- |
+| Console UI | `console-selfhost-prod-v6.svc.plus` | `console-k3s-v6.svc.plus`（旧候选，已改为推荐名） | Caddy → `web-saas-console.web-saas-prod.svc.cluster.local:80`；`ingress-prod/console-tls` | 名称已按 V5 结构收敛；待证书 SAN、TLS KV 和 HTTPS/页面验收 |
+| Accounts API/UI | `accounts-selfhost-prod-v6.svc.plus` | `accounts-k3s-v6.svc.plus`（旧候选，已改为推荐名） | Caddy → `web-saas-accounts.web-saas-prod.svc.cluster.local:80`；`ingress-prod/accounts-tls` | 名称已按 V5 结构收敛；待证书 SAN、TLS KV、接口回归和错误率验收 |
+| Billing API/UI | `billing-selfhost-prod-v6.svc.plus` | `billing-k3s-v6.svc.plus`（旧候选，已改为推荐名） | Caddy → `web-saas-billing.web-saas-prod.svc.cluster.local:80`；`ingress-prod/billing-tls` | 名称已按 V5 结构收敛；真实扣款/退款及 webhook 另行评审，不因 V6 路由自动启用 |
+| PostgreSQL | `postgresql-selfhost-prod-v6.svc.plus`（DNS 名称已分配；不开放公网 DB 端口） | 待新增 V6 A 记录 | 应用走集群内 Service DNS；`migratectl` 按迁移授权访问隔离的目标库 | DNS 解析与数据库网络访问分离；5432 不加入公网防火墙 |
+| Content | 暂不分配独立公网域名 | `content-k3s-v6.svc.plus` | 优先作为业务内部服务，由 Console/API 内部访问；当前 Caddy 无对应 route/TLS 引用 | 待业务 owner 确认独立外部入口、后端 Service/端口及认证后再分配 |
+| Observability | `observability-k3s-v6.svc.plus` | 同左，Grafana `rootUrl` 当前已使用 | DNS 只解析到 V6 节点；访问仍须经 VPN/受限运维通道，当前 Caddy 无 route/TLS 引用 | DNS 生效不等于公开访问放行；先确认 SSO、来源限制和 TLS |
+| Vault | `vault-selfhost-prod-v6.svc.plus`（V6 专属服务/TLS 名称；不公开管理/API） | `vault-k3s-v6.svc.plus`（旧候选，已改为推荐名） | 不通过 Caddy 对公网暴露 Vault 管理/API；初始证书读取仍走现有 `https://vault.svc.plus` | 待证书 SAN、Vault `tlsServerName` 与集群内服务名核对；公共 Vault 域名/DNS保持不变 |
+
+初始化 Vault TLS 所读取的来源仍为现有公共 `https://vault.svc.plus`，它只用于读取受控
+证书记录，不等于 V6 Vault 的服务地址。V6 上述候选名的
+用户提供的 V5 记录显示：`console-selfhost-prod-v5.svc.plus` 曾有 Google DoH A 记录回执
+（TTL 60、status 0），但 HTTPS/SNI、登录和 runtime 为 `NOT_RUN`；Accounts/Billing 仅有
+provider 确认，独立查询仍待补，PostgreSQL 项无结果。以上均不是 V6 可用性证据，也不构成
+V5 线上验收。V6 建议域名的本机递归查询未返回记录；Google DoH A 查询对 Console、Accounts、
+Billing、PostgreSQL、Vault、Observability 的 V6 名称均返回 NXDOMAIN。V6 GitOps 路由与
+`service_domains` 已按确认的名称收敛；用户要求的 V6 DNS 记录尚未创建，须待本批次实际地址
+核实后添加；V5 canonical 域名不变。发布前仍须核对证书 SAN、KV 记录和验收清单。
+
+### 与 V5 基线相同格式的 V6 批次验收清单
+
+| V5 基线 | V6 批次建议域名 | V6 DNS/入口状态 | HTTPS/SNI、应用或数据库验收 |
+| --- | --- | --- | --- |
+| `console-selfhost-prod-v5.svc.plus`：Google DoH A 有早期回执；页面/runtime `NOT_RUN` | `console-selfhost-prod-v6.svc.plus` | Google DoH A 查询返回 NXDOMAIN；未创建记录 | HTTPS/SNI、登录、关键页面和 runtime 均 `NOT_RUN` |
+| `accounts-selfhost-prod-v5.svc.plus`：provider 已确认，独立查询待补 | `accounts-selfhost-prod-v6.svc.plus` | Google DoH A 查询返回 NXDOMAIN；未创建记录 | HTTPS/SNI、API 回归、错误率和 runtime 均 `NOT_RUN` |
+| `billing-selfhost-prod-v5.svc.plus`：provider 已确认，独立查询待补 | `billing-selfhost-prod-v6.svc.plus` | Google DoH A 查询返回 NXDOMAIN；未创建记录 | HTTPS/SNI、webhook 和 runtime 均 `NOT_RUN`；真实交易未授权 |
+| `postgresql-selfhost-prod-v5.svc.plus`：无记录证据 | `postgresql-selfhost-prod-v6.svc.plus` | Google DoH A 查询为 NXDOMAIN；地址确认后需解析到 V6 节点，但 5432 保持关闭 | 数据库仅集群内访问；部署后验证 Service、PVC、备份恢复和授权的迁移连接 |
+
+同一命名批次下，`content` 暂不分配域名；`observability-k3s-v6.svc.plus` 与
+`vault-selfhost-prod-v6.svc.plus` 也需解析到 V6 新节点，但不因此开放匿名监控或 Vault 管理/API。
+初步规划为 6 条 DNS-only A 记录、TTL 60 秒，目标为实际 IaC/CMDB 确认的 V6 IPv4；不配置 AAAA
+除非确认 IPv6 地址。新增前检查 Cloudflare 权威区冲突和代理模式。建议名的 DoH 结果只代表本次 A 查询
+得到 NXDOMAIN，后续正式启用前仍须检查 A/AAAA/CNAME、权威区、解析目标、TLS SAN/链和
+HTTPS/SNI；DNS 生效后再独立验证实际路由和服务。PostgreSQL 5432 防火墙仍保持关闭。
+
 ## 3. 每种版本与更新方式
 
 - **根配置版本**：`config-prod.spec.ref`。保存 V6 管理图与各单元的选择。
@@ -97,27 +146,28 @@ SQL schema/数据库/业务持久状态版本转换必须去下一代新集群�
 
 ### 首次引导
 
-首次候选的六个 GitRepository pin 指向同一个包含完整 V6 目录的已审查 tag/commit，
-便于核对完整初始图。初始正式版本为 `v2026.10.29.4`，解析到已合入的
-`c74a1a5a7d3a633d4020897fbb765b3e23fb279a`；六个初始 pin 已统一固定并构建验证。
-后续各单元可独立推进版本引用，不重新执行首次全图引导。
+冷启动时六个 GitRepository 固定到同一完整管理图的已审查 tag，便于从单一 commit
+核对完整初始图。后续五个单元 GitRepository 可独立固定和推进不可变 tag；根管理 source
+仍单独固定根配置 tag，不重新执行首次全图引导。
 
-Playbooks 的 `declarative_paused` 模式从控制端固定 GitOps checkout 构建 root 与所有前置/业务路径，
-加载 source、root、子 Kustomization、chart 源及 HelmRelease；不会另外生成/调谐 `platform-root`。
-六个 GitRepository、九个 Flux Kustomization 和八个 HelmRelease 均要求 `suspend: true`。
-ExternalSecret 本身没有 `suspend` 字段；它由暂停的 `vault-tls-bootstrap` Kustomization 隔离，不会在放行前调谐。
+Playbooks 的 `declarative_paused` 模式从控制端固定 GitOps checkout 校验并加载管理图，
+不会另外生成/调谐 `platform-root`。首次加载时六个 GitRepository、根与八个子 Kustomization、
+八个 HelmRelease 全部暂停；后续受审查的 `release-root` 操作只启用 `config-prod` 和根 `prod-k3s`，
+五个单元 source 与八个子 Kustomization/HelmRelease 继续保持暂停。ExternalSecret 本身没有 `suspend` 字段；
+它由暂停的 `vault-tls-bootstrap` Kustomization 隔离，不会在放行前调谐。
 所有对象已加载不等于 release 已安装，更不等于业务健康或数据验收通过。
 
-引导器验证源码 commit、稳定 tag、对象名称、sourceRef/path、一单元一配置源以及完整暂停状态；
-拒绝覆盖已有 active Flux 图。保留旧 generated 模式仅为既有 caller 兼容，V6 明确选 paused 模式。
+引导器验证根配置 tag、首发统一 source pin、对象名称、sourceRef/path、一单元一配置源及完整暂停边界；
+若发现已有 active Flux 对象则拒绝冷启动覆盖。保留旧 generated 模式仅为既有 caller 兼容，
+V6 明确选声明式分阶段模式。
 
 ### 放行顺序
 
 1. K3s 与 Flux core 由受审查的 Playbooks bootstrap 安装。V6 已验收 K3s `v1.37.1+k3s1` Ready，
    Flux source/kustomize/helm/notification controller 均 `1/1 Ready`；不重复安装。
-2. 节点、独立数据卷 `/data`、PV 供给路径、hostname/身份及 Flux 暂停式声明加载完成。
-   在权威声明中启用根 GitRepository 和根 Kustomization，仅使管理图开始调谐；root `wait: false`
-   只确认管理对象成功应用，五个业务单元和三个前置各自报告状态并仍保持暂停。
+2. 节点、独立数据卷 `/data`、PV 供给路径、hostname/身份及完整暂停式 Flux 声明加载完成。
+   经 `release-root` 审查后只启用管理 source/root；root `wait: false` 只确认管理对象成功应用，
+   五个业务单元和三个前置子 Kustomization/HelmRelease 仍保持暂停。
 3. 单独放行 `external-secrets` Kustomization 与 HelmRelease，等待 ESO controller 和 CRD Ready。
    ESO 固定 Helm chart `2.14.0`；V6 K3s `1.37` 在该版本上游支持矩阵内。禁用 chart 默认的全局
    `serviceaccounts/token` 创建权限，只授予 ESO 对 `vault-prod/vault-tls-reader` 的命名空间级、
@@ -130,7 +180,7 @@ ExternalSecret 本身没有 `suspend` 字段；它由暂停的 `vault-tls-bootst
    错误 audience 和错误 ServiceAccount 登录被拒绝，记录脱敏证据。此角色与 V6 Vault 启动后的内部 Vault auth 完全分开。
    Flux dependsOn 仅验证身份对象已应用；授权验收是独立的放行门禁，不由 dependsOn 自动证明。
 5. 放行 `vault-tls-bootstrap` 后等待其 ExternalSecret `Ready=True`，检查目标 Secret 名称/类型、证书
-   与私钥匹配、有效期及 SAN `vault-k3s-v6.svc.plus`；敏感值不得写入日志。ExternalSecret 每 5 分钟读取公共 Vault 中
+   与私钥匹配、有效期及 SAN `vault-selfhost-prod-v6.svc.plus`；敏感值不得写入日志。ExternalSecret 每 5 分钟读取公共 Vault 中
    `tls_fullchain_pem_b64` / `tls_key_pem_b64`，解码后生成 `vault-prod/vault-server-tls`。
    公网 Vault 地址仍是 `https://vault.svc.plus`；不改 DNS、不本机签发证书。
 6. 只有 Secret 同步与证书校验通过后，才放行 Vault 子 Kustomization/HelmRelease；之后由 Vault owner
@@ -183,4 +233,4 @@ services/prod-k3s-v6/<unit>/       # 五个业务单元自己的 Kustomize、cha
 ```
 
 V6 已安装并验收 K3s `v1.37.1+k3s1` 及四个 Flux controller；ESO 与 TLS bootstrap 声明是本次新增，
-仍需固定新 GitOps tag、由受审查入口加载为暂停状态，再按上述依赖逐级放行。详见[创建准备与实机证据](prod-k3s-v6-node-cluster-preflight.md)。
+仍需使用新 GitOps tag、由受审查入口完整暂停加载，再按上述依赖逐级放行。详见[创建准备与实机证据](prod-k3s-v6-node-cluster-preflight.md)。

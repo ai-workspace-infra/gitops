@@ -1,13 +1,13 @@
-# V6 management source. Its immutable release activates only the management root;
-# every workload source, child Kustomization and HelmRelease remains independently paused.
+# Stable PROD management source. Cold bootstrap starts all sources paused; a
+# reviewed release-root operation later enables this source and its root.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: config-prod
   namespace: flux-system
 spec:
-  suspend: false
+  suspend: true
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.11
+    tag: v2026.10.30.1

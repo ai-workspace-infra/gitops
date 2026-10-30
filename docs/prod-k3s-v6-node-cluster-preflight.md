@@ -35,7 +35,7 @@ Kustomization 管理五个单元的独立 GitRepository/子 Kustomization，各�
 | 层级 | V6 对象 | 数量 | 声明位置与职责 |
 | --- | --- | --- | --- |
 | 引导 GitRepository | `flux-system/config-prod` | 1 | `source.yaml`；固定 V6 根管理图版本 |
-| 根 Flux Kustomization | `flux-system/prod-k3s-v6` | 1 | `root.yaml` 也进入根 `kustomization.yaml`；仅应用管理图，`wait: false` 使暂停子对象独立报告状态 |
+| 根 Flux Kustomization | `flux-system/prod-k3s` | 1 | 根名按 GitOps 环境稳定；root path 仍是 `environments/clusters/prod-k3s-v6`；首次加载暂停，`release-root` 只启用管理图 |
 | 单元 GitRepository | `<unit>-config`，均在 `flux-system` | 5 | `unit-sources.yaml`；同一 Git 仓库、每单元独立 tag/commit |
 | 业务子 Flux Kustomization | `<unit>`，均在 `flux-system` | 5 | 每个单元独立 sourceRef、`services/prod-k3s-v6/<unit>` 路径及暂停/健康等待状态 |
 | 集群前置 Flux Kustomization | `external-secrets`、`vault-tls-identity`、`vault-tls-bootstrap` | 3 | ESO controller/CRD、身份预置与 Vault server TLS Secret 引导；不增加业务发布单元 |
@@ -56,7 +56,7 @@ namespace，HelmRelease 也在该 namespace。**所有 Flux Kustomization 和 Gi
 
 | 环境 | 集群 | namespace | Kustomization（flux-system） | HelmRelease | GitRepository（flux-system） | source path |
 | --- | --- | --- | --- | --- | --- | --- |
-| PROD | **PROD-K3S-V6** | `flux-system`（控制层） | `prod-k3s-v6` | —（根不直接发布 chart） | `config-prod` | `./environments/clusters/prod-k3s-v6` |
+| PROD | **PROD-K3S-V6** | `flux-system`（控制层） | `prod-k3s` | —（根不直接发布 chart） | `config-prod` | `./environments/clusters/prod-k3s-v6` |
 | PROD | **PROD-K3S-V6** | `external-secrets` | `external-secrets` | `external-secrets` | `config-prod` | `./services/prod-k3s-v6/cluster-prerequisites/external-secrets` |
 | PROD | **PROD-K3S-V6** | `vault-prod`（身份前置） | `vault-tls-identity` | —（ServiceAccount / RBAC） | `vault-prod-config` | `./services/prod-k3s-v6/vault-prod/tls-identity` |
 | PROD | **PROD-K3S-V6** | `vault-prod`（TLS 前置） | `vault-tls-bootstrap` | —（ESO ExternalSecret） | `vault-prod-config` | `./services/prod-k3s-v6/vault-prod/tls-bootstrap` |
@@ -116,20 +116,18 @@ Caddy `externalBackends` 显式引用跨 namespace 上游，禁止重复部署�
 
 | 阶段 | Source / Kustomization / HelmRelease 状态 | 执行约束 |
 | --- | --- | --- |
-| 首次加载 | 六 GitRepository、八 Flux Kustomization、八 HelmRelease 全部 `suspend: true` | Playbooks 从固定 checkout 校验并加载完整声明，不另外生成 `platform-root`，不主动 reconcile |
-| 管理图放行 | 先启用引导 GitRepository 和根 Kustomization | 五个业务单元及三个前置 Kustomization/HelmRelease 仍保持暂停 |
+| 首次加载 | 六个 GitRepository、根与八个子 Kustomization、八个 HelmRelease 全部 `suspend: true` | Playbooks 从固定 checkout 校验并加载完整声明，不另外生成 `platform-root` |
+| 管理图接管 | `release-root` 按固定 GitOps tag 启用 `config-prod` 和 `prod-k3s` | 五个业务单元及三个前置 Kustomization/HelmRelease 仍保持暂停 |
 | ESO 与 Vault TLS 前置 | 先放行 ESO controller/CRD；准备公共 Vault JWT auth 只读角色；再同步 `vault-server-tls` | Secret Ready、证书/私钥匹配、SAN 和有效期验收通过后，才放行 Vault HelmRelease |
-| 单元冷启动 | Vault → PostgreSQL → Observability → Web SaaS → Ingress | Vault 完成初始化与内部 SecretStore 后逐单元放行；Ingress 最后，公共 DNS 保持不变 |
+| 单元冷启动 | Vault → PostgreSQL → Observability → Web SaaS → Ingress | Vault 完成初始化与内部 SecretStore 后逐单元放行；Ingress 最后；V5 canonical DNS 保持不变，V6 批次域名由 DNS owner 按已确认的新节点 IP 单独添加 |
 | 单元独立维护 | 保持正常运行单元状态，仅修改被选中单元的声明与 pin | 所有暂停状态在权威 GitOps 声明中维护；不靠现场 resume 对抗父级旧声明 |
 | 健康验收 | source/子 Kustomization/HelmRelease 与目标 revision 一致，再检查实际链路 | 暂停 HR 不会因解除子 Kustomization 暂停而自动运行；`wait: true` 须与 HR 放行配套，Ready 不等于数据或业务验收 |
 
 根、Vault/PostgreSQL/监控子 Kustomization 已设置 `prune: false`，保留数据相关对象；
 仍须验证 Helm 自身删除行为、PVC `Retain`、云卷保护和备份，不能把 prune 关闭当作完整数据保护。
-首次六个 Git source pin 必须共同指向包含 V6 目录的正式候选，后续才各自推进。
-TLS identity 分门禁已合并到 GitOps 主干。当前 V6 源需要一份新的固定发布：六个 GitRepository
-首发均指向 `v2026.10.29.8`，保持暂停；发布 tag 后再用 Playbooks 的暂停图校验器验证六个源
-都解析到同一个已审查提交。后续允许逐个更新单元源 pin 和对应 Kustomization/HelmRelease，
-其他单元继续固定原版本。公共 DNS 在本次 V6 冷启动与验收期间保持不启用、不修改。
+冷启动 tag 的六个 Git source pin 首发统一固定到同一不可变候选；后续五个单元 source 可独立推进。
+首次加载时所有 Flux source/root/child/HelmRelease 暂停，`release-root` 只放行管理 source/root。
+V5 canonical DNS 不启用、不修改；V6 专属 DNS 目标另见 GitOps hierarchy 域名规划，并在新节点 IP 确认后由 DNS owner 新增。
 
 ## 部署所需 Vault KV 路径
 
@@ -183,8 +181,7 @@ data path `kv/data/CICD/domains/svc.plus` 的权限。Vault JWT verifier 必须�
 
 ExternalSecret 每 5 分钟刷新，删除策略 `Retain`。放行 Vault HelmRelease 前必须确认
 ExternalSecret `Ready=True`、Secret 存在且类型/键名符合 chart contract，证书与私钥匹配、有效期
-与 SAN 覆盖 V6 专属 `vault-k3s-v6.svc.plus`。需要集群内消费者用该主机名访问 Vault 时，后续
-配置只作用于 V6 的内部 DNS 映射至 Vault ClusterIP；不创建或修改公网 DNS。证书/私钥值不进入 Git、日志、工单或执行回执。
+与 SAN 覆盖 V6 专属 `vault-selfhost-prod-v6.svc.plus`。该名字的 DNS 记录只解析到 V6 新节点，不代表 Vault 管理/API 对公网开放；集群内消费者使用集群 Service DNS，并按证书 SAN 设置受支持的 TLS server name。V6 DNS 记录在新节点 IP 确认后由 DNS owner 单独创建，不触碰公共 `vault.svc.plus` 或 V5 DNS。证书/私钥值不进入 Git、日志、工单或执行回执。
 共享 Vault JWT mount/role/policy 尚未证明可用前，保持相关 Kustomization 和 HelmRelease 暂停；
 本次文档/声明变更不执行共享 Vault 写入、凭据轮换、业务迁移或 DNS 修改。
 

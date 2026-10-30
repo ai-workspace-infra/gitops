@@ -1,17 +1,17 @@
 # Same repository, independent immutable configuration pins per release unit.
-# Initially use the same reviewed V6 release; each unit can later advance its
-# own source pin independently while its Kustomization remains separately gated.
+# Cold bootstrap aligns the pins to one reviewed tag; later unit releases may
+# advance one source and reconciliation gate without moving the other units.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: vault-prod-config
   namespace: flux-system
 spec:
-  suspend: false
+  suspend: true
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.8
+    tag: v2026.10.30.1
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -23,7 +23,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.8
+    tag: v2026.10.30.1
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -35,7 +35,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.8
+    tag: v2026.10.30.1
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -47,7 +47,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.8
+    tag: v2026.10.30.1
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -59,4 +59,4 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.29.8
+    tag: v2026.10.30.1

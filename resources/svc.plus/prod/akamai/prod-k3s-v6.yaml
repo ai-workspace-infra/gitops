@@ -68,14 +68,14 @@ hosts:
       k3s_platform_flux_bootstrap_mode: declarative_paused
       k3s_platform_git_url: https://github.com/ai-workspace-infra/gitops.git
       k3s_platform_flux_source_name: config-prod
-      k3s_platform_flux_root_name: prod-k3s-v6
+      k3s_platform_flux_root_name: prod-k3s
       k3s_platform_flux_root_path: ./environments/clusters/prod-k3s-v6
       service_domains:
-        - console-k3s-v6.svc.plus
-        - accounts-k3s-v6.svc.plus
-        - billing-k3s-v6.svc.plus
-        - content-k3s-v6.svc.plus
-        - vault-k3s-v6.svc.plus
+        - console-selfhost-prod-v6.svc.plus
+        - accounts-selfhost-prod-v6.svc.plus
+        - billing-selfhost-prod-v6.svc.plus
+        - postgresql-selfhost-prod-v6.svc.plus
+        - vault-selfhost-prod-v6.svc.plus
         - observability-k3s-v6.svc.plus
       # Canonical alias targets consumed by the dedicated IaC/provider owner.
       # Bootstrap does not independently perform public DNS cutover.
