@@ -18,6 +18,9 @@ spec:
         name: datakit
         namespace: observability-prod
   values:
+    image:
+      repository: pubrepo.guance.com/datakit/datakit
+      tag: "2.16.1@sha256:1cd545f7f14dc08935ec6557936b1e6422a3d7d9728b57d6e1d6b57ea1703fc6"
     workload:
       kind: DaemonSet
     datakit:
