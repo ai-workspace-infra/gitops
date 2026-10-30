@@ -12,6 +12,22 @@ spec:
     kind: OCIRepository
     name: observability-stack-chart
   values:
+    victoriaMetrics:
+      image:
+        repository: victoriametrics/victoria-metrics
+        tag: "v1.101.0@sha256:91d0456cc064e195869175074ced2a6849d72531613b320492698e5fe935d10a"
+    victoriaLogs:
+      image:
+        repository: victoriametrics/victoria-logs
+        tag: "v1.52.0@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+    victoriaTraces:
+      image:
+        repository: victoriametrics/victoria-traces
+        tag: "v0.1.0@sha256:b3204fd598b023b4726f38689791c707803b9f34733822dd053f22d64721b3d2"
+    otelCollector:
+      image:
+        repository: otel/opentelemetry-collector-contrib
+        tag: "0.114.0@sha256:37fa87091cfaaec7234a27e4e395a40c31c2bfaea97a349a4afef6d9e9681197"
     telemetry:
       cluster: PROD-K3S-V6
       environment: prod
