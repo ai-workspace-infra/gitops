@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-shared-vault-node-oidc-open-platform-shared
+  description: github-actions-platform-ops-toolkit-shared-vault-node-oidc-open-platform-shared
+spec:
+  paths:
+  - path: kv/data/shared/platform/oidc/open-platform-shared
+    capabilities:
+    - read

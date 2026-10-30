@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-prod-release
+  description: Release authoring only; downstream deployments use their own scoped roles.
+spec:
+  paths:
+  - path: kv/data/CICD/github-app/daily-snapshot
+    capabilities:
+    - read

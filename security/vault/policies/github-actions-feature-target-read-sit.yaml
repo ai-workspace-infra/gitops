@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-feature-target-read-sit
+  description: Dedicated read-only Dev target identity; no cloud write or DNS credentials.
+spec:
+  paths:
+  - path: kv/data/sit/platform/akamai/feature-target
+    capabilities:
+    - read

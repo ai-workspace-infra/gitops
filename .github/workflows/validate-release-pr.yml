@@ -25,11 +25,12 @@ jobs:
       - run: python3 -m unittest discover -s tests -p test_feature_sit_path_isolation.py
 
   yaml-only-source:
-    name: Reject tracked JSON sources
+    name: Enforce YAML-only declarations
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Enforce the repository YAML source rule
+      - run: python3 -m pip install 'pyyaml==6.0.2'
+      - name: Enforce YAML-only repository and Vault authorization contracts
         run: |
           python3 - <<'PY'
           import subprocess
@@ -37,6 +38,53 @@ jobs:
           forbidden = sorted(path for path in paths if path.lower().endswith('.json'))
           if forbidden:
               raise SystemExit('GitOps tracks YAML sources only; convert: ' + ', '.join(forbidden))
+
+          vault_hcl = sorted(path for path in paths
+                             if path.startswith('security/vault/') and path.lower().endswith('.hcl'))
+          if vault_hcl:
+              raise SystemExit('Vault authorization declarations must be YAML: ' + ', '.join(vault_hcl))
+
+          import pathlib
+          import yaml
+          root = pathlib.Path('security/vault')
+          docs = []
+          for path in sorted(root.rglob('*.yaml')):
+              with path.open(encoding='utf-8') as stream:
+                  doc = yaml.safe_load(stream)
+              if not isinstance(doc, dict) or doc.get('apiVersion') != 'security.gitops/v1alpha1':
+                  raise SystemExit(f'{path}: invalid Vault declaration apiVersion')
+              metadata = doc.get('metadata')
+              if not isinstance(metadata, dict) or not isinstance(metadata.get('name'), str):
+                  raise SystemExit(f'{path}: metadata.name is required')
+              docs.append((path, doc))
+
+          policies = {doc['metadata']['name'] for _, doc in docs if doc.get('kind') == 'VaultACLPolicy'}
+          for path, doc in docs:
+              kind = doc.get('kind')
+              spec = doc.get('spec')
+              if not isinstance(spec, dict):
+                  raise SystemExit(f'{path}: spec must be a mapping')
+              if kind in ('VaultACLPolicy', 'VaultACLPolicyTemplate'):
+                  entries = spec.get('paths')
+                  if not isinstance(entries, list) or not entries:
+                      raise SystemExit(f'{path}: at least one policy path is required')
+                  for entry in entries:
+                      if not isinstance(entry, dict) or not isinstance(entry.get('path'), str):
+                          raise SystemExit(f'{path}: every policy entry requires a path')
+                      if not isinstance(entry.get('capabilities'), list) or not entry['capabilities']:
+                          raise SystemExit(f'{path}: every policy path requires capabilities')
+              elif kind in ('VaultJWTAuthRole', 'VaultKubernetesJWTAuthRole'):
+                  refs = spec.get('token_policies')
+                  if not isinstance(refs, list) or not refs:
+                      raise SystemExit(f'{path}: token_policies must be a non-empty list')
+                  missing = sorted(set(refs) - policies)
+                  if missing:
+                      raise SystemExit(f'{path}: undefined policy reference(s): {", ".join(missing)}')
+              elif kind == 'VaultJWTAuthRoleTemplate':
+                  if not isinstance(spec.get('role'), dict):
+                      raise SystemExit(f'{path}: role template must contain a role mapping')
+              else:
+                  raise SystemExit(f'{path}: unsupported Vault declaration kind {kind!r}')
           PY
   validate-zitadel-compose:
     name: Validate Shared IAM single-host GitOps

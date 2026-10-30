@@ -1,0 +1,22 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-artifacts
+  description: github-actions-artifacts
+spec:
+  paths:
+  - path: kv/data/CICD
+    capabilities:
+    - read
+  - path: kv/data/CICD/*
+    capabilities:
+    - read
+  - path: kv/metadata/CICD
+    capabilities:
+    - list
+    - read
+  - path: kv/metadata/CICD/*
+    capabilities:
+    - list
+    - read

@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: prod-k3s-v6-vault-tls-reader
+  description: prod-k3s-v6-vault-tls-reader
+spec:
+  paths:
+  - path: kv/data/CICD/domains/svc.plus
+    capabilities:
+    - read

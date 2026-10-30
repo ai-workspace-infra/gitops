@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-shared-vault-monitoring
+  description: github-actions-platform-ops-toolkit-shared-vault-monitoring
+spec:
+  paths:
+  - path: kv/data/CICD/observability
+    capabilities:
+    - read

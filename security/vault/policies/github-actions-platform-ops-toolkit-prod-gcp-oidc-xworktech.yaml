@@ -1,0 +1,23 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-prod-gcp-oidc-xworktech
+  description: github-actions-platform-ops-toolkit-prod-gcp-oidc-xworktech
+spec:
+  paths:
+  - path: kv/data/CICD
+    capabilities:
+    - read
+  - path: kv/data/prod/platform/oidc/xworktech
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/oidc/xworktech
+    capabilities:
+    - read
+  - path: kv/data/CICD/prod/iac_state
+    capabilities:
+    - read
+  - path: kv/metadata/CICD/prod/iac_state
+    capabilities:
+    - read

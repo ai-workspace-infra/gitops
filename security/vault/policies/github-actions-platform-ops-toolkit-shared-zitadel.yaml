@@ -1,0 +1,17 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-shared-zitadel
+  description: Service delivery only. No Terraform state, DNS or migration-source access.
+spec:
+  paths:
+  - path: kv/data/shared/platform/oidc/open-platform-shared
+    capabilities:
+    - read
+  - path: kv/data/shared/iam
+    capabilities:
+    - read
+  - path: kv/data/shared/databases
+    capabilities:
+    - read

@@ -1,0 +1,15 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-billing-service
+  description: github-actions-billing-service
+spec:
+  paths:
+  - path: kv/data/CICD
+    capabilities:
+    - read
+  - path: kv/metadata/CICD
+    capabilities:
+    - list
+    - read

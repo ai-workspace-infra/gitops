@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-shared-vault-legacy-ssh
+  description: github-actions-platform-ops-toolkit-shared-vault-legacy-ssh
+spec:
+  paths:
+  - path: ssh-client-signer/sign/vault-legacy-ops
+    capabilities:
+    - update

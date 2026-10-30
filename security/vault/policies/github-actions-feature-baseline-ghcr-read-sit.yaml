@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-feature-baseline-ghcr-read-sit
+  description: Dedicated SIT baseline pull credential; no registry write or adjacent secrets.
+spec:
+  paths:
+  - path: kv/data/sit/platform/ghcr/feature-baseline
+    capabilities:
+    - read

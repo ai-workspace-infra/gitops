@@ -1,0 +1,11 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-feature-dns-write-sit
+  description: Dedicated SIT DNS identity; the provider credential is separately zone-scoped.
+spec:
+  paths:
+  - path: kv/data/sit/platform/cloudflare/feature-dns
+    capabilities:
+    - read
