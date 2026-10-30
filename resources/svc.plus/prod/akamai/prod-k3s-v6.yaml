@@ -65,7 +65,7 @@ hosts:
       k3s_platform_local_storage_path: /data/k3s/storage
       k3s_platform_require_data_mount: true
       k3s_platform_write_kubeconfig_mode: "0600"
-      k3s_platform_flux_bootstrap_mode: declarative_paused
+      k3s_platform_flux_bootstrap_mode: declarative_active
       k3s_platform_git_url: https://github.com/ai-workspace-infra/gitops.git
       k3s_platform_flux_source_name: config-prod
       k3s_platform_flux_root_name: prod-k3s

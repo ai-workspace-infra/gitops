@@ -1,13 +1,13 @@
-# Stable PROD management source. Cold bootstrap starts all sources paused; a
-# reviewed release-root operation later enables this source and its root.
+# Stable PROD management source. The release tag must be published after merge
+# before the production workflow selects this candidate.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: config-prod
   namespace: flux-system
 spec:
-  suspend: true
+  suspend: false
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.30.1
+    tag: v2026.10.30.2

@@ -4,7 +4,7 @@ metadata:
   name: datakit
   namespace: observability-prod
 spec:
-  suspend: true
+  suspend: false
   interval: 10m
   releaseName: datakit
   targetNamespace: observability-prod

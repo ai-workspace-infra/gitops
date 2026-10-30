@@ -4,7 +4,7 @@ metadata:
   name: vault
   namespace: vault-prod
 spec:
-  suspend: true
+  suspend: false
   interval: 5m
   releaseName: vault
   targetNamespace: vault-prod
