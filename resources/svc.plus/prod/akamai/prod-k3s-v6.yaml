@@ -71,6 +71,11 @@ hosts:
       k3s_platform_flux_source_name: config-prod
       k3s_platform_flux_root_name: prod-k3s
       k3s_platform_flux_root_path: ./environments/clusters/prod-k3s-v6
+      # Identity verification waits until this Flux-owned RBAC graph has
+      # reconciled the GitOps commit selected for the bootstrap run.
+      k3s_identity_rbac_kustomizations:
+        - name: cluster-identities
+          namespace: flux-system
       service_domains:
         - console-selfhost-prod-v6.svc.plus
         - accounts-selfhost-prod-v6.svc.plus
