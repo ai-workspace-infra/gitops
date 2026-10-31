@@ -64,6 +64,7 @@ hosts:
       k3s_platform_flux_version: "2.9.6"
       k3s_platform_helm_version: v3.22.1
       k3s_platform_local_storage_path: /data/k3s/storage
+      k3s_platform_data_filesystem_label: k3sdata
       k3s_platform_require_data_mount: true
       k3s_platform_write_kubeconfig_mode: "0600"
       k3s_platform_flux_bootstrap_mode: declarative_active
