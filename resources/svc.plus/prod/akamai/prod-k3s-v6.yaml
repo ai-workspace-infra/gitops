@@ -38,6 +38,7 @@ hosts:
     # Mount/format and Kubernetes storage routing belong to Playbooks, not IaC.
     volume:
       label: prod-k3s-v6-cold-20261031-data
+      filesystem_label: pk3s-v6-data
       size: 100
       filesystem: ext4
     firewall:
