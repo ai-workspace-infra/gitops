@@ -6,7 +6,7 @@ targets:
   project: svc.plus
   provider: akamai-cloud
   account: manbuzhe2026
-  workspace: prod-k3s-v6
+  workspace: prod-k3s-v6-cold-20261031
   auth:
     expected_identity: manbuzhe2026
     vault_role: github-actions-platform-ops-toolkit-prod-k3s-v6-iac
@@ -22,7 +22,8 @@ targets:
       mode: terraform
       manifest: resources/svc.plus/prod/akamai/prod-k3s-v6.yaml
       state:
-        key: terraform/prod/svc.plus/akamai-cloud/manbuzhe2026/prod-k3s-v6/terraform.tfstate
+        # A separate cold-start attempt preserves the previous V6 state and disk.
+        key: terraform/prod/svc.plus/akamai-cloud/manbuzhe2026/prod-k3s-v6-cold-20261031/terraform.tfstate
         cli_workspace: default
       owners:
       - module.compute_prod_k3s_v6
@@ -33,8 +34,8 @@ targets:
       requires_existing_state: false
       create_only: true
       destroy_allowed: false
-      reason: New isolated V6 validation cluster with an independent 100 GB data volume; capacity, volume protection and CMDB/mount contracts require preflight; no V5 resources or canonical DNS may change.
-  namespace: prod-k3s-v6
+      reason: Fresh V6 cold-start attempt with a new 100 GB data volume and separate state; retain the previous V6 state and disk, and do not change V5 resources or canonical DNS.
+  namespace: prod-k3s-v6-cold-20261031
   lifecycle:
     status: active
     persistent: true

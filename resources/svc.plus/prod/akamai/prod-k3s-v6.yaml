@@ -1,14 +1,14 @@
 # Kubernetes PROD Web SaaS on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
 # User-selected 2 shared vCPU / 4 GB, Debian 13 (linode/debian13)
-# Isolated state namespace: prod-k3s-v6
+# Fresh cold-start state is isolated from the retained previous V6 state.
 # New isolated V6 validation cluster; canonical production DNS is not promoted.
 global:
   provider: akamai-cloud
   environment: prod
   project: svc.plus
   account: manbuzhe2026
-  workspace: prod-k3s-v6
-  state_namespace: prod-k3s-v6
+  workspace: prod-k3s-v6-cold-20261031
+  state_namespace: prod-k3s-v6-cold-20261031
   region: jp-tyo-3
   image: linode/debian13
   type: g6-standard-2
@@ -37,10 +37,11 @@ hosts:
     # Independent PROD data volume; capacity is a planning candidate in provider GB.
     # Mount/format and Kubernetes storage routing belong to Playbooks, not IaC.
     volume:
-      label: prod-k3s-v6-data
+      label: prod-k3s-v6-cold-20261031-data
       size: 100
       filesystem: ext4
     firewall:
+      label: prod-k3s-v6-cold-20261031-fw
       # Temporary user-approved bootstrap access; replace with operator CIDRs.
       ssh_cidrs: ["0.0.0.0/0"]
       ssh_ipv6_cidrs: []
