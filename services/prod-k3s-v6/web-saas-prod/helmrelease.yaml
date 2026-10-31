@@ -36,7 +36,7 @@ spec:
           POSTGRES_USER: accounts_runtime
           DB_NAME: account
         secretRefs:
-        - accounts-runtime
+        - web-saas-secrets
         - accounts-db-runtime
         image: ghcr.io/ai-workspace-services/accounts:sha-3ef09c82f46152096bfc16edc9ba767f128a197f@sha256:b5bf111a64ca2f2ed5e74d2ab1f87e0e164d09869a32832368fb43e577fdf37b
         resources:
@@ -51,7 +51,7 @@ spec:
           POSTGRES_USER: billing_runtime
           DB_NAME: account
         secretRefs:
-        - billing-runtime
+        - web-saas-secrets
         - billing-db-runtime
         image: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
         resources:
@@ -62,7 +62,7 @@ spec:
       workload:
         image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
         secretRefs:
-        - content-runtime
+        - web-saas-secrets
         resources:
           requests: {cpu: 15m, memory: 48Mi}
           limits: {cpu: 50m, memory: 64Mi}
