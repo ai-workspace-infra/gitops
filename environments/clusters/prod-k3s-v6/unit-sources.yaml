@@ -1,6 +1,4 @@
-# Same repository, independent immutable configuration pins per release unit.
-# Cold bootstrap aligns the pins to one reviewed tag; later unit releases may
-# advance one source and reconciliation gate without moving the other units.
+# Independent unit sources default to main; each may select a reviewed ref.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -11,7 +9,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.30.2
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -23,7 +21,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.30.2
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -35,7 +33,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.30.2
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -47,7 +45,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.30.2
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -59,4 +57,4 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.30.2
+    branch: main

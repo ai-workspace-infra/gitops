@@ -1,13 +1,14 @@
-# Stable PROD management source. The release tag must be published after merge
-# before the production workflow selects this candidate.
+# Bootstrap owns the management source pin for the selected run.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
   name: config-prod
   namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
 spec:
   suspend: false
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    tag: v2026.10.30.2
+    branch: main
