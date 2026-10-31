@@ -13,3 +13,4 @@ resources:
   - ingress-kustomization.yaml
   - observability-kustomization.yaml
   - web-saas-kustomization.yaml
+  - cluster-identities-kustomization.yaml
