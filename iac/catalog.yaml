@@ -19,6 +19,22 @@ target_manifests:
 - iac/targets/uat-serverless-runtime.yaml
 - iac/migrations/targets/uat-akamai-web-saas-k3s-v5.yaml
 migration_sources:
+- id: prod-akamai-v6-retained-state
+  environment: prod
+  project: svc.plus
+  provider: akamai-cloud
+  account: manbuzhe2026
+  namespace: prod-k3s-v6
+  lifecycle:
+    status: migration
+    persistent: true
+  read_only: true
+  state:
+    key: terraform/prod/svc.plus/akamai-cloud/manbuzhe2026/prod-k3s-v6/terraform.tfstate
+    cli_workspace: default
+  provenance:
+    commit: f51fe89de1d5b1dae545fbb47e42e20261597ce2
+    path: iac/targets/prod-akamai-k3s-v6.yaml
 - id: prod-akamai-v6-former-declaration
   environment: prod
   project: svc.plus
