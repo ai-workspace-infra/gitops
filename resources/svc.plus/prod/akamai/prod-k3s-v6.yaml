@@ -71,6 +71,27 @@ hosts:
       k3s_platform_flux_source_name: config-prod
       k3s_platform_flux_root_name: prod-k3s
       k3s_platform_flux_root_path: ./environments/clusters/prod-k3s-v6
+      # Identity verification waits until this Flux-owned RBAC graph has
+      # reconciled the GitOps commit selected for the bootstrap run.
+      # Credentials are generated on the master and delivered to OS users.
+      # The API endpoint is node-local; remote use requires a separate endpoint.
+      k3s_identity_environment: prod
+      k3s_identity_cluster: prod-k3s-v6
+      k3s_identity_api_server: https://127.0.0.1:6443
+      k3s_identity_tls_dir: /opt/rancher/k3s/server/tls
+      k3s_identity_checks:
+        root:
+          - {verb: get, resource: nodes, namespace: flux-system, allowed: true}
+          - {verb: impersonate, resource: users, namespace: flux-system, allowed: false}
+        operator:
+          - {verb: update, resource: deployments/scale, namespace: web-saas-prod, allowed: true}
+          - {verb: get, resource: secrets, namespace: web-saas-prod, allowed: false}
+        auditor:
+          - {verb: get, resource: nodes, namespace: web-saas-prod, allowed: true}
+          - {verb: get, resource: secrets, namespace: web-saas-prod, allowed: false}
+      k3s_identity_rbac_kustomizations:
+        - name: cluster-identities
+          namespace: flux-system
       service_domains:
         - console-selfhost-prod-v6.svc.plus
         - accounts-selfhost-prod-v6.svc.plus
