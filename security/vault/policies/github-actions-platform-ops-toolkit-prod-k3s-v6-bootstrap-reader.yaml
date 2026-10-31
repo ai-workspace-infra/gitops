@@ -1,0 +1,16 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-prod-k3s-v6-bootstrap-reader
+  description: Read the cluster-specific SSH key and three OS identity key records.
+spec:
+  paths:
+    - path: kv/data/prod/platform/prod-k3s-v6/ssh
+      capabilities: [read]
+    - path: kv/data/prod/security/root
+      capabilities: [read]
+    - path: kv/data/prod/security/operator
+      capabilities: [read]
+    - path: kv/data/prod/security/auditor
+      capabilities: [read]
