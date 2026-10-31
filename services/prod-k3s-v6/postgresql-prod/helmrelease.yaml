@@ -31,15 +31,21 @@ spec:
     postgresql:
       enabled: true
       image: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
-      username: postgres
+      username: root
       database: account
-      existingSecret: postgresql-superuser
-      secretKey: POSTGRES_PASSWORD
+      existingSecret: postgresql-admin
+      secretKey: password
+      identityAccounts:
+        enabled: true
+        root: {username: root, existingSecret: postgresql-admin, secretKey: password}
+        operator: {username: operator, existingSecret: postgresql-operator, secretKey: password, tables: [], sequences: []}
+        auditor: {username: auditor, existingSecret: postgresql-auditor, secretKey: password, views: []}
       storage:
         className: local-path
         size: 20Gi
       metrics:
-        enabled: true
+        # A dedicated read-only exporter credential is required before enabling.
+        enabled: false
         resources:
           requests: {cpu: 10m, memory: 32Mi}
           limits: {cpu: 25m, memory: 64Mi}
