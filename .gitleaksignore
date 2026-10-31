@@ -32,3 +32,9 @@ d8bf34e951bf2241fad3460b8b30ce3d25a7fd88:services/distributed-web-saas-fullstack
 8eb1d11bceea89640aa39497d3c124b99e78211f:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:67
 8eb1d11bceea89640aa39497d3c124b99e78211f:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:145
 8eb1d11bceea89640aa39497d3c124b99e78211f:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:223
+
+# Mainline merge commit reintroduced the same reviewed SecretStore metadata findings.
+568c65b2d7b75867c8798d04aab59416998d94ab:services/prod-k3s-v6/web-saas-prod/vault-secrets.yaml:kubernetes-secret-yaml:67
+568c65b2d7b75867c8798d04aab59416998d94ab:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:67
+568c65b2d7b75867c8798d04aab59416998d94ab:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:145
+568c65b2d7b75867c8798d04aab59416998d94ab:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:223

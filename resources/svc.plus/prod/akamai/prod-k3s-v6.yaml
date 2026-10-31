@@ -77,6 +77,9 @@ hosts:
       # The API endpoint is node-local; remote use requires a separate endpoint.
       k3s_identity_environment: prod
       k3s_identity_vault_writer_role: github-actions-platform-ops-toolkit-prod-k3s-v6-identity-writer
+      k3s_platform_vault_bootstrap_reader_role: github-actions-platform-ops-toolkit-prod-k3s-v6-bootstrap-reader
+      k3s_platform_vault_ssh_key_path: kv/data/prod/platform/prod-k3s-v6/ssh
+      k3s_platform_vault_ssh_key_field: SSH_PRIVATE_KEY
       k3s_platform_acceptance_objects:
         - {kind: gitrepositories, namespace: flux-system, name: config-prod}
         - {kind: gitrepositories, namespace: flux-system, name: vault-prod-config}
