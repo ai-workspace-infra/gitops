@@ -77,6 +77,28 @@ hosts:
       # The API endpoint is node-local; remote use requires a separate endpoint.
       k3s_identity_environment: prod
       k3s_identity_vault_writer_role: github-actions-platform-ops-toolkit-prod-k3s-v6-identity-writer
+      k3s_platform_acceptance_objects:
+        - {kind: gitrepositories, namespace: flux-system, name: config-prod}
+        - {kind: gitrepositories, namespace: flux-system, name: vault-prod-config}
+        - {kind: gitrepositories, namespace: flux-system, name: postgresql-prod-config}
+        - {kind: gitrepositories, namespace: flux-system, name: observability-prod-config}
+        - {kind: gitrepositories, namespace: flux-system, name: web-saas-prod-config}
+        - {kind: gitrepositories, namespace: flux-system, name: ingress-prod-config}
+        - {kind: kustomizations, namespace: flux-system, name: external-secrets}
+        - {kind: kustomizations, namespace: flux-system, name: vault-tls-bootstrap}
+        - {kind: kustomizations, namespace: flux-system, name: vault-prod}
+        - {kind: kustomizations, namespace: flux-system, name: postgresql-prod}
+        - {kind: kustomizations, namespace: flux-system, name: observability-prod}
+        - {kind: kustomizations, namespace: flux-system, name: web-saas-prod}
+        - {kind: kustomizations, namespace: flux-system, name: ingress-prod}
+        - {kind: helmreleases, namespace: vault-prod, name: vault}
+        - {kind: helmreleases, namespace: external-secrets, name: external-secrets}
+        - {kind: helmreleases, namespace: postgresql-prod, name: postgresql}
+        - {kind: helmreleases, namespace: observability-prod, name: observability}
+        - {kind: helmreleases, namespace: observability-prod, name: observability-agent}
+        - {kind: helmreleases, namespace: observability-prod, name: datakit}
+        - {kind: helmreleases, namespace: web-saas-prod, name: web-saas-prod}
+        - {kind: helmreleases, namespace: ingress-prod, name: caddy-ingress}
       k3s_identity_cluster: prod-k3s-v6
       k3s_identity_api_server: https://127.0.0.1:6443
       k3s_identity_tls_dir: /opt/rancher/k3s/server/tls
