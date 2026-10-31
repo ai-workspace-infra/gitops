@@ -110,8 +110,14 @@ hosts:
           - {verb: get, resource: nodes, namespace: flux-system, allowed: true}
           - {verb: impersonate, resource: users, namespace: flux-system, allowed: false}
         operator:
+          - {verb: get, resource: pods, namespace: web-saas-prod, allowed: true}
+          - {verb: get, resource: events, namespace: web-saas-prod, allowed: true}
+          - {verb: list, resource: replicasets.apps, namespace: web-saas-prod, allowed: true}
           - {verb: update, resource: deployments/scale, namespace: web-saas-prod, allowed: true}
           - {verb: get, resource: secrets, namespace: web-saas-prod, allowed: false}
+          - {verb: get, resource: pods/log, namespace: web-saas-prod, allowed: false}
+          - {verb: patch, resource: deployments.apps, namespace: web-saas-prod, allowed: false}
+          - {verb: get, resource: pods, namespace: postgresql-prod, allowed: false}
         auditor:
           - {verb: get, resource: nodes, namespace: web-saas-prod, allowed: true}
           - {verb: get, resource: secrets, namespace: web-saas-prod, allowed: false}
