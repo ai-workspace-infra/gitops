@@ -23,3 +23,12 @@ a6bd943c5649d44f55fc9d6e335cec9359b50725:services/distributed-web-saas-fullstack
 57755271d208238ccc2ccab0a055ed2c1b56c783:services/distributed-web-saas-fullstack/prod/external-secret.yaml:kubernetes-secret-yaml:110
 # Reviewed PR554 squash commit: Vault reference metadata only, no secret material.
 d8bf34e951bf2241fad3460b8b30ce3d25a7fd88:services/distributed-web-saas-fullstack/prod/external-secret.yaml:kubernetes-secret-yaml:110
+
+# V6 ExternalSecret documents are ESO declarations, not Kubernetes Secret data.
+# The built-in kubernetes-secret-yaml rule matches `kind: SecretStore` inside
+# `secretStoreRef` and reports the declaration block as a secret. These exact
+# findings contain only SecretStore references and Vault path/property names.
+8eb1d11bceea89640aa39497d3c124b99e78211f:services/prod-k3s-v6/web-saas-prod/vault-secrets.yaml:kubernetes-secret-yaml:67
+8eb1d11bceea89640aa39497d3c124b99e78211f:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:67
+8eb1d11bceea89640aa39497d3c124b99e78211f:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:145
+8eb1d11bceea89640aa39497d3c124b99e78211f:services/prod-k3s-v6/postgresql-prod/vault-secrets.yaml:kubernetes-secret-yaml:223
