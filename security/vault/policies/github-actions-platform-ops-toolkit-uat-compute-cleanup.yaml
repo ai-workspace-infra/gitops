@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-uat-compute-cleanup
+  description: github-actions-platform-ops-toolkit-uat-compute-cleanup
+spec:
+  paths:
+  - path: kv/data/uat/serverless/gcp
+    capabilities:
+    - read
+  - path: kv/data/CICD/github-app/daily-snapshot
+    capabilities:
+    - read
