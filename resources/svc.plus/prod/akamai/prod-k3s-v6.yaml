@@ -76,6 +76,7 @@ hosts:
       # Credentials are generated on the master and delivered to OS users.
       # The API endpoint is node-local; remote use requires a separate endpoint.
       k3s_identity_environment: prod
+      k3s_identity_vault_writer_role: github-actions-platform-ops-toolkit-prod-k3s-v6-identity-writer
       k3s_identity_cluster: prod-k3s-v6
       k3s_identity_api_server: https://127.0.0.1:6443
       k3s_identity_tls_dir: /opt/rancher/k3s/server/tls
