@@ -9,6 +9,8 @@ spec:
   - path: kv/data/uat/serverless/gcp
     capabilities:
     - read
+  # Reviewed cross-env exception (org GitHub App key, read-only, data path only):
+  # see security/vault-exceptions/cross-env-paths.yaml for compat window + exit criteria.
   - path: kv/data/CICD/github-app/daily-snapshot
     capabilities:
     - read
