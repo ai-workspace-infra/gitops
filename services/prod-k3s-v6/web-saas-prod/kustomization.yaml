@@ -4,3 +4,4 @@ namespace: web-saas-prod
 resources:
   - oci-repository.yaml
   - helmrelease.yaml
+  - vault-secrets.yaml
