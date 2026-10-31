@@ -1,0 +1,29 @@
+---
+# Migrated from Platform-Orchestrator config/iac_environment_defaults.json (dfdbc2cc).
+# Target declaration only: environment -> provider/account/public origins. No secrets.
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCEnvironmentDefaults
+spec:
+  environments:
+    sit:
+      cloud_provider: vultr-vps
+      account: primary
+    uat:
+      cloud_provider: gcp-cloud
+      account: manbuzhe2026
+      gcp_account: xworktech
+      accounts_public_origin: https://accounts-uat.onwalk.net
+      billing_public_origin: https://billing-uat.onwalk.net
+    prod:
+      cloud_provider: gcp-cloud
+      account: primary
+      gcp_account: xworktech
+      accounts_public_origin: https://accounts.svc.plus
+      billing_public_origin: https://billing.svc.plus
+    # Pattern key: any prod-v<profile> environment; {profile} is substituted by the reader.
+    prod-v*:
+      cloud_provider: gcp-cloud
+      account: xworktech
+      gcp_account: xworktech
+      accounts_public_origin: https://accounts-selfhost-{profile}.svc.plus
+      billing_public_origin: https://billing-selfhost-{profile}.svc.plus

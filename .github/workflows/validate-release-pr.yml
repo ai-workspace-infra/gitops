@@ -94,6 +94,10 @@ jobs:
               else:
                   raise SystemExit(f'{path}: unsupported Vault declaration kind {kind!r}')
           PY
+      - name: Enforce env-scoped Vault paths for enforced policies (no Vault access)
+        run: |
+          python3 -m unittest discover -s tests -p test_vault_env_isolation.py
+          python3 scripts/validate-vault-env-isolation.py .
   validate-zitadel-compose:
     name: Validate Shared IAM single-host GitOps
     runs-on: ubuntu-latest

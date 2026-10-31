@@ -1,0 +1,36 @@
+---
+# Reviewed exceptions to environment-scoped Vault paths.
+# Kept outside security/vault/ so Vault renderers never treat it as a policy.
+# Policies listed in `enforced_policies` may only reference kv paths under
+# their own environment prefix (kv/{data,metadata}/<env>/ or
+# kv/{data,metadata}/CICD/<env>/) unless an entry below covers the exact
+# (policy, path, capabilities) tuple. Checked by
+# scripts/validate-vault-env-isolation.py; no Vault access.
+apiVersion: security.gitops/v1alpha1
+kind: VaultCrossEnvExceptionList
+metadata:
+  name: cross-env-paths
+spec:
+  enforced_policies:
+  - github-actions-platform-ops-toolkit-uat-compute-cleanup
+  exceptions:
+  - policy: github-actions-platform-ops-toolkit-uat-compute-cleanup
+    path: kv/data/CICD/github-app/daily-snapshot
+    capabilities: [read]
+    status: compatibility-window
+    reason: >-
+      Org-level GitHub App private key (not environment data). The cleanup
+      workflow uses only field app_private_key to mint a read-only,
+      single-repo (gitops, contents:read) installation token. Ported 1:1 from
+      Platform-Orchestrator .github/config/uat-compute-cleanup-auth.yaml; the
+      same path is already granted on main to the uat/sit/prod/dev toolkit
+      policies, so this adds no new secret exposure. Least privilege kept:
+      data read only, no kv/metadata, no list, no wildcard.
+    owner: playbooks (Task 1 Vault contracts)
+    depends_on:
+    - playbooks#895 env-scoped credential contract
+    exit_criteria: >-
+      Playbooks publishes an env-scoped GitHub App credential (e.g.
+      kv/data/uat/github-app/gitops-read) or a token-broker action; the
+      cleanup workflow switches to it; then remove this path and this entry.
+    review_by: '2026-12-31'
