@@ -58,9 +58,9 @@ console:
   enabled: true
   deploymentProfile: single-container
   singleContainer:
-    image: ghcr.io/ai-workspace-services/console:sha-a0c73a4a8c806e77a70315155932de8d203082b2@sha256:ecaec076c718c3265e7a9ca481937f2e00cc29f6cd5e9c053d670c9358739aa3
+    image: ghcr.io/ai-workspace-services/console:sha-ffd896439916098ad0fad7dea25d156b89754b8f@sha256:07c37f0260392cfbb09895d1fc41c46b6e27ffb2c37b30d9cd1277a9da6b7462
     env:
-      FRONTEND_IMAGE: ghcr.io/ai-workspace-services/console:sha-a0c73a4a8c806e77a70315155932de8d203082b2@sha256:ecaec076c718c3265e7a9ca481937f2e00cc29f6cd5e9c053d670c9358739aa3
+      FRONTEND_IMAGE: ghcr.io/ai-workspace-services/console:sha-ffd896439916098ad0fad7dea25d156b89754b8f@sha256:07c37f0260392cfbb09895d1fc41c46b6e27ffb2c37b30d9cd1277a9da6b7462
     port: 8080
     command:
     - /bin/bash
