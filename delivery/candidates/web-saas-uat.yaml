@@ -1,0 +1,112 @@
+apiVersion: delivery.gitops.svc.plus/v1alpha1
+kind: ArtifactCandidatePolicy
+metadata:
+  name: web-saas-uat
+spec:
+  environment: uat
+  delivery_scope: web-saas
+  source_ref: main
+  candidate:
+    id_prefix: daily-build
+    immutable: true
+    production_eligible: false
+  owners:
+    artifacts:
+      repository: ai-workspace-infra/artifacts
+      action: .github/actions/component-candidate
+    iac:
+      repository: ai-workspace-infra/iac_modules
+    playbooks:
+      repository: ai-workspace-infra/playbooks
+  components:
+    - name: accounts
+      required: true
+      source:
+        repository: ai-workspace-services/accounts
+        workflow: ci-pipeline.yml
+        trigger: tag
+        dispatch_if_missing: true
+        dispatch_inputs:
+          deploy_env: uat
+          push_image: "true"
+          push_latest: "false"
+      artifact:
+        kind: oci-image
+        reference: ghcr.io/ai-workspace-services/accounts
+        require_digest: true
+    - name: billing
+      required: true
+      source:
+        repository: ai-workspace-services/billing-service
+        workflow: ci-pipeline.yml
+        trigger: tag
+        dispatch_if_missing: true
+        dispatch_inputs:
+          deployment_environment: uat
+      artifact:
+        kind: oci-image
+        reference: ghcr.io/ai-workspace-services/billing-service
+        require_digest: true
+    - name: content
+      required: true
+      source:
+        repository: ai-workspace-services/content-service
+        workflow: ci-pipeline.yml
+        trigger: tag
+        dispatch_if_missing: true
+        dispatch_inputs:
+          deployment_environment: uat
+      artifact:
+        kind: oci-image
+        reference: ghcr.io/ai-workspace-services/docs
+        require_digest: true
+    - name: console
+      required: true
+      source:
+        repository: ai-workspace-services/portal
+        workflow: ci-pipeline.yml
+        trigger: tag
+        dispatch_if_missing: true
+        dispatch_inputs:
+          deployment_environment: uat
+      artifact:
+        kind: oci-image
+        reference: ghcr.io/ai-workspace-services/console
+        require_digest: true
+    - name: postgresql
+      required: true
+      source:
+        repository: ai-workspace-services/postgresql
+        workflow: ci-pipeline.yml
+        trigger: tag
+        dispatch_if_missing: true
+        dispatch_inputs:
+          deployment_environment: uat
+          push_latest: "false"
+      artifact:
+        kind: oci-image
+        reference: ghcr.io/ai-workspace-services/postgresql
+        require_digest: true
+    - name: frontend-router
+      required: true
+      source:
+        repository: ai-workspace-services/frontend-router
+        workflow: release.yml
+        trigger: tag
+        dispatch_if_missing: false
+        dispatch_inputs: {}
+      artifact:
+        kind: github-release
+        required_assets:
+          - frontend-router-worker.js
+          - release-metadata.json
+          - SHA256SUMS
+  uat_dispatch:
+    status: pending-owner
+    target_ref: uat-serverless-web-saas
+    topology_path: topology/uat/serverless/runtime-topology.yaml
+    owner_key: ""
+    owner_repository: ""
+    owner_workflow: ""
+    receipt_artifact: ""
+

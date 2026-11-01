@@ -1,0 +1,86 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://gitops.svc.plus/schemas/artifact-candidate-policy.schema.yaml
+title: ArtifactCandidatePolicy
+type: object
+required:
+  - apiVersion
+  - kind
+  - metadata
+  - spec
+properties:
+  apiVersion:
+    const: delivery.gitops.svc.plus/v1alpha1
+  kind:
+    const: ArtifactCandidatePolicy
+  metadata:
+    type: object
+    required: [name]
+    properties:
+      name:
+        type: string
+        pattern: ^[a-z0-9][a-z0-9-]*$
+  spec:
+    type: object
+    required:
+      - environment
+      - delivery_scope
+      - source_ref
+      - candidate
+      - owners
+      - components
+      - uat_dispatch
+    properties:
+      environment:
+        const: uat
+      delivery_scope:
+        type: string
+        minLength: 1
+      source_ref:
+        const: main
+      candidate:
+        type: object
+        required: [id_prefix, immutable, production_eligible]
+        properties:
+          id_prefix:
+            const: daily-build
+          immutable:
+            const: true
+          production_eligible:
+            const: false
+      owners:
+        type: object
+        required: [artifacts, iac, playbooks]
+      components:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required: [name, required, source, artifact]
+      uat_dispatch:
+        type: object
+        required:
+          - status
+          - target_ref
+          - topology_path
+          - owner_key
+          - owner_repository
+          - owner_workflow
+          - receipt_artifact
+        properties:
+          status:
+            enum: [pending-owner, ready]
+          target_ref:
+            type: string
+            minLength: 1
+          topology_path:
+            type: string
+            minLength: 1
+          owner_key:
+            enum: ["", orchestrator, gitops, artifacts, iac, playbooks]
+          owner_repository:
+            type: string
+          owner_workflow:
+            type: string
+          receipt_artifact:
+            type: string
+

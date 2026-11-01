@@ -26,6 +26,14 @@ jobs:
       - run: python3 -m pip install 'pyyaml==6.0.2'
       - run: python3 -m unittest discover -s tests -p test_web_saas_business_env.py
 
+  validate-artifact-candidate-policy:
+    name: Validate Daily artifact candidate policy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - run: python3 -m pip install 'pyyaml==6.0.2'
+      - run: python3 -m unittest discover -s tests -p test_artifact_candidate_policy.py
+
   validate-feature-sit-path-isolation:
     name: Validate feature SIT path isolation
     runs-on: ubuntu-latest
