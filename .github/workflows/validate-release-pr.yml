@@ -83,7 +83,7 @@ jobs:
                           raise SystemExit(f'{path}: every policy entry requires a path')
                       if not isinstance(entry.get('capabilities'), list) or not entry['capabilities']:
                           raise SystemExit(f'{path}: every policy path requires capabilities')
-              elif kind in ('VaultJWTAuthRole', 'VaultKubernetesJWTAuthRole'):
+              elif kind in ('VaultJWTAuthRole', 'VaultKubernetesJWTAuthRole', 'VaultKubernetesAuthRole'):
                   refs = spec.get('token_policies')
                   if not isinstance(refs, list) or not refs:
                       raise SystemExit(f'{path}: token_policies must be a non-empty list')

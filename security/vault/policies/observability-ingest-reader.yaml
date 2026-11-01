@@ -1,0 +1,13 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: observability-ingest-reader
+spec:
+  paths:
+    - path: kv/data/CICD/observability
+      capabilities: [read]
+    - path: auth/token/renew-self
+      capabilities: [update]
+    - path: auth/token/lookup-self
+      capabilities: [read]
