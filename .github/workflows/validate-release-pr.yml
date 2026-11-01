@@ -158,6 +158,9 @@ jobs:
           sudo mv gitleaks /usr/local/bin/gitleaks
           gitleaks version
 
+      - name: Test Kubernetes secret rule boundary
+        run: python3 scripts/tests/test_gitleaks_secret_kind.py
+
       - name: Run gitleaks detect
         run: gitleaks detect -v --redact --exit-code 1
 
