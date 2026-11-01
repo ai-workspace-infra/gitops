@@ -61,3 +61,5 @@ spec:
     global:
       environment: prod
       expectedNamespace: postgresql-prod
+      imagePullSecrets:
+        - name: postgresql-ghcr-pull
