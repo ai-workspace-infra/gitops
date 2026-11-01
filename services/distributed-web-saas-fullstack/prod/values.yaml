@@ -58,7 +58,9 @@ console:
   enabled: true
   deploymentProfile: single-container
   singleContainer:
-    image: ghcr.io/ai-workspace-services/console:v2026.10.29.2@sha256:3ae076cac3cb79a38a7739f1a726087f8900b8964a7f5ef7833e7cd8e3623ed3
+    image: ghcr.io/ai-workspace-services/console:sha-a0c73a4a8c806e77a70315155932de8d203082b2@sha256:ecaec076c718c3265e7a9ca481937f2e00cc29f6cd5e9c053d670c9358739aa3
+    env:
+      FRONTEND_IMAGE: ghcr.io/ai-workspace-services/console:sha-a0c73a4a8c806e77a70315155932de8d203082b2@sha256:ecaec076c718c3265e7a9ca481937f2e00cc29f6cd5e9c053d670c9358739aa3
     port: 8080
     command:
     - /bin/bash
@@ -90,7 +92,7 @@ console:
 accounts:
   enabled: true
   workload:
-    image: ghcr.io/ai-workspace-services/accounts:v2026.11.02.1@sha256:0b395778994a0efca2f9c30bf0a6628d6a8fc8a69f9a8783561634e21f10818b
+    image: ghcr.io/ai-workspace-services/accounts:sha-024c70199bc23a923e09fb93f18a63887768cfbd@sha256:6719801e926d8cd4dcec2e2bd9780c3f1e750b99e398a2cb2910781f669b5c92
     port: 8080
     replicas: 1
     resources:
@@ -98,6 +100,7 @@ accounts:
       limits: {cpu: 200m, memory: 256Mi}
     env:
       CONFIG_TEMPLATE: /app/config/account.cloudrun.yaml
+      REGISTRATION_MODE: open
       DB_HOST: RELEASE_NAME-postgresql
       DB_PORT: '5432'
       POSTGRES_USER: app
@@ -105,7 +108,7 @@ accounts:
       ROOT_BOOTSTRAP_EMAIL: admin@svc.plus
       XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
       XWORKMATE_SHARED_TENANT_DOMAINS: svc.plus
-      IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.02.1@sha256:0b395778994a0efca2f9c30bf0a6628d6a8fc8a69f9a8783561634e21f10818b
+      IMAGE: ghcr.io/ai-workspace-services/accounts:sha-024c70199bc23a923e09fb93f18a63887768cfbd@sha256:6719801e926d8cd4dcec2e2bd9780c3f1e750b99e398a2cb2910781f669b5c92
       DATABASE_RUNTIME_ROLE: primary
       DATABASE_BACKGROUND_WRITERS: 'false'
       DATABASE_IDENTITY_SHA256: b6618223acd5f8a50897c7adb203e5e491a60f9c8f5cb1702977592f442ab758
