@@ -7,10 +7,11 @@ metadata:
   namespace: flux-system
 spec:
   suspend: false
-  interval: 5m
+  interval: 1m
+  retryInterval: 1m
   prune: false
   wait: true
-  timeout: 15m
+  timeout: 2m
   dependsOn:
     - name: external-secrets
     - name: vault-tls-identity
