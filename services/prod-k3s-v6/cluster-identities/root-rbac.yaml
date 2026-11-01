@@ -1,41 +1,11 @@
 apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: k3s-root-platform
-rules:
-  - apiGroups: [""]
-    resources: [nodes, namespaces, pods, events, services, endpoints, persistentvolumes, persistentvolumeclaims, resourcequotas, limitranges]
-    verbs: [get, list, watch]
-  - apiGroups: [apps]
-    resources: [deployments, replicasets, statefulsets, daemonsets]
-    verbs: [get, list, watch]
-  - apiGroups: [batch]
-    resources: [jobs, cronjobs]
-    verbs: [get, list, watch]
-  - apiGroups: [storage.k8s.io]
-    resources: [storageclasses]
-    verbs: [get, list, watch]
-  - apiGroups: [source.toolkit.fluxcd.io]
-    resources: [gitrepositories, helmrepositories, ocirepositories, helmcharts]
-    verbs: [get, list, watch, create, update, patch, delete]
-  - apiGroups: [kustomize.toolkit.fluxcd.io]
-    resources: [kustomizations]
-    verbs: [get, list, watch, create, update, patch, delete]
-  - apiGroups: [helm.toolkit.fluxcd.io]
-    resources: [helmreleases]
-    verbs: [get, list, watch, create, update, patch, delete]
-  - apiGroups: [networking.k8s.io]
-    resources: [ingresses, ingressclasses]
-    verbs: [get, list, watch, create, update, patch, delete]
----
-apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: k3s-root-platform
+  name: k3s-root-cluster-admin
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: k3s-root-platform
+  name: cluster-admin
 subjects:
   - kind: User
     apiGroup: rbac.authorization.k8s.io
