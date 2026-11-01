@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgresql-web-saas-access
+  namespace: postgresql-prod
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: postgresql
+      app.kubernetes.io/component: postgresql
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: web-saas-prod
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: web-saas
+            matchExpressions:
+              - key: app.kubernetes.io/component
+                operator: In
+                values: [accounts, billing]
+      ports:
+        - protocol: TCP
+          port: 5432
