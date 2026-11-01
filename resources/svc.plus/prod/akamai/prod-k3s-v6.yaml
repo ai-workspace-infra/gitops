@@ -109,7 +109,7 @@ hosts:
       k3s_identity_checks:
         root:
           - {verb: get, resource: nodes, namespace: flux-system, allowed: true}
-          - {verb: impersonate, resource: users, namespace: flux-system, allowed: false}
+          - {verb: impersonate, resource: users, namespace: flux-system, allowed: true}
         operator:
           - {verb: get, resource: pods, namespace: web-saas-prod, allowed: true}
           - {verb: get, resource: events, namespace: web-saas-prod, allowed: true}
