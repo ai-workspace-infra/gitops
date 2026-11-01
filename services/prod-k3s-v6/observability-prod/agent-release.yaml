@@ -48,5 +48,5 @@ spec:
     vector:
       enabled: false
     resources:
-      requests: {cpu: 10m, memory: 32Mi}
-      limits: {cpu: 25m, memory: 64Mi}
+      requests: {cpu: 100m, memory: 128Mi}
+      limits: {cpu: 300m, memory: 256Mi}
