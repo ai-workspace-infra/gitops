@@ -11,6 +11,45 @@ spec:
   chartRef:
     kind: OCIRepository
     name: web-saas-fullstack-chart
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: web-saas-console
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-console
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: console
+                        securityContext:
+                          capabilities:
+                            add: [CHOWN, SETUID, SETGID]
+          - target:
+              kind: Deployment
+              name: web-saas-content
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-content
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: content
+                        startupProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 30
   values:
     global:
       environment: prod
@@ -67,8 +106,8 @@ spec:
         secretRefs:
         - web-saas-secrets
         resources:
-          requests: {cpu: 15m, memory: 48Mi}
-          limits: {cpu: 50m, memory: 64Mi}
+          requests: {cpu: 100m, memory: 128Mi}
+          limits: {cpu: 500m, memory: 256Mi}
     edgeGateway:
       enabled: false
     stunnelClient:
