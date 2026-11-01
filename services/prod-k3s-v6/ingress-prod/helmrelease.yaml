@@ -1,5 +1,4 @@
-# Standalone Caddy is independently reconciled; TLS and backend availability
-# are reported by its own release and runtime checks.
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -36,10 +35,14 @@ spec:
       enabled: true
       image: ghcr.io/ai-workspace-infra/caddy-cloudflare:959d6c8@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf
       service:
-        type: ClusterIP
+        type: LoadBalancer
       resources:
-        requests: {cpu: 20m, memory: 48Mi}
-        limits: {cpu: 50m, memory: 80Mi}
+        requests:
+          cpu: 20m
+          memory: 48Mi
+        limits:
+          cpu: 50m
+          memory: 80Mi
       nodeSelector:
         kubernetes.io/hostname: prod-k3s-v6
       externalBackends:
@@ -62,16 +65,3 @@ spec:
     global:
       environment: prod
       expectedNamespace: ingress-prod
-  postRenderers:
-  - kustomize:
-      patches:
-      - target:
-          kind: Deployment
-          name: caddy-ingress-caddy
-        patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: caddy-ingress-caddy\n\
-          spec:\n  strategy:\n    type: Recreate\n    rollingUpdate: null\n  template:\n\
-          \    spec:\n      containers:\n        - name: caddy\n          ports:\n\
-          \            - name: http\n              containerPort: 8080\n         \
-          \     hostPort: 80\n              protocol: TCP\n            - name: https\n\
-          \              containerPort: 8443\n              hostPort: 443\n      \
-          \        protocol: TCP\n"
