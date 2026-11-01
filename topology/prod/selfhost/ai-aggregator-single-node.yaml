@@ -7,7 +7,7 @@ metadata:
   mode: selfhost
   topology: single-node
 spec:
-  enabled: false
+  enabled: true
   delivery:
     runtime: systemd
     playbook: deploy-ai-aggregator-v1.yml
