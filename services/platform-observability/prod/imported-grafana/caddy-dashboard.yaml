@@ -9,8 +9,7 @@ metadata:
 data:
   caddy-dashboard.json: |
     {
-      "__elements": {
-      },
+      "__elements": {},
       "__requires": [
         {
           "type": "grafana",
@@ -959,7 +958,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 11
+            "y": 16
           },
           "id": 11,
           "panels": [
@@ -1091,7 +1090,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 0,
-            "y": 12
+            "y": 17
           },
           "id": 26,
           "options": {
@@ -1215,7 +1214,7 @@ data:
             "h": 10,
             "w": 6,
             "x": 12,
-            "y": 12
+            "y": 17
           },
           "id": 15,
           "options": {
@@ -1292,7 +1291,7 @@ data:
             "h": 10,
             "w": 6,
             "x": 18,
-            "y": 12
+            "y": 17
           },
           "id": 16,
           "options": {
@@ -1409,7 +1408,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 0,
-            "y": 22
+            "y": 27
           },
           "id": 10,
           "options": {
@@ -1621,7 +1620,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 12,
-            "y": 22
+            "y": 27
           },
           "id": 27,
           "options": {
@@ -1734,7 +1733,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 0,
-            "y": 32
+            "y": 37
           },
           "id": 9,
           "options": {
@@ -1839,7 +1838,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 12,
-            "y": 32
+            "y": 37
           },
           "id": 14,
           "options": {
@@ -1881,7 +1880,7 @@ data:
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 42
+            "y": 47
           },
           "id": 19,
           "panels": [
@@ -1917,7 +1916,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 0,
-            "y": 43
+            "y": 48
           },
           "id": 12,
           "options": {
@@ -1947,7 +1946,7 @@ data:
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1.0e-09
+              "le": 1e-09
             },
             "legend": {
               "show": true
@@ -2012,7 +2011,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 12,
-            "y": 43
+            "y": 48
           },
           "id": 13,
           "options": {
@@ -2042,7 +2041,7 @@ data:
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1.0e-09
+              "le": 1e-09
             },
             "legend": {
               "show": true
@@ -2109,7 +2108,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 0,
-            "y": 53
+            "y": 58
           },
           "id": 17,
           "options": {
@@ -2139,7 +2138,7 @@ data:
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1.0e-09
+              "le": 1e-09
             },
             "legend": {
               "show": true
@@ -2204,7 +2203,7 @@ data:
             "h": 10,
             "w": 12,
             "x": 12,
-            "y": 53
+            "y": 58
           },
           "id": 18,
           "options": {
@@ -2234,7 +2233,7 @@ data:
               "color": "rgba(255,0,255,0.7)"
             },
             "filterValues": {
-              "le": 1.0e-09
+              "le": 1e-09
             },
             "legend": {
               "show": true
@@ -2273,6 +2272,154 @@ data:
           ],
           "title": "Response size heatmap",
           "type": "heatmap"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "1 means the active Caddy configuration loaded successfully.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 0,
+            "y": 11
+          },
+          "id": 3001,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "min(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"})",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Caddy configuration loaded",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "1 means every reported Caddy reverse proxy upstream is healthy.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed"
+              },
+              "mappings": [
+
+              ],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": null
+                  },
+                  {
+                    "color": "green",
+                    "value": 1
+                  }
+                ]
+              }
+            },
+            "overrides": [
+
+            ]
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 4,
+            "x": 4,
+            "y": 11
+          },
+          "id": 3002,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "11.5.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "min(caddy_reverse_proxy_upstreams_healthy{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\",instance=~\"$instance\"})",
+              "instant": false,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Caddy upstreams healthy",
+          "type": "stat"
         }
       ],
       "refresh": "1m",
@@ -2283,8 +2430,7 @@ data:
       "templating": {
         "list": [
           {
-            "current": {
-            },
+            "current": {},
             "label": "Datasource",
             "name": "datasource",
             "options": [
@@ -2303,16 +2449,15 @@ data:
               "type": "prometheus",
               "uid": "${datasource}"
             },
-            "definition": "label_values(caddy_http_requests_total,environment)",
+            "definition": "label_values(caddy_config_last_reload_successful,environment)",
             "query": {
               "qryType": 1,
-              "query": "label_values(caddy_http_requests_total,environment)",
+              "query": "label_values(caddy_config_last_reload_successful,environment)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "refresh": 1,
             "regex": "",
-            "current": {
-            },
+            "current": {},
             "options": [
 
             ],
@@ -2328,16 +2473,15 @@ data:
               "type": "prometheus",
               "uid": "${datasource}"
             },
-            "definition": "label_values(caddy_http_requests_total{environment=~\"$environment\"},cluster)",
+            "definition": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\"},cluster)",
             "query": {
               "qryType": 1,
-              "query": "label_values(caddy_http_requests_total{environment=~\"$environment\"},cluster)",
+              "query": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\"},cluster)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "refresh": 1,
             "regex": "",
-            "current": {
-            },
+            "current": {},
             "options": [
 
             ],
@@ -2353,16 +2497,15 @@ data:
               "type": "prometheus",
               "uid": "${datasource}"
             },
-            "definition": "label_values(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\"},service)",
+            "definition": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\"},service)",
             "query": {
               "qryType": 1,
-              "query": "label_values(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\"},service)",
+              "query": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\"},service)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "refresh": 1,
             "regex": "",
-            "current": {
-            },
+            "current": {},
             "options": [
 
             ],
@@ -2378,16 +2521,15 @@ data:
               "type": "prometheus",
               "uid": "${datasource}"
             },
-            "definition": "label_values(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\"},instance)",
+            "definition": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\"},instance)",
             "query": {
               "qryType": 1,
-              "query": "label_values(caddy_http_requests_total{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\"},instance)",
+              "query": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\"},instance)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "refresh": 1,
             "regex": "",
-            "current": {
-            },
+            "current": {},
             "options": [
 
             ],
@@ -2452,8 +2594,7 @@ data:
         "from": "now-24h",
         "to": "now"
       },
-      "timepicker": {
-      },
+      "timepicker": {},
       "timezone": "browser",
       "title": "Caddy",
       "uid": "fed94ifiv8h6oc",
