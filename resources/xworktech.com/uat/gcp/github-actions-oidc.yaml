@@ -15,11 +15,11 @@ spec:
   pool_id: github-actions
   provider_id: github
   service_account_id: github-actions-uat
-  repository: ai-workspace-infra/platform-ops-toolkit
+  repository: ai-workspace-infra/Platform-Orchestrator
   subjects:
-    - repo:ai-workspace-infra/platform-ops-toolkit:environment:uat
-    - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/heads/main
-    - repo:ai-workspace-infra/platform-ops-toolkit:ref:refs/tags/uat-*
+    - repo:ai-workspace-infra/Platform-Orchestrator:environment:uat
+    - repo:ai-workspace-infra/Platform-Orchestrator:ref:refs/heads/main
+    - repo:ai-workspace-infra/Platform-Orchestrator:ref:refs/tags/uat-*
   state:
     bucket: xworktech-platform-terraform-state
     key: platform-ops-toolkit/uat/xworktech/gcp-oidc-bootstrap/terraform.tfstate
