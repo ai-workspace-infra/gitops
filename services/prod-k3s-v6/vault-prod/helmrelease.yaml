@@ -17,8 +17,11 @@ spec:
         name: hashicorp
         namespace: vault-prod
   install:
-    remediation:
-      retries: 0
+    # A sealed Vault may exceed the initial install timeout. Retry as an
+    # upgrade so recovery does not uninstall the stateful release.
+    strategy:
+      name: RetryOnFailure
+      retryInterval: 2m
   upgrade:
     remediation:
       retries: 0
