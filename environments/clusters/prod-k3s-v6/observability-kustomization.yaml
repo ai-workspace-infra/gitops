@@ -9,8 +9,6 @@ spec:
   prune: false
   wait: true
   timeout: 20m
-  dependsOn:
-    - name: vault-prod
   sourceRef:
     kind: GitRepository
     name: observability-prod-config

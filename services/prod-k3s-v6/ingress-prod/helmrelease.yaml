@@ -1,4 +1,5 @@
-# Standalone Caddy uses the pinned chart; its parent waits for backend readiness.
+# Standalone Caddy is independently reconciled; TLS and backend availability
+# are reported by its own release and runtime checks.
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
