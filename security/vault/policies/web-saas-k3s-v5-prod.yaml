@@ -1,0 +1,17 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: web-saas-k3s-v5-prod
+  description: V5 ESO reader; preserve existing service reads and add exact SMTP credentials read.
+spec:
+  paths:
+  - path: kv/data/prod/services/web-saas-k3s-v5/database
+    capabilities: [read]
+  - path: kv/data/prod/services/web-saas-k3s-v5/jwt
+    capabilities: [read]
+  - path: kv/data/prod/services/web-saas-k3s-v5/tls
+    capabilities: [read]
+  - path: kv/data/prod/services/web-saas-k3s-v5/brand-tls
+    capabilities: [read]
+  - path: kv/data/prod/platform/smtp/google
+    capabilities: [read]

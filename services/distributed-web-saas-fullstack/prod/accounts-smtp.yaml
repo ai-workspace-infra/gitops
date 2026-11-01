@@ -1,0 +1,29 @@
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: accounts-smtp
+  namespace: web-saas-k3s-v5
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: vault-backend
+    kind: SecretStore
+  target:
+    name: accounts-smtp
+    creationPolicy: Owner
+    template:
+      engineVersion: v2
+      mergePolicy: Merge
+      data:
+        SMTP_HOST: smtp.gmail.com
+        SMTP_PORT: "587"
+        SMTP_FROM: 'XWorkmate <{{ .SMTP_USERNAME }}>'
+  data:
+  - secretKey: SMTP_USERNAME
+    remoteRef:
+      key: prod/platform/smtp/google
+      property: username
+  - secretKey: SMTP_PASSWORD
+    remoteRef:
+      key: prod/platform/smtp/google
+      property: password
