@@ -121,7 +121,7 @@ hosts:
           - {verb: get, resource: pods, namespace: postgresql-prod, allowed: false}
         auditor:
           - {verb: get, resource: nodes, namespace: web-saas-prod, allowed: true}
-          - {verb: get, resource: secrets, namespace: web-saas-prod, allowed: false}
+          - {verb: get, resource: secrets, namespace: web-saas-prod, allowed: true}
       k3s_identity_rbac_kustomizations:
         - name: cluster-identities
           namespace: flux-system
