@@ -60,6 +60,9 @@ spec:
     content:
       enabled: true
       workload:
+        env:
+          KNOWLEDGE_REPO_PATH: /tmp/knowledge
+          KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
         image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
         secretRefs:
         - web-saas-secrets
