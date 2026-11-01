@@ -11,6 +11,29 @@ spec:
   chartRef:
     kind: OCIRepository
     name: observability-stack-chart
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: observability-observability-stack
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: observability-observability-stack
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: grafana
+                        startupProbe:
+                          httpGet:
+                            path: /api/health
+                            port: grafana
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 30
   values:
     victoriaMetrics:
       image:
@@ -48,8 +71,8 @@ spec:
       existingSecret: grafana-admin
       adminPasswordKey: password
       resources:
-        requests: {cpu: 20m, memory: 64Mi}
-        limits: {cpu: 40m, memory: 96Mi}
+        requests: {cpu: 100m, memory: 128Mi}
+        limits: {cpu: 500m, memory: 512Mi}
       pluginInstallerResources:
         requests: {cpu: 10m, memory: 32Mi}
         limits: {cpu: 50m, memory: 96Mi}
