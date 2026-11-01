@@ -18,6 +18,8 @@ target_manifests:
 - iac/targets/uat-gcp-web-saas.yaml
 - iac/targets/uat-serverless-runtime.yaml
 - iac/migrations/targets/uat-akamai-web-saas-k3s-v5.yaml
+- iac/targets/uat-akamai-ai-aggregator.yaml
+- iac/targets/prod-akamai-ai-aggregator.yaml
 migration_sources:
 - id: prod-akamai-v6-retained-state
   environment: prod

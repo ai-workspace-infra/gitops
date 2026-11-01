@@ -1,0 +1,38 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: IaCPipelineTargets
+targets:
+- id: uat-akamai-ai-aggregator
+  environment: uat
+  project: svc.plus
+  provider: akamai-cloud
+  account: manbuzhe2026
+  workspace: ai-aggregator-single-node
+  namespace: ai-aggregator-single-node
+  lifecycle:
+    status: active
+    persistent: true
+  auth:
+    expected_identity: manbuzhe2026
+    vault_role: github-actions-platform-ops-toolkit-uat-akamai-oidc-bootstrap-manbuzhe2026
+    record: kv/data/CICD/uat/akamai-cloud/manbuzhe2026
+  stages:
+    bootstrap:
+      mode: verify
+    account:
+      mode: not_applicable
+      reason: No independent account objects; reuse declared SSH public keys.
+    resources:
+      mode: terraform
+      manifest: resources/svc.plus/uat/akamai/ai-aggregator-single-node.yaml
+      state:
+        key: terraform/uat/svc.plus/akamai-cloud/manbuzhe2026/ai-aggregator-single-node/terraform.tfstate
+        cli_workspace: default
+      owners:
+      - module.compute_ai_gateway_svc_plus
+      - linode_firewall.fw_ai_gateway_svc_plus
+      protected:
+      - module.compute_ai_gateway_svc_plus
+      ownership_reviewed: true
+      requires_existing_state: false
+      create_only: true
+      destroy_allowed: false
