@@ -62,7 +62,7 @@ spec:
       lifecycle: persistent
       caddy_mode: reuse-existing
   resources:
-    minimum_resources: {cpu: 4, memory: 8Gi, disk: 80Gi}
+    minimum_resources: {cpu: 2, memory: 4Gi, disk: 80Gi}
     recommended_resources: {cpu: 4, memory: 16Gi, disk: 100Gi}
   artifacts:
     new_api: {repository: ai-workspace-lab/new-api, revision: "", sha256: "", arch: arm64}
