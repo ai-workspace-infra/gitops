@@ -6,7 +6,7 @@ global:
   organization_id: "744119519286"
   region: asia-east1
   github_owner: ai-workspace-infra
-  github_repository: platform-ops-toolkit
+  github_repository: Platform-Orchestrator
   network_name: web-saas-uat
   subnet_cidr: 10.63.0.0/20
   artifact_registry_location: asia-east1
