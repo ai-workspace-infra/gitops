@@ -18,6 +18,6 @@ spec:
     repository: ai-workspace-infra/Platform-Orchestrator
     environment: prod
     ref: [refs/heads/main]
-    workflow_ref: ai-workspace-infra/Platform-Orchestrator/.github/workflows/selfhost-stage-deploy.yml@refs/heads/main
+    workflow_ref: ai-workspace-infra/Platform-Orchestrator/.github/workflows/selfhost-stage-deploy-container.yml@refs/heads/main
     ref_protected: 'true'
   token_policies: [github-actions-platform-ops-toolkit-prod-k3s-v6-bootstrap-reader]
