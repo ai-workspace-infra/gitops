@@ -30,7 +30,7 @@ spec:
     destroy_policy: never
   entrypoint:
     component: caddy
-    domain: ai.svc.plus
+    domain: ai-gateway.svc.plus
     tls: automatic
     public_port: 443
     source_cidrs: []
@@ -53,8 +53,9 @@ spec:
     activation_validated: false
   nodes:
     - id: gateway-01
-      inventory_host: jp-xhttp-contabo.svc.plus
-      resource_ref: cmdb://nodes/jp-xhttp-contabo.svc.plus
+      inventory_host: ai-gateway.svc.plus
+      resource_ref: cmdb://nodes/ai-gateway.svc.plus
+      ssh_user: root
       role: gateway
       roles: [gateway, cpa]
       provider: existing
@@ -90,9 +91,9 @@ spec:
       xai: {endpoint: vault://kv/prod/ai-aggregator/litellm/providers/xai#endpoint, api_key: vault://kv/prod/ai-aggregator/litellm/providers/xai#api_key}
     legacy_upstream: true
   client_profiles:
-    - {id: claude-code, chain: new-api-cpa, base_url: https://ai.svc.plus, protocol: anthropic-messages, model_alias: claude-main, token_source: new-api}
-    - {id: android-studio, chain: new-api-litellm, base_url: https://ai.svc.plus/v1, protocol: openai-chat, model_alias: anthropic-api, token_source: new-api}
-    - {id: openai-compatible, chain: new-api-cpa, base_url: https://ai.svc.plus/v1, protocol: openai-chat-or-responses, model_alias: codex-main, token_source: new-api}
+    - {id: claude-code, chain: new-api-cpa, base_url: https://ai-gateway.svc.plus, protocol: anthropic-messages, model_alias: claude-main, token_source: new-api}
+    - {id: android-studio, chain: new-api-litellm, base_url: https://ai-gateway.svc.plus/v1, protocol: openai-chat, model_alias: anthropic-api, token_source: new-api}
+    - {id: openai-compatible, chain: new-api-cpa, base_url: https://ai-gateway.svc.plus/v1, protocol: openai-chat-or-responses, model_alias: codex-main, token_source: new-api}
   tenants:
     - {id: personal, status: disabled, applications: [claude-code, android-studio, openai-compatible], allowed_entrypoints: [new-api, litellm], rate_limit_per_minute: 60}
   cpa_instances:
@@ -104,7 +105,7 @@ spec:
       account_alias: cpa-codex-01
       bind_address: private_ip
       port: 8317
-      network_endpoint: cmdb://nodes/jp-xhttp-contabo.svc.plus/private_ip:8317
+      network_endpoint: cmdb://nodes/ai-gateway.svc.plus/private_ip:8317
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-01/auth
       jwt: {issuer: ai-aggregator, audience: cpa:cpa-codex-01, public_key_file: /etc/ai-aggregator/cpa/cpa-codex-01/jwt-public.pem, ttl_seconds: 300}
       new_api_channel: {name: cpa-codex-01, protocol: openai-responses, public_models: [codex-auto-review, gpt-5.5, gpt-5.6-luna, gpt-5.6-sol, gpt-5.6-terra, gpt-6-astra, gpt-6-luna, gpt-6-sol, gpt-6.1-sol], model_mapping: {codex-main: gpt-5.6-luna}, enabled: false}
@@ -116,7 +117,7 @@ spec:
       account_alias: cpa-codex-02
       bind_address: private_ip
       port: 8320
-      network_endpoint: cmdb://nodes/jp-xhttp-contabo.svc.plus/private_ip:8320
+      network_endpoint: cmdb://nodes/ai-gateway.svc.plus/private_ip:8320
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-02/auth
       jwt: {issuer: ai-aggregator, audience: cpa:cpa-codex-02, public_key_file: /etc/ai-aggregator/cpa/cpa-codex-02/jwt-public.pem, ttl_seconds: 300}
       new_api_channel: {name: cpa-codex-02, protocol: openai-responses, public_models: [codex-auto-review, gpt-5.5, gpt-5.6-luna, gpt-5.6-sol, gpt-5.6-terra, gpt-6-astra, gpt-6-luna, gpt-6-sol, gpt-6.1-sol], model_mapping: {codex-main: gpt-5.6-luna}, enabled: false}
@@ -128,7 +129,7 @@ spec:
       account_alias: cpa-claude-01
       bind_address: private_ip
       port: 8318
-      network_endpoint: cmdb://nodes/jp-xhttp-contabo.svc.plus/private_ip:8318
+      network_endpoint: cmdb://nodes/ai-gateway.svc.plus/private_ip:8318
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-claude-01/auth
       jwt: {issuer: ai-aggregator, audience: cpa:cpa-claude-01, public_key_file: /etc/ai-aggregator/cpa/cpa-claude-01/jwt-public.pem, ttl_seconds: 300}
       new_api_channel: {name: cpa-claude-01, protocol: anthropic-messages, public_models: [claude-opus-4-5-20251101, claude-opus-4-6, claude-opus-4-7, claude-opus-4-8, claude-opus-5, claude-sonnet-4-5-20250929, claude-sonnet-4-6, claude-sonnet-5, claude-sonnet-5-5], model_mapping: {claude-main: claude-sonnet-5}, enabled: false}
@@ -140,7 +141,7 @@ spec:
       account_alias: cpa-antigravity-01
       bind_address: private_ip
       port: 8319
-      network_endpoint: cmdb://nodes/jp-xhttp-contabo.svc.plus/private_ip:8319
+      network_endpoint: cmdb://nodes/ai-gateway.svc.plus/private_ip:8319
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-antigravity-01/auth
       jwt: {issuer: ai-aggregator, audience: cpa:cpa-antigravity-01, public_key_file: /etc/ai-aggregator/cpa/cpa-antigravity-01/jwt-public.pem, ttl_seconds: 300}
       new_api_channel: {name: cpa-antigravity-01, protocol: openai-chat, public_models: [gemini-3-flash, gemini-3.1-flash-lite, gemini-3.5-flash-lite, gemini-pro-agent], model_mapping: {gemini-main: gemini-3-flash}, enabled: false}
