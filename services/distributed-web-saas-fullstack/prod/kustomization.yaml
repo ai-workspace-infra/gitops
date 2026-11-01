@@ -9,6 +9,7 @@ resources:
   - external-secret.yaml
   - helmrelease.yaml
   - caddy-metrics.yaml
+  - observability-ingest-auth.yaml
 configMapGenerator:
   - name: web-saas-fullstack-values
     files:

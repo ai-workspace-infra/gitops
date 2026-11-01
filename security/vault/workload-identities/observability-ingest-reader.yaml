@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultKubernetesAuthRole
+metadata:
+  name: observability-ingest-reader
+spec:
+  bound_service_account_names: [observability-ingest-vault-reader]
+  bound_service_account_namespaces: [web-saas-k3s-v5]
+  audience: vault-web-saas-k3s-v5-prod
+  token_policies: [observability-ingest-reader]
+  token_no_default_policy: true
+  token_type: service
+  token_ttl: 5m
+  token_max_ttl: 15m

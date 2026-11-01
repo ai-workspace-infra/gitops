@@ -1,0 +1,165 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: observability-ingest-vault-reader
+  namespace: web-saas-k3s-v5
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: eso-observability-ingest-vault-login
+  namespace: web-saas-k3s-v5
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts]
+    resourceNames: [observability-ingest-vault-reader]
+    verbs: [get]
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [observability-ingest-vault-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: eso-observability-ingest-vault-login
+  namespace: web-saas-k3s-v5
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: eso-observability-ingest-vault-login
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: platform
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: observability-ingest-vault
+  namespace: web-saas-k3s-v5
+spec:
+  provider:
+    vault:
+      server: https://vault-raft.platform-vault.svc.cluster.local:8200
+      path: kv
+      version: v2
+      caProvider:
+        type: ConfigMap
+        name: vault-raft-ca
+        key: ca.crt
+      auth:
+        kubernetes:
+          mountPath: kubernetes-web-saas-k3s-v5
+          role: observability-ingest-reader
+          serviceAccountRef:
+            name: observability-ingest-vault-reader
+            audiences: [vault-web-saas-k3s-v5-prod]
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: observability-ingest-auth
+  namespace: web-saas-k3s-v5
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    name: observability-ingest-vault
+    kind: SecretStore
+  target:
+    name: observability-ingest-auth
+    creationPolicy: Owner
+    template:
+      engineVersion: v2
+      data:
+        auth.yaml: |
+          users:
+            - username: {{ .user | toJson }}
+              password: {{ .password | toJson }}
+              url_map:
+                - src_paths: ["/api/v1/write"]
+                  url_prefix: "http://platform-observability-observability-stack.platform-observability.svc.cluster.local:8428"
+  data:
+    - secretKey: user
+      remoteRef:
+        key: CICD/observability
+        property: user
+    - secretKey: password
+      remoteRef:
+        key: CICD/observability
+        property: password
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: observability-ingest-auth
+  namespace: web-saas-k3s-v5
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: observability-ingest-auth}
+  template:
+    metadata:
+      labels: {app: observability-ingest-auth}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+      containers:
+        - name: vmauth
+          image: victoriametrics/vmauth:v1.101.0@sha256:2b56af142a4a5549a333a3882b10cfb01de7807979ffec46f081152ad238d666
+          args: ["-auth.config=/etc/vmauth/auth.yaml", "-configCheckInterval=30s"]
+          ports:
+            - {name: http, containerPort: 8427}
+          readinessProbe:
+            tcpSocket: {port: http}
+          livenessProbe:
+            tcpSocket: {port: http}
+          resources:
+            requests: {cpu: 10m, memory: 32Mi}
+            limits: {cpu: 200m, memory: 128Mi}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - {name: auth, mountPath: /etc/vmauth, readOnly: true}
+      volumes:
+        - name: auth
+          secret:
+            secretName: observability-ingest-auth
+            defaultMode: 0440
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: observability-ingest-auth
+  namespace: web-saas-k3s-v5
+spec:
+  type: ClusterIP
+  selector: {app: observability-ingest-auth}
+  ports:
+    - {name: http, port: 8427, targetPort: http}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: observability-ingest-auth
+  namespace: web-saas-k3s-v5
+spec:
+  podSelector:
+    matchLabels: {app: observability-ingest-auth}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: caddy
+              app.kubernetes.io/instance: web-saas
+      ports:
+        - {protocol: TCP, port: 8427}
