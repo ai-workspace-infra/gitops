@@ -71,7 +71,7 @@ spec:
       existingSecret: grafana-admin
       adminPasswordKey: password
       resources:
-        requests: {cpu: 100m, memory: 128Mi}
+        requests: {cpu: 250m, memory: 256Mi}
         limits: {cpu: 500m, memory: 512Mi}
       pluginInstallerResources:
         requests: {cpu: 10m, memory: 32Mi}
