@@ -9,7 +9,7 @@ spec:
   - path: sys/auth
     capabilities:
     - read
-  - path: sys/auth/jwt-prod-k3s-2519bf1ba3d7db80
+  - path: sys/auth/jwt-prod-k3s-prod-k3s-v6
     capabilities:
     - create
     - update
@@ -22,12 +22,12 @@ spec:
     - read
     - create
     - update
-  - path: auth/jwt-prod-k3s-2519bf1ba3d7db80/config
+  - path: auth/jwt-prod-k3s-prod-k3s-v6/config
     capabilities:
     - create
     - read
     - update
-  - path: auth/jwt-prod-k3s-2519bf1ba3d7db80/role/prod-k3s-tls-reader
+  - path: auth/jwt-prod-k3s-prod-k3s-v6/role/prod-k3s-tls-reader
     capabilities:
     - create
     - read

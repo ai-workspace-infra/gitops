@@ -23,10 +23,10 @@ spec:
     sshKeyField: SSH_PRIVATE_KEY
     providerTokenPath: kv/data/CICD/prod/akamai-cloud/manbuzhe2026
     providerTokenField: LINODE_TOKEN
-  # Stable, non-secret identifier allocated to this specific cluster.
-  clusterId: 2519bf1ba3d7db80
+  # User-selected identifier; do not reuse for a rebuilt cluster without explicit identity review.
+  clusterId: prod-k3s-v6
   identity:
-    mount: jwt-prod-k3s-2519bf1ba3d7db80
+    mount: jwt-prod-k3s-prod-k3s-v6
     role: prod-k3s-tls-reader
     policy: prod-k3s-tls-reader
     namespace: vault-prod
