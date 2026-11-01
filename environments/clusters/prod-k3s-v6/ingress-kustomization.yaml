@@ -9,6 +9,8 @@ spec:
   prune: true
   wait: true
   timeout: 15m
+  dependsOn:
+    - name: external-secrets
   sourceRef:
     kind: GitRepository
     name: ingress-prod-config
