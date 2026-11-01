@@ -64,6 +64,7 @@ hosts:
       k3s_platform_k3s_version: v1.37.1+k3s1
       k3s_platform_cluster_cidr: 10.52.0.0/16
       k3s_platform_service_cidr: 10.53.0.0/16
+      k3s_platform_cluster_dns: 10.53.0.10
       k3s_platform_flux_version: "2.9.6"
       k3s_platform_helm_version: v3.22.1
       k3s_platform_local_storage_path: /data/k3s/storage
