@@ -48,7 +48,7 @@ spec:
         env:
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
-          POSTGRES_USER: billing_runtime
+          POSTGRES_USER: accounts_runtime
           DB_NAME: account
         secretRefs:
         - web-saas-secrets
