@@ -1,0 +1,155 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ingress-tls-reader
+  namespace: ingress-prod
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ingress-tls-reader
+  namespace: ingress-prod
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - serviceaccounts/token
+  resourceNames:
+  - ingress-tls-reader
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ingress-tls-reader
+  namespace: ingress-prod
+subjects:
+- kind: ServiceAccount
+  name: external-secrets
+  namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ingress-tls-reader
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: ingress-tls-reader
+  namespace: ingress-prod
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-prod-k3s-prod-k3s-v6
+          role: prod-k3s-v6-ingress-tls-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: ingress-tls-reader
+            audiences:
+            - vault-prod-k3s-v6-ingress-tls-reader
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: console-tls
+  namespace: ingress-prod
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: ingress-tls-reader
+  target:
+    name: console-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: CICD/domains/svc.plus
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: CICD/domains/svc.plus
+        property: tls_key_pem_b64
+        decodingStrategy: Base64
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: accounts-tls
+  namespace: ingress-prod
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: ingress-tls-reader
+  target:
+    name: accounts-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: CICD/domains/svc.plus
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: CICD/domains/svc.plus
+        property: tls_key_pem_b64
+        decodingStrategy: Base64
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: billing-tls
+  namespace: ingress-prod
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: ingress-tls-reader
+  target:
+    name: billing-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: CICD/domains/svc.plus
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: CICD/domains/svc.plus
+        property: tls_key_pem_b64
+        decodingStrategy: Base64
