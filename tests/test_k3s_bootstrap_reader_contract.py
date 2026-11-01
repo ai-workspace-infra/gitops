@@ -18,7 +18,7 @@ class BootstrapReader(unittest.TestCase):
         self.assertEqual(role['bound_claims']['environment'], 'prod')
         self.assertEqual(role['bound_claims']['ref'], ['refs/heads/main'])
         self.assertEqual(role['bound_claims']['ref_protected'], 'true')
-        self.assertEqual(role['bound_claims']['workflow_ref'], 'ai-workspace-infra/Platform-Orchestrator/.github/workflows/selfhost-stage-deploy.yml@refs/heads/main')
+        self.assertEqual(role['bound_claims']['workflow_ref'], 'ai-workspace-infra/Platform-Orchestrator/.github/workflows/selfhost-stage-deploy-container.yml@refs/heads/main')
 
 
 if __name__ == '__main__':

@@ -25,7 +25,7 @@ class WriterContract(unittest.TestCase):
         self.assertEqual(claims['environment'], 'prod')
         self.assertEqual(claims['ref_protected'], 'true')
         self.assertEqual(claims['ref'], ['refs/heads/main'])
-        self.assertEqual(claims['workflow_ref'], 'ai-workspace-infra/Platform-Orchestrator/.github/workflows/selfhost-stage-deploy.yml@refs/heads/main')
+        self.assertEqual(claims['workflow_ref'], 'ai-workspace-infra/Platform-Orchestrator/.github/workflows/selfhost-stage-deploy-container.yml@refs/heads/main')
 
 
 if __name__ == '__main__':
