@@ -10,7 +10,8 @@ spec:
   wait: true
   timeout: 15m
   dependsOn:
-    - name: vault-prod
+    # SecretStore and ExternalSecret resources require ESO CRDs.
+    - name: external-secrets
   sourceRef:
     kind: GitRepository
     name: postgresql-prod-config
