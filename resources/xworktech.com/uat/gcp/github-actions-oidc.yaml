@@ -16,10 +16,12 @@ spec:
   provider_id: github
   service_account_id: github-actions-uat
   repository: ai-workspace-infra/Platform-Orchestrator
+  repository_owner_id: "292703558"
+  repository_id: "1284966060"
   subjects:
-    - repo:ai-workspace-infra/Platform-Orchestrator:environment:uat
-    - repo:ai-workspace-infra/Platform-Orchestrator:ref:refs/heads/main
-    - repo:ai-workspace-infra/Platform-Orchestrator:ref:refs/tags/uat-*
+    - repo:ai-workspace-infra@292703558/Platform-Orchestrator@1284966060:environment:uat
+    - repo:ai-workspace-infra@292703558/Platform-Orchestrator@1284966060:ref:refs/heads/main
+    - repo:ai-workspace-infra@292703558/Platform-Orchestrator@1284966060:ref:refs/tags/uat-*
   state:
     bucket: xworktech-platform-terraform-state
     key: platform-ops-toolkit/uat/xworktech/gcp-oidc-bootstrap/terraform.tfstate
