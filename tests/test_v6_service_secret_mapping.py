@@ -22,20 +22,21 @@ class ServiceSecrets(unittest.TestCase):
             store = next(d for d in docs if d['kind'] == 'SecretStore' and d['metadata']['name'] == principal)
             jwt = store['spec']['provider']['vault']['auth']['jwt']
             operation = yaml.safe_load((ROOT/f'operations/workload-identities/prod-k3s-v6/{principal}.yaml').read_text())['spec']['identity']
+            self.assertEqual(jwt['path'], operation['mount'])
             self.assertEqual(jwt['role'], operation['role'])
             self.assertEqual(jwt['kubernetesServiceAccountToken']['serviceAccountRef']['name'], operation['serviceAccount'])
             self.assertEqual(jwt['kubernetesServiceAccountToken']['audiences'], [operation['audience']])
             self.assertEqual(operation['allowedPath'], 'kv/data/' + path)
             self.assertNotEqual(operation['deniedPath'], operation['allowedPath'])
-            roles.add(operation['role'])
+            roles.add((operation['role'], operation['mount']))
         self.assertEqual(len(roles), 4)
         admin = 'github-actions-platform-ops-toolkit-prod-k3s-v6-service-secret-admin'
         policy = yaml.safe_load((ROOT/f'security/vault/policies/{admin}.yaml').read_text())['spec']['paths']
         paths = {entry['path'] for entry in policy}
         self.assertFalse(any('*' in path or path.startswith('kv/') for path in paths))
-        for role in roles:
+        for role, mount in roles:
             self.assertIn('sys/policies/acl/' + role, paths)
-            self.assertIn('auth/jwt-prod-k3s-v6/role/' + role, paths)
+            self.assertIn('auth/' + mount + '/role/' + role, paths)
 
 
 if __name__ == '__main__':
