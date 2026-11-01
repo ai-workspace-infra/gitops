@@ -1,0 +1,10 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: prod-k3s-tls-reader
+spec:
+  paths:
+  - path: kv/data/CICD/domains/svc.plus
+    capabilities: [read]
+  - path: auth/token/lookup-self
+    capabilities: [read]
