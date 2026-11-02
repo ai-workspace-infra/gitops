@@ -144,6 +144,7 @@ hosts:
         console.svc.plus: console-selfhost-prod-v6.svc.plus
         accounts.svc.plus: accounts-selfhost-prod-v6.svc.plus
         billing.svc.plus: billing-selfhost-prod-v6.svc.plus
+        postgresql.svc.plus: postgresql-selfhost-prod-v6.svc.plus
         vault.svc.plus: vault-selfhost-prod-v6.svc.plus
         observability.svc.plus: observability-selfhost-prod-v6.svc.plus
         xworktech.com: console-selfhost-prod-v6.svc.plus
