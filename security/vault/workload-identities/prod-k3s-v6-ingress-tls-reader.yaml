@@ -1,0 +1,19 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultKubernetesJWTAuthRole
+metadata:
+  name: prod-k3s-v6-ingress-tls-reader
+  description: V6 ingress-prod ESO workload role on the dedicated jwt-prod-k3s-prod-k3s-v6 mount.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_subject: system:serviceaccount:ingress-prod:ingress-tls-reader
+  bound_audiences:
+  - vault-prod-k3s-v6-ingress-tls-reader
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 10m
+  token_max_ttl: 10m
+  token_explicit_max_ttl: 10m
+  token_policies:
+  - prod-k3s-v6-ingress-tls-reader
