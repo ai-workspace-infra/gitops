@@ -92,7 +92,7 @@ console:
 accounts:
   enabled: true
   workload:
-    image: ghcr.io/ai-workspace-services/accounts:sha-b1ea07695b448c6527eb612d0cd7e0dba41c0e03@sha256:8cc6ef6225bfc4af33d57ecb874d5928b2475c8e115d66b252abca8339e3525f
+    image: ghcr.io/ai-workspace-services/accounts:sha-d906d85d133a35ae0b9e1e1d82e201927791501b@sha256:18fc5b1daeefd26f3d3843358c736ee3adbfca9f508c1d119663a23f91a3ea67
     port: 8080
     replicas: 1
     resources:
@@ -108,7 +108,7 @@ accounts:
       ROOT_BOOTSTRAP_EMAIL: admin@svc.plus
       XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
       XWORKMATE_SHARED_TENANT_DOMAINS: svc.plus
-      IMAGE: ghcr.io/ai-workspace-services/accounts:sha-b1ea07695b448c6527eb612d0cd7e0dba41c0e03@sha256:8cc6ef6225bfc4af33d57ecb874d5928b2475c8e115d66b252abca8339e3525f
+      IMAGE: ghcr.io/ai-workspace-services/accounts:sha-d906d85d133a35ae0b9e1e1d82e201927791501b@sha256:18fc5b1daeefd26f3d3843358c736ee3adbfca9f508c1d119663a23f91a3ea67
       DATABASE_RUNTIME_ROLE: primary
       DATABASE_BACKGROUND_WRITERS: 'false'
       DATABASE_IDENTITY_SHA256: b6618223acd5f8a50897c7adb203e5e491a60f9c8f5cb1702977592f442ab758
