@@ -52,7 +52,7 @@ spec:
         fsGroup: 10001
       initContainers:
       - name: stage-permissions
-        image: ghcr.io/ai-workspace-services/accounts:sha-0cbaf2e988ad3677338274fab719b2eb9a60d9ee@sha256:a79ac6676a55c4f45394c503091bcb22d87fafc7b7ed9a75222195e88186c202
+        image: ghcr.io/ai-workspace-services/accounts:sha-67f5649ac335f9d3eda737dcd8ccdeb38fdcfbc3@sha256:c7786e2ca360e9b69e521f503213f1c65dff9b06221e520429080aeaf9d255fa
         command:
         - sh
         - -c
@@ -73,7 +73,7 @@ spec:
           mountPath: /private/stage
       containers:
       - name: listener
-        image: ghcr.io/ai-workspace-services/accounts:sha-0cbaf2e988ad3677338274fab719b2eb9a60d9ee@sha256:a79ac6676a55c4f45394c503091bcb22d87fafc7b7ed9a75222195e88186c202
+        image: ghcr.io/ai-workspace-services/accounts:sha-67f5649ac335f9d3eda737dcd8ccdeb38fdcfbc3@sha256:c7786e2ca360e9b69e521f503213f1c65dff9b06221e520429080aeaf9d255fa
         command:
         - /usr/local/bin/migratectl
         args:
@@ -105,7 +105,13 @@ spec:
         - --allowed-source-url
         - https://accounts.svc.plus
         - --allowed-peer-cidr
-        - 10.254.250.1/32
+        - $(source_ip)/32
+        env:
+        - name: source_ip
+          valueFrom:
+            secretKeyRef:
+              name: migration-network
+              key: source_ip
         envFrom:
         - secretRef:
             name: migration-listener
@@ -142,10 +148,6 @@ spec:
       - name: tls
         secret:
           secretName: migration-tls
-      hostAliases:
-      - ip: 10.254.250.1
-        hostnames:
-        - accounts.svc.plus
 ---
 apiVersion: v1
 kind: Service
