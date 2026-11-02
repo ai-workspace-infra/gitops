@@ -68,6 +68,7 @@ spec:
             add:
             - CHOWN
             - FOWNER
+            - DAC_OVERRIDE
         volumeMounts:
         - name: stage
           mountPath: /private/stage
