@@ -56,10 +56,16 @@ spec:
 
                 @migration path /api/migrations/v1 /api/migrations/v1/*
                 handle @migration {
-                  reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
-                    transport http {
-                      tls_server_name accounts.svc.plus
+                  @migration_allowed remote_ip {$source_ip}/32 {$destination_ip}/32
+                  handle @migration_allowed {
+                    reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
+                      transport http {
+                        tls_server_name accounts.svc.plus
+                      }
                     }
+                  }
+                  handle {
+                    respond "forbidden" 403
                   }
                 }
 
@@ -76,10 +82,16 @@ spec:
 
                 @migration path /api/migrations/v1 /api/migrations/v1/*
                 handle @migration {
-                  reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
-                    transport http {
-                      tls_server_name accounts.svc.plus
+                  @migration_allowed remote_ip {$source_ip}/32 {$destination_ip}/32
+                  handle @migration_allowed {
+                    reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
+                      transport http {
+                        tls_server_name accounts.svc.plus
+                      }
                     }
+                  }
+                  handle {
+                    respond "forbidden" 403
                   }
                 }
 
@@ -178,6 +190,20 @@ spec:
                 annotations:
                   checksum/caddy-metrics: d4768204cc3a7cc17a1e3e6d69c85f49ae2fd529c6813a2d68ac1221c7cac935
                   checksum/observability-ingest: 023ff736aa943f152c5b340495ff6de725b9eb612e5f4de057f4ec4b392dfb04
+              spec:
+                containers:
+                - name: caddy
+                  env:
+                  - name: source_ip
+                    valueFrom:
+                      secretKeyRef:
+                        name: migration-network
+                        key: source_ip
+                  - name: destination_ip
+                    valueFrom:
+                      secretKeyRef:
+                        name: migration-network
+                        key: destination_ip
       - target:
           kind: Service
           name: web-saas-caddy-ingress
