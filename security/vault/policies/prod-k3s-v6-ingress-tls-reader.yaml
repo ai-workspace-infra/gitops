@@ -1,0 +1,17 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: prod-k3s-v6-ingress-tls-reader
+  description: Read-only access to svc.plus and xworktech.com TLS certificates for prod-k3s-v6 ingress-prod ESO.
+spec:
+  paths:
+  - path: kv/data/CICD/domains/svc.plus
+    capabilities:
+    - read
+  - path: kv/data/CICD/domains/xworktech.com
+    capabilities:
+    - read
+  - path: auth/token/lookup-self
+    capabilities:
+    - read
