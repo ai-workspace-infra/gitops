@@ -53,6 +53,15 @@ spec:
                   https://accounts-selfhost-prod-v6.svc.plus:8443 {
                     tls /tls/accounts/tls.crt /tls/accounts/tls.key
 
+                    @migration path /api/migrations/v1 /api/migrations/v1/*
+                    handle @migration {
+                      reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
+                        transport http {
+                          tls_server_name accounts-selfhost-prod-v6.svc.plus
+                        }
+                      }
+                    }
+
                     @api path /api /api/*
                     handle @api {
                       reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
@@ -63,6 +72,15 @@ spec:
                   }
                   https://accounts.svc.plus:8443 {
                     tls /tls/accounts/tls.crt /tls/accounts/tls.key
+
+                    @migration path /api/migrations/v1 /api/migrations/v1/*
+                    handle @migration {
+                      reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
+                        transport http {
+                          tls_server_name accounts-selfhost-prod-v6.svc.plus
+                        }
+                      }
+                    }
 
                     @api path /api /api/*
                     handle @api {

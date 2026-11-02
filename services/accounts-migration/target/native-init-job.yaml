@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: migration-native-init
+  namespace: accounts-migration
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      containers:
+      - name: init
+        image: ghcr.io/ai-workspace-services/accounts:sha-0cbaf2e988ad3677338274fab719b2eb9a60d9ee@sha256:a79ac6676a55c4f45394c503091bcb22d87fafc7b7ed9a75222195e88186c202
+        command:
+        - /usr/local/bin/migratectl
+        args:
+        - init
+        - --dsn-env
+        - MIGRATION_DSN
+        - --environment
+        - prod
+        - --writers-paused
+        - --schema-sha256
+        - 80ca865a9b93f1e63ca4c4c76e7a08e69458245ec63f1bba5667e28c4409a619
+        - --dry-run=false
+        envFrom:
+        - secretRef:
+            name: migration-candidate-init
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
+        securityContext:
+          runAsUser: 10001
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
