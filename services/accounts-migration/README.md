@@ -4,6 +4,10 @@
 
 ## 目标数据库部署选择
 
+常规模式是独立 listener 直接连接目标业务 PostgreSQL。候选 PostgreSQL **不是常规迁移的必需依赖**；仅当源、目标 SQL schema 差异较大、无法安全原地升级或兼容性尚未证明时，才启用独立候选库进行 schema 转换、导入、业务一致性和恢复演练。
+
+候选库验证成功不等于业务库已经完成迁移，也不自动切换 Accounts 的数据库连接。验证后的正式交付与写者切换仍需按确认的方案执行；不得把候选库测试结果当作允许对现有业务库强制 DDL、清库或覆盖数据的授权。
+
 | Flux source path | 常驻 Pod | 数据库用途 |
 | --- | --- | --- |
 | `services/accounts-migration/target` | listener + candidate | 当前已部署模式，独立 PostgreSQL 用于隔离验证 |
