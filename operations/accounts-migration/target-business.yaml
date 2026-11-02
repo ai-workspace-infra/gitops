@@ -11,6 +11,7 @@ source_namespace: postgresql-prod
 postgres_pod: postgresql-postgresql-0
 postgres_admin: postgres
 database_host: postgresql-postgresql.postgresql-prod.svc.cluster.local
+database_name: account
 tls_namespace: ingress-prod
 tls_secret: accounts-tls
 native_job_path: null
