@@ -9,3 +9,4 @@ resources:
   - platform-observability-kustomization.yaml
   - datakit-kustomization.yaml
   - controller-resources.yaml
+  - migration-kustomization.yaml

@@ -1,0 +1,186 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: accounts-migration
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: migration-stage
+  namespace: accounts-migration
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounts-migration-listener
+  namespace: accounts-migration
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels: &id001
+      app: accounts-migration-listener
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+      initContainers:
+      - name: stage-permissions
+        image: ghcr.io/ai-workspace-services/accounts:sha-0cbaf2e988ad3677338274fab719b2eb9a60d9ee@sha256:a79ac6676a55c4f45394c503091bcb22d87fafc7b7ed9a75222195e88186c202
+        command:
+        - sh
+        - -c
+        - chmod 700 /private/stage && chown 10001:10001 /private/stage
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+          runAsNonRoot: false
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - CHOWN
+            - FOWNER
+        volumeMounts:
+        - name: stage
+          mountPath: /private/stage
+      containers:
+      - name: listener
+        image: ghcr.io/ai-workspace-services/accounts:sha-0cbaf2e988ad3677338274fab719b2eb9a60d9ee@sha256:a79ac6676a55c4f45394c503091bcb22d87fafc7b7ed9a75222195e88186c202
+        command:
+        - /usr/local/bin/migratectl
+        args:
+        - serve
+        - --role
+        - source
+        - --audience
+        - accounts-migration-source
+        - --source-audience
+        - accounts-migration-source
+        - --target-audience
+        - accounts-migration-target
+        - --job-id
+        - 6b70db94-e6de-4cee-902e-92ec1ccede20
+        - --dsn-env
+        - MIGRATION_DSN
+        - --accounts-auth-url
+        - https://accounts.svc.plus
+        - --staging-key-env
+        - STAGING_KEY
+        - --staging-dir
+        - /private/stage
+        - --listen
+        - 0.0.0.0:9097
+        - --tls-cert
+        - /tls/tls.crt
+        - --tls-key
+        - /tls/tls.key
+        envFrom:
+        - secretRef:
+            name: migration-listener
+        ports:
+        - containerPort: 9097
+        resources:
+          requests:
+            cpu: 25m
+            memory: 64Mi
+          limits:
+            cpu: 300m
+            memory: 256Mi
+        securityContext:
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        readinessProbe:
+          tcpSocket:
+            port: 9097
+          initialDelaySeconds: 5
+        volumeMounts:
+        - name: stage
+          mountPath: /private/stage
+        - name: tls
+          mountPath: /tls
+          readOnly: true
+      volumes:
+      - name: stage
+        persistentVolumeClaim:
+          claimName: migration-stage
+      - name: tls
+        secret:
+          secretName: migration-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accounts-migration-listener
+  namespace: accounts-migration
+spec:
+  selector:
+    app: accounts-migration-listener
+  ports:
+  - port: 9097
+    targetPort: 9097
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: migration-ingress
+  namespace: accounts-migration
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: web-saas-k3s-v5
+    ports:
+    - protocol: TCP
+      port: 9097
+  - from:
+    - podSelector: {}
+    ports:
+    - protocol: TCP
+      port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: migration-source-postgresql
+  namespace: web-saas-k3s-v5
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: postgresql
+      app.kubernetes.io/instance: web-saas
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: accounts-migration
+      podSelector:
+        matchLabels:
+          app: accounts-migration-listener
+    ports:
+    - protocol: TCP
+      port: 5432

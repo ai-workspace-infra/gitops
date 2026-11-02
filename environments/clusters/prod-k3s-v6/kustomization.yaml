@@ -14,3 +14,4 @@ resources:
   - observability-kustomization.yaml
   - web-saas-kustomization.yaml
   - cluster-identities-kustomization.yaml
+  - migration-kustomization.yaml
