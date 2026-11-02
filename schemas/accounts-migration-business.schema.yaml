@@ -1,0 +1,47 @@
+'$schema': https://json-schema.org/draft/2020-12/schema
+title: Accounts business migration identity operation
+type: object
+additionalProperties: false
+required:
+  - schema_version
+  - kind
+  - role
+  - target_mode
+  - schema_mode
+  - listener_secret_name
+  - staging_key_vault_path
+  - namespace
+  - vault_path
+  - source_namespace
+  - postgres_pod
+  - postgres_admin
+  - database_host
+  - database_name
+  - tls_namespace
+  - tls_secret
+  - native_job_path
+  - tables
+properties:
+  schema_version: {const: 1}
+  kind: {const: accounts-migration-bootstrap}
+  role: {const: target}
+  target_mode: {const: business}
+  schema_mode: {const: unversioned_verified_scope}
+  listener_secret_name: {type: string, pattern: '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$', maxLength: 253}
+  staging_key_vault_path: {type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9_./-]*$'}
+  namespace: {type: string, pattern: '^[a-zA-Z0-9_.-]+$'}
+  vault_path: {type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9_./-]*$'}
+  source_namespace: {type: string, pattern: '^[a-zA-Z0-9_.-]+$'}
+  postgres_pod: {type: string, pattern: '^[a-zA-Z0-9_.-]+$'}
+  postgres_admin: {type: string, pattern: '^[a-zA-Z0-9_.-]+$'}
+  database_host: {type: string, pattern: '^[A-Za-z0-9][A-Za-z0-9.-]*[A-Za-z0-9]$', maxLength: 253}
+  database_name: {type: string, pattern: '^[a-z][a-z0-9_]{0,62}$'}
+  tls_namespace: {type: string, pattern: '^[a-zA-Z0-9_.-]+$'}
+  tls_secret: {type: string, pattern: '^[a-zA-Z0-9_.-]+$'}
+  native_job_path: {type: 'null'}
+  tables:
+    type: array
+    minItems: 42
+    maxItems: 42
+    uniqueItems: true
+    items: {type: string, pattern: '^[a-z_]+$'}
