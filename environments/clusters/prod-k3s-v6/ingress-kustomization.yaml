@@ -15,3 +15,7 @@ spec:
     kind: GitRepository
     name: ingress-prod-config
   path: ./services/prod-k3s-v6/ingress-prod
+  postBuild:
+    substituteFrom:
+    - kind: ConfigMap
+      name: accounts-migration-network

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: accounts-migration-network
+  namespace: flux-system
+data:
+  source_ip: "104.105.141.213"
+  destination_ip: "172.237.24.232"

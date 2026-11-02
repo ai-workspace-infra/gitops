@@ -6,10 +6,11 @@ keys. The target has a separate PostgreSQL17 instance and 2Gi PVC; staging uses
 separate 1Gi PVCs. No existing Accounts database or application DATABASE_URL changes.
 
 Only `/api/migrations/v1` and `/api/migrations/v1/*` are routed to the TLS listener.
-The original Accounts routes continue through their ordinary upstream. The V6
-listener resolves the source origin through the WireGuard V5 address. Verify that
-path from the actual target Pod before snapshot acceptance; a host probe alone is
-not Pod connectivity proof. TLS SNI remains the source hostname.
+The original Accounts routes continue through their ordinary upstream. Both migration routes allow only the `source_ip` and `destination_ip` IPv4
+parameters declared in `environments/clusters/shared/accounts-migration-network`.
+The V6 listener uses public DNS and HTTPS for the source, with an exact source
+`/32` peer allowlist and verified TLS. Confirm the actual peer addresses observed
+by both Caddy Pods after ServiceLB before declaring allow/deny validation complete.
 
 Apply sequence after producer/consumer PR review:
 
