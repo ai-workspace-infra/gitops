@@ -90,7 +90,7 @@ spec:
       enabled: true
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-1b1fadf707958e59ff97701b1b86549e44446c53@sha256:d453e66232653a388c10ba8f8d0909ea997bfc7e47cf632bf5374a08425633d4
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-a0a867f0c7b9bf9480f5db42a4b7aec316daa9fb@sha256:973fb82cb67d44f845144a84752e17bca0dea0d2c3c509db7541c968d0b07b29
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -100,7 +100,7 @@ spec:
         - web-saas-secrets
         - accounts-db-runtime
         - accounts-bootstrap
-        image: ghcr.io/ai-workspace-services/accounts:sha-1b1fadf707958e59ff97701b1b86549e44446c53@sha256:d453e66232653a388c10ba8f8d0909ea997bfc7e47cf632bf5374a08425633d4
+        image: ghcr.io/ai-workspace-services/accounts:sha-a0a867f0c7b9bf9480f5db42a4b7aec316daa9fb@sha256:973fb82cb67d44f845144a84752e17bca0dea0d2c3c509db7541c968d0b07b29
         resources:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
