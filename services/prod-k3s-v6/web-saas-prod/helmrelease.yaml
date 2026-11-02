@@ -74,6 +74,7 @@ spec:
           DB_PORT: '5432'
           POSTGRES_USER: postgres
           DB_NAME: account
+          XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
