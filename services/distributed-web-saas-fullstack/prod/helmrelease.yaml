@@ -178,3 +178,13 @@ spec:
                 annotations:
                   checksum/caddy-metrics: d4768204cc3a7cc17a1e3e6d69c85f49ae2fd529c6813a2d68ac1221c7cac935
                   checksum/observability-ingest: 023ff736aa943f152c5b340495ff6de725b9eb612e5f4de057f4ec4b392dfb04
+      - target:
+          kind: Service
+          name: web-saas-caddy-ingress
+        patch: |-
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: web-saas-caddy-ingress
+          spec:
+            externalTrafficPolicy: Local

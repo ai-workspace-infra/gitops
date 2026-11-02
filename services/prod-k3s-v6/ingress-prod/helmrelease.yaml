@@ -175,6 +175,16 @@ spec:
                   metadata:
                     annotations:
                       checksum/caddyfile-postrender: 2ea344451b275dec03e08d3456a59a1dc7f0b5d795b85743abb52f50a1d5cc26
+          - target:
+              kind: Service
+              name: caddy-ingress-caddy-ingress
+            patch: |-
+              apiVersion: v1
+              kind: Service
+              metadata:
+                name: caddy-ingress-caddy-ingress
+              spec:
+                externalTrafficPolicy: Local
   values:
     console:
       enabled: false
