@@ -23,3 +23,12 @@
 6. 检查 namespace 只剩 listener 一个常驻 Pod，并记录回退用的原连接引用和固定镜像。验证完成之前保留候选库；两个 PVC 均禁用 Flux prune，切换路径不会自动删除暂存分片和候选数据库卷。后续 PVC 清理由独立保留策略处理。
 
 初始化 Job 是一次性管理操作，不在 Flux 资源图中。完成或失败后应保存必要的受限诊断记录，再清理 Job；诊断 Pod 不作为常驻服务交付。
+
+## 现有部署与运行约束
+
+- 两端是独立 Flux 单元，使用相同 job UUID、不同 audience 和 staging key。只有 `/api/migrations/v1` 与 `/api/migrations/v1/*` 转发到 TLS listener，不能扩大到普通业务路由。
+- 通过固定 GitOps SHA 运行 Playbooks `accounts-migration-identity.yml` 的 `secrets` 阶段交付 Vault 材料和证书；`init` 只适用于空候选库。源端身份已经交付，本轮不再次轮换源端凭据或修改源端 RLS/schema。
+- 两端跨节点使用公共 HTTPS，实际 target Pod 到 source 的连通性和证书验证必须独立验收；不再依赖 WireGuard 地址解析。
+- 当前部署尚未配置 apply 所需的备份恢复回执和数据库提交回执初始化，不能把 preview 成功视为允许导入。目标连接不使用数据库管理员权限。
+- TLS Secret 是迁移窗口的证书副本，证书续期后需要同步。只要保留的快照或计划还需要解密，就不能轮换 staging key。
+- 回退通过 GitOps 恢复精确 Caddy 路由、listener 连接和固定镜像；数据卷保持保留。迁移写入与 DNS/业务写者切换分别验收。
