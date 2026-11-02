@@ -27,6 +27,9 @@ spec:
                   spec:
                     containers:
                       - name: console
+                        env:
+                          - name: PORT
+                            value: '3000'
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -66,6 +69,23 @@ spec:
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
+        volumes:
+          - name: nginx-config
+            configMap:
+              name: web-saas-console-nginx
+          - name: tmp
+            emptyDir: {}
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+          - name: nginx-config
+            mountPath: /etc/nginx/conf.d/default.conf
+            subPath: default.conf
+            readOnly: true
+          - name: tmp
+            mountPath: /tmp
     accounts:
       enabled: true
       workload:
@@ -91,10 +111,36 @@ spec:
           DB_PORT: '5432'
           POSTGRES_USER: postgres
           DB_NAME: account
+          BILLING_INGEST_MODE: push
+          DEFAULT_REGION: jp
+          IMAGE: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
         image: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
+        probes:
+          startupProbe:
+            httpGet:
+              path: /api/ping
+              port: primary
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: primary
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/ping
+              port: primary
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
         resources:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
