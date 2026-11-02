@@ -63,7 +63,7 @@ spec:
           mountPath: /private/stage
       containers:
       - name: listener
-        image: ghcr.io/ai-workspace-services/accounts:migration-356b9d9aa1d1-901b825ab8df@sha256:901b825ab8dfd34ddd63628e50a6266a48ca69cf0bd751b1b1a7e763df851ea5
+        image: ghcr.io/ai-workspace-services/accounts:migration-bc32fac4846c-2089183b2179@sha256:2089183b2179b1594e7a354c576b1a2a481e44c59b7dbe419ad811b0fd1da0e6
         command:
         - /usr/local/bin/migratectl
         args:
@@ -81,8 +81,8 @@ spec:
         - 6b70db94-e6de-4cee-902e-92ec1ccede20
         - --dsn-env
         - MIGRATION_DSN
-        - --accounts-auth-url
-        - https://accounts-selfhost-prod-v6.svc.plus
+        - --internal-service-token-env
+        - INTERNAL_SERVICE_TOKEN
         - --staging-key-env
         - STAGING_KEY
         - --staging-dir
