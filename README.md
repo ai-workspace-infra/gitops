@@ -126,3 +126,14 @@ runs, which is rarely what a deployment wants:
 continuing — logging a warning and exiting 0 — produces a run that is green while having
 configured nothing. Consumers are responsible for asserting that the declaration they expected
 was actually found.
+
+## Pull request checks
+
+GitOps declares desired state; PR checks are limited to YAML declaration format
+and redacted gitleaks scanning of the PR commit range. Checks require only
+repository read access and do not retrieve Vault credentials, build or publish
+artifacts, deploy workloads, migrate databases, or inspect live environments.
+Domain-specific declaration tools remain available for focused manual review;
+they are not automatic merge gates. Execution and runtime acceptance belong to
+Playbooks and the service owners, with deployment through the declared Flux graph
+or an explicitly authorized manual operation.

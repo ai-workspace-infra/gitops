@@ -8,45 +8,13 @@ permissions:
   contents: read
 
 jobs:
-  validate-k3s-identity-writer:
-    name: Validate K3s identity writer declaration
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: python3 -m pip install 'pyyaml==6.0.2'
-      - run: python3 -m unittest discover -s tests -p test_k3s_identity_writer_contract.py
-      - run: python3 -m unittest discover -s tests -p test_k3s_bootstrap_reader_contract.py
-      - run: python3 -m unittest discover -s tests -p test_v6_service_secret_mapping.py
-
-  validate-web-saas-business-env:
-    name: Validate business database env compatibility
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: python3 -m pip install 'pyyaml==6.0.2'
-      - run: python3 -m unittest discover -s tests -p test_web_saas_business_env.py
-
-  validate-artifact-candidate-policy:
-    name: Validate Daily artifact candidate policy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
-      - run: python3 -m pip install 'pyyaml==6.0.2'
-      - run: python3 -m unittest discover -s tests -p test_artifact_candidate_policy.py
-
-  validate-feature-sit-path-isolation:
-    name: Validate feature SIT path isolation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: python3 -m pip install 'pyyaml==6.0.2'
-      - run: python3 -m unittest discover -s tests -p test_feature_sit_path_isolation.py
-
   yaml-only-source:
     name: Enforce YAML-only declarations
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
       - run: python3 -m pip install 'pyyaml==6.0.2'
       - name: Enforce YAML-only repository and Vault authorization contracts
         run: |
@@ -104,41 +72,6 @@ jobs:
               else:
                   raise SystemExit(f'{path}: unsupported Vault declaration kind {kind!r}')
           PY
-      - name: Enforce env-scoped Vault paths for enforced policies (no Vault access)
-        run: |
-          python3 -m unittest discover -s tests -p test_vault_env_isolation.py
-          python3 scripts/validate-vault-env-isolation.py .
-  validate-zitadel-compose:
-    name: Validate Shared IAM single-host GitOps
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - run: python3 -m pip install 'pyyaml==6.0.2'
-      - run: python3 -m unittest discover -s tests -p test_zitadel_compose.py
-      - name: Validate Compose without loading host secrets
-        run: python3 scripts/validate-zitadel-compose.py
-
-  validate-shared-vault-xconnect:
-    name: Validate shared Vault XConnect topology
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Validate dedicated shared network and SSH-only policy
-        run: bash scripts/validate-shared-vault-xconnect.sh
-
-  validate-open-platform-shared:
-    name: Validate open-platform-shared migration target
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Validate shared project and service host declaration
-        run: bash scripts/validate-open-platform-shared.sh
 
   sec-qa-gate:
     name: Sec QA Gate (gitleaks)
@@ -147,9 +80,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout (full history)
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Install gitleaks
         run: |
@@ -163,13 +97,3 @@ jobs:
 
       - name: Scan PR commits for secrets
         run: gitleaks detect -v --redact --exit-code 1 --log-opts="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
-
-  validate-runtime-topologies:
-    name: Validate runtime topology declarations
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - name: Validate runtime topology declarations
-        run: scripts/validate-runtime-topologies.sh
