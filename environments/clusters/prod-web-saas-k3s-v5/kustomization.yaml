@@ -10,3 +10,4 @@ resources:
   - datakit-kustomization.yaml
   - controller-resources.yaml
   - migration-kustomization.yaml
+  - ../shared/accounts-migration-network

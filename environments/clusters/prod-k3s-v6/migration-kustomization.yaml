@@ -11,3 +11,7 @@ spec:
     kind: GitRepository
     name: web-saas-prod-config
   path: ./services/accounts-migration/target
+  postBuild:
+    substituteFrom:
+    - kind: ConfigMap
+      name: accounts-migration-network
