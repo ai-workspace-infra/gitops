@@ -153,3 +153,36 @@ spec:
         key: CICD/domains/svc.plus
         property: tls_key_pem_b64
         decodingStrategy: Base64
+
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: brand-console-tls
+  namespace: ingress-prod
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: ingress-tls-reader
+  target:
+    name: brand-console-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: CICD/domains/xworktech.com
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: CICD/domains/xworktech.com
+        property: tls_key_pem_b64
+        decodingStrategy: Base64

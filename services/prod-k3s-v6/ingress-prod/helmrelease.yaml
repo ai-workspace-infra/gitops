@@ -18,6 +18,145 @@ spec:
   upgrade:
     remediation:
       retries: 0
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: ConfigMap
+              name: caddy-ingress-caddy-config
+            patch: |-
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: caddy-ingress-caddy-config
+              data:
+                Caddyfile: |
+                  {
+                    admin off
+                    auto_https off
+                    http_port 8080
+                    https_port 8443
+                  }
+                  :8080 {
+                    handle /healthz {
+                      respond "ok" 200
+                    }
+
+                    @api path /api /api/*
+                    handle @api {
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                    handle {
+                      respond "not found" 404
+                    }
+                  }
+                  https://accounts-selfhost-prod-v6.svc.plus:8443 {
+                    tls /tls/accounts/tls.crt /tls/accounts/tls.key
+
+                    @api path /api /api/*
+                    handle @api {
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                    handle {
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                  }
+                  https://accounts.svc.plus:8443 {
+                    tls /tls/accounts/tls.crt /tls/accounts/tls.key
+
+                    @api path /api /api/*
+                    handle @api {
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                    handle {
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                  }
+                  https://billing-selfhost-prod-v6.svc.plus:8443 {
+                    tls /tls/billing/tls.crt /tls/billing/tls.key
+                    reverse_proxy web-saas-billing.web-saas-prod.svc.cluster.local:80
+                  }
+                  https://billing.svc.plus:8443 {
+                    tls /tls/billing/tls.crt /tls/billing/tls.key
+                    reverse_proxy web-saas-billing.web-saas-prod.svc.cluster.local:80
+                  }
+                  https://console-selfhost-prod-v6.svc.plus:8443 {
+                    tls /tls/console/tls.crt /tls/console/tls.key
+
+                    @api path /api /api/*
+                    handle @api {
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                    handle {
+                      reverse_proxy web-saas-console.web-saas-prod.svc.cluster.local:80
+                    }
+                  }
+                  https://console.svc.plus:8443 {
+                    tls /tls/console/tls.crt /tls/console/tls.key
+
+                    @api path /api /api/*
+                    handle @api {
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                    handle {
+                      reverse_proxy web-saas-console.web-saas-prod.svc.cluster.local:80
+                    }
+                  }
+                  https://xworktech.com:8443 {
+                    tls /tls/extra-brand-console/tls.crt /tls/extra-brand-console/tls.key
+
+                    @api path /api /api/*
+                    handle @api {
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                    handle {
+                      reverse_proxy web-saas-console.web-saas-prod.svc.cluster.local:80
+                    }
+                  }
+                  https://vault-selfhost-prod-v6.svc.plus:8443 {
+                    tls /tls/extra-vault/tls.crt /tls/extra-vault/tls.key
+                    reverse_proxy https://vault.vault-prod.svc.cluster.local:8200 {
+                      transport http {
+                        tls_server_name vault.svc.plus
+                      }
+                    }
+                  }
+                  https://vault.svc.plus:8443 {
+                    tls /tls/extra-vault/tls.crt /tls/extra-vault/tls.key
+                    reverse_proxy https://vault.vault-prod.svc.cluster.local:8200 {
+                      transport http {
+                        tls_server_name vault.svc.plus
+                      }
+                    }
+                  }
+                  https://observability-k3s-v6.svc.plus:8443 {
+                    tls /tls/extra-observability/tls.crt /tls/extra-observability/tls.key
+                    reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000 {
+                    }
+                  }
+                  https://observability-selfhost-prod-v6.svc.plus:8443 {
+                    tls /tls/extra-observability/tls.crt /tls/extra-observability/tls.key
+                    reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000 {
+                    }
+                  }
+                  https://observability.svc.plus:8443 {
+                    tls /tls/extra-observability/tls.crt /tls/extra-observability/tls.key
+                    reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000 {
+                    }
+                  }
+          - target:
+              kind: Deployment
+              name: caddy-ingress-caddy
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: caddy-ingress-caddy
+              spec:
+                template:
+                  metadata:
+                    annotations:
+                      checksum/caddyfile-postrender: 2ea344451b275dec03e08d3456a59a1dc7f0b5d795b85743abb52f50a1d5cc26
   values:
     console:
       enabled: false
@@ -52,12 +191,36 @@ spec:
         billing: web-saas-billing.web-saas-prod.svc.cluster.local:80
       routes:
         consoleHost: console-selfhost-prod-v6.svc.plus
+        consoleAliases:
+          - console.svc.plus
         accountsHost: accounts-selfhost-prod-v6.svc.plus
+        accountsAliases:
+          - accounts.svc.plus
         billingHost: billing-selfhost-prod-v6.svc.plus
+        billingAliases:
+          - billing.svc.plus
       tls:
         consoleSecret: console-tls
         accountsSecret: accounts-tls
         billingSecret: billing-tls
+      additionalHosts:
+        - name: brand-console
+          host: xworktech.com
+          serviceRole: console
+          tlsSecret: brand-console-tls
+        - name: vault
+          host: vault-selfhost-prod-v6.svc.plus
+          aliases:
+            - vault.svc.plus
+          upstream: https://vault.vault-prod.svc.cluster.local:8200
+          tlsSecret: console-tls
+        - name: observability
+          host: observability-k3s-v6.svc.plus
+          aliases:
+            - observability-selfhost-prod-v6.svc.plus
+            - observability.svc.plus
+          upstream: http://observability-observability-stack.observability-prod.svc.cluster.local:3000
+          tlsSecret: console-tls
     stunnelClient:
       enabled: false
     stunnelServer:
