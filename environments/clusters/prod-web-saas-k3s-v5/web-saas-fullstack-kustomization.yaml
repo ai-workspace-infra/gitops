@@ -12,7 +12,3 @@ spec:
     kind: GitRepository
     name: platform-config-prod
   path: ./services/distributed-web-saas-fullstack/prod
-  postBuild:
-    substituteFrom:
-    - kind: ConfigMap
-      name: accounts-migration-network

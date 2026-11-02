@@ -39,7 +39,7 @@ spec:
       engineVersion: v2
       mergePolicy: Merge
       data:
-        DATABASE_URL: '{{ regexReplaceAll "/[^/?]+([?].*)?$" .DATABASE_URL "/account$${1}"
+        DATABASE_URL: '{{ regexReplaceAll "/[^/?]+([?].*)?$" .DATABASE_URL "/account${1}"
           }}'
   data:
   - secretKey: password

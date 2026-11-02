@@ -105,7 +105,7 @@ spec:
         - --allowed-source-url
         - https://accounts.svc.plus
         - --allowed-peer-cidr
-        - ${source_ip}/32
+        - 10.254.250.1/32
         envFrom:
         - secretRef:
             name: migration-listener
@@ -142,6 +142,10 @@ spec:
       - name: tls
         secret:
           secretName: migration-tls
+      hostAliases:
+      - ip: 10.254.250.1
+        hostnames:
+        - accounts.svc.plus
 ---
 apiVersion: v1
 kind: Service

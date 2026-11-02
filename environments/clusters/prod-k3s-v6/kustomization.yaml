@@ -15,4 +15,3 @@ resources:
   - web-saas-kustomization.yaml
   - cluster-identities-kustomization.yaml
   - migration-kustomization.yaml
-  - ../shared/accounts-migration-network

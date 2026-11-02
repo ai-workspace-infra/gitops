@@ -55,16 +55,10 @@ spec:
 
                     @migration path /api/migrations/v1 /api/migrations/v1/*
                     handle @migration {
-                      @migration_allowed remote_ip ${source_ip}/32 ${destination_ip}/32
-                      handle @migration_allowed {
-                        reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
-                          transport http {
-                            tls_server_name accounts-selfhost-prod-v6.svc.plus
-                          }
+                      reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
+                        transport http {
+                          tls_server_name accounts-selfhost-prod-v6.svc.plus
                         }
-                      }
-                      handle {
-                        respond "forbidden" 403
                       }
                     }
 
@@ -81,16 +75,10 @@ spec:
 
                     @migration path /api/migrations/v1 /api/migrations/v1/*
                     handle @migration {
-                      @migration_allowed remote_ip ${source_ip}/32 ${destination_ip}/32
-                      handle @migration_allowed {
-                        reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
-                          transport http {
-                            tls_server_name accounts-selfhost-prod-v6.svc.plus
-                          }
+                      reverse_proxy https://accounts-migration-listener.accounts-migration.svc.cluster.local:9097 {
+                        transport http {
+                          tls_server_name accounts-selfhost-prod-v6.svc.plus
                         }
-                      }
-                      handle {
-                        respond "forbidden" 403
                       }
                     }
 
@@ -187,8 +175,6 @@ spec:
                   metadata:
                     annotations:
                       checksum/caddyfile-postrender: 2ea344451b275dec03e08d3456a59a1dc7f0b5d795b85743abb52f50a1d5cc26
-                      migration/source-ip: "${source_ip}"
-                      migration/destination-ip: "${destination_ip}"
   values:
     console:
       enabled: false
