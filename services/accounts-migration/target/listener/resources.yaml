@@ -63,7 +63,7 @@ spec:
           mountPath: /private/stage
       containers:
       - name: listener
-        image: ghcr.io/ai-workspace-services/accounts:migration-97f8c92ff9c1-272e09a7306a@sha256:272e09a7306a44b0bd30e499242f9be34729eadf03da2b698117ef806836636d
+        image: ghcr.io/ai-workspace-services/accounts:migration-356b9d9aa1d1-901b825ab8df@sha256:901b825ab8dfd34ddd63628e50a6266a48ca69cf0bd751b1b1a7e763df851ea5
         command:
         - /usr/local/bin/migratectl
         args:
