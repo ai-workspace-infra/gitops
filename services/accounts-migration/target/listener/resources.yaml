@@ -63,13 +63,14 @@ spec:
           mountPath: /private/stage
       containers:
       - name: listener
-        image: ghcr.io/ai-workspace-services/accounts:sha-67f5649ac335f9d3eda737dcd8ccdeb38fdcfbc3@sha256:c7786e2ca360e9b69e521f503213f1c65dff9b06221e520429080aeaf9d255fa
+        image: ghcr.io/ai-workspace-services/accounts:migration-97f8c92ff9c1-272e09a7306a@sha256:272e09a7306a44b0bd30e499242f9be34729eadf03da2b698117ef806836636d
         command:
         - /usr/local/bin/migratectl
         args:
         - serve
         - --role
         - target
+        - --allow-unversioned-target
         - --audience
         - accounts-migration-target
         - --source-audience
@@ -104,7 +105,7 @@ spec:
               key: source_ip
         envFrom:
         - secretRef:
-            name: migration-listener
+            name: migration-listener-business
         ports:
         - containerPort: 9097
         resources:
