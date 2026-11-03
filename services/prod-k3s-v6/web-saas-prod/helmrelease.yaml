@@ -16,6 +16,33 @@ spec:
         patches:
           - target:
               kind: Deployment
+              name: web-saas-accounts
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-accounts
+              spec:
+                template:
+                  spec:
+                    volumes:
+                      - name: accounts-controller-config
+                        secret:
+                          secretName: accounts-controller-config
+                          defaultMode: 0400
+                    containers:
+                      - name: accounts
+                        env:
+                          - name: CONFIG_TEMPLATE
+                            value: /var/run/accounts-controller-config/account.yaml
+                          - name: CONFIG_PATH
+                            value: /tmp/accounts-controller-config.yaml
+                        volumeMounts:
+                          - name: accounts-controller-config
+                            mountPath: /var/run/accounts-controller-config
+                            readOnly: true
+          - target:
+              kind: Deployment
               name: web-saas-console
             patch: |
               apiVersion: apps/v1
