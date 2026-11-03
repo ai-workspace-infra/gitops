@@ -45,6 +45,7 @@ spec:
         size: 20Gi
       metrics:
         enabled: true
+        username: auditor
         resources:
           requests: {cpu: 10m, memory: 32Mi}
           limits: {cpu: 25m, memory: 64Mi}
