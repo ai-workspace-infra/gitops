@@ -53,22 +53,3 @@ hosts:
       logical_region: us-ca
       provider_region: us-lax
       service_domains: [us-xconnect.svc.plus]
-
-  - name: sg
-    region: sg-sin-2
-    type: g6-standard-1
-    image: linode/debian12
-    private_ip: true
-    ansible_user: root
-    groups: [xconnect, agent_proxy, prod, akamai_cloud]
-    tags: [svc-plus, prod, xconnect, logical-sg, provider-sg-sin-2]
-    firewall:
-      ssh_cidrs: ["0.0.0.0/0"]
-      ssh_ipv6_cidrs: ["::/0"]
-      allow_http: false
-      allow_https: false
-    host_vars:
-      role: xconnect
-      logical_region: sg
-      provider_region: sg-sin-2
-      service_domains: [sg-xconnect.svc.plus]

@@ -38,7 +38,7 @@ spec:
   lifecycle: hybrid
   provisioning:
     managed_by: mixed
-    iac_status: active_for_jp_sg_us
+    iac_status: active_for_jp_us
   entrypoint_defaults:
     dns_record:
       zone: svc.plus
@@ -87,21 +87,6 @@ spec:
       nodes:
         - id: us-01
           node_id: ap-prod-us
-          connection_source: terraform_cmdb
-          enabled: true
-          role: standalone
-          weight: 100
-    - name: sg
-      region: sg
-      entrypoint:
-        fqdn: sg-xconnect.svc.plus
-        mode: auto
-        single_node_binding: direct
-        multi_node_binding: scheduler
-        scheduler_node: sg-01
-      nodes:
-        - id: sg-01
-          node_id: ap-prod-sg
           connection_source: terraform_cmdb
           enabled: true
           role: standalone
