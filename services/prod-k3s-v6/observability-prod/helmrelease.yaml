@@ -11,6 +11,10 @@ spec:
   chartRef:
     kind: OCIRepository
     name: observability-stack-chart
+  valuesFrom:
+    - kind: ConfigMap
+      name: source-grafana-values
+      valuesKey: values.yaml
   postRenderers:
     - kustomize:
         patches:
@@ -67,9 +71,44 @@ spec:
       cluster: PROD-K3S-V6
       environment: prod
     grafana:
-      rootUrl: https://observability-k3s-v6.svc.plus/
+      rootUrl: https://observability.svc.plus/
       existingSecret: grafana-admin
       adminPasswordKey: password
+      bundleChecksum: ee2a6472c61550a6568ea2f78afc85c2b9f2c800a1b4de2518188d8fef9e0253
+      # Restore display dependencies without enabling the source identity resolver.
+      appsConfigMap: ""
+      plugins:
+        - victoriametrics-logs-datasource@0.33.1
+        - marcusolsson-treemap-panel@2.1.1
+      dashboardProviders:
+        - name: import-general
+          folder: ''
+          folderUid: ''
+          path: general
+          configMaps:
+            - source-grafana-general-0
+            - starsl-k8s-dashboard
+            - caddy-dashboard
+            - postgres-unified-dashboard
+            - grafana-restored-postgres
+        - name: import-alerts
+          folder: Observability Alerts
+          folderUid: dfzrqnab9cpa8e
+          path: alerts
+          configMaps:
+            - grafana-empty-folder
+        - name: import-platform
+          folder: Platform
+          folderUid: bg27c6c3dih34a
+          path: platform
+          configMaps:
+            - grafana-restored-platform
+        - name: import-acceptance
+          folder: Controlled acceptance
+          folderUid: k3s-acceptance
+          path: acceptance
+          configMaps:
+            - grafana-empty-folder
       resources:
         requests: {cpu: 250m, memory: 256Mi}
         limits: {cpu: 500m, memory: 512Mi}

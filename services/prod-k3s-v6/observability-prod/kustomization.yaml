@@ -11,3 +11,7 @@ resources:
 - datakit-helmrepository.yaml
 - datakit-helmrelease.yaml
 - business-networkpolicy.yaml
+- ../../platform-observability/prod/imported-grafana
+- grafana-restored-postgres.yaml
+- grafana-restored-platform.yaml
+- grafana-empty-folder.yaml
