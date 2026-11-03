@@ -151,11 +151,11 @@ spec:
           DB_NAME: account
           BILLING_INGEST_MODE: push
           DEFAULT_REGION: jp
-          IMAGE: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.03.4@sha256:0dbbe1fc63685ba9f9703114210d7e3e61d962b77f62ad87be145354a7e9bc3d
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
-        image: ghcr.io/ai-workspace-services/billing-service@sha256:14bbaee5ba37d85ddf243272ee2c3bed25603ee26ffd5c0b8d685cfe0e7a85a0
+        image: ghcr.io/ai-workspace-services/billing-service:v2026.11.03.4@sha256:0dbbe1fc63685ba9f9703114210d7e3e61d962b77f62ad87be145354a7e9bc3d
         probes:
           startupProbe:
             httpGet:
