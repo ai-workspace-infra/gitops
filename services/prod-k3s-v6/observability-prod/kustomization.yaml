@@ -5,6 +5,7 @@ namespace: observability-prod
 resources:
 - datakit-vault-secret.yaml
 - grafana-vault-secret.yaml
+- observability-ingest-auth.yaml
 - oci-repository.yaml
 - helmrelease.yaml
 - agent-release.yaml

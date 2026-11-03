@@ -173,17 +173,68 @@ spec:
                   }
                   https://observability-k3s-v6.svc.plus:8443 {
                     tls /tls/extra-observability/tls.crt /tls/extra-observability/tls.key
-                    reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000 {
+
+                    @metrics_write path /ingest/metrics/api/v1/write
+                    handle @metrics_write {
+                      uri strip_prefix /ingest/metrics
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    @logs_write path /ingest/logs/*
+                    handle @logs_write {
+                      uri strip_prefix /ingest/logs
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    @otlp_traces path /ingest/otlp/*
+                    handle @otlp_traces {
+                      uri strip_prefix /ingest/otlp
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    handle {
+                      reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000
                     }
                   }
                   https://observability-selfhost-prod-v6.svc.plus:8443 {
                     tls /tls/extra-observability/tls.crt /tls/extra-observability/tls.key
-                    reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000 {
+
+                    @metrics_write path /ingest/metrics/api/v1/write
+                    handle @metrics_write {
+                      uri strip_prefix /ingest/metrics
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    @logs_write path /ingest/logs/*
+                    handle @logs_write {
+                      uri strip_prefix /ingest/logs
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    @otlp_traces path /ingest/otlp/*
+                    handle @otlp_traces {
+                      uri strip_prefix /ingest/otlp
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    handle {
+                      reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000
                     }
                   }
                   https://observability.svc.plus:8443 {
                     tls /tls/extra-observability/tls.crt /tls/extra-observability/tls.key
-                    reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000 {
+
+                    @metrics_write path /ingest/metrics/api/v1/write
+                    handle @metrics_write {
+                      uri strip_prefix /ingest/metrics
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    @logs_write path /ingest/logs/*
+                    handle @logs_write {
+                      uri strip_prefix /ingest/logs
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    @otlp_traces path /ingest/otlp/*
+                    handle @otlp_traces {
+                      uri strip_prefix /ingest/otlp
+                      reverse_proxy http://observability-ingest-auth.observability-prod.svc.cluster.local:8427
+                    }
+                    handle {
+                      reverse_proxy http://observability-observability-stack.observability-prod.svc.cluster.local:3000
                     }
                   }
           - target:

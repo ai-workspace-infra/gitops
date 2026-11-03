@@ -67,9 +67,102 @@ spec:
       resources:
         requests: {cpu: 15m, memory: 48Mi}
         limits: {cpu: 30m, memory: 96Mi}
+    rbac:
+      create: true
     telemetry:
       cluster: PROD-K3S-V6
       environment: prod
+      spanMetrics: true
+      kubernetes:
+        enabled: true
+      extraScrapeConfigs:
+        - job_name: node-exporter
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['observability-agent.observability-prod.svc:9100']
+              labels:
+                cluster: PROD-K3S-V6
+                environment: prod
+                job: node-exporter
+                nodename: prod-k3s-v6
+                instance: prod-k3s-v6
+        - job_name: process-exporter
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['observability-agent-process.observability-prod.svc:9256']
+              labels:
+                cluster: PROD-K3S-V6
+                environment: prod
+                job: process-exporter
+                instance: prod-k3s-v6
+        - job_name: kube-state-metrics
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['observability-agent-state.observability-prod.svc:8080']
+              labels:
+                cluster: PROD-K3S-V6
+                environment: prod
+                job: kube-state-metrics
+        - job_name: postgres-exporter
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['postgresql-postgresql-exporter.postgresql-prod.svc:9187']
+              labels:
+                cluster: PROD-K3S-V6
+                environment: prod
+                service: postgresql
+                job: postgres-exporter
+                instance: prod-postgresql-0
+        - job_name: kubelet
+          scrape_interval: 15s
+          scheme: https
+          metrics_path: /metrics
+          authorization:
+            type: Bearer
+            credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+          tls_config:
+            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            insecure_skip_verify: false
+          kubernetes_sd_configs:
+            - role: node
+          relabel_configs:
+            - source_labels: [__meta_kubernetes_node_name]
+              target_label: node
+            - source_labels: [__meta_kubernetes_node_name]
+              target_label: instance
+            - source_labels: [__address__]
+              regex: (.+):[0-9]+
+              replacement: $1:10250
+              target_label: __address__
+            - target_label: cluster
+              replacement: PROD-K3S-V6
+            - target_label: environment
+              replacement: prod
+        - job_name: cadvisor
+          scrape_interval: 15s
+          scheme: https
+          metrics_path: /metrics/cadvisor
+          authorization:
+            type: Bearer
+            credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+          tls_config:
+            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            insecure_skip_verify: false
+          kubernetes_sd_configs:
+            - role: node
+          relabel_configs:
+            - source_labels: [__meta_kubernetes_node_name]
+              target_label: node
+            - source_labels: [__meta_kubernetes_node_name]
+              target_label: instance
+            - source_labels: [__address__]
+              regex: (.+):[0-9]+
+              replacement: $1:10250
+              target_label: __address__
+            - target_label: cluster
+              replacement: PROD-K3S-V6
+            - target_label: environment
+              replacement: prod
     grafana:
       rootUrl: https://observability.svc.plus/
       existingSecret: grafana-admin
