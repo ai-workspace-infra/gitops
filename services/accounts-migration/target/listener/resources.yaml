@@ -85,8 +85,6 @@ spec:
         - INTERNAL_SERVICE_TOKEN
         - --staging-key-env
         - STAGING_KEY
-        - --backup-receipt-file
-        - /private/stage/operator-backup-receipt.json
         - --staging-dir
         - /private/stage
         - --listen
