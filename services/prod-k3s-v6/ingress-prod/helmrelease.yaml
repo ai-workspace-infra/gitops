@@ -117,6 +117,10 @@ spec:
                       rewrite * /api/auth/admin/agents/team-enrollments
                       reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
                     }
+                    @console_api path /api/auth/mfa /api/auth/mfa/* /api/account /api/account/*
+                    handle @console_api {
+                      reverse_proxy web-saas-console.web-saas-prod.svc.cluster.local:80
+                    }
                     @api path /api /api/*
                     handle @api {
                       reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
@@ -131,6 +135,10 @@ spec:
                     handle /api/admin/agents/team-enrollments {
                       rewrite * /api/auth/admin/agents/team-enrollments
                       reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
+                    @console_api path /api/auth/mfa /api/auth/mfa/* /api/account /api/account/*
+                    handle @console_api {
+                      reverse_proxy web-saas-console.web-saas-prod.svc.cluster.local:80
                     }
                     @api path /api /api/*
                     handle @api {
