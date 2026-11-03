@@ -50,14 +50,6 @@ spec:
         resources:
           requests: {cpu: 10m, memory: 32Mi}
           limits: {cpu: 25m, memory: 64Mi}
-        env:
-          - name: DATA_SOURCE_USER
-            value: "auditor"
-          - name: DATA_SOURCE_PASS
-            valueFrom:
-              secretKeyRef:
-                name: postgresql-auditor
-                key: password
       resources:
         requests: {cpu: 200m, memory: 384Mi}
         limits: {cpu: 300m, memory: 512Mi}
