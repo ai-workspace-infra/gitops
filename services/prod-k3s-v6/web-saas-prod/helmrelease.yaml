@@ -57,6 +57,16 @@ spec:
                         env:
                           - name: PORT
                             value: '3000'
+                          - name: RUNTIME_ENV
+                            value: prod
+                          - name: RUNTIME_AUTH_URL
+                            value: http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                          - name: RUNTIME_XCONNECT_ZERO_URL
+                            value: http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                          - name: RUNTIME_DASHBOARD_URL
+                            value: https://console.svc.plus
+                          - name: FRONTEND_IMAGE
+                            value: ghcr.io/ai-workspace-services/console:sha-32695533eeb39f1af351cc3b4876aa9d23150c62@sha256:5ee55a96a8184074ea4186cf38b426a0d368b686866afc345d2991b0eb02e8b9
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -92,7 +102,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console@sha256:06775cfa5582fb83bae336c4c4befe1fbd4f7747d526653b80736e3e4862e666
+        image: ghcr.io/ai-workspace-services/console:sha-32695533eeb39f1af351cc3b4876aa9d23150c62@sha256:5ee55a96a8184074ea4186cf38b426a0d368b686866afc345d2991b0eb02e8b9
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
