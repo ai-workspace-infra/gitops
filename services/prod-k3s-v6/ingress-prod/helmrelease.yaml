@@ -113,6 +113,10 @@ spec:
                   https://console-selfhost-prod-v6.svc.plus:8443 {
                     tls /tls/console/tls.crt /tls/console/tls.key
 
+                    handle /api/admin/agents/team-enrollments {
+                      rewrite * /api/auth/admin/agents/team-enrollments
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
                     @api path /api /api/*
                     handle @api {
                       reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
@@ -124,6 +128,10 @@ spec:
                   https://console.svc.plus:8443 {
                     tls /tls/console/tls.crt /tls/console/tls.key
 
+                    handle /api/admin/agents/team-enrollments {
+                      rewrite * /api/auth/admin/agents/team-enrollments
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
                     @api path /api /api/*
                     handle @api {
                       reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
@@ -135,6 +143,10 @@ spec:
                   https://xworktech.com:8443 {
                     tls /tls/extra-brand-console/tls.crt /tls/extra-brand-console/tls.key
 
+                    handle /api/admin/agents/team-enrollments {
+                      rewrite * /api/auth/admin/agents/team-enrollments
+                      reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                    }
                     @api path /api /api/*
                     handle @api {
                       reverse_proxy web-saas-accounts.web-saas-prod.svc.cluster.local:80
