@@ -109,7 +109,7 @@ spec:
         volumes:
           - name: nginx-config
             configMap:
-              name: web-saas-console-nginx
+              name: web-saas-console-nginx-relative-redirects
           - name: tmp
             emptyDir: {}
         volumeMounts:
