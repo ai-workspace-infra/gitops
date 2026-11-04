@@ -66,7 +66,7 @@ spec:
                           - name: RUNTIME_DASHBOARD_URL
                             value: https://console.svc.plus
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:v2026.11.03.4@sha256:0f4cf8ab41c524583116372aeb6ac00ed3c433b7c03ee92ce47be6e4bbaa75c6
+                            value: ghcr.io/ai-workspace-services/console:v2026.11.04.1@sha256:c01ede3ce8a4e7f667900b21bfaba91f80a19afca9f8955eec923a8490f17943
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -102,7 +102,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:v2026.11.03.4@sha256:0f4cf8ab41c524583116372aeb6ac00ed3c433b7c03ee92ce47be6e4bbaa75c6
+        image: ghcr.io/ai-workspace-services/console:v2026.11.04.1@sha256:c01ede3ce8a4e7f667900b21bfaba91f80a19afca9f8955eec923a8490f17943
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
@@ -127,7 +127,7 @@ spec:
       enabled: true
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.03.4@sha256:efd4b7c24cf6ec83756a88386589e63ee930e6526577e17dff6f045e6fe9e605
+          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.04.1@sha256:14d4e5f9f73762dede0ce6f93d0fae9af00a55f5f1cde163ec718523e3b40471
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -137,7 +137,7 @@ spec:
         - web-saas-secrets
         - accounts-db-runtime
         - accounts-bootstrap
-        image: ghcr.io/ai-workspace-services/accounts:v2026.11.03.4@sha256:efd4b7c24cf6ec83756a88386589e63ee930e6526577e17dff6f045e6fe9e605
+        image: ghcr.io/ai-workspace-services/accounts:v2026.11.04.1@sha256:14d4e5f9f73762dede0ce6f93d0fae9af00a55f5f1cde163ec718523e3b40471
         resources:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
