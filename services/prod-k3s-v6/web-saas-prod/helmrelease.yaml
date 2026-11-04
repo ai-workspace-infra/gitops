@@ -137,6 +137,7 @@ spec:
         - web-saas-secrets
         - accounts-db-runtime
         - accounts-bootstrap
+        - accounts-stripe
         image: ghcr.io/ai-workspace-services/accounts:v2026.11.04.4@sha256:bd9ecae426d9f6e2b83868bb3d9bb65057c5b9606047948bc6719876331ebad4
         resources:
           requests: {cpu: 25m, memory: 96Mi}
