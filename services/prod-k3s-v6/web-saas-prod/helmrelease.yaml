@@ -66,7 +66,7 @@ spec:
                           - name: RUNTIME_DASHBOARD_URL
                             value: https://console.svc.plus
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:v2026.11.04.1@sha256:c01ede3ce8a4e7f667900b21bfaba91f80a19afca9f8955eec923a8490f17943
+                            value: ghcr.io/ai-workspace-services/console:v2026.11.04.2@sha256:ed996416a32eb4e6d13b95b095960bc3e4004d717b56f2783df7128ea27fbf1f
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -102,7 +102,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:v2026.11.04.1@sha256:c01ede3ce8a4e7f667900b21bfaba91f80a19afca9f8955eec923a8490f17943
+        image: ghcr.io/ai-workspace-services/console:v2026.11.04.2@sha256:ed996416a32eb4e6d13b95b095960bc3e4004d717b56f2783df7128ea27fbf1f
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
