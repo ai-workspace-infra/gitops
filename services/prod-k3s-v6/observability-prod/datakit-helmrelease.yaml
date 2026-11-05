@@ -28,8 +28,78 @@ spec:
       dataway_secret_enabled: true
       dataway_secret_key: ENV_DATAWAY
       dataway_secret_name: datakit-dataway-secret
-      global_tags: host=prod-k3s-v6,cluster=PROD-K3S-V6,env=prod
+      global_tags: host=prod-k3s-v6,cluster=PROD-K3S-V6,environment=prod,env=prod
       log: info
+      default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,container,kubernetesprometheus,prom
+    extraEnvs:
+      - name: ENV_INPUT_CONTAINER_ENDPOINTS
+        value: unix:///var/run/k3s/containerd/containerd.sock
+    dkconfig:
+      - name: caddy-metrics.conf
+        path: /usr/local/datakit/conf.d/prom/caddy-metrics.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://caddy-ingress-caddy.ingress-prod:80/metrics"]
+            source = "caddy"
+            interval = "15s"
+            measurement_name = "caddy"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "PROD-K3S-V6"
+              environment = "prod"
+              env = "prod"
+              service = "caddy-ingress"
+              instance = "caddy-ingress-caddy"
+              host = "prod-k3s-v6"
+      - name: postgresql-exporter.conf
+        path: /usr/local/datakit/conf.d/prom/postgresql-exporter.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://postgresql-postgresql-exporter.postgresql-prod:9187/metrics"]
+            source = "postgresql"
+            interval = "15s"
+            measurement_name = "postgresql"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "PROD-K3S-V6"
+              environment = "prod"
+              env = "prod"
+              service = "postgresql"
+              instance = "prod-postgresql-0"
+              db_instance = "postgresql"
+              host = "prod-k3s-v6"
+      - name: kube-state-metrics.conf
+        path: /usr/local/datakit/conf.d/prom/kube-state-metrics.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://observability-agent-state.observability-prod:8080/metrics"]
+            source = "kube-state-metrics"
+            interval = "15s"
+            measurement_name = "kube-state-metrics"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "PROD-K3S-V6"
+              environment = "prod"
+              env = "prod"
+              host = "prod-k3s-v6"
+      - name: node-exporter.conf
+        path: /usr/local/datakit/conf.d/prom/node-exporter.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://observability-agent.observability-prod:9100/metrics"]
+            source = "node-exporter"
+            interval = "15s"
+            measurement_name = "node-exporter"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "PROD-K3S-V6"
+              environment = "prod"
+              env = "prod"
+              host = "prod-k3s-v6"
     resources:
       requests: {cpu: 100m, memory: 128Mi}
       limits: {cpu: 500m, memory: 512Mi}

@@ -36,8 +36,12 @@ spec:
                     auto_https off
                     http_port 8080
                     https_port 8443
+                    metrics
                   }
                   :8080 {
+                    handle /metrics {
+                      metrics
+                    }
                     handle /healthz {
                       respond "ok" 200
                     }

@@ -103,6 +103,16 @@ spec:
                 cluster: PROD-K3S-V6
                 environment: prod
                 job: kube-state-metrics
+        - job_name: caddy
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['caddy-ingress-caddy.ingress-prod.svc:80']
+              labels:
+                cluster: PROD-K3S-V6
+                environment: prod
+                job: caddy
+                service: caddy-ingress
+                instance: caddy-ingress-caddy
         - job_name: postgres-exporter
           scrape_interval: 15s
           static_configs:
