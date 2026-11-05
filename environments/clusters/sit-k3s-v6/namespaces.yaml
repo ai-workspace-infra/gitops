@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-secrets
+  labels:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-dns
+  labels:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: postgresql-sit
+  labels:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: observability-sit
+  labels:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform-mcp-sit
+  labels:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-sit
+  labels:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: web-saas-sit
+  labels:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6

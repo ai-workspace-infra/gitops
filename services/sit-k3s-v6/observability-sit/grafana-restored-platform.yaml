@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-restored-platform
+  namespace: observability-sit-sit
+data:
+  web-saas-k3s-v5-overview.json: "{\n  \"editable\": false,\n  \"panels\": [\n    {\n      \"datasource\": {\n \
+    \       \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n\
+    \        \"defaults\": {\n          \"unit\": \"percent\"\n        },\n        \"overrides\": []\n      },\n\
+    \      \"gridPos\": {\n        \"h\": 8,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\": 0\n      },\n\
+    \      \"id\": 1,\n      \"targets\": [\n        {\n          \"expr\": \"100 * avg(k8s_node_cpu_utilization_ratio{cluster=\\\
+    \"web-saas-k3s-v5\\\",environment=\\\"prod\\\"})\",\n          \"legendFormat\": \"{{instance}}\",\n       \
+    \   \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Node CPU %\",\n      \"type\": \"timeseries\"\n\
+    \    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\
+    \n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"bytes\"\n        },\n \
+    \       \"overrides\": []\n      },\n      \"gridPos\": {\n        \"h\": 8,\n        \"w\": 12,\n        \"\
+    x\": 12,\n        \"y\": 0\n      },\n      \"id\": 2,\n      \"targets\": [\n        {\n          \"expr\"\
+    : \"sum(k8s_node_memory_working_set_bytes{cluster=\\\"web-saas-k3s-v5\\\",environment=\\\"prod\\\"})\",\n  \
+    \        \"legendFormat\": \"{{instance}}\",\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\"\
+    : \"Node working memory\",\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n       \
+    \ \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"description\": \"Canonical\
+    \ kubelet cAdvisor workload-container working set, grouped by namespace and pod. Excludes root cgroups and pause\
+    \ containers; no OTel k8s_pod_name dependency.\",\n      \"fieldConfig\": {\n        \"defaults\": {\n     \
+    \     \"unit\": \"bytes\"\n        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n        \"\
+    h\": 8,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\": 8\n      },\n      \"id\": 3,\n      \"targets\"\
+    : [\n        {\n          \"expr\": \"sum by (namespace,pod) (container_memory_working_set_bytes{cluster=\\\"\
+    web-saas-k3s-v5\\\",environment=\\\"prod\\\",job=\\\"cadvisor\\\",namespace!=\\\"\\\",pod!=\\\"\\\",container!=\\\
+    \"\\\",container!=\\\"POD\\\"})\",\n          \"legendFormat\": \"{{namespace}} / {{pod}}\",\n          \"refId\"\
+    : \"A\"\n        }\n      ],\n      \"title\": \"Container working memory\",\n      \"type\": \"timeseries\"\
+    \n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\
+    \n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"reqps\"\n        },\n \
+    \       \"overrides\": []\n      },\n      \"gridPos\": {\n        \"h\": 8,\n        \"w\": 12,\n        \"\
+    x\": 12,\n        \"y\": 8\n      },\n      \"id\": 4,\n      \"targets\": [\n        {\n          \"expr\"\
+    : \"sum by (service_name) (rate(traces_span_metrics_calls_total{cluster=\\\"web-saas-k3s-v5\\\",environment=\\\
+    \"prod\\\",span_kind=\\\"SPAN_KIND_SERVER\\\"}[5m]))\",\n          \"legendFormat\": \"{{service_name}}\",\n\
+    \          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Observed request spans / second\",\n  \
+    \    \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n \
+    \       \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"\
+    unit\": \"ms\"\n        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n        \"h\": 8,\n \
+    \       \"w\": 12,\n        \"x\": 0,\n        \"y\": 16\n      },\n      \"id\": 5,\n      \"targets\": [\n\
+    \        {\n          \"expr\": \"histogram_quantile(0.95, sum by (le,service_name) (rate(traces_span_metrics_duration_milliseconds_bucket{cluster=\\\
+    \"web-saas-k3s-v5\\\",environment=\\\"prod\\\",span_kind=\\\"SPAN_KIND_SERVER\\\"}[5m])))\",\n          \"legendFormat\"\
+    : \"{{service_name}} p95\",\n          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Request duration\
+    \ p95 (ms)\",\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n        \"type\": \"\
+    prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n        \"defaults\"\
+    : {\n          \"unit\": \"ops\"\n        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n  \
+    \      \"h\": 8,\n        \"w\": 12,\n        \"x\": 12,\n        \"y\": 16\n      },\n      \"id\": 6,\n  \
+    \    \"targets\": [\n        {\n          \"expr\": \"sum(rate(otelcol_receiver_accepted_spans{cluster=\\\"\
+    web-saas-k3s-v5\\\",environment=\\\"prod\\\"}[5m]))\",\n          \"legendFormat\": \"Accepted Spans/s\",\n\
+    \          \"refId\": \"A\"\n        }\n      ],\n      \"title\": \"Collector accepted spans\",\n      \"type\"\
+    : \"timeseries\"\n    }\n  ],\n  \"refresh\": \"30s\",\n  \"schemaVersion\": 39,\n  \"tags\": [\n    \"web-saas-k3s-v5\"\
+    ,\n    \"prod\"\n  ],\n  \"templating\": {\n    \"list\": [\n      {\n        \"label\": \"Metrics\",\n    \
+    \    \"name\": \"DS_METRICS\",\n        \"query\": \"prometheus\",\n        \"refresh\": 1,\n        \"type\"\
+    : \"datasource\"\n      },\n      {\n        \"current\": {\n          \"text\": \"web-saas-k3s-v5\",\n    \
+    \      \"value\": \"web-saas-k3s-v5\"\n        },\n        \"label\": \"Cluster\",\n        \"name\": \"cluster\"\
+    ,\n        \"options\": [\n          {\n            \"selected\": true,\n            \"text\": \"web-saas-k3s-v5\"\
+    ,\n            \"value\": \"web-saas-k3s-v5\"\n          }\n        ],\n        \"query\": \"web-saas-k3s-v5\"\
+    ,\n        \"type\": \"custom\"\n      },\n      {\n        \"current\": {\n          \"text\": \"prod\",\n\
+    \          \"value\": \"prod\"\n        },\n        \"label\": \"Environment\",\n        \"name\": \"environment\"\
+    ,\n        \"options\": [\n          {\n            \"selected\": true,\n            \"text\": \"prod\",\n \
+    \           \"value\": \"prod\"\n          }\n        ],\n        \"query\": \"prod,uat,sit\",\n        \"type\"\
+    : \"custom\"\n      }\n    ]\n  },\n  \"time\": {\n    \"from\": \"now-1h\",\n    \"to\": \"now\"\n  },\n  \"\
+    timezone\": \"Asia/Shanghai\",\n  \"title\": \"Web-SaaS K3s V5 PROD Cluster Overview\",\n  \"uid\": \"web-saas-k3s-v5-overview\"\
+    \n}\n"

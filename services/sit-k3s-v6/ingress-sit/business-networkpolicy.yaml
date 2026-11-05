@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: business-namespaces-ingress
+  namespace: ingress-sit
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - {}

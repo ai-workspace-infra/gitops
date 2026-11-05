@@ -1,0 +1,145 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ingress-tls-reader
+  namespace: ingress-sit
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ingress-tls-reader-cluster
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: ingress-tls-reader-binding
+subjects:
+- kind: ServiceAccount
+  name: ingress-tls-reader
+  namespace: ingress-sit
+- kind: ServiceAccount
+  name: external-secrets
+  namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ingress-tls-reader-cluster
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: ingress-tls-reader
+  namespace: ingress-sit
+spec:
+  provider:
+    kubernetes:
+      remoteNamespace: external-secrets
+      server:
+        caProvider:
+          type: ConfigMap
+          name: kube-root-ca.crt
+          key: ca.crt
+      auth:
+        serviceAccount:
+          name: ingress-tls-reader
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: console-tls
+  namespace: ingress-sit
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: SecretStore
+    name: ingress-tls-reader
+  target:
+    name: console-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: sit-domains-onwalk-net
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: sit-domains-onwalk-net
+        property: tls_key_pem_b64
+        decodingStrategy: Base64
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: accounts-tls
+  namespace: ingress-sit
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: SecretStore
+    name: ingress-tls-reader
+  target:
+    name: accounts-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: sit-domains-onwalk-net
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: sit-domains-onwalk-net
+        property: tls_key_pem_b64
+        decodingStrategy: Base64
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: billing-tls
+  namespace: ingress-sit
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: SecretStore
+    name: ingress-tls-reader
+  target:
+    name: billing-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: sit-domains-onwalk-net
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: sit-domains-onwalk-net
+        property: tls_key_pem_b64
+        decodingStrategy: Base64

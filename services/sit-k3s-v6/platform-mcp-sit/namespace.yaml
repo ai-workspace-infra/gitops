@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: platform-mcp-sit
+  labels:
+    app.kubernetes.io/managed-by: flux
+    app.kubernetes.io/part-of: platform-mcp
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

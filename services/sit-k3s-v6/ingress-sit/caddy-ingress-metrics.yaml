@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: caddy-ingress-metrics
+  namespace: ingress-sit
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: caddy-ingress
+  ingress:
+  - ports:
+    - port: 8080
+      protocol: TCP
+  policyTypes:
+  - Ingress

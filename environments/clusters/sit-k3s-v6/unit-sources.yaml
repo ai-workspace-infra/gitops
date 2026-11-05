@@ -1,0 +1,83 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: postgresql-sit-config
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: feature/dev-k3s-v6-single-node
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: observability-sit-config
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: feature/dev-k3s-v6-single-node
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: platform-mcp-sit-config
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: feature/dev-k3s-v6-single-node
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: web-saas-sit-config
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: feature/dev-k3s-v6-single-node
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: ingress-sit-config
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: feature/dev-k3s-v6-single-node
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: external-dns-sit-config
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: feature/dev-k3s-v6-single-node
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: cluster-identities-sit-config
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: feature/dev-k3s-v6-single-node

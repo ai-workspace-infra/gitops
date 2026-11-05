@@ -1,0 +1,62 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: caddy-gateway
+  namespace: ingress-sit
+  labels:
+    app.kubernetes.io/name: caddy-ingress
+    app.kubernetes.io/part-of: platform-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "172.237.9.58"
+spec:
+  gatewayClassName: caddy
+  listeners:
+  - name: http
+    protocol: HTTP
+    port: 80
+    allowedRoutes:
+      namespaces:
+        from: All
+  - name: https
+    protocol: HTTPS
+    port: 443
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: console-tls
+    allowedRoutes:
+      namespaces:
+        from: All
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sit-platform-routes
+  namespace: ingress-sit
+  labels:
+    app.kubernetes.io/name: caddy-ingress
+    app.kubernetes.io/part-of: platform-ingress
+spec:
+  parentRefs:
+  - name: caddy-gateway
+  hostnames:
+  - "console-sit.onwalk.net"
+  - "accounts-sit.onwalk.net"
+  - "billing-sit.onwalk.net"
+  - "grafana-sit.onwalk.net"
+  - "mcp-sit.onwalk.net"
+  - "app-sit.onwalk.net"
+  - "console.sit.onwalk.net"
+  - "accounts.sit.onwalk.net"
+  - "billing.sit.onwalk.net"
+  - "grafana.sit.onwalk.net"
+  - "mcp.sit.onwalk.net"
+  - "app.sit.onwalk.net"
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: web-saas-console
+      port: 80
