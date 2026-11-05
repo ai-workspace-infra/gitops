@@ -35,32 +35,36 @@ spec:
                     auto_https off
                     http_port 8080
                   }
+
+                  http://grafana.172.237.9.58.nip.io:8080 {
+                    reverse_proxy observability-observability-stack.observability-sit.svc.cluster.local:3000
+                  }
+
+                  http://mcp.172.237.9.58.nip.io:8080 {
+                    reverse_proxy infrastructure-mcp-server.platform-mcp-sit.svc.cluster.local:8080
+                  }
+
+                  http://app.172.237.9.58.nip.io:8080 {
+                    handle /api/* {
+                      reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
+                    }
+                    handle {
+                      reverse_proxy web-saas-console.web-saas-sit.svc.cluster.local:80
+                    }
+                  }
+
+                  http://accounts.172.237.9.58.nip.io:8080 {
+                    reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
+                  }
+
+                  http://billing.172.237.9.58.nip.io:8080 {
+                    reverse_proxy web-saas-billing.web-saas-sit.svc.cluster.local:80
+                  }
+
                   :8080 {
                     handle /healthz {
                       respond "ok" 200
                     }
-
-                    @grafana host grafana.172.237.9.58.nip.io
-                    handle @grafana {
-                      reverse_proxy observability-observability-stack.observability-sit.svc.cluster.local:3000
-                    }
-
-                    @mcp host mcp.172.237.9.58.nip.io
-                    handle @mcp {
-                      reverse_proxy infrastructure-mcp-server.platform-mcp-sit.svc.cluster.local:8080
-                    }
-
-                    @app host app.172.237.9.58.nip.io
-                    handle @app {
-                      @api path /api /api/*
-                      handle @api {
-                        reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
-                      }
-                      handle {
-                        reverse_proxy web-saas-console.web-saas-sit.svc.cluster.local:80
-                      }
-                    }
-
                     handle {
                       respond "SIT Platform Gateway Ready" 200
                     }
