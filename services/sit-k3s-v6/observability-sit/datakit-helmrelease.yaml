@@ -28,7 +28,7 @@ spec:
       dataway_secret_enabled: true
       dataway_secret_key: ENV_DATAWAY
       dataway_secret_name: datakit-dataway-secret
-      global_tags: host=sit-k3s-v6,cluster=SIT-K3S-V6,env=sit
+      global_tags: host=sit-k3s-v6,cluster=ev-k3s-v6,environment=dev,env=sit
       log: info
       default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,host_processes,container,kubernetesprometheus,prom
     extraEnvs:
@@ -46,9 +46,11 @@ spec:
             keep_exist_metric_name = true
             election = false
             [inputs.prom.tags]
-              cluster = "SIT-K3S-V6"
+              cluster = "ev-k3s-v6"
+              environment = "dev"
               env = "sit"
-              service = "caddy-ingress"
+              service = "caddy"
+              instance = "caddy-ingress-caddy"
               host = "sit-k3s-v6"
       - name: postgresql-exporter.conf
         path: /usr/local/datakit/conf.d/prom/postgresql-exporter.conf
@@ -61,9 +63,44 @@ spec:
             keep_exist_metric_name = true
             election = false
             [inputs.prom.tags]
-              cluster = "SIT-K3S-V6"
+              cluster = "ev-k3s-v6"
+              environment = "dev"
               env = "sit"
+              service = "postgresql"
+              instance = "prod-postgresql-0"
               db_instance = "postgresql"
+              host = "sit-k3s-v6"
+      - name: kube-state-metrics.conf
+        path: /usr/local/datakit/conf.d/prom/kube-state-metrics.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://observability-agent-state.observability-sit:8080/metrics"]
+            source = "kube-state-metrics"
+            interval = "15s"
+            measurement_name = "kube-state-metrics"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "ev-k3s-v6"
+              environment = "dev"
+              env = "sit"
+              host = "sit-k3s-v6"
+      - name: node-exporter.conf
+        path: /usr/local/datakit/conf.d/prom/node-exporter.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://observability-agent.observability-sit:9100/metrics"]
+            source = "node-exporter"
+            interval = "15s"
+            measurement_name = "node-exporter"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "ev-k3s-v6"
+              environment = "dev"
+              env = "sit"
+              instance = "sit-k3s-v6"
+              nodename = "sit-k3s-v6"
               host = "sit-k3s-v6"
     resources:
       requests: {cpu: 100m, memory: 128Mi}
