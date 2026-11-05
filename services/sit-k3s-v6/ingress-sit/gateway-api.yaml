@@ -40,12 +40,18 @@ spec:
   parentRefs:
   - name: caddy-gateway
   hostnames:
+  - "console-sit.onwalk.net"
+  - "accounts-sit.onwalk.net"
+  - "billing-sit.onwalk.net"
+  - "grafana-sit.onwalk.net"
+  - "mcp-sit.onwalk.net"
+  - "app-sit.onwalk.net"
   - "console.sit.onwalk.net"
-  - "app.sit.onwalk.net"
   - "accounts.sit.onwalk.net"
   - "billing.sit.onwalk.net"
   - "grafana.sit.onwalk.net"
   - "mcp.sit.onwalk.net"
+  - "app.sit.onwalk.net"
   rules:
   - matches:
     - path:

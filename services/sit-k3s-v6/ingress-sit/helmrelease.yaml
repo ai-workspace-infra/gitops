@@ -85,7 +85,7 @@ spec:
                     reverse_proxy infrastructure-mcp-server.platform-mcp-sit.svc.cluster.local:8080
                   }
 
-                  http://app.sit.onwalk.net:8080, http://console.sit.onwalk.net:8080, http://app-sit.onwalk.net:8080 {
+                  http://console-sit.onwalk.net:8080, http://app-sit.onwalk.net:8080, http://console.sit.onwalk.net:8080, http://app.sit.onwalk.net:8080 {
                     handle /api/* {
                       reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
                     }
@@ -94,7 +94,7 @@ spec:
                     }
                   }
 
-                  https://app.sit.onwalk.net:8443, https://console.sit.onwalk.net:8443, https://app-sit.onwalk.net:8443 {
+                  https://console-sit.onwalk.net:8443, https://app-sit.onwalk.net:8443, https://console.sit.onwalk.net:8443, https://app.sit.onwalk.net:8443 {
                     tls /tls/console/tls.crt /tls/console/tls.key
                     handle /api/* {
                       reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
@@ -160,16 +160,17 @@ spec:
         frontend: web-saas-console.web-saas-sit.svc.cluster.local:80
         billing: web-saas-billing.web-saas-sit.svc.cluster.local:80
       routes:
-        consoleHost: "app.sit.onwalk.net"
+        consoleHost: "console-sit.onwalk.net"
         consoleAliases:
-          - "console.sit.onwalk.net"
           - "app-sit.onwalk.net"
-        accountsHost: "accounts.sit.onwalk.net"
+          - "console.sit.onwalk.net"
+          - "app.sit.onwalk.net"
+        accountsHost: "accounts-sit.onwalk.net"
         accountsAliases:
-          - "accounts-sit.onwalk.net"
-        billingHost: "billing.sit.onwalk.net"
+          - "accounts.sit.onwalk.net"
+        billingHost: "billing-sit.onwalk.net"
         billingAliases:
-          - "billing-sit.onwalk.net"
+          - "billing.sit.onwalk.net"
       tls:
         consoleSecret: console-tls
         accountsSecret: accounts-tls

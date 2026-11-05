@@ -3,7 +3,7 @@
 Infrastructure MCP Server for the single-node dev cluster (namespace `platform-mcp-dev`).
 
 ```text
-http://mcp.sit.onwalk.net  (Caddy ingress, ingress-sit)
+https://mcp-sit.onwalk.net  (Caddy ingress, ingress-sit)
   \-- /  -> infrastructure-mcp-server:8080   (CMDB, Environment Graph, safe CLI exec)
               \-- in-cluster SSE -> mcp-grafana:8000/v1/grafana/sse   (cluster-internal only)
                                      \-- http://observability-observability-stack.observability-dev.svc:3000
