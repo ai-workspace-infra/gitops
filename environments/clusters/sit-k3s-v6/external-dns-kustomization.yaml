@@ -4,8 +4,8 @@ metadata:
   name: external-dns-sit
   namespace: flux-system
 spec:
-  # 可选开关：suspend: false 为开启，suspend: true 为关闭
-  suspend: false
+  # 可选开关：suspend: false 为开启，suspend: true 为关闭（默认挂起，待注入 Cloudflare 凭据后按需激活）
+  suspend: true
   interval: 5m
   prune: true
   wait: false
