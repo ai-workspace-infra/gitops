@@ -11,10 +11,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: observability-stack-chart
-  valuesFrom:
-    - kind: ConfigMap
-      name: source-grafana-values
-      valuesKey: values.yaml
   postRenderers:
     - kustomize:
         patches:

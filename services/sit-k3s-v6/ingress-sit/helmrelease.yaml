@@ -74,6 +74,8 @@ spec:
     postgresql: {enabled: false}
     caddy:
       enabled: true
+      routes:
+        consoleHost: "app.172.237.9.58.nip.io"
       resources:
         requests: {cpu: 50m, memory: 64Mi}
         limits: {cpu: 200m, memory: 128Mi}
