@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: infrastructure-mcp-server
     app.kubernetes.io/part-of: platform-mcp
 spec:
-  # Caddy ingress controller deployed by the ingress-dev unit. HTTP only (nip.io, no TLS).
+  # Caddy ingress controller deployed by the ingress-sit unit. HTTP only.
   # Only the infrastructure gateway is exposed; mcp-grafana stays cluster-internal.
   ingressClassName: caddy
   rules:
@@ -22,16 +22,6 @@ spec:
             port:
               number: 8080
   - host: mcp-sit.onwalk.net
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: infrastructure-mcp-server
-            port:
-              number: 8080
-  - host: mcp.172.237.9.58.nip.io
     http:
       paths:
       - path: /
