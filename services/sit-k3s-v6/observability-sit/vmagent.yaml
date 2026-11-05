@@ -4,12 +4,21 @@ metadata:
   name: observability-vmagent-config
   namespace: observability-sit
 data:
+  url-relabel-sit.yml: |
+    - target_label: cluster
+      replacement: sit-k3s-v6
+    - target_label: environment
+      replacement: dev
   url-relabel-ev.yml: |
     - target_label: cluster
       replacement: ev-k3s-v6
+    - target_label: environment
+      replacement: dev
   url-relabel-dev.yml: |
     - target_label: cluster
       replacement: dev-k3s-v6
+    - target_label: environment
+      replacement: dev
   scrape.yml: |
     global:
       scrape_interval: 15s
@@ -111,6 +120,11 @@ spec:
           image: victoriametrics/vmagent:v1.101.0
           args:
             - -promscrape.config=/config/scrape.yml
+            - -remoteWrite.url=https://observability.svc.plus/ingest/metrics/api/v1/write
+            - -remoteWrite.basicAuth.username=observability
+            - -remoteWrite.basicAuth.passwordFile=/etc/vmagent-secret/password
+            - -remoteWrite.tlsInsecureSkipVerify=true
+            - -remoteWrite.urlRelabelConfig=/config/url-relabel-sit.yml
             - -remoteWrite.url=https://observability.svc.plus/ingest/metrics/api/v1/write
             - -remoteWrite.basicAuth.username=observability
             - -remoteWrite.basicAuth.passwordFile=/etc/vmagent-secret/password
