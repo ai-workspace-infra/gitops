@@ -10,4 +10,5 @@ resources:
   - gateway-api.yaml
   - oci-repository.yaml
   - helmrelease.yaml
+  - caddy-ingress-metrics.yaml
   - business-networkpolicy.yaml

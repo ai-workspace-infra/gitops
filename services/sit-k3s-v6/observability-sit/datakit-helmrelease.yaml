@@ -1,0 +1,70 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: datakit
+  namespace: observability-sit
+spec:
+  suspend: false
+  interval: 10m
+  releaseName: datakit
+  targetNamespace: observability-sit
+  timeout: 5m
+  chart:
+    spec:
+      chart: datakit
+      version: 2.16.1
+      sourceRef:
+        kind: HelmRepository
+        name: datakit
+        namespace: observability-sit
+  values:
+    image:
+      repository: pubrepo.guance.com/datakit/datakit
+      tag: "2.16.1@sha256:1cd545f7f14dc08935ec6557936b1e6422a3d7d9728b57d6e1d6b57ea1703fc6"
+    workload:
+      kind: DaemonSet
+    datakit:
+      dataway_secret_create: false
+      dataway_secret_enabled: true
+      dataway_secret_key: ENV_DATAWAY
+      dataway_secret_name: datakit-dataway-secret
+      global_tags: host=sit-k3s-v6,cluster=SIT-K3S-V6,env=sit
+      log: info
+      default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,host_processes,container,kubernetesprometheus,prom
+    extraEnvs:
+      - name: ENV_INPUT_CONTAINER_ENDPOINTS
+        value: unix:///var/run/k3s/containerd/containerd.sock
+    dkconfig:
+      - name: caddy-metrics.conf
+        path: /usr/local/datakit/conf.d/prom/caddy-metrics.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://caddy-ingress-caddy.ingress-sit:80/metrics"]
+            source = "caddy"
+            interval = "15s"
+            measurement_name = "caddy"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "SIT-K3S-V6"
+              env = "sit"
+              service = "caddy-ingress"
+              host = "sit-k3s-v6"
+      - name: postgresql-exporter.conf
+        path: /usr/local/datakit/conf.d/prom/postgresql-exporter.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://postgresql-postgresql-exporter.postgresql-sit:9187/metrics"]
+            source = "postgresql"
+            interval = "15s"
+            measurement_name = "postgresql"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "SIT-K3S-V6"
+              env = "sit"
+              db_instance = "postgresql"
+              host = "sit-k3s-v6"
+    resources:
+      requests: {cpu: 100m, memory: 128Mi}
+      limits: {cpu: 500m, memory: 512Mi}

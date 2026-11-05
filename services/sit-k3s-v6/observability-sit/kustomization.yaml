@@ -16,4 +16,6 @@ resources:
   - observability-ingest-auth.yaml
   - agent-release.yaml
   - helmrelease.yaml
+  - datakit-helmrepository.yaml
+  - datakit-helmrelease.yaml
   - business-networkpolicy.yaml
