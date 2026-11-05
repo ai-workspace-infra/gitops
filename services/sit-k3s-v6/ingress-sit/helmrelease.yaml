@@ -36,15 +36,15 @@ spec:
                     http_port 8080
                   }
 
-                  http://grafana.172.237.9.58.nip.io:8080 {
+                  http://grafana.sit.onwalk.net:8080, http://grafana-sit.onwalk.net:8080, http://grafana.172.237.9.58.nip.io:8080 {
                     reverse_proxy observability-observability-stack.observability-sit.svc.cluster.local:3000
                   }
 
-                  http://mcp.172.237.9.58.nip.io:8080 {
+                  http://mcp.sit.onwalk.net:8080, http://mcp-sit.onwalk.net:8080, http://mcp.172.237.9.58.nip.io:8080 {
                     reverse_proxy infrastructure-mcp-server.platform-mcp-sit.svc.cluster.local:8080
                   }
 
-                  http://app.172.237.9.58.nip.io:8080 {
+                  http://app.sit.onwalk.net:8080, http://console.sit.onwalk.net:8080, http://app-sit.onwalk.net:8080, http://app.172.237.9.58.nip.io:8080 {
                     handle /api/* {
                       reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
                     }
@@ -53,11 +53,11 @@ spec:
                     }
                   }
 
-                  http://accounts.172.237.9.58.nip.io:8080 {
+                  http://accounts.sit.onwalk.net:8080, http://accounts-sit.onwalk.net:8080, http://accounts.172.237.9.58.nip.io:8080 {
                     reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
                   }
 
-                  http://billing.172.237.9.58.nip.io:8080 {
+                  http://billing.sit.onwalk.net:8080, http://billing-sit.onwalk.net:8080, http://billing.172.237.9.58.nip.io:8080 {
                     reverse_proxy web-saas-billing.web-saas-sit.svc.cluster.local:80
                   }
 
@@ -86,9 +86,19 @@ spec:
         frontend: web-saas-console.web-saas-sit.svc.cluster.local:80
         billing: web-saas-billing.web-saas-sit.svc.cluster.local:80
       routes:
-        consoleHost: "app.172.237.9.58.nip.io"
-        accountsHost: "accounts.172.237.9.58.nip.io"
-        billingHost: "billing.172.237.9.58.nip.io"
+        consoleHost: "app.sit.onwalk.net"
+        consoleAliases:
+          - "console.sit.onwalk.net"
+          - "app-sit.onwalk.net"
+          - "app.172.237.9.58.nip.io"
+        accountsHost: "accounts.sit.onwalk.net"
+        accountsAliases:
+          - "accounts-sit.onwalk.net"
+          - "accounts.172.237.9.58.nip.io"
+        billingHost: "billing.sit.onwalk.net"
+        billingAliases:
+          - "billing-sit.onwalk.net"
+          - "billing.172.237.9.58.nip.io"
       tls:
         consoleSecret: caddy-tls
         accountsSecret: caddy-tls
