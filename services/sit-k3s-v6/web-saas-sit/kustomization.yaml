@@ -5,6 +5,7 @@ commonLabels:
   platform.svc.plus/environment: sit
   platform.svc.plus/cluster: sit-k3s-v6
 resources:
+  - secrets.yaml
   - oci-repository.yaml
   - console-nginx-configmap.yaml
   - helmrelease.yaml
