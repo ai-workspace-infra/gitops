@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-restored-platform
-  namespace: observability-sit
+  namespace: observability-sit-sit
 data:
   web-saas-k3s-v5-overview.json: "{\n  \"editable\": false,\n  \"panels\": [\n    {\n      \"datasource\": {\n \
     \       \"type\": \"prometheus\",\n        \"uid\": \"${DS_METRICS}\"\n      },\n      \"fieldConfig\": {\n\

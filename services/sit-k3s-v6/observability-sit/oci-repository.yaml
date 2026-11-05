@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: observability-stack-chart
-  namespace: observability-sit
+  namespace: observability-sit-sit
 spec:
   interval: 10m
   url: oci://ghcr.io/ai-workspace-infra/observability-stack

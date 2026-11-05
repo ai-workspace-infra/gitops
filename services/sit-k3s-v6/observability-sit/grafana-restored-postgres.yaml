@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: grafana-restored-postgres
-  namespace: observability-sit
+  namespace: observability-sit-sit
 data:
   wGgaPlciz.json: "{\n  \"annotations\": {\n    \"list\": [\n      {\n        \"builtIn\": 1,\n        \"datasource\"\
     : {\n          \"type\": \"datasource\",\n          \"uid\": \"grafana\"\n        },\n        \"enable\": true,\n\

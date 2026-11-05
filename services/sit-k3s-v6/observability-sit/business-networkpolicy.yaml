@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: business-namespaces-ingress
-  namespace: observability-sit
+  namespace: observability-sit-sit
 spec:
   podSelector: {}
   policyTypes:
