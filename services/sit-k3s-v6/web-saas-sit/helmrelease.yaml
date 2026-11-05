@@ -1,0 +1,203 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: web-saas-sit
+  namespace: web-saas-sit
+spec:
+  suspend: false
+  interval: 5m
+  releaseName: web-saas
+  targetNamespace: web-saas-sit
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: web-saas-accounts
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-accounts
+              spec:
+                template:
+                  spec:
+                    volumes:
+                      - name: accounts-controller-config
+                        secret:
+                          secretName: accounts-controller-config
+                          defaultMode: 0400
+                    containers:
+                      - name: accounts
+                        env:
+                          - name: CONFIG_TEMPLATE
+                            value: /var/run/accounts-controller-config/account.yaml
+                          - name: CONFIG_PATH
+                            value: /tmp/accounts-controller-config.yaml
+                        volumeMounts:
+                          - name: accounts-controller-config
+                            mountPath: /var/run/accounts-controller-config
+                            readOnly: true
+          - target:
+              kind: Deployment
+              name: web-saas-console
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-console
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: console
+                        env:
+                          - name: PORT
+                            value: '3000'
+                          - name: RUNTIME_ENV
+                            value: prod
+                          - name: RUNTIME_AUTH_URL
+                            value: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
+                          - name: RUNTIME_XCONNECT_ZERO_URL
+                            value: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
+                          - name: RUNTIME_DASHBOARD_URL
+                            value: https://console.svc.plus
+                          - name: FRONTEND_IMAGE
+                            value: ghcr.io/ai-workspace-services/console:v2026.11.04.4@sha256:18fa857b726d7b2ae419890e3b777168695d41ed9f4e64f5604c208292cef301
+                        securityContext:
+                          capabilities:
+                            add: [CHOWN, SETUID, SETGID]
+          - target:
+              kind: Deployment
+              name: web-saas-content
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-content
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: content
+                        startupProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 30
+  values:
+    global:
+      environment: sit
+      expectedNamespace: web-saas-sit
+    caddy:
+      enabled: false
+    postgresql:
+      enabled: false
+    console:
+      enabled: true
+      deploymentProfile: single-container
+      singleContainer:
+        image: ghcr.io/ai-workspace-services/console:v2026.11.04.4@sha256:18fa857b726d7b2ae419890e3b777168695d41ed9f4e64f5604c208292cef301
+        resources:
+          requests: {cpu: 50m, memory: 128Mi}
+          limits: {cpu: 125m, memory: 192Mi}
+        volumes:
+          - name: nginx-config
+            configMap:
+              name: web-saas-console-nginx-relative-redirects
+          - name: tmp
+            emptyDir: {}
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+          - name: nginx-config
+            mountPath: /etc/nginx/conf.d/default.conf
+            subPath: default.conf
+            readOnly: true
+          - name: tmp
+            mountPath: /tmp
+    accounts:
+      enabled: true
+      workload:
+        env:
+          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.04.4@sha256:bd9ecae426d9f6e2b83868bb3d9bb65057c5b9606047948bc6719876331ebad4
+          DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
+          DB_PORT: '5432'
+          POSTGRES_USER: postgres
+          DB_NAME: account
+          XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
+        secretRefs:
+        - web-saas-secrets
+        - accounts-db-runtime
+        - accounts-bootstrap
+        - accounts-stripe
+        image: ghcr.io/ai-workspace-services/accounts:v2026.11.04.4@sha256:bd9ecae426d9f6e2b83868bb3d9bb65057c5b9606047948bc6719876331ebad4
+        resources:
+          requests: {cpu: 25m, memory: 96Mi}
+          limits: {cpu: 100m, memory: 128Mi}
+    billing:
+      enabled: true
+      workload:
+        env:
+          DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
+          DB_PORT: '5432'
+          POSTGRES_USER: postgres
+          DB_NAME: account
+          BILLING_INGEST_MODE: push
+          DEFAULT_REGION: jp
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.03.4@sha256:0dbbe1fc63685ba9f9703114210d7e3e61d962b77f62ad87be145354a7e9bc3d
+        secretRefs:
+        - web-saas-secrets
+        - billing-db-runtime
+        image: ghcr.io/ai-workspace-services/billing-service:v2026.11.03.4@sha256:0dbbe1fc63685ba9f9703114210d7e3e61d962b77f62ad87be145354a7e9bc3d
+        probes:
+          startupProbe:
+            httpGet:
+              path: /api/ping
+              port: primary
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: primary
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/ping
+              port: primary
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+        resources:
+          requests: {cpu: 25m, memory: 96Mi}
+          limits: {cpu: 100m, memory: 128Mi}
+    content:
+      enabled: true
+      workload:
+        env:
+          KNOWLEDGE_REPO_PATH: /tmp/knowledge
+          KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
+        image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
+        secretRefs:
+        - web-saas-secrets
+        resources:
+          requests: {cpu: 100m, memory: 128Mi}
+          limits: {cpu: 500m, memory: 256Mi}
+    edgeGateway:
+      enabled: false
+    stunnelClient:
+      enabled: false
+    stunnelServer:
+      enabled: false

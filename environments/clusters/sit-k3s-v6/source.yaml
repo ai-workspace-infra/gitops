@@ -1,0 +1,13 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: config-sit
+  namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: feature/dev-k3s-v6-single-node

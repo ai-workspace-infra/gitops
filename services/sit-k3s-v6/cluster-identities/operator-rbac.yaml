@@ -1,0 +1,56 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: k3s-operator-workloads
+  namespace: web-saas-sit
+rules:
+  # Runtime status only; logs, Secret values, exec/attach and spec edits stay denied.
+  - apiGroups: [""]
+    resources: [services, pods, events]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments, replicasets]
+    verbs: [get, list, watch]
+  - apiGroups: [apps]
+    resources: [deployments/scale]
+    verbs: [get, update, patch]
+  - apiGroups: [helm.toolkit.fluxcd.io]
+    resources: [helmreleases]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k3s-operator-workloads
+  namespace: web-saas-sit
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: k3s-operator-workloads
+subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k3s-operator-pod-status
+rules:
+  # Permit kubectl get pods -A without exposing Secrets, logs or subresources.
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k3s-operator-pod-status
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: k3s-operator-pod-status
+subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: operator

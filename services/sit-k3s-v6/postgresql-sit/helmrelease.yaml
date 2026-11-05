@@ -1,0 +1,64 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: postgresql
+  namespace: postgresql-sit
+spec:
+  suspend: false
+  interval: 5m
+  releaseName: postgresql
+  targetNamespace: postgresql-sit
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  install:
+    remediation:
+      retries: 2
+  upgrade:
+    remediation:
+      retries: 2
+  values:
+    console:
+      enabled: false
+    accounts:
+      enabled: false
+    billing:
+      enabled: false
+    content:
+      enabled: false
+    edgeGateway:
+      enabled: false
+    postgresql:
+      enabled: true
+      image: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
+      username: postgres
+      database: account
+      existingSecret: postgresql-admin
+      secretKey: password
+      identityAccounts:
+        enabled: true
+        root: {username: postgres, existingSecret: postgresql-admin, secretKey: password}
+        operator: {username: operator, existingSecret: postgresql-operator, secretKey: password, tables: [], sequences: []}
+        auditor: {username: auditor, existingSecret: postgresql-auditor, secretKey: password, views: []}
+      storage:
+        className: local-path
+        size: 5Gi
+      metrics:
+        enabled: true
+        username: auditor
+        existingSecret: postgresql-auditor
+        resources:
+          requests: {cpu: 10m, memory: 32Mi}
+          limits: {cpu: 25m, memory: 64Mi}
+      resources:
+        requests: {cpu: 100m, memory: 256Mi}
+        limits: {cpu: 300m, memory: 512Mi}
+    caddy:
+      enabled: false
+    stunnelClient:
+      enabled: false
+    stunnelServer:
+      enabled: false
+    global:
+      environment: sit
+      expectedNamespace: postgresql-sit

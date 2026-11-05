@@ -1,0 +1,214 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: observability
+  namespace: observability-sit
+spec:
+  suspend: false
+  interval: 5m
+  releaseName: observability
+  targetNamespace: observability-sit
+  chartRef:
+    kind: OCIRepository
+    name: observability-stack-chart
+  valuesFrom:
+    - kind: ConfigMap
+      name: source-grafana-values
+      valuesKey: values.yaml
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: observability-observability-stack
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: observability-observability-stack
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: grafana
+                        startupProbe:
+                          httpGet:
+                            path: /api/health
+                            port: grafana
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 30
+  values:
+    victoriaMetrics:
+      image:
+        repository: victoriametrics/victoria-metrics
+        tag: "v1.101.0@sha256:91d0456cc064e195869175074ced2a6849d72531613b320492698e5fe935d10a"
+      resources:
+        requests: {cpu: 50m, memory: 160Mi}
+        limits: {cpu: 100m, memory: 256Mi}
+    victoriaLogs:
+      image:
+        repository: victoriametrics/victoria-logs
+        tag: "v1.52.0@sha256:47b820890d64c4575a2a0a46415dcd8a4fd59a0f1fcd6a377693d7aea639442e"
+      resources:
+        requests: {cpu: 50m, memory: 160Mi}
+        limits: {cpu: 100m, memory: 256Mi}
+    victoriaTraces:
+      image:
+        repository: victoriametrics/victoria-traces
+        tag: "v0.1.0@sha256:b3204fd598b023b4726f38689791c707803b9f34733822dd053f22d64721b3d2"
+      resources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {cpu: 30m, memory: 64Mi}
+    otelCollector:
+      image:
+        repository: otel/opentelemetry-collector-contrib
+        tag: "0.114.0@sha256:37fa87091cfaaec7234a27e4e395a40c31c2bfaea97a349a4afef6d9e9681197"
+      resources:
+        requests: {cpu: 15m, memory: 48Mi}
+        limits: {cpu: 30m, memory: 96Mi}
+    rbac:
+      create: true
+    telemetry:
+      cluster: SIT-K3S-V6
+      environment: sit
+      spanMetrics: true
+      kubernetes:
+        enabled: true
+      extraScrapeConfigs:
+        - job_name: node-exporter
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['observability-agent.observability-sit.svc:9100']
+              labels:
+                cluster: SIT-K3S-V6
+                environment: sit
+                job: node-exporter
+                nodename: sit-k3s-v6
+                instance: sit-k3s-v6
+        - job_name: process-exporter
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['observability-agent-process.observability-sit.svc:9256']
+              labels:
+                cluster: SIT-K3S-V6
+                environment: sit
+                job: process-exporter
+                instance: sit-k3s-v6
+        - job_name: kube-state-metrics
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['observability-agent-state.observability-sit.svc:8080']
+              labels:
+                cluster: SIT-K3S-V6
+                environment: sit
+                job: kube-state-metrics
+        - job_name: postgres-exporter
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['postgresql-postgresql-exporter.postgresql-sit.svc:9187']
+              labels:
+                cluster: SIT-K3S-V6
+                environment: sit
+                service: postgresql
+                job: postgres-exporter
+                instance: prod-postgresql-0
+        - job_name: kubelet
+          scrape_interval: 15s
+          scheme: https
+          metrics_path: /metrics
+          authorization:
+            type: Bearer
+            credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+          tls_config:
+            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            insecure_skip_verify: false
+          kubernetes_sd_configs:
+            - role: node
+          relabel_configs:
+            - source_labels: [__meta_kubernetes_node_name]
+              target_label: node
+            - source_labels: [__meta_kubernetes_node_name]
+              target_label: instance
+            - source_labels: [__address__]
+              regex: (.+):[0-9]+
+              replacement: $1:10250
+              target_label: __address__
+            - target_label: cluster
+              replacement: SIT-K3S-V6
+            - target_label: environment
+              replacement: prod
+        - job_name: cadvisor
+          scrape_interval: 15s
+          scheme: https
+          metrics_path: /metrics/cadvisor
+          authorization:
+            type: Bearer
+            credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+          tls_config:
+            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            insecure_skip_verify: false
+          kubernetes_sd_configs:
+            - role: node
+          relabel_configs:
+            - source_labels: [__meta_kubernetes_node_name]
+              target_label: node
+            - source_labels: [__meta_kubernetes_node_name]
+              target_label: instance
+            - source_labels: [__address__]
+              regex: (.+):[0-9]+
+              replacement: $1:10250
+              target_label: __address__
+            - target_label: cluster
+              replacement: SIT-K3S-V6
+            - target_label: environment
+              replacement: prod
+    grafana:
+      rootUrl: http://grafana.172.237.9.58.nip.io/
+      existingSecret: grafana-admin
+      adminPasswordKey: password
+      bundleChecksum: ee2a6472c61550a6568ea2f78afc85c2b9f2c800a1b4de2518188d8fef9e0253
+      # Restore display dependencies without enabling the source identity resolver.
+      appsConfigMap: ""
+      plugins:
+        - victoriametrics-logs-datasource@0.33.1
+        - marcusolsson-treemap-panel@2.1.1
+      dashboardProviders:
+        - name: import-general
+          folder: ''
+          folderUid: ''
+          path: general
+          configMaps:
+            - source-grafana-general-0
+            - starsl-k8s-dashboard
+            - caddy-dashboard
+            - postgres-unified-dashboard
+            - grafana-restored-postgres
+        - name: import-alerts
+          folder: Observability Alerts
+          folderUid: dfzrqnab9cpa8e
+          path: alerts
+          configMaps:
+            - grafana-empty-folder
+        - name: import-platform
+          folder: Platform
+          folderUid: bg27c6c3dih34a
+          path: platform
+          configMaps:
+            - grafana-restored-platform
+        - name: import-acceptance
+          folder: Controlled acceptance
+          folderUid: k3s-acceptance
+          path: acceptance
+          configMaps:
+            - grafana-empty-folder
+      resources:
+        requests: {cpu: 250m, memory: 256Mi}
+        limits: {cpu: 500m, memory: 512Mi}
+      pluginInstallerResources:
+        requests: {cpu: 10m, memory: 32Mi}
+        limits: {cpu: 50m, memory: 96Mi}
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: local-path

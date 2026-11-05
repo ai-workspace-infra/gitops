@@ -1,0 +1,17 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: web-saas-sit
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 5m
+  prune: true
+  wait: true
+  timeout: 20m
+  dependsOn:
+    - name: postgresql-sit
+  sourceRef:
+    kind: GitRepository
+    name: web-saas-sit-config
+  path: ./services/sit-k3s-v6/web-saas-sit

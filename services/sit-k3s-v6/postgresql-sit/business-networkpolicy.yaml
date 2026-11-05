@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: business-namespaces-ingress
+  namespace: postgresql-sit
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: web-saas-sit
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability-sit
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: platform-mcp-sit
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: postgresql-sit
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-sit

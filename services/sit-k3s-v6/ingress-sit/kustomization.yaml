@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ingress-sit
+commonLabels:
+  platform.svc.plus/environment: sit
+  platform.svc.plus/cluster: sit-k3s-v6
+resources:
+  - oci-repository.yaml
+  - helmrelease.yaml
+  - business-networkpolicy.yaml

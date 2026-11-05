@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: infrastructure-mcp-config
+  namespace: platform-mcp-sit
+  labels:
+    app.kubernetes.io/name: infrastructure-mcp-server
+    app.kubernetes.io/part-of: platform-mcp
+data:
+  # Dev-local backends only. The only downstream MCP backend is the in-cluster
+  # read-only mcp-grafana gateway (Service mcp-grafana, same namespace).
+  # Metrics/logs/traces MCP backends and all process-based backends (kubernetes,
+  # helm, vault, terraform, ...) are intentionally omitted (never enabled in dev).
+  config.json: |
+    {
+      "server": {
+        "name": "infrastructure-mcp-server",
+        "version": "0.1.0"
+      },
+      "backends": [
+        {
+          "name": "observability-grafana",
+          "capability": "observability",
+          "transport": "sse",
+          "url": "http://mcp-grafana.platform-mcp-sit.svc.cluster.local:8000/v1/grafana/sse",
+          "enabled": true
+        }
+      ]
+    }
