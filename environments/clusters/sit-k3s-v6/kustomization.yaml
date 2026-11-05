@@ -10,4 +10,5 @@ resources:
   - observability-kustomization.yaml
   - platform-mcp-kustomization.yaml
   - ingress-kustomization.yaml
+  - external-dns-kustomization.yaml
   - web-saas-kustomization.yaml

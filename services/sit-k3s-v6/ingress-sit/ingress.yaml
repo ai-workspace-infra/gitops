@@ -1,0 +1,83 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sit-platform-ingress
+  namespace: ingress-sit
+  labels:
+    app.kubernetes.io/name: caddy-ingress
+    app.kubernetes.io/part-of: platform-ingress
+  annotations:
+    external-dns.alpha.kubernetes.io/target: "172.237.9.58"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
+spec:
+  ingressClassName: caddy
+  tls:
+  - hosts:
+    - console.sit.onwalk.net
+    - app.sit.onwalk.net
+    - accounts.sit.onwalk.net
+    - billing.sit.onwalk.net
+    - grafana.sit.onwalk.net
+    - mcp.sit.onwalk.net
+    secretName: console-tls
+  rules:
+  - host: console.sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-console
+            port:
+              number: 80
+  - host: app.sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-console
+            port:
+              number: 80
+  - host: accounts.sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-accounts
+            port:
+              number: 80
+  - host: billing.sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web-saas-billing
+            port:
+              number: 80
+  - host: grafana.sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: observability-observability-stack
+            port:
+              number: 3000
+  - host: mcp.sit.onwalk.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: infrastructure-mcp-server
+            port:
+              number: 8080

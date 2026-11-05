@@ -5,6 +5,9 @@ commonLabels:
   platform.svc.plus/environment: sit
   platform.svc.plus/cluster: sit-k3s-v6
 resources:
+  - vault-tls.yaml
+  - ingress.yaml
+  - gateway-api.yaml
   - oci-repository.yaml
   - helmrelease.yaml
   - business-networkpolicy.yaml

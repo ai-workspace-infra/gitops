@@ -1,0 +1,59 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-dns
+  namespace: flux-system
+spec:
+  interval: 5m
+  releaseName: external-dns
+  targetNamespace: external-dns
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: external-dns
+      version: "1.20.0"
+      sourceRef:
+        kind: HelmRepository
+        name: addon-external-dns
+        namespace: flux-system
+  values:
+    # 基础环境部分的可选开关：支持随时平滑开启与关闭
+    enabled: true
+    provider:
+      name: cloudflare
+    env:
+      - name: CF_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-cloudflare
+            key: CF_API_TOKEN
+            optional: true
+    extraArgs:
+      - --cloudflare-proxied=false
+      - --cloudflare-dns-records-per-page=5000
+    domainFilters:
+      - sit.onwalk.net
+      - onwalk.net
+    sources:
+      - ingress
+      - service
+      - crd
+      - gateway-httproute
+    txtOwnerId: sit-k3s-v6
+    txtPrefix: "_extdns."
+    policy: upsert-only
+    interval: 2m
+    triggerLoopOnEvent: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi

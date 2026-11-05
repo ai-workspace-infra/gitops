@@ -34,13 +34,24 @@ spec:
                     admin off
                     auto_https off
                     http_port 8080
+                    https_port 8443
                   }
 
                   http://grafana.sit.onwalk.net:8080, http://grafana-sit.onwalk.net:8080 {
                     reverse_proxy observability-observability-stack.observability-sit.svc.cluster.local:3000
                   }
 
+                  https://grafana.sit.onwalk.net:8443, https://grafana-sit.onwalk.net:8443 {
+                    tls /tls/console/tls.crt /tls/console/tls.key
+                    reverse_proxy observability-observability-stack.observability-sit.svc.cluster.local:3000
+                  }
+
                   http://mcp.sit.onwalk.net:8080, http://mcp-sit.onwalk.net:8080 {
+                    reverse_proxy infrastructure-mcp-server.platform-mcp-sit.svc.cluster.local:8080
+                  }
+
+                  https://mcp.sit.onwalk.net:8443, https://mcp-sit.onwalk.net:8443 {
+                    tls /tls/console/tls.crt /tls/console/tls.key
                     reverse_proxy infrastructure-mcp-server.platform-mcp-sit.svc.cluster.local:8080
                   }
 
@@ -53,11 +64,31 @@ spec:
                     }
                   }
 
+                  https://app.sit.onwalk.net:8443, https://console.sit.onwalk.net:8443, https://app-sit.onwalk.net:8443 {
+                    tls /tls/console/tls.crt /tls/console/tls.key
+                    handle /api/* {
+                      reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
+                    }
+                    handle {
+                      reverse_proxy web-saas-console.web-saas-sit.svc.cluster.local:80
+                    }
+                  }
+
                   http://accounts.sit.onwalk.net:8080, http://accounts-sit.onwalk.net:8080 {
                     reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
                   }
 
+                  https://accounts.sit.onwalk.net:8443, https://accounts-sit.onwalk.net:8443 {
+                    tls /tls/accounts/tls.crt /tls/accounts/tls.key
+                    reverse_proxy web-saas-accounts.web-saas-sit.svc.cluster.local:80
+                  }
+
                   http://billing.sit.onwalk.net:8080, http://billing-sit.onwalk.net:8080 {
+                    reverse_proxy web-saas-billing.web-saas-sit.svc.cluster.local:80
+                  }
+
+                  https://billing.sit.onwalk.net:8443, https://billing-sit.onwalk.net:8443 {
+                    tls /tls/billing/tls.crt /tls/billing/tls.key
                     reverse_proxy web-saas-billing.web-saas-sit.svc.cluster.local:80
                   }
 
@@ -69,6 +100,16 @@ spec:
                       respond "SIT Platform Gateway Ready" 200
                     }
                   }
+
+                  :8443 {
+                    tls /tls/console/tls.crt /tls/console/tls.key
+                    handle /healthz {
+                      respond "ok" 200
+                    }
+                    handle {
+                      respond "SIT Platform Gateway TLS Ready" 200
+                    }
+                  }
   values:
     console: {enabled: false}
     accounts: {enabled: false}
@@ -78,7 +119,7 @@ spec:
     postgresql: {enabled: false}
     caddy:
       enabled: true
-      httpOnly: true
+      httpOnly: false
       image: ghcr.io/ai-workspace-infra/caddy-cloudflare:959d6c8@sha256:9895385033fea2bdb445841b45f37e6cd58b9e071a16e4c147e483abb74a0acf
       externalBackends:
         enabled: true
@@ -97,9 +138,9 @@ spec:
         billingAliases:
           - "billing-sit.onwalk.net"
       tls:
-        consoleSecret: caddy-tls
-        accountsSecret: caddy-tls
-        billingSecret: caddy-tls
+        consoleSecret: console-tls
+        accountsSecret: accounts-tls
+        billingSecret: billing-tls
       service:
         type: LoadBalancer
       resources:
