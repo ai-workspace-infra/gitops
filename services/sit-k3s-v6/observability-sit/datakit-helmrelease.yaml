@@ -28,9 +28,9 @@ spec:
       dataway_secret_enabled: true
       dataway_secret_key: ENV_DATAWAY
       dataway_secret_name: datakit-dataway-secret
-      global_tags: host=sit-k3s-v6,cluster=ev-k3s-v6,environment=dev,env=sit
+      global_tags: host=sit-k3s-v6,cluster=sit-k3s-v6,environment=dev,env=sit
       log: info
-      default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,host_processes,container,kubernetesprometheus,prom
+      default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,container,kubernetesprometheus,prom
     extraEnvs:
       - name: ENV_INPUT_CONTAINER_ENDPOINTS
         value: unix:///var/run/k3s/containerd/containerd.sock
@@ -46,10 +46,10 @@ spec:
             keep_exist_metric_name = true
             election = false
             [inputs.prom.tags]
-              cluster = "ev-k3s-v6"
+              cluster = "sit-k3s-v6"
               environment = "dev"
               env = "sit"
-              service = "caddy"
+              service = "caddy-ingress"
               instance = "caddy-ingress-caddy"
               host = "sit-k3s-v6"
       - name: postgresql-exporter.conf
@@ -63,7 +63,7 @@ spec:
             keep_exist_metric_name = true
             election = false
             [inputs.prom.tags]
-              cluster = "ev-k3s-v6"
+              cluster = "sit-k3s-v6"
               environment = "dev"
               env = "sit"
               service = "postgresql"
@@ -81,7 +81,7 @@ spec:
             keep_exist_metric_name = true
             election = false
             [inputs.prom.tags]
-              cluster = "ev-k3s-v6"
+              cluster = "sit-k3s-v6"
               environment = "dev"
               env = "sit"
               host = "sit-k3s-v6"
@@ -96,7 +96,7 @@ spec:
             keep_exist_metric_name = true
             election = false
             [inputs.prom.tags]
-              cluster = "ev-k3s-v6"
+              cluster = "sit-k3s-v6"
               environment = "dev"
               env = "sit"
               instance = "sit-k3s-v6"
