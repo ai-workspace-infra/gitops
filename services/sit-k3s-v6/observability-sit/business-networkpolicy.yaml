@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: business-namespaces-ingress
-  namespace: observability-sit-sit
+  namespace: observability-sit
 spec:
   podSelector: {}
   policyTypes:
@@ -17,6 +17,6 @@ spec:
           values:
           - web-saas-sit
           - postgresql-sit
-          - ingress-prod
+          - ingress-sit
           - observability-sit
-          - vault-prod
+          - platform-mcp-sit

@@ -15,8 +15,8 @@ spec:
         - key: kubernetes.io/metadata.name
           operator: In
           values:
-          - web-saas-dev
-          - postgresql-dev
-          - ingress-dev
-          - observability-dev
+          - web-saas-sit
+          - postgresql-sit
+          - ingress-sit
+          - observability-sit
           - platform-mcp-sit

@@ -16,7 +16,7 @@ spec:
           operator: In
           values:
           - web-saas-sit
-          - postgresql-prod
-          - ingress-prod
-          - observability-prod
-          - vault-prod
+          - postgresql-sit
+          - ingress-sit
+          - observability-sit
+          - platform-mcp-sit
