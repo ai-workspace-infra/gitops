@@ -21,7 +21,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: addon-external-dns
-        namespace: flux-system
+        namespace: external-dns
   values:
     # 基础环境部分的可选开关：支持随时平滑开启与关闭
     enabled: true
