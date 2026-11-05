@@ -33,7 +33,8 @@
 
 ### 3. 口径与变量校验
 - **PromQL 引擎兼容**：面板均声明 `"datasource": "dataflux"` 与 `"qtype": "promql"`，完全复用 PromQL 表达式。
-- **视图变量绑定**：变量占位符已由 Grafana 的 `${var:regex}` 自动转为观测云的 `#{var}` 语法。
+- **视图变量绑定**：变量占位符已由 Grafana 的 `${var:regex}` 规范转为观测云的 `#{var}` 语法；针对 `*`（全选）统一配置 `"starMeaning": ".*"`，避免 PromQL 正则解析错误。
+- **Grafana 宏替换**：观测云 PromQL 解析器不支持 Grafana 特有宏 `$__range` 与 `$__rate_interval`，已转为动态变量 `[#{interval}]`（Caddy 看板）或标准步长 `[5m]`（Postgres/K8S 看板）。
 - **指标名对齐**：DataKit 采集器启用了 `keep_exist_metric_name = true`，保留原始 `pg_*`、`caddy_*`、`kube_*`、`node_*` 与 `container_*` 指标名，与原 Grafana 查询口径 100% 一致。
 
 ---
