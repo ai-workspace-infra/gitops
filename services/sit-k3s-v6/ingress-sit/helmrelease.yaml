@@ -76,6 +76,12 @@ spec:
       enabled: true
       routes:
         consoleHost: "app.172.237.9.58.nip.io"
+        accountsHost: "accounts.172.237.9.58.nip.io"
+        billingHost: "billing.172.237.9.58.nip.io"
+      tls:
+        consoleSecret: caddy-tls
+        accountsSecret: caddy-tls
+        billingSecret: caddy-tls
       resources:
         requests: {cpu: 50m, memory: 64Mi}
         limits: {cpu: 200m, memory: 128Mi}

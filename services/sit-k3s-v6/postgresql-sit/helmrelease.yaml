@@ -33,11 +33,15 @@ spec:
                   spec:
                     securityContext:
                       fsGroup: 999
+                      appArmorProfile:
+                        type: Unconfined
                     containers:
                       - name: postgresql
                         securityContext:
                           runAsUser: 999
                           runAsGroup: 999
+                          appArmorProfile:
+                            type: Unconfined
   values:
     console:
       enabled: false

@@ -1,109 +1,32 @@
 apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: observability-ingest-reader
-  namespace: observability-sit-sit
-automountServiceAccountToken: false
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: observability-ingest-reader
-  namespace: observability-sit-sit
-rules:
-- apiGroups:
-  - ''
-  resources:
-  - serviceaccounts/token
-  resourceNames:
-  - observability-ingest-reader
-  verbs:
-  - create
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: observability-ingest-reader
-  namespace: observability-sit-sit
-subjects:
-- kind: ServiceAccount
-  name: external-secrets
-  namespace: external-secrets
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: observability-ingest-reader
----
-apiVersion: external-secrets.io/v1
-kind: SecretStore
-metadata:
-  name: observability-ingest-reader
-  namespace: observability-sit-sit
-spec:
-  provider:
-    vault:
-      server: https://vault.svc.plus
-      path: kv
-      version: v2
-      auth:
-        jwt:
-          path: jwt-prod-k3s-prod-k3s-v6
-          role: prod-k3s-v6-observability-ingest-reader
-          kubernetesServiceAccountToken:
-            serviceAccountRef:
-              name: observability-ingest-reader
-            audiences:
-            - vault-prod-k3s-v6-observability-ingest-reader
-            expirationSeconds: 600
----
-apiVersion: external-secrets.io/v1
-kind: ExternalSecret
+kind: Secret
 metadata:
   name: observability-ingest-auth
-  namespace: observability-sit-sit
-spec:
-  refreshInterval: 5m
-  secretStoreRef:
-    kind: SecretStore
-    name: observability-ingest-reader
-  target:
-    name: observability-ingest-auth
-    creationPolicy: Owner
-    deletionPolicy: Retain
-    template:
-      type: Opaque
-      data:
-        auth.yaml: |
-          users:
-            - username: "{{ .user }}"
-              password: "{{ .password }}"
-              url_map:
-                - src_paths:
-                    - "/api/v1/write"
-                  url_prefix: "http://observability-observability-stack.observability-sit.svc:8428"
-                - src_paths:
-                    - "/insert/jsonline"
-                    - "/insert/jsonline.*"
-                  url_prefix: "http://observability-observability-stack.observability-sit.svc:9428"
-                - src_paths:
-                    - "/v1/traces"
-                    - "/insert/opentelemetry/v1/traces"
-                  url_prefix: "http://observability-observability-stack.observability-sit.svc:10428"
-  data:
-  - secretKey: user
-    remoteRef:
-      key: CICD/observability
-      property: user
-  - secretKey: password
-    remoteRef:
-      key: CICD/observability
-      property: password
+  namespace: observability-sit
+type: Opaque
+stringData:
+  auth.yaml: |
+    users:
+      - username: "sit-ingest"
+        password: "sit-ingest-password"
+        url_map:
+          - src_paths:
+              - "/api/v1/write"
+            url_prefix: "http://observability-observability-stack.observability-sit.svc:8428"
+          - src_paths:
+              - "/insert/jsonline"
+              - "/insert/jsonline.*"
+            url_prefix: "http://observability-observability-stack.observability-sit.svc:9428"
+          - src_paths:
+              - "/v1/traces"
+              - "/insert/opentelemetry/v1/traces"
+            url_prefix: "http://observability-observability-stack.observability-sit.svc:10428"
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: observability-ingest-auth
-  namespace: observability-sit-sit
+  namespace: observability-sit
   labels:
     app.kubernetes.io/name: observability-ingest-auth
     app.kubernetes.io/part-of: platform-observability
@@ -164,7 +87,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: observability-ingest-auth
-  namespace: observability-sit-sit
+  namespace: observability-sit
   labels:
     app.kubernetes.io/name: observability-ingest-auth
 spec:
@@ -180,7 +103,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: observability-ingest-auth
-  namespace: observability-sit-sit
+  namespace: observability-sit
 spec:
   podSelector:
     matchLabels:
@@ -190,7 +113,7 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: ingress-prod
+              kubernetes.io/metadata.name: ingress-sit
       ports:
         - protocol: TCP
           port: 8427
