@@ -17,6 +17,27 @@ spec:
   upgrade:
     remediation:
       retries: 2
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: StatefulSet
+              name: postgresql-postgresql
+            patch: |-
+              apiVersion: apps/v1
+              kind: StatefulSet
+              metadata:
+                name: postgresql-postgresql
+              spec:
+                template:
+                  spec:
+                    securityContext:
+                      fsGroup: 999
+                    containers:
+                      - name: postgresql
+                        securityContext:
+                          runAsUser: 999
+                          runAsGroup: 999
   values:
     console:
       enabled: false
