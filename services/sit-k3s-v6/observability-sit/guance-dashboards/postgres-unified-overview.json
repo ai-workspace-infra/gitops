@@ -24,7 +24,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "sort": 1
         },
@@ -37,8 +37,8 @@
           "metric": "pg_stat_database_numbackends{environment!=\"\"}",
           "object": "",
           "defaultVal": {
-            "label": "all values",
-            "value": "__all__"
+            "label": "",
+            "value": ""
           }
         }
       },
@@ -52,7 +52,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "sort": 1
         },
@@ -61,12 +61,12 @@
         "definition": {
           "tag": "",
           "field": "",
-          "value": "label_values(pg_stat_database_numbackends{environment=~`#{environment}`,environment!=\"\" ,cluster!=\"\"}, cluster)",
-          "metric": "pg_stat_database_numbackends{environment=~`#{environment}`",
+          "value": "label_values(pg_stat_database_numbackends{environment=~\"#{environment}\",environment!=\"\" ,cluster!=\"\"}, cluster)",
+          "metric": "pg_stat_database_numbackends{environment=~\"#{environment}\"",
           "object": "",
           "defaultVal": {
-            "label": "all values",
-            "value": "__all__"
+            "label": "",
+            "value": ""
           }
         }
       },
@@ -80,7 +80,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "sort": 1
         },
@@ -89,12 +89,12 @@
         "definition": {
           "tag": "",
           "field": "",
-          "value": "label_values(pg_stat_database_numbackends{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\" ,service!=\"\"}, service)",
-          "metric": "pg_stat_database_numbackends{environment=~`#{environment}`",
+          "value": "label_values(pg_stat_database_numbackends{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\" ,service!=\"\"}, service)",
+          "metric": "pg_stat_database_numbackends{environment=~\"#{environment}\"",
           "object": "",
           "defaultVal": {
-            "label": "all values",
-            "value": "__all__"
+            "label": "",
+            "value": ""
           }
         }
       },
@@ -108,7 +108,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "sort": 1
         },
@@ -117,12 +117,12 @@
         "definition": {
           "tag": "",
           "field": "",
-          "value": "label_values(pg_stat_database_numbackends{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\" ,instance!=\"\"}, instance)",
-          "metric": "pg_stat_database_numbackends{environment=~`#{environment}`",
+          "value": "label_values(pg_stat_database_numbackends{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\" ,instance!=\"\"}, instance)",
+          "metric": "pg_stat_database_numbackends{environment=~\"#{environment}\"",
           "object": "",
           "defaultVal": {
-            "label": "all values",
-            "value": "__all__"
+            "label": "",
+            "value": ""
           }
         }
       },
@@ -136,7 +136,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "sort": 1
         },
@@ -145,12 +145,12 @@
         "definition": {
           "tag": "",
           "field": "",
-          "value": "label_values(pg_stat_database_numbackends{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\" ,datname!=\"\"}, datname)",
-          "metric": "pg_stat_database_numbackends{environment=~`#{environment}`",
+          "value": "label_values(pg_stat_database_numbackends{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\" ,datname!=\"\"}, datname)",
+          "metric": "pg_stat_database_numbackends{environment=~\"#{environment}\"",
           "object": "",
           "defaultVal": {
-            "label": "all values",
-            "value": "__all__"
+            "label": "",
+            "value": ""
           }
         }
       }
@@ -246,7 +246,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "pg_up{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\"}",
+              "q": "pg_up{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\"}",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -255,7 +255,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -351,7 +351,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(pg_stat_database_numbackends{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"})",
+              "q": "sum(pg_stat_database_numbackends{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"})",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -360,7 +360,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -455,7 +455,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(rate(pg_stat_database_blks_hit{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}[$__rate_interval])) / (sum(rate(pg_stat_database_blks_hit{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}[$__rate_interval])) + sum(rate(pg_stat_database_blks_read{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))) * 100",
+              "q": "sum(rate(pg_stat_database_blks_hit{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}[5m])) / (sum(rate(pg_stat_database_blks_hit{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}[5m])) + sum(rate(pg_stat_database_blks_read{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}[5m]))) * 100",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -464,7 +464,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -531,7 +531,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(rate(pg_stat_database_xact_commit{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))",
+              "q": "sum(rate(pg_stat_database_xact_commit{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}[5m]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -540,7 +540,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -626,7 +626,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(rate(pg_stat_database_xact_rollback{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))",
+              "q": "sum(rate(pg_stat_database_xact_rollback{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}[5m]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -635,7 +635,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -704,7 +704,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(irate(pg_stat_database_xact_commit{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval])) + sum(irate(pg_stat_database_xact_rollback{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))",
+              "q": "sum(irate(pg_stat_database_xact_commit{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m])) + sum(irate(pg_stat_database_xact_rollback{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -712,7 +712,7 @@
             "extend": {
               "refId": "A",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -779,7 +779,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "pg_stat_database_numbackends{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}",
+              "q": "pg_stat_database_numbackends{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -788,7 +788,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -854,7 +854,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "pg_database_size_bytes{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}",
+              "q": "pg_database_size_bytes{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -863,7 +863,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -1001,7 +1001,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(irate(pg_stat_database_tup_fetched{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))",
+              "q": "sum(irate(pg_stat_database_tup_fetched{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1009,7 +1009,7 @@
             "extend": {
               "refId": "A",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1020,7 +1020,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(irate(pg_stat_database_tup_returned{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))",
+              "q": "sum(irate(pg_stat_database_tup_returned{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m]))",
               "code": "B",
               "type": "promql",
               "promqlCode": 2
@@ -1028,7 +1028,7 @@
             "extend": {
               "refId": "B",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1039,7 +1039,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(irate(pg_stat_database_tup_inserted{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))",
+              "q": "sum(irate(pg_stat_database_tup_inserted{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m]))",
               "code": "C",
               "type": "promql",
               "promqlCode": 3
@@ -1047,7 +1047,7 @@
             "extend": {
               "refId": "C",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1058,7 +1058,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(irate(pg_stat_database_tup_updated{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))",
+              "q": "sum(irate(pg_stat_database_tup_updated{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m]))",
               "code": "D",
               "type": "promql",
               "promqlCode": 4
@@ -1066,7 +1066,7 @@
             "extend": {
               "refId": "D",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1077,7 +1077,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(irate(pg_stat_database_tup_deleted{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval]))",
+              "q": "sum(irate(pg_stat_database_tup_deleted{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m]))",
               "code": "E",
               "type": "promql",
               "promqlCode": 5
@@ -1085,7 +1085,7 @@
             "extend": {
               "refId": "E",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -1209,7 +1209,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(pg_stat_database_deadlocks{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"})",
+              "q": "sum(pg_stat_database_deadlocks{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"})",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1217,7 +1217,7 @@
             "extend": {
               "refId": "A",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1228,7 +1228,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(pg_stat_database_conflicts{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"})",
+              "q": "sum(pg_stat_database_conflicts{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"})",
               "code": "B",
               "type": "promql",
               "promqlCode": 2
@@ -1236,7 +1236,7 @@
             "extend": {
               "refId": "B",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               },
               "editorMode": "code"
             }
@@ -1348,7 +1348,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "round(sum by (datname) (rate(pg_stat_database_blks_hit{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval])) / (sum by (datname)(rate(pg_stat_database_blks_hit{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval])) + sum by (datname)(rate(pg_stat_database_blks_read{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\",datname=~`#{datname}`,datname!=\"\"}[$__rate_interval])))*100,0.001)",
+              "q": "round(sum by (datname) (rate(pg_stat_database_blks_hit{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m])) / (sum by (datname)(rate(pg_stat_database_blks_hit{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m])) + sum by (datname)(rate(pg_stat_database_blks_read{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\",datname=~\"#{datname}\",datname!=\"\"}[5m])))*100,0.001)",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1356,7 +1356,7 @@
             "extend": {
               "refId": "A",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -1501,7 +1501,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "irate(pg_stat_bgwriter_buffers_alloc_total{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\"}[$__rate_interval])",
+              "q": "irate(pg_stat_bgwriter_buffers_alloc_total{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\"}[5m])",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1509,7 +1509,7 @@
             "extend": {
               "refId": "A",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1520,7 +1520,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "irate(pg_stat_bgwriter_buffers_backend_fsync_total{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\"}[$__rate_interval])",
+              "q": "irate(pg_stat_bgwriter_buffers_backend_fsync_total{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\"}[5m])",
               "code": "B",
               "type": "promql",
               "promqlCode": 2
@@ -1528,7 +1528,7 @@
             "extend": {
               "refId": "B",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1539,7 +1539,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "irate(pg_stat_bgwriter_buffers_backend_total{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\"}[$__rate_interval])",
+              "q": "irate(pg_stat_bgwriter_buffers_backend_total{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\"}[5m])",
               "code": "C",
               "type": "promql",
               "promqlCode": 3
@@ -1547,7 +1547,7 @@
             "extend": {
               "refId": "C",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1558,7 +1558,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "irate(pg_stat_bgwriter_buffers_clean_total{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\"}[$__rate_interval])",
+              "q": "irate(pg_stat_bgwriter_buffers_clean_total{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\"}[5m])",
               "code": "D",
               "type": "promql",
               "promqlCode": 4
@@ -1566,7 +1566,7 @@
             "extend": {
               "refId": "D",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1577,7 +1577,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "irate(pg_stat_bgwriter_buffers_checkpoint_total{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\"}[$__rate_interval])",
+              "q": "irate(pg_stat_bgwriter_buffers_checkpoint_total{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\"}[5m])",
               "code": "E",
               "type": "promql",
               "promqlCode": 5
@@ -1585,7 +1585,7 @@
             "extend": {
               "refId": "E",
               "datasource": {
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           },
@@ -1596,7 +1596,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "irate(pg_stat_checkpointer_buffers_written_total{environment=~`#{environment}`,environment!=\"\",cluster=~`#{cluster}`,cluster!=\"\",service=~`#{service}`,service!=\"\",instance=~`#{instance}`,instance!=\"\"}[$__rate_interval])",
+              "q": "irate(pg_stat_checkpointer_buffers_written_total{environment=~\"#{environment}\",environment!=\"\",cluster=~\"#{cluster}\",cluster!=\"\",service=~\"#{service}\",service!=\"\",instance=~\"#{instance}\",instance!=\"\"}[5m])",
               "code": "F",
               "type": "promql",
               "promqlCode": 6
@@ -1670,7 +1670,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "pg_stat_database_numbackends{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}",
+              "q": "pg_stat_database_numbackends{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1679,7 +1679,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }
@@ -1753,7 +1753,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "pg_database_size_bytes{environment=~`#{environment}`,environment!=\"\", cluster=~`#{cluster}`,cluster!=\"\", service=~`#{service}`,service!=\"\", instance=~`#{instance}`,instance!=\"\", datname=~`#{datname}`,datname!=\"\"}",
+              "q": "pg_database_size_bytes{environment=~\"#{environment}\",environment!=\"\", cluster=~\"#{cluster}\",cluster!=\"\", service=~\"#{service}\",service!=\"\", instance=~\"#{instance}\",instance!=\"\", datname=~\"#{datname}\",datname!=\"\"}",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1762,7 +1762,7 @@
               "refId": "A",
               "datasource": {
                 "type": "prometheus",
-                "uid": "$datasource"
+                "uid": "dataflux"
               }
             }
           }

@@ -11,9 +11,9 @@
   "uid": "StarsL_cn_K8S",
   "dashboardExtend": {
     "groupUnfoldStatus": {
-      "节点资源总览：所选节点:【$Node】": true,
-      "Pod资源总览：所选Pod:【$Pod】": true,
-      "微服务(容器名)资源总览：所选微服务:【$Container】": false
+      "节点资源总览：所选节点:【#{Node}】": true,
+      "Pod资源总览：所选Pod:【#{Pod}】": true,
+      "微服务(容器名)资源总览：所选微服务:【#{Container}】": false
     }
   },
   "main": {
@@ -24,11 +24,12 @@
         "code": "cluster",
         "hide": 0,
         "multiple": false,
-        "includeStar": false,
+        "includeStar": true,
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "refresh": 1
+          "refresh": 1,
+          "starMeaning": ".*"
         },
         "datasource": "dataflux",
         "type": "PROMQL_QUERY",
@@ -50,11 +51,12 @@
         "code": "environment",
         "hide": 0,
         "multiple": false,
-        "includeStar": false,
+        "includeStar": true,
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "refresh": 1
+          "refresh": 1,
+          "starMeaning": ".*"
         },
         "datasource": "dataflux",
         "type": "PROMQL_QUERY",
@@ -80,7 +82,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "skipUrlSync": false,
           "sort": 5
@@ -109,7 +111,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "skipUrlSync": false,
           "sort": 5
@@ -138,7 +140,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "skipUrlSync": false,
           "sort": 5
@@ -167,7 +169,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1,
           "skipUrlSync": false,
           "sort": 5
@@ -192,7 +194,7 @@
         "name": "节点内存比例",
         "type": "toplist",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 0,
@@ -370,7 +372,7 @@
         "name": "节点CPU比例",
         "type": "toplist",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 4,
@@ -548,7 +550,7 @@
         "name": "节点与Pod",
         "type": "toplist",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 8,
@@ -723,7 +725,7 @@
         "name": "命名空间资源统计",
         "type": "table",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 11,
@@ -896,7 +898,7 @@
         "name": "#{NameSpace}：网络总览（可关联节点与命名空间）",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 16,
@@ -1049,7 +1051,7 @@
         "name": "节点内存信息",
         "type": "toplist",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 0,
@@ -1250,7 +1252,7 @@
         "name": "节点CPU核数",
         "type": "toplist",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 4,
@@ -1451,7 +1453,7 @@
         "name": "节点存储信息",
         "type": "toplist",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 8,
@@ -1633,7 +1635,7 @@
         "name": "",
         "type": "singlestat",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 0,
@@ -1882,7 +1884,7 @@
         "name": "内存使用量【#{Node}】",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 0,
@@ -2086,7 +2088,7 @@
         "name": "CPU使用核【#{Node}】",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 8,
@@ -2290,7 +2292,7 @@
         "name": "Pod数与节点数【#{Node}】",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 16,
@@ -2473,7 +2475,7 @@
         "name": "#{Node}：节点CPU明细",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 0,
@@ -2601,7 +2603,7 @@
         "name": "#{Node}：节点内存明细",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 8,
@@ -2722,7 +2724,7 @@
         "name": "#{Node}：节点网络总览",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 16,
@@ -2870,7 +2872,7 @@
         "name": "#{Node}：节点信息明细",
         "type": "table",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 0,
@@ -3612,7 +3614,7 @@
         "name": "PVC存储使用情况",
         "type": "table",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 0,
@@ -3892,7 +3894,7 @@
         "name": "各命名空间CPU使用核(>0.5)",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 6,
@@ -4018,7 +4020,7 @@
         "name": "命名空间WSS内存使用(>1G)",
         "type": "sequence",
         "group": {
-          "name": "节点资源总览：所选节点:【$Node】"
+          "name": "节点资源总览：所选节点:【#{Node}】"
         },
         "pos": {
           "x": 15,
@@ -4144,7 +4146,7 @@
         "name": "#{Node}：Pod资源明细(可关联节点)",
         "type": "table",
         "group": {
-          "name": "Pod资源总览：所选Pod:【$Pod】"
+          "name": "Pod资源总览：所选Pod:【#{Pod}】"
         },
         "pos": {
           "x": 0,
@@ -4845,7 +4847,7 @@
         "name": "Pod容器CPU使用率(最大100%可关联节点)",
         "type": "sequence",
         "group": {
-          "name": "Pod资源总览：所选Pod:【$Pod】"
+          "name": "Pod资源总览：所选Pod:【#{Pod}】"
         },
         "pos": {
           "x": 0,
@@ -4967,7 +4969,7 @@
         "name": "Pod容器内存使用率(可关联节点)",
         "type": "sequence",
         "group": {
-          "name": "Pod资源总览：所选Pod:【$Pod】"
+          "name": "Pod资源总览：所选Pod:【#{Pod}】"
         },
         "pos": {
           "x": 8,
@@ -5117,7 +5119,7 @@
         "name": "Pod每秒网络带宽 (可关联节点)",
         "type": "sequence",
         "group": {
-          "name": "Pod资源总览：所选Pod:【$Pod】"
+          "name": "Pod资源总览：所选Pod:【#{Pod}】"
         },
         "pos": {
           "x": 16,
@@ -5307,7 +5309,7 @@
         "name": "Pod容器CPU核使用",
         "type": "sequence",
         "group": {
-          "name": "Pod资源总览：所选Pod:【$Pod】"
+          "name": "Pod资源总览：所选Pod:【#{Pod}】"
         },
         "pos": {
           "x": 0,
@@ -5467,7 +5469,7 @@
         "name": "Pod容器WSS内存使用(可关联节点)",
         "type": "sequence",
         "group": {
-          "name": "Pod资源总览：所选Pod:【$Pod】"
+          "name": "Pod资源总览：所选Pod:【#{Pod}】"
         },
         "pos": {
           "x": 8,
@@ -5627,7 +5629,7 @@
         "name": "Pod容器RSS内存使用(可关联节点)",
         "type": "sequence",
         "group": {
-          "name": "Pod资源总览：所选Pod:【$Pod】"
+          "name": "Pod资源总览：所选Pod:【#{Pod}】"
         },
         "pos": {
           "x": 16,
@@ -5749,7 +5751,7 @@
         "name": "微服务(容器名)资源统计",
         "type": "table",
         "group": {
-          "name": "微服务(容器名)资源总览：所选微服务:【$Container】"
+          "name": "微服务(容器名)资源总览：所选微服务:【#{Container}】"
         },
         "pos": {
           "x": 0,
@@ -6280,7 +6282,7 @@
         "name": "微服务(容器名)平均CPU使用率(最大100%)",
         "type": "sequence",
         "group": {
-          "name": "微服务(容器名)资源总览：所选微服务:【$Container】"
+          "name": "微服务(容器名)资源总览：所选微服务:【#{Container}】"
         },
         "pos": {
           "x": 0,
@@ -6402,7 +6404,7 @@
         "name": "微服务(容器名)平均内存使用率",
         "type": "sequence",
         "group": {
-          "name": "微服务(容器名)资源总览：所选微服务:【$Container】"
+          "name": "微服务(容器名)资源总览：所选微服务:【#{Container}】"
         },
         "pos": {
           "x": 8,
@@ -6550,7 +6552,7 @@
         "name": "微服务(容器名)每秒网络带宽 (可关联节点)",
         "type": "sequence",
         "group": {
-          "name": "微服务(容器名)资源总览：所选微服务:【$Container】"
+          "name": "微服务(容器名)资源总览：所选微服务:【#{Container}】"
         },
         "pos": {
           "x": 16,
@@ -6752,7 +6754,7 @@
         "name": "微服务(容器名)整体CPU使用核",
         "type": "sequence",
         "group": {
-          "name": "微服务(容器名)资源总览：所选微服务:【$Container】"
+          "name": "微服务(容器名)资源总览：所选微服务:【#{Container}】"
         },
         "pos": {
           "x": 0,
@@ -6912,7 +6914,7 @@
         "name": "微服务(容器名)整体内存使用量",
         "type": "sequence",
         "group": {
-          "name": "微服务(容器名)资源总览：所选微服务:【$Container】"
+          "name": "微服务(容器名)资源总览：所选微服务:【#{Container}】"
         },
         "pos": {
           "x": 8,
@@ -7099,7 +7101,7 @@
         "name": "微服务(容器名)Pod数",
         "type": "sequence",
         "group": {
-          "name": "微服务(容器名)资源总览：所选微服务:【$Container】"
+          "name": "微服务(容器名)资源总览：所选微服务:【#{Container}】"
         },
         "pos": {
           "x": 16,
@@ -7221,13 +7223,13 @@
     ],
     "groups": [
       {
-        "name": "节点资源总览：所选节点:【$Node】"
+        "name": "节点资源总览：所选节点:【#{Node}】"
       },
       {
-        "name": "Pod资源总览：所选Pod:【$Pod】"
+        "name": "Pod资源总览：所选Pod:【#{Pod}】"
       },
       {
-        "name": "微服务(容器名)资源总览：所选微服务:【$Container】"
+        "name": "微服务(容器名)资源总览：所选微服务:【#{Container}】"
       }
     ],
     "type": "template"

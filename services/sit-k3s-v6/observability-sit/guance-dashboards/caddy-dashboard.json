@@ -21,7 +21,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1
         },
         "datasource": "dataflux",
@@ -48,7 +48,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1
         },
         "datasource": "dataflux",
@@ -75,7 +75,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1
         },
         "datasource": "dataflux",
@@ -102,7 +102,7 @@
         "valueSort": "desc",
         "extend": {
           "originalType": "query",
-          "starMeaning": "*",
+          "starMeaning": ".*",
           "refresh": 1
         },
         "datasource": "dataflux",
@@ -309,7 +309,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_requests_total{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range]))",
+              "q": "sum(increase(caddy_http_requests_total{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -384,7 +384,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(rate(caddy_http_requests_total{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range]))",
+              "q": "sum(rate(caddy_http_requests_total{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -459,7 +459,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "histogram_quantile(0.5, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range])) by (le))",
+              "q": "histogram_quantile(0.5, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (le))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -534,7 +534,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "histogram_quantile(0.5, sum(rate(caddy_http_response_duration_seconds_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range])) by (le))",
+              "q": "histogram_quantile(0.5, sum(rate(caddy_http_response_duration_seconds_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (le))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -604,7 +604,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_request_errors_total{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range]))",
+              "q": "sum(increase(caddy_http_request_errors_total{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -679,7 +679,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "histogram_quantile(0.5, sum(rate(caddy_http_request_size_bytes_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range])) by (le))",
+              "q": "histogram_quantile(0.5, sum(rate(caddy_http_request_size_bytes_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (le))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -754,7 +754,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "histogram_quantile(0.5, sum(rate(caddy_http_response_size_bytes_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range])) by (le))",
+              "q": "histogram_quantile(0.5, sum(rate(caddy_http_response_size_bytes_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (le))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -829,7 +829,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_request_size_bytes_sum{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range]))",
+              "q": "sum(increase(caddy_http_request_size_bytes_sum{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -904,7 +904,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_response_size_bytes_sum{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range]))",
+              "q": "sum(increase(caddy_http_response_size_bytes_sum{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -979,7 +979,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_response_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\",code=~\"4..\"}[$__range])) / sum(increase(caddy_http_response_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range]))",
+              "q": "sum(increase(caddy_http_response_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\",code=~\"4..\"}[#{interval}])) / sum(increase(caddy_http_response_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1054,7 +1054,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_response_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\",code=~\"5..\"}[$__range])) / sum(increase(caddy_http_response_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range]))",
+              "q": "sum(increase(caddy_http_response_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\",code=~\"5..\"}[#{interval}])) / sum(increase(caddy_http_response_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}]))",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1424,7 +1424,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_request_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range])) by (code)",
+              "q": "sum(increase(caddy_http_request_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (code)",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -1513,7 +1513,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_request_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__range])) by (method)",
+              "q": "sum(increase(caddy_http_request_duration_seconds_count{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (method)",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -2137,7 +2137,7 @@
             "showFieldMapping": false,
             "openThousandsSeparator": true,
             "precision": "2",
-            "timeInterval": "$interval",
+            "timeInterval": "auto",
             "fixedTime": "",
             "showLegend": true,
             "legendPostion": "none",
@@ -2184,7 +2184,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_request_duration_seconds_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__rate_interval])) by (le)",
+              "q": "sum(increase(caddy_http_request_duration_seconds_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (le)",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -2221,7 +2221,7 @@
             "showFieldMapping": false,
             "openThousandsSeparator": true,
             "precision": "2",
-            "timeInterval": "$interval",
+            "timeInterval": "auto",
             "fixedTime": "",
             "showLegend": true,
             "legendPostion": "none",
@@ -2263,7 +2263,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_request_size_bytes_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__rate_interval])) by (le)",
+              "q": "sum(increase(caddy_http_request_size_bytes_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (le)",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -2300,7 +2300,7 @@
             "showFieldMapping": false,
             "openThousandsSeparator": true,
             "precision": "2",
-            "timeInterval": "$interval",
+            "timeInterval": "auto",
             "fixedTime": "",
             "showLegend": true,
             "legendPostion": "none",
@@ -2347,7 +2347,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_response_duration_seconds_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__rate_interval])) by (le)",
+              "q": "sum(increase(caddy_http_response_duration_seconds_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (le)",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
@@ -2384,7 +2384,7 @@
             "showFieldMapping": false,
             "openThousandsSeparator": true,
             "precision": "2",
-            "timeInterval": "$interval",
+            "timeInterval": "auto",
             "fixedTime": "",
             "showLegend": true,
             "legendPostion": "none",
@@ -2426,7 +2426,7 @@
             "datasource": "dataflux",
             "disabled": false,
             "query": {
-              "q": "sum(increase(caddy_http_response_size_bytes_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[$__rate_interval])) by (le)",
+              "q": "sum(increase(caddy_http_response_size_bytes_bucket{environment=~\"#{environment}\",cluster=~\"#{cluster}\",service=~\"#{service}\",instance=~\"#{instance}\"}[#{interval}])) by (le)",
               "code": "A",
               "type": "promql",
               "promqlCode": 1
