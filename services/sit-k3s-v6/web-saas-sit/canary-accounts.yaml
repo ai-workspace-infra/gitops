@@ -6,7 +6,7 @@ metadata:
 spec:
   provider:
     type: prometheus
-    address: http://observability-observability-stack.observability-sit:8428
+    address: http://observability-observability-stack-victoria-metrics.observability-sit:8428
   query: |
     100 - (
       sum(rate(traefik_service_requests_total{service=~"{{ target }}.*",code!~"5.*"}[{{ interval }}]))

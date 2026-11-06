@@ -12,15 +12,15 @@ stringData:
         url_map:
           - src_paths:
               - "/api/v1/write"
-            url_prefix: "http://observability-observability-stack.observability-sit.svc:8428"
+            url_prefix: "http://observability-observability-stack-victoria-metrics.observability-sit.svc:8428"
           - src_paths:
               - "/insert/jsonline"
               - "/insert/jsonline.*"
-            url_prefix: "http://observability-observability-stack.observability-sit.svc:9428"
+            url_prefix: "http://observability-observability-stack-victoria-logs.observability-sit.svc:9428"
           - src_paths:
               - "/v1/traces"
               - "/insert/opentelemetry/v1/traces"
-            url_prefix: "http://observability-observability-stack.observability-sit.svc:10428"
+            url_prefix: "http://observability-observability-stack-victoria-traces.observability-sit.svc:10428"
 ---
 apiVersion: apps/v1
 kind: Deployment
