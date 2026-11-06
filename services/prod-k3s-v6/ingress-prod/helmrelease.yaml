@@ -5,7 +5,7 @@ metadata:
   name: caddy-ingress
   namespace: ingress-prod
 spec:
-  suspend: false
+  suspend: true
   interval: 5m
   releaseName: caddy-ingress
   targetNamespace: ingress-prod
@@ -286,7 +286,7 @@ spec:
               metadata:
                 name: caddy-ingress-caddy-ingress
               spec:
-                externalTrafficPolicy: Local
+                externalTrafficPolicy: Cluster
   values:
     console:
       enabled: false
