@@ -8,8 +8,6 @@ spec:
   interval: 5m
   releaseName: traefik-ingress
   targetNamespace: ingress-prod
-  dependsOn:
-    - name: traefik-crds
   chartRef:
     kind: OCIRepository
     name: web-saas-fullstack-chart
