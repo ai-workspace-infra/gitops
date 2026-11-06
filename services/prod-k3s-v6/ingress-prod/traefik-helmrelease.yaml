@@ -41,6 +41,9 @@ spec:
         spec:
           type: LoadBalancer
       ports:
+        metrics:
+          port: 9100
+          exposedPort: 9100
         web:
           port: 8000
           exposedPort: 80
