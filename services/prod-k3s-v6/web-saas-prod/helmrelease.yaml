@@ -201,3 +201,10 @@ spec:
       enabled: false
     stunnelServer:
       enabled: false
+    flagger:
+      enabled: true
+      meshProvider: traefik
+      metricsServer: http://observability-observability-stack.observability-prod:8428
+      selectorLabels: websaas.io/workload,app.kubernetes.io/name,app
+      crd:
+        create: true
