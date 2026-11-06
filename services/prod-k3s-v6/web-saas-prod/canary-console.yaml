@@ -1,0 +1,34 @@
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: web-saas-console
+  namespace: web-saas-prod
+spec:
+  provider: traefik
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-saas-console
+  progressDeadlineSeconds: 120
+  service:
+    port: 80
+    targetPort: 80
+    gateways:
+      - traefik
+    hosts:
+      - console-selfhost-prod-v6.svc.plus
+      - console.svc.plus
+      - xworktech.com
+  analysis:
+    interval: 15s
+    threshold: 3
+    maxWeight: 50
+    stepWeight: 10
+    metrics:
+      - name: traefik-error-rate
+        templateRef:
+          name: traefik-error-rate
+          namespace: web-saas-prod
+        thresholdRange:
+          max: 1
+        interval: 1m
