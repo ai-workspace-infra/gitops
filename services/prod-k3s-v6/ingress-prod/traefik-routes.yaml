@@ -51,6 +51,7 @@ spec:
           namespace: vault-prod
           port: 8200
           scheme: https
+          serversTransport: vault-transport
   tls:
     secretName: console-tls
 ---

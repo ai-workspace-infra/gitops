@@ -8,4 +8,5 @@ resources:
 - helmrelease.yaml
 - business-networkpolicy.yaml
 - traefik-helmrelease.yaml
+- traefik-serverstransport.yaml
 - traefik-routes.yaml
