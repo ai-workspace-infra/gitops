@@ -8,6 +8,12 @@ spec:
   interval: 5m
   releaseName: web-saas
   targetNamespace: web-saas-sit
+  upgrade:
+    crds: Skip
+    remediation:
+      retries: 0
+      remediateLastFailure: true
+      strategy: rollback
   chartRef:
     kind: OCIRepository
     name: web-saas-fullstack-chart
