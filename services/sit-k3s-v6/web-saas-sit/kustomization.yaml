@@ -10,3 +10,4 @@ resources:
   - console-nginx-configmap.yaml
   - helmrelease.yaml
   - business-networkpolicy.yaml
+  - canary-accounts.yaml

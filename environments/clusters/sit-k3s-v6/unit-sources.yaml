@@ -8,7 +8,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    branch: feature/dev-k3s-v6-single-node
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -20,7 +20,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    branch: feature/dev-k3s-v6-single-node
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -32,7 +32,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    branch: feature/dev-k3s-v6-single-node
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -44,7 +44,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    branch: feature/dev-k3s-v6-single-node
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -56,7 +56,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    branch: feature/dev-k3s-v6-single-node
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -68,7 +68,7 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    branch: feature/dev-k3s-v6-single-node
+    branch: main
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
@@ -80,4 +80,4 @@ spec:
   interval: 1m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
-    branch: feature/dev-k3s-v6-single-node
+    branch: main
