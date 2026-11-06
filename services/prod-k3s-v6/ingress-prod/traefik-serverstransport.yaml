@@ -1,0 +1,8 @@
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: vault-transport
+  namespace: ingress-prod
+spec:
+  serverName: vault.svc.plus
+  insecureSkipVerify: true
