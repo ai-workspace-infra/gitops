@@ -1,0 +1,89 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgresql-backup-data
+  namespace: postgresql-prod
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgresql-daily-backup
+  namespace: postgresql-prod
+spec:
+  # 每日凌晨 03:00 (UTC 19:00) 运行，避开业务高峰
+  schedule: "0 19 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 1800
+      backoffLimit: 2
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: postgresql-daily-backup
+            app.kubernetes.io/instance: postgresql
+            app.kubernetes.io/component: backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: postgres-backup
+              image: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
+              imagePullPolicy: IfNotPresent
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 200m
+                  memory: 256Mi
+              env:
+                - name: PGHOST
+                  value: "postgresql-postgresql"
+                - name: PGPORT
+                  value: "5432"
+                - name: PGUSER
+                  value: "postgres"
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: postgresql-admin
+                      key: password
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  set -euo pipefail
+                  BACKUP_DIR="/backup"
+                  DATE=$(date +%Y%m%d_%H%M%S)
+                  TARGET_FILE="${BACKUP_DIR}/pg_all_databases_${DATE}.sql.gz"
+                  TMP_FILE="${TARGET_FILE}.tmp"
+
+                  echo "[$(date -Iseconds)] 开始执行 PostgreSQL 全量备份 (极轻量流式压缩)..."
+                  # 使用 pg_dumpall 导出所有数据库及角色/权限，快速流式单线程 gzip -1 最小化 CPU 负载
+                  pg_dumpall -h "${PGHOST}" -p "${PGPORT}" -U "${PGUSER}" --clean --if-exists | gzip -1 > "${TMP_FILE}"
+                  mv "${TMP_FILE}" "${TARGET_FILE}"
+                  echo "[$(date -Iseconds)] 备份生成成功: ${TARGET_FILE} ($(du -sh "${TARGET_FILE}" | cut -f1))"
+
+                  echo "[$(date -Iseconds)] 清理保留策略：自动删除 7 天 (7*24h) 之前的旧备份文件..."
+                  find "${BACKUP_DIR}" -type f -name "pg_all_databases_*.sql.gz" -mtime +7 -exec echo "正在清理过期备份: {}" \; -exec rm -f {} \;
+
+                  echo "[$(date -Iseconds)] 当前已归档备份列表:"
+                  ls -lh "${BACKUP_DIR}"
+                  echo "[$(date -Iseconds)] 全量备份作业顺利完成。"
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backup
+          volumes:
+            - name: backup-storage
+              persistentVolumeClaim:
+                claimName: postgresql-backup-data
