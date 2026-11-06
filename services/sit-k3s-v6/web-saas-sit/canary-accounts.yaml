@@ -9,9 +9,9 @@ spec:
     address: http://observability-observability-stack-victoria-metrics.observability-sit:8428
   query: |
     100 - (
-      sum(rate(traefik_service_requests_total{service=~"{{ target }}.*",code!~"5.*"}[{{ interval }}]))
+      sum(rate(traefik_service_requests_total{service=~"web-saas-sit-{{ target }}-canary-80(@kubernetescrd)?",code!~"5.*"}[{{ interval }}]))
       /
-      sum(rate(traefik_service_requests_total{service=~"{{ target }}.*"}[{{ interval }}]))
+      sum(rate(traefik_service_requests_total{service=~"web-saas-sit-{{ target }}-canary-80(@kubernetescrd)?"}[{{ interval }}]))
     ) * 100
 ---
 apiVersion: flagger.app/v1beta1
