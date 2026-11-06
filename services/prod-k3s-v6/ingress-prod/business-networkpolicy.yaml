@@ -9,14 +9,4 @@ spec:
   policyTypes:
   - Ingress
   ingress:
-  - from:
-    - namespaceSelector:
-        matchExpressions:
-        - key: kubernetes.io/metadata.name
-          operator: In
-          values:
-          - web-saas-prod
-          - postgresql-prod
-          - ingress-prod
-          - observability-prod
-          - vault-prod
+  - {}
