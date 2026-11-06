@@ -106,7 +106,7 @@ spec:
         - job_name: traefik
           scrape_interval: 15s
           static_configs:
-            - targets: ['traefik-ingress.ingress-prod.svc:9100']
+            - targets: ['traefik-metrics.ingress-prod.svc:9100']
               labels:
                 cluster: PROD-K3S-V6
                 environment: prod

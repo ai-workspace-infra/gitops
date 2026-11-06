@@ -9,4 +9,5 @@ resources:
 - business-networkpolicy.yaml
 - traefik-helmrelease.yaml
 - traefik-serverstransport.yaml
+- traefik-metrics-service.yaml
 - traefik-routes.yaml
