@@ -12,3 +12,6 @@ resources:
   - helmrelease.yaml
   - caddy-ingress-metrics.yaml
   - business-networkpolicy.yaml
+  - traefik-crds.yaml
+  - traefik-helmrelease.yaml
+  - traefik-routes.yaml

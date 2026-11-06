@@ -207,3 +207,9 @@ spec:
       enabled: false
     stunnelServer:
       enabled: false
+    flagger:
+      enabled: true
+      meshProvider: traefik
+      metricsServer: http://observability-observability-stack.observability-sit:8428
+      crd:
+        create: true

@@ -1,0 +1,47 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sit-platform-routes
+  namespace: ingress-sit
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    # Console (Frontend)
+    - match: Host(`console-sit.onwalk.net`) || Host(`app-sit.onwalk.net`) || Host(`console.sit.onwalk.net`) || Host(`app.sit.onwalk.net`)
+      kind: Rule
+      services:
+        - name: web-saas-console
+          namespace: web-saas-sit
+          port: 80
+    # Accounts (Auth / Sessions / API)
+    - match: Host(`accounts-sit.onwalk.net`) || Host(`accounts.sit.onwalk.net`)
+      kind: Rule
+      services:
+        - name: web-saas-accounts
+          namespace: web-saas-sit
+          port: 80
+    # Billing
+    - match: Host(`billing-sit.onwalk.net`) || Host(`billing.sit.onwalk.net`)
+      kind: Rule
+      services:
+        - name: web-saas-billing
+          namespace: web-saas-sit
+          port: 80
+    # Observability (Grafana)
+    - match: Host(`grafana-sit.onwalk.net`) || Host(`grafana.sit.onwalk.net`)
+      kind: Rule
+      services:
+        - name: observability-observability-stack
+          namespace: observability-sit
+          port: 3000
+    # AI Infrastructure MCP Server
+    - match: Host(`mcp-sit.onwalk.net`) || Host(`mcp.sit.onwalk.net`)
+      kind: Rule
+      services:
+        - name: infrastructure-mcp-server
+          namespace: platform-mcp-sit
+          port: 8080
+  tls:
+    secretName: console-tls
