@@ -1,0 +1,1396 @@
+dashboardExtend:
+  groupUnfoldStatus:
+    "\u6982\u89C8": true
+    "\u70ED\u529B\u56FE": true
+    "\u8BE6\u7EC6\u6307\u6807": true
+description: "PostgreSQL exporter \u76D1\u63A7\u6982\u89C8\u3002\u7F3A\u5931\u7684\
+  \u6307\u6807\u663E\u793A\u4E3A\u65E0\u6570\u636E\uFF1B\u5B9E\u4F8B\u7EA7\u9762\u677F\
+  \u4E0D\u53D7\u6570\u636E\u5E93\u7B5B\u9009\u5F71\u54CD\uFF0C\u6307\u6807\u53EF\u7528\
+  \u6027\u53D6\u51B3\u4E8E exporter \u914D\u7F6E\u548C PostgreSQL \u7248\u672C\u3002"
+main:
+  charts:
+  - extend:
+      settings:
+        alias:
+        - alias: '{{instance}}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            fieldColorMode: thresholds
+            reduceCalcs:
+            - lastNotNull
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - number
+        - short_scale
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          fontColor: '#999999'
+          operation: <
+          value:
+          - 50
+        - bgColor: yellow
+          fontColor: '#999999'
+          operation: between
+          value:
+          - 50
+          - 80
+        - bgColor: red
+          fontColor: '#999999'
+          operation: '>='
+          value:
+          - 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        scientificNotation: true
+        showFieldMapping: false
+        showLineAxis: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6240\u9009\u5B9E\u4F8B\u7684 exporter \u6570\u636E\u5E93\u8FDE\
+          \u63A5\u72B6\u6001\uFF1B\u4E0D\u53D7\u6570\u636E\u5E93\u7B5B\u9009\u5F71\
+          \u54CD\u3002"
+        unitType: global
+    group:
+      name: "\u6982\u89C8"
+    name: "PostgreSQL \u53EF\u7528\u6027 (pg_up)"
+    pos:
+      h: 9.6
+      w: 4
+      x: 0
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: '{{instance}}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: pg_up{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!=""}
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        alias:
+        - alias: Connections
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            fieldColorMode: thresholds
+            reduceCalcs:
+            - lastNotNull
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - number
+        - short_scale
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          fontColor: '#999999'
+          operation: <
+          value:
+          - 50
+        - bgColor: yellow
+          fontColor: '#999999'
+          operation: between
+          value:
+          - 50
+          - 80
+        - bgColor: red
+          fontColor: '#999999'
+          operation: '>='
+          value:
+          - 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        scientificNotation: true
+        showFieldMapping: false
+        showLineAxis: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6240\u9009\u6570\u636E\u5E93\u7684\u540E\u7AEF\u8FDE\u63A5\u6570\
+          \u603B\u548C\u3002"
+        unitType: global
+    group:
+      name: "\u6982\u89C8"
+    name: "\u6D3B\u8DC3\u540E\u7AEF\u8FDE\u63A5\u6570"
+    pos:
+      h: 9.6
+      w: 4
+      x: 4
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: Connections
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(pg_stat_database_numbackends{environment=~"#{environment}",environment!="",
+          cluster=~"#{cluster}",cluster!="", service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""})
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        alias:
+        - alias: Hit Ratio
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            fieldColorMode: thresholds
+            reduceCalcs:
+            - lastNotNull
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: red
+          fontColor: '#999999'
+          operation: <
+          value:
+          - 90
+        - bgColor: yellow
+          fontColor: '#999999'
+          operation: between
+          value:
+          - 90
+          - 98
+        - bgColor: green
+          fontColor: '#999999'
+          operation: '>='
+          value:
+          - 98
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6240\u9009\u6570\u636E\u5E93\u7F13\u5B58\u547D\u4E2D\u6B21\u6570\
+          \u5360\u7F13\u5B58\u547D\u4E2D\u4E0E\u78C1\u76D8\u8BFB\u53D6\u603B\u6B21\
+          \u6570\u7684\u6BD4\u4F8B\u3002"
+        unitType: global
+    group:
+      name: "\u6982\u89C8"
+    name: "\u7F13\u5B58\u547D\u4E2D\u7387"
+    pos:
+      h: 9.6
+      w: 4
+      x: 8
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: Hit Ratio
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(rate(pg_stat_database_blks_hit{environment=~"#{environment}",environment!="",
+          cluster=~"#{cluster}",cluster!="", service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}[5m])) / (sum(rate(pg_stat_database_blks_hit{environment=~"#{environment}",environment!="",
+          cluster=~"#{cluster}",cluster!="", service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}[5m])) + sum(rate(pg_stat_database_blks_read{environment=~"#{environment}",environment!="",
+          cluster=~"#{cluster}",cluster!="", service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}[5m]))) * 100
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        alias:
+        - alias: Commits/s
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            fieldColorMode: palette-classic
+            reduceCalcs:
+            - lastNotNull
+        fixedTime: ''
+        globalUnit:
+        - throughput
+        - ops
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6240\u9009\u6570\u636E\u5E93\u6BCF\u79D2\u63D0\u4EA4\u4E8B\u52A1\
+          \u7684\u901F\u7387\u603B\u548C\u3002"
+        unitType: global
+    group:
+      name: "\u6982\u89C8"
+    name: "\u6BCF\u79D2\u63D0\u4EA4\u4E8B\u52A1\u6570"
+    pos:
+      h: 9.6
+      w: 4
+      x: 12
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: Commits/s
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(rate(pg_stat_database_xact_commit{environment=~"#{environment}",environment!="",
+          cluster=~"#{cluster}",cluster!="", service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}[5m]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        alias:
+        - alias: Rollbacks/s
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            fieldColorMode: thresholds
+            reduceCalcs:
+            - lastNotNull
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - throughput
+        - ops
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          fontColor: '#999999'
+          operation: <
+          value:
+          - 1
+        - bgColor: red
+          fontColor: '#999999'
+          operation: '>='
+          value:
+          - 1
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6240\u9009\u6570\u636E\u5E93\u6BCF\u79D2\u56DE\u6EDA\u4E8B\u52A1\
+          \u7684\u901F\u7387\u603B\u548C\u3002"
+        unitType: global
+    group:
+      name: "\u6982\u89C8"
+    name: "\u6BCF\u79D2\u56DE\u6EDA\u4E8B\u52A1\u6570"
+    pos:
+      h: 9.6
+      w: 4
+      x: 16
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: Rollbacks/s
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(rate(pg_stat_database_xact_rollback{environment=~"#{environment}",environment!="",
+          cluster=~"#{cluster}",cluster!="", service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}[5m]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        color: rgb(31, 120, 193)
+        direction: horizontal
+        extend:
+          appearance:
+            colorMode: none
+            fieldColorMode: fixed
+            fixedColor: rgb(31, 120, 193)
+            graphMode: area
+            justifyMode: auto
+            reduceCalcs:
+            - mean
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        maxPointCount: 100
+        openThousandsSeparator: true
+        precision: '0'
+        sequenceChartType: line
+        showFieldMapping: false
+        showLineAxis: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6BCF\u79D2\u63D0\u4EA4\u4E0E\u56DE\u6EDA\u4E8B\u52A1\u7684\u901F\
+          \u7387\u4E4B\u548C\u3002"
+        unitType: global
+    group:
+      name: "\u6982\u89C8"
+    name: "\u6BCF\u79D2\u4E8B\u52A1\u6570 (TPS)"
+    pos:
+      h: 9.6
+      w: 4
+      x: 20
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(irate(pg_stat_database_xact_commit{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+          + sum(irate(pg_stat_database_xact_rollback{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        alias:
+        - alias: '{{datname}} ({{instance}})'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: areaLine
+        extend:
+          appearance:
+            drawStyle: line
+            fillOpacity: 10
+        fixedTime: ''
+        globalUnit:
+        - number
+        - short_scale
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: none
+        lineType: smooth
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        scientificNotation: true
+        showFieldMapping: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6309\u6570\u636E\u5E93\u548C\u5B9E\u4F8B\u5C55\u793A\u5F53\u524D\
+          \u540E\u7AEF\u8FDE\u63A5\u6570\u3002"
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8BE6\u7EC6\u6307\u6807"
+    name: "\u5404\u6570\u636E\u5E93\u6D3B\u8DC3\u540E\u7AEF\u8FDE\u63A5\u6570"
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: '{{datname}} ({{instance}})'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: pg_stat_database_numbackends{environment=~"#{environment}",environment!="",
+          cluster=~"#{cluster}",cluster!="", service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: '{{datname}} ({{instance}})'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: areaLine
+        extend:
+          appearance:
+            drawStyle: line
+            fillOpacity: 10
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: none
+        lineType: smooth
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6309\u6570\u636E\u5E93\u548C\u5B9E\u4F8B\u5C55\u793A\u6570\u636E\
+          \u5E93\u5927\u5C0F\uFF1B\u4F9D\u8D56 exporter \u63D0\u4F9B pg_database_size_bytes\uFF0C\
+          \u7F3A\u5931\u65F6\u663E\u793A\u65E0\u6570\u636E\u3002"
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8BE6\u7EC6\u6307\u6807"
+    name: "\u6570\u636E\u5E93\u78C1\u76D8\u5927\u5C0F"
+    pos:
+      h: 19.1
+      w: 12
+      x: 12
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: '{{datname}} ({{instance}})'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: pg_database_size_bytes{environment=~"#{environment}",environment!="", cluster=~"#{cluster}",cluster!="",
+          service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: fetched
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: returned
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        - alias: inserted
+          key: promql_3
+          name: promql_3
+          queryCode: C
+        - alias: updated
+          key: promql_4
+          name: promql_4
+          queryCode: D
+        - alias: deleted
+          key: promql_5
+          name: promql_5
+          queryCode: E
+        changeWorkspace: false
+        chartType: areaLine
+        connectNulls: true
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 10
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: true
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: none
+        fixedTime: ''
+        globalUnit:
+        - number
+        - short_scale
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: right
+        legendValues:
+        - max
+        - min
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        scientificNotation: true
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u5C55\u793A\u6240\u9009\u6570\u636E\u5E93\u8BFB\u53D6\u3001\u8FD4\
+          \u56DE\u3001\u63D2\u5165\u3001\u66F4\u65B0\u548C\u5220\u9664\u7684\u6570\
+          \u636E\u884C\u6BCF\u79D2\u901F\u7387\u3002"
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8BE6\u7EC6\u6307\u6807"
+    name: "\u6570\u636E\u884C\u64CD\u4F5C\u901F\u7387"
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: A
+      name: fetched
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(irate(pg_stat_database_tup_fetched{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: B
+      name: returned
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: sum(irate(pg_stat_database_tup_returned{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: C
+      name: inserted
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: sum(irate(pg_stat_database_tup_inserted{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: D
+      name: updated
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 4
+        q: sum(irate(pg_stat_database_tup_updated{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: E
+      name: deleted
+      qtype: promql
+      query:
+        code: E
+        promqlCode: 5
+        q: sum(irate(pg_stat_database_tup_deleted{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: deadlocks
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: conflicts
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: areaLine
+        colors:
+        - color: light-red
+          key: deadlocks
+          name: deadlocks
+        connectNulls: true
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 10
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 2
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: true
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: none
+        fixedTime: ''
+        globalUnit:
+        - number
+        - short_scale
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        min: 0
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        scientificNotation: true
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u5C55\u793A\u6240\u9009\u6570\u636E\u5E93\u51B2\u7A81\u548C\u6B7B\
+          \u9501\u7684\u7D2F\u8BA1\u8BA1\u6570\u603B\u548C\u3002"
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8BE6\u7EC6\u6307\u6807"
+    name: "\u51B2\u7A81\u4E0E\u6B7B\u9501"
+    pos:
+      h: 19.1
+      w: 12
+      x: 12
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: A
+      name: deadlocks
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(pg_stat_database_deadlocks{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""})
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        editorMode: code
+        refId: B
+      name: conflicts
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: sum(pg_stat_database_conflicts{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""})
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: '{{datname}} - cache hit rate'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: areaLine
+        connectNulls: true
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 10
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 2
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: true
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: none
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        max: 100
+        min: 0
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6309\u6570\u636E\u5E93\u5C55\u793A\u7F13\u5B58\u547D\u4E2D\u7387\
+          \u3002"
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8BE6\u7EC6\u6307\u6807"
+    name: "\u5404\u6570\u636E\u5E93\u7F13\u5B58\u547D\u4E2D\u7387"
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 40.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: A
+      name: '{{datname}} - cache hit rate'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: round(sum by (datname) (rate(pg_stat_database_blks_hit{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+          / (sum by (datname)(rate(pg_stat_database_blks_hit{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m]))
+          + sum by (datname)(rate(pg_stat_database_blks_read{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!="",datname=~"#{datname}",datname!=""}[5m])))*100,0.001)
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: buffers_alloc
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: buffers_backend_fsync
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        - alias: buffers_backend
+          key: promql_3
+          name: promql_3
+          queryCode: C
+        - alias: buffers_clean
+          key: promql_4
+          name: promql_4
+          queryCode: D
+        - alias: buffers_checkpoint
+          key: promql_5
+          name: promql_5
+          queryCode: E
+        - alias: Checkpointer buffers written (PG17+, optional collector)
+          key: promql_6
+          name: promql_6
+          queryCode: F
+        changeWorkspace: false
+        chartType: areaLine
+        connectNulls: true
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 10
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: true
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: none
+        fixedTime: ''
+        globalUnit:
+        - number
+        - short_scale
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - min
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        min: 0
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        scientificNotation: true
+        showFieldMapping: false
+        showLegend: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u5B9E\u4F8B\u7EA7\u6307\u6807\uFF0C\u4E0D\u53D7\u6570\u636E\u5E93\
+          \u7B5B\u9009\u5F71\u54CD\u3002PostgreSQL 17 \u79FB\u9664\u4E86\u90E8\u5206\
+          \u65E7\u7248 bgwriter \u6307\u6807\uFF1Bcheckpointer \u6307\u6807\u9700\u8981\
+          \u53EF\u9009\u91C7\u96C6\u5668\u3002\u6307\u6807\u7F3A\u5931\u4E0D\u7B49\
+          \u4E8E 0\u3002"
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8BE6\u7EC6\u6307\u6807"
+    name: "\u7F13\u51B2\u533A\uFF08\u5B9E\u4F8B\u7EA7\uFF09"
+    pos:
+      h: 19.1
+      w: 12
+      x: 12
+      y: 40.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: A
+      name: buffers_alloc
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: irate(pg_stat_bgwriter_buffers_alloc_total{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!=""}[5m])
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: B
+      name: buffers_backend_fsync
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: irate(pg_stat_bgwriter_buffers_backend_fsync_total{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!=""}[5m])
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: C
+      name: buffers_backend
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: irate(pg_stat_bgwriter_buffers_backend_total{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!=""}[5m])
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: D
+      name: buffers_clean
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 4
+        q: irate(pg_stat_bgwriter_buffers_clean_total{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!=""}[5m])
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          uid: dataflux
+        refId: E
+      name: buffers_checkpoint
+      qtype: promql
+      query:
+        code: E
+        promqlCode: 5
+        q: irate(pg_stat_bgwriter_buffers_checkpoint_total{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!=""}[5m])
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        refId: F
+      name: Checkpointer buffers written (PG17+, optional collector)
+      qtype: promql
+      query:
+        code: F
+        promqlCode: 6
+        q: irate(pg_stat_checkpointer_buffers_written_total{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!=""}[5m])
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: '{{datname}} ({{instance}})'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            scaleDistribution:
+              type: linear
+          tooltip:
+            mode: single
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6BCF\u4E2A\u65F6\u95F4\u6876\u5185\uFF0C\u6240\u9009\u6570\u636E\
+          \u5E93\u548C\u5B9E\u4F8B\u7684\u540E\u7AEF\u8FDE\u63A5\u6570\u6837\u672C\
+          \u5206\u5E03\uFF1B\u989C\u8272\u8868\u793A\u6837\u672C\u6570\u91CF\uFF0C\
+          \u4E0D\u662F\u8BF7\u6C42\u5EF6\u8FDF\u5206\u5E03\uFF0C\u4E5F\u4E0D\u662F\
+          \u8FDE\u63A5\u4E8B\u4EF6\u6570\u3002"
+    group:
+      name: "\u70ED\u529B\u56FE"
+    name: "\u8FDE\u63A5\u6570\u6837\u672C\u968F\u65F6\u95F4\u7684\u5206\u5E03"
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: '{{datname}} ({{instance}})'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: pg_stat_database_numbackends{environment=~"#{environment}",environment!="",
+          cluster=~"#{cluster}",cluster!="", service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}
+        type: promql
+      type: heatmap
+    type: heatmap
+  - extend:
+      settings:
+        alias:
+        - alias: '{{datname}} ({{instance}})'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            scaleDistribution:
+              type: linear
+          tooltip:
+            mode: single
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u6BCF\u4E2A\u65F6\u95F4\u6876\u5185\uFF0C\u6240\u9009\u6570\u636E\
+          \u5E93\u548C\u5B9E\u4F8B\u7684\u6570\u636E\u5E93\u5927\u5C0F\u6837\u672C\
+          \u5206\u5E03\uFF1B\u989C\u8272\u8868\u793A\u6837\u672C\u6570\u91CF\uFF0C\
+          \u4E0D\u662F\u8BF7\u6C42\u5EF6\u8FDF\u5206\u5E03\uFF0C\u4E5F\u4E0D\u662F\
+          \u5BB9\u91CF\u4E0A\u9650\u3002"
+        unitType: global
+    group:
+      name: "\u70ED\u529B\u56FE"
+    name: "\u6570\u636E\u5E93\u5927\u5C0F\u6837\u672C\u968F\u65F6\u95F4\u7684\u5206\
+      \u5E03"
+    pos:
+      h: 19.1
+      w: 12
+      x: 12
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: dataflux
+        refId: A
+      name: '{{datname}} ({{instance}})'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: pg_database_size_bytes{environment=~"#{environment}",environment!="", cluster=~"#{cluster}",cluster!="",
+          service=~"#{service}",service!="", instance=~"#{instance}",instance!="",
+          datname=~"#{datname}",datname!=""}
+        type: promql
+      type: heatmap
+    type: heatmap
+  groups:
+  - name: "\u6982\u89C8"
+  - name: "\u8BE6\u7EC6\u6307\u6807"
+  - name: "\u70ED\u529B\u56FE"
+  type: template
+  vars:
+  - code: environment
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: pg_stat_database_numbackends{environment!=""}
+      object: ''
+      tag: ''
+      value: label_values(pg_stat_database_numbackends{environment!=""}, environment)
+    extend:
+      originalType: query
+      refresh: 1
+      sort: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: "\u73AF\u5883"
+    seq: 0
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: cluster
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: pg_stat_database_numbackends{environment=~"#{environment}"
+      object: ''
+      tag: ''
+      value: label_values(pg_stat_database_numbackends{environment=~"#{environment}",environment!=""
+        ,cluster!=""}, cluster)
+    extend:
+      originalType: query
+      refresh: 1
+      sort: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: "\u96C6\u7FA4"
+    seq: 1
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: service
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: pg_stat_database_numbackends{environment=~"#{environment}"
+      object: ''
+      tag: ''
+      value: label_values(pg_stat_database_numbackends{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!=""
+        ,service!=""}, service)
+    extend:
+      originalType: query
+      refresh: 1
+      sort: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: "\u670D\u52A1"
+    seq: 2
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: instance
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: pg_stat_database_numbackends{environment=~"#{environment}"
+      object: ''
+      tag: ''
+      value: label_values(pg_stat_database_numbackends{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!=""
+        ,instance!=""}, instance)
+    extend:
+      originalType: query
+      refresh: 1
+      sort: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: "\u5B9E\u4F8B"
+    seq: 3
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: datname
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: pg_stat_database_numbackends{environment=~"#{environment}"
+      object: ''
+      tag: ''
+      value: label_values(pg_stat_database_numbackends{environment=~"#{environment}",environment!="",cluster=~"#{cluster}",cluster!="",service=~"#{service}",service!="",instance=~"#{instance}",instance!=""
+        ,datname!=""}, datname)
+    extend:
+      originalType: query
+      refresh: 1
+      sort: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: "\u6570\u636E\u5E93"
+    seq: 4
+    type: PROMQL_QUERY
+    valueSort: desc
+tags:
+- postgres
+title: "PostgreSQL \u7EDF\u4E00\u76D1\u63A7\u6982\u89C8"
+uid: postgres-unified-overview

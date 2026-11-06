@@ -1,0 +1,1918 @@
+dashboardExtend:
+  groupUnfoldStatus:
+    Detailed metrics: true
+    Heatmaps: true
+    Summary: true
+description: Caddy HTTP server monitoring.
+main:
+  charts:
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: The number of requests currently being handled by the server.
+    group:
+      name: Summary
+    name: Requests in flight
+    pos:
+      h: 9.6
+      w: 4
+      x: 0
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(caddy_http_requests_in_flight{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"})
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - throughput
+        - reqps
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Total requests handled in the selected time range.
+        unitType: global
+    group:
+      name: Summary
+    name: Total requests
+    pos:
+      h: 9.6
+      w: 4
+      x: 4
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_requests_total{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - throughput
+        - reqps
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Rate of requests handled per second in the selected time range.
+        unitType: global
+    group:
+      name: Summary
+    name: Requests per second
+    pos:
+      h: 9.6
+      w: 4
+      x: 8
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(rate(caddy_http_requests_total{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - time
+        - s
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Median round-trip request duration for the selected time range.
+        unitType: global
+    group:
+      name: Summary
+    name: Median request duration
+    pos:
+      h: 9.6
+      w: 4
+      x: 12
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: histogram_quantile(0.5, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - time
+        - s
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Median time-to-first-byte response duration for the selected time
+          range.
+        unitType: global
+    group:
+      name: Summary
+    name: Median response duration
+    pos:
+      h: 9.6
+      w: 4
+      x: 16
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: histogram_quantile(0.5, sum(rate(caddy_http_response_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '0'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: A number of middleware errors encountered while handling requests
+          in the selected time range.
+    group:
+      name: Summary
+    name: Total middleware errors
+    pos:
+      h: 9.6
+      w: 4
+      x: 20
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_request_errors_total{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Median request (estimated) size in bytes in the selected time range.
+          Includes body.
+        unitType: global
+    group:
+      name: Summary
+    name: Median request size
+    pos:
+      h: 9.6
+      w: 4
+      x: 0
+      y: 11.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: histogram_quantile(0.5, sum(rate(caddy_http_request_size_bytes_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Median returned response body size in bytes in the selected time
+          range.
+        unitType: global
+    group:
+      name: Summary
+    name: Median response size
+    pos:
+      h: 9.6
+      w: 4
+      x: 4
+      y: 11.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: histogram_quantile(0.5, sum(rate(caddy_http_response_size_bytes_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Sum of the sizes of all received requests in the selected time
+          range.
+        unitType: global
+    group:
+      name: Summary
+    name: Total requests size
+    pos:
+      h: 9.6
+      w: 4
+      x: 8
+      y: 11.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_request_size_bytes_sum{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Sum of sizes of all response bodies in the selected time range.
+        unitType: global
+    group:
+      name: Summary
+    name: Total responses size
+    pos:
+      h: 9.6
+      w: 4
+      x: 12
+      y: 11.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_response_size_bytes_sum{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent_decimal
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Percentage of responses with 4xx status code in all responses.
+        unitType: global
+    group:
+      name: Summary
+    name: 4xx response percentage
+    pos:
+      h: 9.6
+      w: 4
+      x: 16
+      y: 11.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_response_duration_seconds_count{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}",code=~"4.."}[#{interval}]))
+          / sum(increase(caddy_http_response_duration_seconds_count{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent_decimal
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Percentage of responses with 4xx status code in all responses.
+        unitType: global
+    group:
+      name: Summary
+    name: 5xx response percentage
+    pos:
+      h: 9.6
+      w: 4
+      x: 20
+      y: 11.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_response_duration_seconds_count{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}",code=~"5.."}[#{interval}]))
+          / sum(increase(caddy_http_response_duration_seconds_count{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: red
+          fontColor: '#999999'
+          operation: <
+          value:
+          - 1
+        - bgColor: green
+          fontColor: '#999999'
+          operation: '>='
+          value:
+          - 1
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: 1 means the active Caddy configuration loaded successfully.
+    group:
+      name: Summary
+    name: Caddy configuration loaded
+    pos:
+      h: 9.6
+      w: 4
+      x: 0
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: min(caddy_config_last_reload_successful{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"})
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: line
+        direction: auto
+        extend:
+          appearance:
+            colorMode: value
+            fieldColorMode: fixed
+            graphMode: none
+            justifyMode: auto
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: red
+          fontColor: '#999999'
+          operation: <
+          value:
+          - 1
+        - bgColor: green
+          fontColor: '#999999'
+          operation: '>='
+          value:
+          - 1
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: 1 means every reported Caddy reverse proxy upstream is healthy.
+    group:
+      name: Summary
+    name: Caddy upstreams healthy
+    pos:
+      h: 9.6
+      w: 4
+      x: 4
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: min(caddy_reverse_proxy_upstreams_healthy{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"})
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: areaLine
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 20
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: auto
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - time
+        - ms
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: true
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: Detailed metrics
+    name: Rate of requests by HTTP method (stacked)
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(rate(caddy_http_request_duration_seconds_count{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (method)
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: pie
+        extend:
+          appearance:
+            fieldColorMode: palette-classic
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            pieType: pie
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+          legend:
+            displayMode: table
+          tooltip:
+            mode: single
+            sort: none
+        fixedTime: ''
+        globalUnit:
+        - time
+        - ms
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: right
+        legendValueOpen: true
+        legendValuePercentOpen: true
+        lineType: linear
+        mainMeasurementLimit: 10
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLabel: false
+        showLabelValue: false
+        showLegend: true
+        showPercent: false
+        showTitle: true
+        slimit: 10
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+    group:
+      name: Detailed metrics
+    name: HTTP status breakdown
+    pos:
+      h: 19.1
+      w: 6
+      x: 12
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_request_duration_seconds_count{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (code)
+        type: promql
+      type: pie
+    type: pie
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: pie
+        extend:
+          appearance:
+            fieldColorMode: palette-classic
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            pieType: pie
+            reduceCalcs:
+            - lastNotNull
+            reduceValues: false
+          legend:
+            displayMode: table
+          tooltip:
+            mode: single
+            sort: none
+        fixedTime: ''
+        globalUnit:
+        - time
+        - ms
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: right
+        legendValueOpen: true
+        legendValuePercentOpen: true
+        lineType: linear
+        mainMeasurementLimit: 10
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLabel: false
+        showLabelValue: false
+        showLegend: true
+        showPercent: false
+        showTitle: true
+        slimit: 10
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+    group:
+      name: Detailed metrics
+    name: HTTP method breakdown
+    pos:
+      h: 19.1
+      w: 6
+      x: 18
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_request_duration_seconds_count{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (method)
+        type: promql
+      type: pie
+    type: pie
+  - extend:
+      settings:
+        alias:
+        - alias: '0.99'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: '0.95'
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        - alias: '0.90'
+          key: promql_3
+          name: promql_3
+          queryCode: C
+        - alias: '0.75'
+          key: promql_4
+          name: promql_4
+          queryCode: D
+        - alias: '0.5'
+          key: promql_5
+          name: promql_5
+          queryCode: E
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: auto
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - time
+        - s
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: Detailed metrics
+    name: Request duration percentiles
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      name: '0.99'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: histogram_quantile(0.99, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: B
+      name: '0.95'
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: histogram_quantile(0.95, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: C
+      name: '0.90'
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: histogram_quantile(0.90, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: D
+      name: '0.75'
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 4
+        q: histogram_quantile(0.75, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: E
+      name: '0.5'
+      qtype: promql
+      query:
+        code: E
+        promqlCode: 5
+        q: histogram_quantile(0.5, sum(rate(caddy_http_request_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le))
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: request
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: response
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: areaLine
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 20
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: auto
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: true
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: Detailed metrics
+    name: Data transfer rate
+    pos:
+      h: 19.1
+      w: 12
+      x: 12
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      name: request
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(rate(caddy_http_request_size_bytes_sum{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: B
+      name: response
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: -sum(rate(caddy_http_response_size_bytes_sum{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: areaLine
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 20
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: auto
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - time
+        - ms
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: Detailed metrics
+    name: Rate of 4xx and 5xx responses
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 40.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(rate(caddy_http_request_duration_seconds_count{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}",code=~"4..|5.."}[#{interval}]))
+          by (code)
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: errors
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: areaLine
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 20
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: auto
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: single
+            sort: none
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        xAxisShowType: time
+    group:
+      name: Detailed metrics
+    name: Middleware error rate
+    pos:
+      h: 19.1
+      w: 12
+      x: 12
+      y: 40.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      name: errors
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: rate(caddy_http_request_errors_total{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}])
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: '{{le}}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            scaleDistribution:
+              type: linear
+          tooltip:
+            mode: single
+        fixedTime: ''
+        globalUnit:
+        - time
+        - ms
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Round-trip request duration heatmap.
+        unitType: global
+    group:
+      name: Heatmaps
+    name: Request duration heatmap
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      name: '{{le}}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_request_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le)
+        type: promql
+      type: heatmap
+    type: heatmap
+  - extend:
+      settings:
+        alias:
+        - alias: '{{le}}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            scaleDistribution:
+              type: linear
+          tooltip:
+            mode: single
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+    group:
+      name: Heatmaps
+    name: Request size heatmap
+    pos:
+      h: 19.1
+      w: 12
+      x: 12
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      name: '{{le}}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_request_size_bytes_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le)
+        type: promql
+      type: heatmap
+    type: heatmap
+  - extend:
+      settings:
+        alias:
+        - alias: '{{le}}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            scaleDistribution:
+              type: linear
+          tooltip:
+            mode: single
+        fixedTime: ''
+        globalUnit:
+        - time
+        - ms
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Response time-to-first-byte heatmap.
+        unitType: global
+    group:
+      name: Heatmaps
+    name: Response duration heatmap
+    pos:
+      h: 19.1
+      w: 12
+      x: 0
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      name: '{{le}}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_response_duration_seconds_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le)
+        type: promql
+      type: heatmap
+    type: heatmap
+  - extend:
+      settings:
+        alias:
+        - alias: '{{le}}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        extend:
+          appearance:
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            scaleDistribution:
+              type: linear
+          tooltip:
+            mode: single
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: none
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+    group:
+      name: Heatmaps
+    name: Response size heatmap
+    pos:
+      h: 19.1
+      w: 12
+      x: 12
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${datasource}
+        editorMode: code
+        refId: A
+      name: '{{le}}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(increase(caddy_http_response_size_bytes_bucket{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}",instance=~"#{instance}"}[#{interval}]))
+          by (le)
+        type: promql
+      type: heatmap
+    type: heatmap
+  groups:
+  - name: Summary
+  - name: Detailed metrics
+  - name: Heatmaps
+  type: template
+  vars:
+  - code: environment
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: caddy_config_last_reload_successful
+      object: ''
+      tag: ''
+      value: label_values(caddy_config_last_reload_successful,environment)
+    extend:
+      originalType: query
+      refresh: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: Environment
+    seq: 0
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: cluster
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: caddy_config_last_reload_successful{environment=~"#{environment}"}
+      object: ''
+      tag: ''
+      value: label_values(caddy_config_last_reload_successful{environment=~"#{environment}"},cluster)
+    extend:
+      originalType: query
+      refresh: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: Cluster
+    seq: 1
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: service
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: caddy_config_last_reload_successful{environment=~"#{environment}"
+      object: ''
+      tag: ''
+      value: label_values(caddy_config_last_reload_successful{environment=~"#{environment}",cluster=~"#{cluster}"},service)
+    extend:
+      originalType: query
+      refresh: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: Service
+    seq: 2
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: instance
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: caddy_config_last_reload_successful{environment=~"#{environment}"
+      object: ''
+      tag: ''
+      value: label_values(caddy_config_last_reload_successful{environment=~"#{environment}",cluster=~"#{cluster}",service=~"#{service}"},instance)
+    extend:
+      originalType: query
+      refresh: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: true
+    name: Instance
+    seq: 3
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: interval
+    datasource: custom
+    definition:
+      defaultVal:
+        label: 10m
+        value: 10m
+      value: 30s,1m,5m,10m,15m,30m,1h
+    extend:
+      options:
+      - selected: false
+        text: 30s
+        value: 30s
+      - selected: false
+        text: 1m
+        value: 1m
+      - selected: false
+        text: 5m
+        value: 5m
+      - selected: true
+        text: 10m
+        value: 10m
+      - selected: false
+        text: 15m
+        value: 15m
+      - selected: false
+        text: 30m
+        value: 30m
+      - selected: false
+        text: 1h
+        value: 1h
+      originalType: interval
+      refresh: 2
+    hide: 0
+    includeStar: false
+    multiple: false
+    name: Interval
+    seq: 4
+    type: CUSTOM_LIST
+    valueSort: desc
+title: Caddy
+uid: fed94ifiv8h6oc

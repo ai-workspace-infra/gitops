@@ -1,0 +1,5704 @@
+dashboardExtend:
+  groupUnfoldStatus:
+    "Pod\u8D44\u6E90\u603B\u89C8\uFF1A\u6240\u9009Pod:\u3010#{Pod}\u3011": true
+    "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8\uFF1A\u6240\u9009\u5FAE\u670D\u52A1:\u3010#{Container}\u3011": false
+    "\u8282\u70B9\u8D44\u6E90\u603B\u89C8\uFF1A\u6240\u9009\u8282\u70B9:\u3010#{Node}\u3011": true
+description: 'StarsL K8s Dashboard; Apache-2.0; source 16a813d8c4144397553a89e99453cc98a5709cc6.
+  Select datasource, cluster and environment. Missing telemetry remains No data. Secret/ConfigMap
+  inventories and the unrelated hidden Cassandra query are omitted. PVC metrics require
+  volume-plugin support. Source: https://github.com/starsliao/Prometheus/blob/16a813d8c4144397553a89e99453cc98a5709cc6/kubernetes/K8S%20Dashboard%20CN%2020240513%20StarsL.cn-1715536276053.json'
+main:
+  charts:
+  - extend:
+      settings:
+        alias:
+        - alias: "\u5185\u5B58\u4F7F\u7528\u7387"
+          key: promql_1
+          name: promql_1
+          queryCode: C
+        - alias: "\u5185\u5B58\u8BF7\u6C42\u7387"
+          key: promql_2
+          name: promql_2
+          queryCode: A
+        - alias: "\u5185\u5B58\u9650\u5236\u7387"
+          key: promql_3
+          name: promql_3
+          queryCode: B
+        changeWorkspace: false
+        chartType: bar
+        colorMappings:
+        - bgColor: green
+          operation: <
+          value:
+          - 0.8
+        - bgColor: orange
+          operation: between
+          value:
+          - 0.8
+          - 0.9
+        - bgColor: red
+          operation: '>='
+          value:
+          - 0.9
+        direction: vertical
+        extend:
+          appearance:
+            reduceCalcs:
+            - last
+            reduceValues: false
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent_decimal
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: orange
+          title: Level 2
+          value: 1
+        - bgColor: red
+          title: Level 3
+          value: 1
+        lineType: linear
+        mainMeasurementQueryCode: C
+        max: 1
+        min: 0
+        openThousandsSeparator: true
+        precision: '1'
+        showFieldMapping: false
+        showTitle: true
+        showTopSize: true
+        slimit: 10
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        topSize: 10
+        unitType: global
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9\u5185\u5B58\u6BD4\u4F8B"
+    pos:
+      h: 7.7
+      w: 4
+      x: 0
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: C
+      name: "\u5185\u5B58\u4F7F\u7528\u7387"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 1
+        q: sum(container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"})
+          / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "\u5185\u5B58\u8BF7\u6C42\u7387"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 2
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "\u5185\u5B58\u9650\u5236\u7387"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 3
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})
+        type: promql
+      type: toplist
+    type: toplist
+  - extend:
+      settings:
+        alias:
+        - alias: "CPU\u4F7F\u7528\u7387"
+          key: promql_1
+          name: promql_1
+          queryCode: C
+        - alias: "CPU\u8BF7\u6C42\u7387"
+          key: promql_2
+          name: promql_2
+          queryCode: A
+        - alias: "CPU\u9650\u5236\u7387"
+          key: promql_3
+          name: promql_3
+          queryCode: B
+        changeWorkspace: false
+        chartType: bar
+        colorMappings:
+        - bgColor: green
+          operation: <
+          value:
+          - 0.7
+        - bgColor: orange
+          operation: between
+          value:
+          - 0.7
+          - 0.9
+        - bgColor: red
+          operation: '>='
+          value:
+          - 0.9
+        direction: vertical
+        extend:
+          appearance:
+            reduceCalcs:
+            - last
+            reduceValues: false
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent_decimal
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: orange
+          title: Level 2
+          value: 1
+        - bgColor: red
+          title: Level 3
+          value: 1
+        lineType: linear
+        mainMeasurementQueryCode: C
+        max: 1
+        min: 0
+        openThousandsSeparator: true
+        precision: '1'
+        showFieldMapping: false
+        showTitle: true
+        showTopSize: true
+        slimit: 10
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        topSize: 10
+        unitType: global
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9CPU\u6BD4\u4F8B"
+    pos:
+      h: 7.7
+      w: 4
+      x: 4
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: C
+      name: "CPU\u4F7F\u7528\u7387"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 1
+        q: sum (irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"}[2m]))
+          / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "CPU\u8BF7\u6C42\u7387"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 2
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "CPU\u9650\u5236\u7387"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 3
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})
+        type: promql
+      type: toplist
+    type: toplist
+  - extend:
+      settings:
+        alias:
+        - alias: "\u8282\u70B9\u6570"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "Pod\u6570"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        - alias: "\u4E0A\u9650Pod"
+          key: promql_3
+          name: promql_3
+          queryCode: C
+        changeWorkspace: false
+        chartType: bar
+        colorMappings:
+        - bgColor: green
+          operation: <
+          value:
+          - 1000
+        - bgColor: orange
+          operation: between
+          value:
+          - 1000
+          - 2000
+        - bgColor: red
+          operation: '>='
+          value:
+          - 2000
+        direction: vertical
+        extend:
+          appearance:
+            reduceCalcs:
+            - last
+            reduceValues: false
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: orange
+          title: Level 2
+          value: 1000
+        - bgColor: red
+          title: Level 3
+          value: 2000
+        lineType: linear
+        mainMeasurementQueryCode: A
+        max: 100
+        min: 1
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showTitle: true
+        showTopSize: true
+        slimit: 10
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u96C6\u7FA4\u8282\u70B9\u6570\uFF0C\u8282\u70B9POD\u6570\uFF0C\
+          \u8282\u70B9POD\u4E0A\u9650"
+        topSize: 10
+        unitType: global
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9\u4E0EPod"
+    pos:
+      h: 7.7
+      w: 3
+      x: 8
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: "\u8282\u70B9\u6570"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: count(kube_node_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "Pod\u6570"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: count((kube_pod_info{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      name: "\u4E0A\u9650Pod"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="pods",
+          unit="integer",node=~"#{Node}"})
+        type: promql
+      type: toplist
+    type: toplist
+  - extend:
+      settings:
+        changeWorkspace: false
+        chartType: table
+        extend:
+          appearance:
+            fieldColorMode: palette-classic
+            thresholdsMode: absolute
+          table:
+            align: center
+            footer:
+              reducer:
+              - sum
+              show: true
+            sortBy:
+            - desc: true
+              displayName: "\u5FAE\u670D\u52A1"
+          tableColumns:
+          - align: center
+            field: namespace
+            order: 0
+            title: "\u7A7A\u95F4"
+            width: 59
+          - align: center
+            field: 'Value #D'
+            order: 1
+            title: "\u5FAE\u670D\u52A1"
+            width: 4
+          - align: center
+            field: 'Value #A'
+            order: 3
+            title: Pod
+            width: 21
+          - align: center
+            field: 'Value #C'
+            order: 5
+            title: SVC
+            width: 7
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        mainMeasurementSort: top
+        openThousandsSeparator: true
+        pageEnable: false
+        pageSize: 20
+        precision: '2'
+        queryMode: toGroupColumn
+        showColumns:
+        - "\u7A7A\u95F4"
+        - "\u5FAE\u670D\u52A1"
+        - Pod
+        - SVC
+        showFieldMapping: false
+        showTableHead: true
+        showTitle: true
+        timeInterval: auto
+        titleDesc: Only Pod/Service/workload metadata is collected. Secret/ConfigMap
+          counts are intentionally omitted; collectors do not receive access to these
+          resources.
+        unitType: global
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u547D\u540D\u7A7A\u95F4\u8D44\u6E90\u7EDF\u8BA1"
+    pos:
+      h: 15.3
+      w: 5
+      x: 11
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: count((kube_pod_info{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: C
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 2
+        q: count(kube_service_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+          by(namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: D
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 3
+        q: count by (namespace)({__name__=~"kube_deployment_metadata_generation|kube_daemonset_metadata_generation|kube_statefulset_metadata_generation",cluster=~"#{cluster}",environment=~"#{environment}"})
+        type: promql
+      type: table
+    type: table
+  - extend:
+      settings:
+        alias:
+        - alias: "\u63A5\u6536"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u53D1\u9001"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: areaLine
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: series
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 30
+            gradientMode: opacity
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineStyle:
+              fill: solid
+            lineWidth: 2
+            pointMode: never
+            pointSize: 4
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+            width: 200
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - binbps
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u7F51\u7EDC\u603B\u89C8 (\u53EF\u5173\u8054\u8282\u70B9\u4E0E\u547D\u540D\
+      \u7A7A\u95F4)"
+    pos:
+      h: 15.3
+      w: 8
+      x: 16
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "\u63A5\u6536"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum (irate(container_network_receive_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))*8
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "\u53D1\u9001"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: sum (irate(container_network_transmit_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))*8
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "\u603B\u5185\u5B58"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u4F7F\u7528\u91CF"
+          key: promql_2
+          name: promql_2
+          queryCode: C
+        - alias: "\u8BF7\u6C42\u91CF"
+          key: promql_3
+          name: promql_3
+          queryCode: D
+        - alias: "\u9650\u5236\u91CF"
+          key: promql_4
+          name: promql_4
+          queryCode: B
+        changeWorkspace: false
+        chartType: bar
+        colorMappings:
+        - bgColor: green
+          operation: <
+          value:
+          - 100000000000
+        - bgColor: orange
+          operation: between
+          value:
+          - 100000000000
+          - 2000000000000
+        - bgColor: red
+          operation: '>='
+          value:
+          - 2000000000000
+        direction: vertical
+        extend:
+          appearance:
+            reduceCalcs:
+            - last
+            reduceValues: false
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: orange
+          title: Level 2
+          value: 100000000000
+        - bgColor: red
+          title: Level 3
+          value: 2000000000000
+        lineType: linear
+        mainMeasurementQueryCode: A
+        max: 2000000000000
+        min: 1
+        openThousandsSeparator: true
+        precision: '1'
+        showFieldMapping: false
+        showTitle: true
+        showTopSize: true
+        slimit: 10
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        topSize: 10
+        unitType: global
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9\u5185\u5B58\u4FE1\u606F"
+    pos:
+      h: 7.7
+      w: 4
+      x: 0
+      y: 10
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: "\u603B\u5185\u5B58"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      name: "\u4F7F\u7528\u91CF"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 2
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: D
+      name: "\u8BF7\u6C42\u91CF"
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 3
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "\u9650\u5236\u91CF"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 4
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: toplist
+    type: toplist
+  - extend:
+      settings:
+        alias:
+        - alias: "\u603B\u6838\u6570"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u4F7F\u7528\u91CF"
+          key: promql_2
+          name: promql_2
+          queryCode: C
+        - alias: "\u8BF7\u6C42\u91CF"
+          key: promql_3
+          name: promql_3
+          queryCode: D
+        - alias: "\u9650\u5236\u91CF"
+          key: promql_4
+          name: promql_4
+          queryCode: B
+        changeWorkspace: false
+        chartType: bar
+        colorMappings:
+        - bgColor: green
+          operation: <
+          value:
+          - 500
+        - bgColor: '#EAB839'
+          operation: between
+          value:
+          - 500
+          - 1000
+        - bgColor: red
+          operation: '>='
+          value:
+          - 1000
+        direction: vertical
+        extend:
+          appearance:
+            reduceCalcs:
+            - last
+            reduceValues: false
+            thresholdsMode: absolute
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: '#EAB839'
+          title: Level 2
+          value: 500
+        - bgColor: red
+          title: Level 3
+          value: 1000
+        lineType: linear
+        mainMeasurementQueryCode: A
+        max: 500
+        min: 1
+        openThousandsSeparator: true
+        precision: '1'
+        showFieldMapping: false
+        showTitle: true
+        showTopSize: true
+        slimit: 10
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        topSize: 10
+        unitType: global
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9CPU\u6838\u6570"
+    pos:
+      h: 7.7
+      w: 4
+      x: 4
+      y: 10
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: "\u603B\u6838\u6570"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      name: "\u4F7F\u7528\u91CF"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 2
+        q: sum (irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",id="/",node=~"#{Node}"}[2m]))
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: D
+      name: "\u8BF7\u6C42\u91CF"
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 3
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "\u9650\u5236\u91CF"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 4
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: toplist
+    type: toplist
+  - extend:
+      settings:
+        alias:
+        - alias: "\u4F7F\u7528\u7387"
+          key: promql_1
+          name: promql_1
+          queryCode: C
+        - alias: "\u4F7F\u7528\u91CF"
+          key: promql_2
+          name: promql_2
+          queryCode: A
+        - alias: "\u603B\u91CF"
+          key: promql_3
+          name: promql_3
+          queryCode: B
+        changeWorkspace: false
+        chartType: bar
+        colorMappings:
+        - bgColor: green
+          operation: <
+          value:
+          - 5000000000000
+        - bgColor: '#EAB839'
+          operation: between
+          value:
+          - 5000000000000
+          - 10000000000000
+        - bgColor: red
+          operation: '>='
+          value:
+          - 10000000000000
+        direction: vertical
+        extend:
+          appearance:
+            reduceCalcs:
+            - last
+            reduceValues: false
+            thresholdsMode: absolute
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: '#EAB839'
+          title: Level 2
+          value: 5000000000000
+        - bgColor: red
+          title: Level 3
+          value: 10000000000000
+        lineType: linear
+        mainMeasurementQueryCode: C
+        max: 8000000000000
+        min: 1
+        openThousandsSeparator: true
+        precision: '1'
+        showFieldMapping: false
+        showTitle: true
+        showTopSize: true
+        slimit: 10
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        topSize: 10
+        unitType: custom
+        units:
+        - key: "\u4F7F\u7528\u7387"
+          name: "\u4F7F\u7528\u7387"
+          unit: percentunit
+          units:
+          - percent
+          - percent_decimal
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9\u5B58\u50A8\u4FE1\u606F"
+    pos:
+      h: 7.7
+      w: 3
+      x: 8
+      y: 10
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      name: "\u4F7F\u7528\u7387"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 1
+        q: sum (container_fs_usage_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",device=~"^/dev/.*$",id="/",node=~"#{Node}"})
+          / sum (container_fs_limit_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",device=~"^/dev/.*$",id="/",node=~"#{Node}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: "\u4F7F\u7528\u91CF"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 2
+        q: sum (container_fs_usage_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",device=~"^/dev/.*$",id="/",node=~"#{Node}"})
+        type: promql
+      type: toplist
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "\u603B\u91CF"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 3
+        q: sum (container_fs_limit_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",device=~"^/dev/.*$",id="/",node=~"#{Node}"})
+        type: promql
+      type: toplist
+    type: toplist
+  - extend:
+      settings:
+        alias:
+        - alias: "\u5DE5\u4F5C\u8D1F\u8F7D"
+          key: promql_1
+          name: promql_1
+          queryCode: F
+        - alias: "\u603BPod"
+          key: promql_2
+          name: promql_2
+          queryCode: E
+        - alias: '{{key}}'
+          key: promql_3
+          name: promql_3
+          queryCode: D
+        - alias: "\u603B\u8282\u70B9"
+          key: promql_4
+          name: promql_4
+          queryCode: C
+        - alias: "\u6B63\u5E38\u8282\u70B9"
+          key: promql_5
+          name: promql_5
+          queryCode: B
+        - alias: '{{key}}'
+          key: promql_6
+          name: promql_6
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        colors:
+        - color: red
+          key: "/\u5F02\u5E38.*/"
+          name: "/\u5F02\u5E38.*/"
+        direction: auto
+        extend:
+          appearance:
+            colorMode: background
+            fieldColorMode: palette-classic
+            graphMode: none
+            justifyMode: center
+            reduceCalcs:
+            - last
+            reduceValues: false
+            textMode: auto
+            thresholdsMode: absolute
+          layout:
+            repeatDirection: v
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          fontColor: '#999999'
+          operation: <
+          value:
+          - 80
+        - bgColor: red
+          fontColor: '#999999'
+          operation: '>='
+          value:
+          - 80
+        lineType: linear
+        mainMeasurementQueryCode: F
+        openThousandsSeparator: true
+        precision: '2'
+        repeatChartRowLimit: 2
+        repeatChartVariable: cluster
+        showFieldMapping: false
+        showLineAxis: false
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: Untainted-node count subtracts distinct nodes carrying non-system
+          taints from the real node inventory. Multiple taints on one node count once.
+          No taints means all inventoried nodes are untainted; missing node inventory
+          stays No data. Taint-detail queries A/D stay empty when there are no matching
+          taints.
+        unitType: global
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: ''
+    pos:
+      h: 3.9
+      w: 24
+      x: 0
+      y: 17.6
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: F
+      name: "\u5DE5\u4F5C\u8D1F\u8F7D"
+      qtype: promql
+      query:
+        code: F
+        promqlCode: 1
+        q: count({__name__=~"kube_deployment_metadata_generation|kube_daemonset_metadata_generation|kube_statefulset_metadata_generation",cluster=~"#{cluster}",environment=~"#{environment}"})
+        type: promql
+      type: singlestat
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: E
+      name: "\u603BPod"
+      qtype: promql
+      query:
+        code: E
+        promqlCode: 2
+        q: count((kube_pod_info{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: singlestat
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: D
+      name: '{{key}}'
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 3
+        q: count by(key,cluster)(kube_node_spec_taint{cluster=~"#{cluster}",environment=~"#{environment}",key=~"node.kubernetes.io.*"})
+        type: promql
+      type: singlestat
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: C
+      name: "\u603B\u8282\u70B9"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 4
+        q: count by(cluster)(kube_node_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+        type: promql
+      type: singlestat
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "\u6B63\u5E38\u8282\u70B9"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 5
+        q: count by(cluster)(kube_node_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+          - (count by(cluster)(count by(cluster,node)(kube_node_spec_taint{cluster=~"#{cluster}",environment=~"#{environment}",key!~"node.kubernetes.io.*"}))
+          or on(cluster) (count by(cluster)(kube_node_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+          * 0))
+        type: promql
+      type: singlestat
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: '{{key}}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 6
+        q: count by(key,cluster)(kube_node_spec_taint{cluster=~"#{cluster}",environment=~"#{environment}",key!~"node.kubernetes.io.*"})
+        type: promql
+      type: singlestat
+    type: singlestat
+  - extend:
+      settings:
+        alias:
+        - alias: "\u603B\u5185\u5B58"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u4F7F\u7528\u91CF"
+          key: promql_2
+          name: promql_2
+          queryCode: C
+        - alias: "\u8BF7\u6C42\u91CF"
+          key: promql_3
+          name: promql_3
+          queryCode: D
+        - alias: "\u9650\u5236\u91CF"
+          key: promql_4
+          name: promql_4
+          queryCode: B
+        changeWorkspace: false
+        chartType: areaLine
+        colors:
+        - color: red
+          key: "\u603B\u5185\u5B58"
+          name: "\u603B\u5185\u5B58"
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 15
+            gradientMode: opacity
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9\u5185\u5B58\u4F7F\u7528\u91CF"
+    pos:
+      h: 9.6
+      w: 8
+      x: 0
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "\u603B\u5185\u5B58"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      name: "\u4F7F\u7528\u91CF"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 2
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"})
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: D
+      name: "\u8BF7\u6C42\u91CF"
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 3
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "\u9650\u5236\u91CF"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 4
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "\u603B\u6838\u6570"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u4F7F\u7528\u91CF"
+          key: promql_2
+          name: promql_2
+          queryCode: C
+        - alias: "\u8BF7\u6C42\u91CF"
+          key: promql_3
+          name: promql_3
+          queryCode: D
+        - alias: "\u9650\u5236\u91CF"
+          key: promql_4
+          name: promql_4
+          queryCode: B
+        changeWorkspace: false
+        chartType: areaLine
+        colors:
+        - color: red
+          key: "\u603B\u6838\u6570"
+          name: "\u603B\u6838\u6570"
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 15
+            gradientMode: opacity
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9CPU\u4F7F\u7528\u6838"
+    pos:
+      h: 9.6
+      w: 8
+      x: 8
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "\u603B\u6838\u6570"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      name: "\u4F7F\u7528\u91CF"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 2
+        q: sum (irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",id="/",node=~"#{Node}"}[2m]))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: D
+      name: "\u8BF7\u6C42\u91CF"
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 3
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "\u9650\u5236\u91CF"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 4
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "\u8282\u70B9\u6570"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "Pod\u6570"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        - alias: "\u4E0A\u9650Pod"
+          key: promql_3
+          name: promql_3
+          queryCode: C
+        changeWorkspace: false
+        chartType: areaLine
+        colors:
+        - color: red
+          key: "\u4E0A\u9650Pod"
+          name: "\u4E0A\u9650Pod"
+        - color: blue
+          key: "\u8282\u70B9\u6570"
+          name: "\u8282\u70B9\u6570"
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: series
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 15
+            gradientMode: opacity
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: list
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: "\u96C6\u7FA4\u8282\u70B9\u6570\uFF0C\u8282\u70B9POD\u6570\uFF0C\
+          \u8282\u70B9POD\u4E0A\u9650"
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "Pod\u6570\u4E0E\u8282\u70B9\u4E0A\u9650"
+    pos:
+      h: 9.6
+      w: 8
+      x: 16
+      y: 21.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: "\u8282\u70B9\u6570"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: count(kube_node_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "Pod\u6570"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: count((kube_pod_info{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      name: "\u4E0A\u9650Pod"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="pods",
+          unit="integer",node=~"#{Node}"})
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: '{{node}}'
+          key: promql_1
+          name: promql_1
+          queryCode: I
+        changeWorkspace: false
+        chartType: line
+        colors:
+        - color: '#C4162A'
+          key: "/\u603B\u6838\u6570.*/"
+          name: "/\u603B\u6838\u6570.*/"
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: I
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9CPU\u660E\u7EC6"
+    pos:
+      h: 11.5
+      w: 8
+      x: 0
+      y: 30.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: I
+      name: '{{node}}'
+      qtype: promql
+      query:
+        code: I
+        promqlCode: 1
+        q: sum (irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"}[2m]))by
+          (node) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})by (node)*100
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: '{{node}}'
+          key: promql_1
+          name: promql_1
+          queryCode: I
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: I
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9\u5185\u5B58\u660E\u7EC6"
+    pos:
+      h: 11.5
+      w: 8
+      x: 8
+      y: 30.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: I
+      name: '{{node}}'
+      qtype: promql
+      query:
+        code: I
+        promqlCode: 1
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"})by
+          (node) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})by (node)*100
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "\u6D41\u5165:{{node}}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u6D41\u51FA:{{node}}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: series
+            axisLabel: "\u2190\u6D41\u5165/\u6D41\u51FA\u2192"
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - binbps
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: false
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9\u7F51\u7EDC\u603B\u89C8"
+    pos:
+      h: 11.5
+      w: 8
+      x: 16
+      y: 30.9
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: "\u6D41\u5165:{{node}}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum (irate(container_network_receive_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}"}[2m]))by
+          (node) *8
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "\u6D41\u51FA:{{node}}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: sum (irate(container_network_transmit_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}"}[2m]))by
+          (node) *8
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "pod\u6570"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u72B6\u6001"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        - alias: "\u5185\u5B58\u4F7F\u7528%"
+          key: promql_13
+          name: promql_13
+          queryCode: M
+        - alias: "\u5185\u5B58\u8BF7\u6C42%"
+          key: promql_14
+          name: promql_14
+          queryCode: N
+        - alias: "\u5185\u5B58\u9650\u5236%"
+          key: promql_15
+          name: promql_15
+          queryCode: O
+        - alias: "CPU\u4F7F\u7528%"
+          key: promql_16
+          name: promql_16
+          queryCode: P
+        - alias: "CPU\u8BF7\u6C42%"
+          key: promql_17
+          name: promql_17
+          queryCode: Q
+        - alias: "\u5185\u5B58\u9650\u5236%"
+          key: promql_18
+          name: promql_18
+          queryCode: R
+        - alias: "\u78C1\u76D8\u4F7F\u7528%"
+          key: promql_19
+          name: promql_19
+          queryCode: S
+        - alias: "Pod\u4E0A\u9650"
+          key: promql_20
+          name: promql_20
+          queryCode: T
+        changeWorkspace: false
+        chartType: table
+        colors:
+        - color: orange
+          key: "CPU\u6838\u4F7F\u7528$|\u5185\u5B58\u4F7F\u7528$|\u78C1\u76D8\u4F7F\
+            \u7528$|Pod\u6570"
+          name: "CPU\u6838\u4F7F\u7528$|\u5185\u5B58\u4F7F\u7528$|\u78C1\u76D8\u4F7F\
+            \u7528$|Pod\u6570"
+        - color: blue
+          key: "/.*\u603B/"
+          name: "/.*\u603B/"
+        extend:
+          appearance:
+            fieldColorMode: thresholds
+            thresholdsMode: absolute
+          table:
+            align: center
+            footer:
+              reducer:
+              - sum
+              show: false
+            sortBy:
+            - desc: true
+              displayName: "\u5185\u5B58\u4F7F\u7528%"
+          tableColumns:
+          - align: center
+            field: node
+            order: 0
+            title: "\u8282\u70B9"
+            width: 96
+          - align: center
+            field: 'Value #T'
+            order: 1
+            title: "Pod\u4E0A\u9650"
+            width: 66
+          - align: center
+            field: 'Value #A'
+            order: 2
+            title: "Pod\u6570"
+            width: 58
+          - field: 'Value #P'
+            order: 3
+            title: "CPU\u4F7F\u7528%"
+          - align: center
+            field: 'Value #M'
+            order: 4
+            title: "\u5185\u5B58\u4F7F\u7528%"
+            width: 102
+          - field: 'Value #S'
+            order: 5
+            title: "\u78C1\u76D8\u4F7F\u7528%"
+          - align: center
+            field: 'Value #C'
+            order: 6
+            title: "CPU\u6838\u603B"
+            width: 69
+          - align: center
+            field: 'Value #I'
+            order: 7
+            title: "CPU\u6838\u4F7F\u7528"
+            width: 74
+          - align: center
+            field: 'Value #D'
+            order: 8
+            title: "\u5185\u5B58\u603B"
+            width: 75
+          - align: center
+            field: 'Value #J'
+            order: 9
+            title: "\u5185\u5B58\u4F7F\u7528"
+            width: 71
+          - align: center
+            field: 'Value #L'
+            order: 10
+            title: "\u78C1\u76D8\u603B"
+            width: 74
+          - align: center
+            field: 'Value #K'
+            order: 11
+            title: "\u78C1\u76D8\u4F7F\u7528"
+            width: 74
+          - field: 'Value #Q'
+            order: 12
+            title: "CPU\u8BF7\u6C42%"
+          - field: 'Value #N'
+            order: 13
+            title: "\u5185\u5B58\u8BF7\u6C42%"
+          - field: 'Value #R'
+            order: 14
+            title: "CPU\u9650\u5236%"
+          - field: 'Value #O'
+            order: 15
+            title: "\u5185\u5B58\u9650\u5236%"
+          - align: center
+            field: 'Value #E'
+            order: 16
+            title: "CPU\u8BF7\u6C42"
+            width: 75
+          - align: center
+            field: 'Value #F'
+            order: 17
+            title: "CPU\u9650\u5236"
+            width: 76
+          - align: center
+            field: 'Value #G'
+            order: 18
+            title: "\u5185\u5B58\u8BF7\u6C42"
+            width: 76
+          - align: center
+            field: 'Value #H'
+            order: 19
+            title: "\u5185\u5B58\u9650\u5236"
+            width: 74
+          - align: center
+            field: .*%
+            title: .*%
+            width: 85
+          - align: center
+            field: "(\u5185\u5B58\u4F7F\u7528|\u5185\u5B58\u603B|\u5185\u5B58\u8BF7\
+              \u6C42|\u5185\u5B58\u9650\u5236|\u78C1\u76D8\u4F7F\u7528|\u78C1\u76D8\
+              \u603B)"
+            title: "(\u5185\u5B58\u4F7F\u7528|\u5185\u5B58\u603B|\u5185\u5B58\u8BF7\
+              \u6C42|\u5185\u5B58\u9650\u5236|\u78C1\u76D8\u4F7F\u7528|\u78C1\u76D8\
+              \u603B)"
+          - align: center
+            field: "(CPU\u603B|\u5185\u5B58\u603B|\u78C1\u76D8\u603B|Pod\u4E0A\u9650\
+              )"
+            title: "(CPU\u603B|\u5185\u5B58\u603B|\u78C1\u76D8\u603B|Pod\u4E0A\u9650\
+              )"
+          - align: center
+            field: "CPU\u6838\u4F7F\u7528$|\u5185\u5B58\u4F7F\u7528$|\u78C1\u76D8\u4F7F\
+              \u7528$|Pod\u6570"
+            title: "CPU\u6838\u4F7F\u7528$|\u5185\u5B58\u4F7F\u7528$|\u78C1\u76D8\u4F7F\
+              \u7528$|Pod\u6570"
+          - align: center
+            field: "/.*\u603B/"
+            title: "/.*\u603B/"
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        mainMeasurementSort: top
+        max: 1
+        min: 0
+        openThousandsSeparator: true
+        pageEnable: false
+        pageSize: 20
+        precision: '2'
+        queryMode: toGroupColumn
+        showColumns:
+        - "\u8282\u70B9"
+        - "Pod\u4E0A\u9650"
+        - "Pod\u6570"
+        - "CPU\u4F7F\u7528%"
+        - "\u5185\u5B58\u4F7F\u7528%"
+        - "\u78C1\u76D8\u4F7F\u7528%"
+        - "CPU\u6838\u603B"
+        - "CPU\u6838\u4F7F\u7528"
+        - "\u5185\u5B58\u603B"
+        - "\u5185\u5B58\u4F7F\u7528"
+        - "\u78C1\u76D8\u603B"
+        - "\u78C1\u76D8\u4F7F\u7528"
+        - "CPU\u8BF7\u6C42%"
+        - "\u5185\u5B58\u8BF7\u6C42%"
+        - "CPU\u9650\u5236%"
+        - "\u5185\u5B58\u9650\u5236%"
+        - "CPU\u8BF7\u6C42"
+        - "CPU\u9650\u5236"
+        - "\u5185\u5B58\u8BF7\u6C42"
+        - "\u5185\u5B58\u9650\u5236"
+        - .*%
+        - "(\u5185\u5B58\u4F7F\u7528|\u5185\u5B58\u603B|\u5185\u5B58\u8BF7\u6C42|\u5185\
+          \u5B58\u9650\u5236|\u78C1\u76D8\u4F7F\u7528|\u78C1\u76D8\u603B)"
+        - "(CPU\u603B|\u5185\u5B58\u603B|\u78C1\u76D8\u603B|Pod\u4E0A\u9650)"
+        - "CPU\u6838\u4F7F\u7528$|\u5185\u5B58\u4F7F\u7528$|\u78C1\u76D8\u4F7F\u7528\
+          $|Pod\u6570"
+        - "/.*\u603B/"
+        showFieldMapping: false
+        showTableHead: true
+        showTitle: true
+        timeInterval: auto
+        titleDesc: Resource and Pod-count totals include bound Pending/Running/Unknown
+          Pods, including active Jobs. Completed/failed operational Pods are excluded
+          by current Pod UID. Requests are scheduling reservations; limits are burst
+          allowances, not actual usage. Containers without limits are not a healthy
+          zero or a whole-node memory guarantee.
+        unitType: custom
+        units:
+        - key: .*%
+          name: .*%
+          unit: percentunit
+          units:
+          - percent
+          - percent_decimal
+        - key: "(\u5185\u5B58\u4F7F\u7528|\u5185\u5B58\u603B|\u5185\u5B58\u8BF7\u6C42\
+            |\u5185\u5B58\u9650\u5236|\u78C1\u76D8\u4F7F\u7528|\u78C1\u76D8\u603B)"
+          name: "(\u5185\u5B58\u4F7F\u7528|\u5185\u5B58\u603B|\u5185\u5B58\u8BF7\u6C42\
+            |\u5185\u5B58\u9650\u5236|\u78C1\u76D8\u4F7F\u7528|\u78C1\u76D8\u603B)"
+          unit: bytes
+          units:
+          - digital
+          - B
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u8282\u70B9\u4FE1\u606F\u660E\u7EC6"
+    pos:
+      h: 21
+      w: 24
+      x: 0
+      y: 42.3
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: "pod\u6570"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: count((kube_pod_info{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "\u72B6\u6001"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: kube_node_status_condition{cluster=~"#{cluster}",environment=~"#{environment}",status="true",node=~"#{Node}"}  ==
+          1
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: I
+      qtype: promql
+      query:
+        code: I
+        promqlCode: 3
+        q: sum (irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"}[2m]))
+          by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 4
+        q: kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"} - 0
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: E
+      qtype: promql
+      query:
+        code: E
+        promqlCode: 5
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: F
+      qtype: promql
+      query:
+        code: F
+        promqlCode: 6
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: J
+      qtype: promql
+      query:
+        code: J
+        promqlCode: 7
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"})
+          by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: D
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 8
+        q: sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"}) by (node) - 0
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: G
+      qtype: promql
+      query:
+        code: G
+        promqlCode: 9
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: H
+      qtype: promql
+      query:
+        code: H
+        promqlCode: 10
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: K
+      qtype: promql
+      query:
+        code: K
+        promqlCode: 11
+        q: sum (container_fs_usage_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",device=~"^/dev/.*$",id="/",node=~"#{Node}"})
+          by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: L
+      qtype: promql
+      query:
+        code: L
+        promqlCode: 12
+        q: sum (container_fs_limit_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",device=~"^/dev/.*$",id="/",node=~"#{Node}"})
+          by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: M
+      name: "\u5185\u5B58\u4F7F\u7528%"
+      qtype: promql
+      query:
+        code: M
+        promqlCode: 13
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"})by
+          (node) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: N
+      name: "\u5185\u5B58\u8BF7\u6C42%"
+      qtype: promql
+      query:
+        code: N
+        promqlCode: 14
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))by (node) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: O
+      name: "\u5185\u5B58\u9650\u5236%"
+      qtype: promql
+      query:
+        code: O
+        promqlCode: 15
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))by (node) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte", node=~"#{Node}"})by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: P
+      name: "CPU\u4F7F\u7528%"
+      qtype: promql
+      query:
+        code: P
+        promqlCode: 16
+        q: sum (irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container!="",node=~"#{Node}",container!="POD"}[2m]))by
+          (node) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: Q
+      name: "CPU\u8BF7\u6C42%"
+      qtype: promql
+      query:
+        code: Q
+        promqlCode: 17
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))by (node) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: R
+      name: "\u5185\u5B58\u9650\u5236%"
+      qtype: promql
+      query:
+        code: R
+        promqlCode: 18
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",node=~"#{Node}"} and on(cluster,environment,namespace,pod,uid)
+          max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))by (node) / sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core", node=~"#{Node}"})by (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: S
+      name: "\u78C1\u76D8\u4F7F\u7528%"
+      qtype: promql
+      query:
+        code: S
+        promqlCode: 19
+        q: sum (container_fs_usage_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",device=~"^/dev/.*$",id="/",node=~"#{Node}"})by
+          (node) / sum (container_fs_limit_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",device=~"^/dev/.*$",id="/",node=~"#{Node}"})by
+          (node)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: T
+      name: "Pod\u4E0A\u9650"
+      qtype: promql
+      query:
+        code: T
+        promqlCode: 20
+        q: sum(kube_node_status_allocatable{cluster=~"#{cluster}",environment=~"#{environment}",resource="pods",
+          unit="integer",node=~"#{Node}"})by (node)
+        type: promql
+      type: table
+    type: table
+  - extend:
+      settings:
+        alias:
+        - alias: '{{namespace}}:{{ persistentvolumeclaim }}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: '{{namespace}}:{{ persistentvolumeclaim }}'
+          key: promql_3
+          name: promql_3
+          queryCode: C
+        changeWorkspace: false
+        chartType: table
+        colors:
+        - color: purple
+          key: "\u4F7F\u7528\u7387"
+          name: "\u4F7F\u7528\u7387"
+        extend:
+          appearance:
+            fieldColorMode: palette-classic
+            thresholdsMode: absolute
+          table:
+            align: center
+            footer:
+              reducer:
+              - sum
+              show: false
+            sortBy:
+            - desc: true
+              displayName: "\u4F7F\u7528\u7387"
+          tableColumns:
+          - align: center
+            field: 'Value #C'
+            mappings:
+            - mappingVal: ''
+              operation: between
+              originalVal:
+              - '75'
+              - '110'
+            title: "\u4F7F\u7528\u7387"
+            width: 54
+          - align: center
+            field: 'Value #D'
+            title: "\u6302\u8F7DPod\u6570"
+            width: 59
+          - align: center
+            field: namespace
+            title: "\u547D\u540D\u7A7A\u95F4"
+            width: 58
+          - align: center
+            field: persistentvolumeclaim
+            title: PVC
+            width: 94
+          - align: center
+            field: 'Value #A'
+            title: "\u4F7F\u7528\u91CF"
+            width: 57
+          - align: center
+            field: 'Value #B'
+            title: "\u603B\u91CF"
+            width: 54
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        lineType: linear
+        mainMeasurementQueryCode: A
+        mainMeasurementSort: top
+        mappings:
+        - mappingVal: '0'
+          operation: '='
+          originalVal:
+          - '0'
+        openThousandsSeparator: true
+        pageEnable: false
+        pageSize: 20
+        precision: '0'
+        queryMode: toGroupColumn
+        showColumns:
+        - "\u4F7F\u7528\u7387"
+        - "\u6302\u8F7DPod\u6570"
+        - "\u547D\u540D\u7A7A\u95F4"
+        - PVC
+        - "\u4F7F\u7528\u91CF"
+        - "\u603B\u91CF"
+        showFieldMapping: false
+        showTableHead: true
+        showTitle: true
+        timeInterval: auto
+        titleDesc: ''
+        unitType: custom
+        units:
+        - key: "\u4F7F\u7528\u7387"
+          name: "\u4F7F\u7528\u7387"
+          unit: percent
+          units:
+          - percent
+          - percent
+        - key: "\u6302\u8F7DPod\u6570"
+          name: "\u6302\u8F7DPod\u6570"
+          unit: none
+          units:
+          - custom
+          - none
+        valColorMappings:
+        - bgColor: ''
+          field: "\u4F7F\u7528\u7387"
+          fontColor: purple
+          lineColor: ''
+          operation: between
+          value:
+          - '75'
+          - '110'
+        valMappings:
+        - field: "\u4F7F\u7528\u7387"
+          mappingVal: ''
+          operation: between
+          originalVal:
+          - '75'
+          - '110'
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "PVC\u5B58\u50A8\u4F7F\u7528\u60C5\u51B5"
+    pos:
+      h: 15.3
+      w: 6
+      x: 0
+      y: 63.2
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: '{{namespace}}:{{ persistentvolumeclaim }}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: max by (namespace,persistentvolumeclaim) (kubelet_volume_stats_used_bytes{cluster=~"#{cluster}",environment=~"#{environment}"})
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: min by (namespace,persistentvolumeclaim) (kubelet_volume_stats_available_bytes{cluster=~"#{cluster}",environment=~"#{environment}"})
+          + max by (namespace,persistentvolumeclaim) (kubelet_volume_stats_used_bytes{cluster=~"#{cluster}",environment=~"#{environment}"})
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: C
+      name: '{{namespace}}:{{ persistentvolumeclaim }}'
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: max by (namespace,persistentvolumeclaim) (kubelet_volume_stats_used_bytes{cluster=~"#{cluster}",environment=~"#{environment}"})
+          /(min by (namespace,persistentvolumeclaim) (kubelet_volume_stats_available_bytes{cluster=~"#{cluster}",environment=~"#{environment}"})
+          + max by (namespace,persistentvolumeclaim) (kubelet_volume_stats_used_bytes{cluster=~"#{cluster}",environment=~"#{environment}"}))*100
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: D
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 4
+        q: count by (namespace,persistentvolumeclaim)(kube_pod_spec_volumes_persistentvolumeclaims_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+        type: promql
+      type: table
+    type: table
+  - extend:
+      settings:
+        alias:
+        - alias: '{{ namespace }}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+            sortBy: Max
+            sortDesc: true
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: right
+        legendValues:
+        - last
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        sorderByOrder: desc
+        stackType: time
+        timeInterval: auto
+        titleDesc: Shows namespaces exceeding 0.5 CPU cores only. An empty result
+          can mean none exceed the threshold; confirm CPU collection/freshness separately.
+          Empty is not a zero CPU measurement.
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u5404\u547D\u540D\u7A7A\u95F4CPU\u4F7F\u7528\u6838(>0.5)"
+    pos:
+      h: 15.3
+      w: 9
+      x: 6
+      y: 63.2
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: '{{ namespace }}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          !="",container!="POD"}[2m])) by (namespace)>0.5
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: '{{namespace} {{ pod }}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+            sortBy: Max
+            sortDesc: true
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: right
+        legendValues:
+        - last
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '0'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        sorderByOrder: desc
+        stackType: time
+        timeInterval: auto
+        titleDesc: Shows namespaces whose working-set memory exceeds 1 GiB only. An
+          empty result can mean none exceed the threshold; confirm memory collection/freshness
+          separately. Empty is not zero memory usage.
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+    name: "\u547D\u540D\u7A7A\u95F4WSS\u5185\u5B58\u4F7F\u7528(>1G)"
+    pos:
+      h: 15.3
+      w: 9
+      x: 15
+      y: 63.2
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: '{{namespace} {{ pod }}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          !="",container!="POD"}) by (namespace) > 1*1024*1024*1024
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "CPU\u6838\u6570\u4F7F\u7528"
+          key: promql_2
+          name: promql_2
+          queryCode: Q
+        - alias: wss%
+          key: promql_5
+          name: promql_5
+          queryCode: I
+        - alias: wss
+          key: promql_6
+          name: promql_6
+          queryCode: D
+        - alias: rss%
+          key: promql_7
+          name: promql_7
+          queryCode: L
+        - alias: rss
+          key: promql_8
+          name: promql_8
+          queryCode: K
+        changeWorkspace: false
+        chartType: table
+        colors:
+        - color: blue
+          key: ".*\u9650\u5236"
+          name: ".*\u9650\u5236"
+        - color: orange
+          key: "\u4F7F\u7528\u6838$|WSS$|RSS$|\u5B58\u6D3B|\u6D41\u5165|\u6D41\u51FA"
+          name: "\u4F7F\u7528\u6838$|WSS$|RSS$|\u5B58\u6D3B|\u6D41\u5165|\u6D41\u51FA"
+        extend:
+          appearance:
+            fieldColorMode: thresholds
+            thresholdsMode: percentage
+          table:
+            align: center
+            footer:
+              reducer:
+              - sum
+              show: false
+            sortBy:
+            - desc: true
+              displayName: WSS%
+          tableColumns:
+          - align: center
+            field: node
+            order: 0
+            title: "\u8282\u70B9"
+            width: 100
+          - align: center
+            field: namespace
+            order: 1
+            title: "\u547D\u540D\u7A7A\u95F4"
+            width: 96
+          - align: left
+            field: container
+            order: 2
+            title: "\u5BB9\u5668\u540D"
+            width: 57
+          - align: right
+            field: pod
+            order: 3
+            title: "Pod\u540D\u79F0"
+            width: 207
+          - field: 'Value #A'
+            order: 4
+            title: CPU%
+          - align: center
+            field: 'Value #I'
+            order: 5
+            title: WSS%
+            width: 77
+          - field: 'Value #L'
+            order: 6
+            title: RSS%
+          - align: center
+            field: 'Value #C'
+            order: 7
+            title: "CPU\u9650\u5236"
+            width: 58
+          - align: center
+            field: 'Value #Q'
+            order: 8
+            title: "\u4F7F\u7528\u6838"
+            width: 62
+          - align: center
+            field: 'Value #F'
+            order: 9
+            title: "\u5185\u5B58\u9650\u5236"
+            width: 68
+          - align: center
+            field: 'Value #D'
+            order: 10
+            title: WSS
+            width: 81
+          - align: center
+            field: 'Value #K'
+            order: 11
+            title: RSS
+            width: 74
+          - align: center
+            field: 'Value #S'
+            order: 12
+            title: "\u78C1\u76D8\u9650\u5236"
+            width: 83
+          - align: center
+            field: 'Value #J'
+            order: 13
+            title: "\u78C1\u76D8\u4F7F\u7528"
+            width: 72
+          - align: center
+            field: 'Value #H'
+            order: 14
+            title: "\u91CD\u542F"
+            width: 38
+          - align: center
+            field: 'Value #R'
+            order: 15
+            title: "\u5B58\u6D3B"
+            width: 80
+          - align: center
+            field: 'Value #B'
+            order: 16
+            title: "CPU\u9700\u6C42"
+            width: 72
+          - align: center
+            field: 'Value #E'
+            order: 17
+            title: "\u5185\u5B58\u9700\u6C42"
+            width: 88
+          - field: 'Value #G'
+            order: 23
+            title: 'Value #G'
+          - field: 'Value #M'
+            order: 24
+            title: "\u5806\u5185\u5B58"
+          - field: 'Value #N'
+            order: 25
+            title: "max\u5806"
+          - field: 'Value #O'
+            order: 26
+            title: "\u975E\u5806"
+          - field: 'Value #P'
+            order: 27
+            title: "max\u975E\u5806"
+          - field: ip
+            order: 28
+            title: POD IP
+          - align: center
+            field: "\u4F7F\u7528\u6838\u6570"
+            title: "\u4F7F\u7528\u6838\u6570"
+            width: 71
+          - align: center
+            field: .*%
+            title: .*%
+            width: 55
+          - align: center
+            field: ".*\u9650\u5236"
+            title: ".*\u9650\u5236"
+          - align: center
+            field: "\u4F7F\u7528\u6838$|WSS$|RSS$|\u5B58\u6D3B|\u6D41\u5165|\u6D41\
+              \u51FA"
+            title: "\u4F7F\u7528\u6838$|WSS$|RSS$|\u5B58\u6D3B|\u6D41\u5165|\u6D41\
+              \u51FA"
+          - align: center
+            field: "WSS$|RSS$|\u5185\u5B58\u9700\u6C42$|\u5185\u5B58\u9650\u5236$|\u78C1\
+              \u76D8.*$"
+            title: "WSS$|RSS$|\u5185\u5B58\u9700\u6C42$|\u5185\u5B58\u9650\u5236$|\u78C1\
+              \u76D8.*$"
+          - align: center
+            field: "/\u6D41\u5165|\u6D41\u51FA/"
+            title: "/\u6D41\u5165|\u6D41\u51FA/"
+            width: 80
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: '#EAB839'
+          title: Level 2
+          value: 80
+        - bgColor: red
+          title: Level 3
+          value: 90
+        lineType: linear
+        mainMeasurementQueryCode: Q
+        mainMeasurementSort: top
+        max: 100
+        min: 0
+        openThousandsSeparator: true
+        pageEnable: false
+        pageSize: 20
+        precision: '2'
+        queryMode: toGroupColumn
+        scientificNotation: true
+        showColumns:
+        - "\u8282\u70B9"
+        - "\u547D\u540D\u7A7A\u95F4"
+        - "\u5BB9\u5668\u540D"
+        - "Pod\u540D\u79F0"
+        - CPU%
+        - WSS%
+        - RSS%
+        - "CPU\u9650\u5236"
+        - "\u4F7F\u7528\u6838"
+        - "\u5185\u5B58\u9650\u5236"
+        - WSS
+        - RSS
+        - "\u78C1\u76D8\u9650\u5236"
+        - "\u78C1\u76D8\u4F7F\u7528"
+        - "\u91CD\u542F"
+        - "\u5B58\u6D3B"
+        - "CPU\u9700\u6C42"
+        - "\u5185\u5B58\u9700\u6C42"
+        - 'Value #G'
+        - "\u5806\u5185\u5B58"
+        - "max\u5806"
+        - "\u975E\u5806"
+        - "max\u975E\u5806"
+        - POD IP
+        - "\u4F7F\u7528\u6838\u6570"
+        - .*%
+        - ".*\u9650\u5236"
+        - "\u4F7F\u7528\u6838$|WSS$|RSS$|\u5B58\u6D3B|\u6D41\u5165|\u6D41\u51FA"
+        - "WSS$|RSS$|\u5185\u5B58\u9700\u6C42$|\u5185\u5B58\u9650\u5236$|\u78C1\u76D8\
+          .*$"
+        - "/\u6D41\u5165|\u6D41\u51FA/"
+        showFieldMapping: false
+        showTableHead: true
+        showTitle: true
+        timeInterval: auto
+        titleDesc: Filesystem targets J/S require per-application-container container_fs_usage_bytes
+          / container_fs_limit_bytes with pod/container labels. Current k3s/containerd
+          telemetry does not provide these selected series. These fields remain No
+          data; node/root filesystem metrics do not substitute for per-container usage
+          or limits. No synthetic zero or additional collector permissions are used.
+        unitType: custom
+        units:
+        - key: .*%
+          name: .*%
+          unit: percentunit
+          units:
+          - percent
+          - percent_decimal
+        - key: "\u5B58\u6D3B"
+          name: "\u5B58\u6D3B"
+          unit: s
+          units:
+          - time
+          - s
+        - key: "WSS$|RSS$|\u5185\u5B58\u9700\u6C42$|\u5185\u5B58\u9650\u5236$|\u78C1\
+            \u76D8.*$"
+          name: "WSS$|RSS$|\u5185\u5B58\u9700\u6C42$|\u5185\u5B58\u9650\u5236$|\u78C1\
+            \u76D8.*$"
+          unit: bytes
+          units:
+          - digital
+          - B
+        - key: "/\u6D41\u5165|\u6D41\u51FA/"
+          name: "/\u6D41\u5165|\u6D41\u51FA/"
+          unit: binbps
+          units:
+          - custom
+          - binbps
+    group:
+      name: "Pod\u8D44\u6E90\u603B\u89C8"
+    name: "Pod\u8D44\u6E90\u660E\u7EC6 (\u8282\u70B9\u4E0E\u5BB9\u5668\u8D44\u6E90\
+      \u753B\u50CF)"
+    pos:
+      h: 15.3
+      w: 24
+      x: 0
+      y: 2.4
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by (container, pod,node,namespace) / (sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}",resource="cpu",unit="core"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container, pod,node,namespace))
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: Q
+      name: "CPU\u6838\u6570\u4F7F\u7528"
+      qtype: promql
+      query:
+        code: Q
+        promqlCode: 2
+        q: sum(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by (container, pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 3
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",pod=~"#{Pod}",container =~"#{Container}",node=~"#{Node}",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container,pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 4
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",pod=~"#{Pod}",container =~"#{Container}",node=~"#{Node}",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container,pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: I
+      name: wss%
+      qtype: promql
+      query:
+        code: I
+        promqlCode: 5
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod,node,namespace)/ sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container, pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: D
+      name: wss
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 6
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: L
+      name: rss%
+      qtype: promql
+      query:
+        code: L
+        promqlCode: 7
+        q: sum (container_memory_rss{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod,node,namespace)/ sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container, pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: K
+      name: rss
+      qtype: promql
+      query:
+        code: K
+        promqlCode: 8
+        q: sum (container_memory_rss{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: E
+      qtype: promql
+      query:
+        code: E
+        promqlCode: 9
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",pod=~"#{Pod}",container =~"#{Container}",node=~"#{Node}",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container,pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: F
+      qtype: promql
+      query:
+        code: F
+        promqlCode: 10
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",pod=~"#{Pod}",container =~"#{Container}",node=~"#{Node}",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container,pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: J
+      qtype: promql
+      query:
+        code: J
+        promqlCode: 11
+        q: sum(container_fs_usage_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container,pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: H
+      qtype: promql
+      query:
+        code: H
+        promqlCode: 12
+        q: sum(kube_pod_container_status_restarts_total{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container=~"#{Container}",container!="",container!="POD",namespace=~"#{NameSpace}"}
+          * on(pod,namespace) group_left(node) kube_pod_info{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod, node, namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: R
+      qtype: promql
+      query:
+        code: R
+        promqlCode: 13
+        q: sum((time() - (kube_pod_created{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",namespace=~"#{NameSpace}"}
+          * on(pod,namespace) group_right kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",namespace=~"#{NameSpace}",container=~"#{Container}"}))
+          * on(pod,namespace) group_left(node) kube_pod_info{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod, node, namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: S
+      qtype: promql
+      query:
+        code: S
+        promqlCode: 14
+        q: sum(container_fs_limit_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container,pod,node,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: T
+      qtype: promql
+      query:
+        code: T
+        promqlCode: 15
+        q: sum(irate(container_network_receive_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by (pod,node,namespace) * on(pod,namespace) group_right(node) sum(kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",namespace=~"#{NameSpace}",container=~"#{Container}"})
+          by (container,pod,namespace) * 8
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: U
+      qtype: promql
+      query:
+        code: U
+        promqlCode: 16
+        q: sum(irate(container_network_transmit_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by (pod,node,namespace) * on(pod,namespace) group_right(node) sum(kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",namespace=~"#{NameSpace}",container=~"#{Container}"})
+          by (container,pod,namespace) * 8
+        type: promql
+      type: table
+    type: table
+  - extend:
+      settings:
+        alias:
+        - alias: '{{ pod }}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "Pod\u8D44\u6E90\u603B\u89C8"
+    name: "Pod\u5BB9\u5668CPU\u4F7F\u7528\u7387(\u6700\u5927100%\u53EF\u5173\u8054\
+      \u8282\u70B9)"
+    pos:
+      h: 17.2
+      w: 8
+      x: 0
+      y: 17.6
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: '{{ pod }}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: max(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by (container, pod) / (max((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}",resource="cpu",unit="core"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container, pod)) * 100
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "WSS\uFF1A{{ pod }}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "RSS\uFF1A{{ pod }}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "Pod\u8D44\u6E90\u603B\u89C8"
+    name: "Pod\u5BB9\u5668\u5185\u5B58\u4F7F\u7528\u7387(\u53EF\u5173\u8054\u8282\u70B9\
+      )"
+    pos:
+      h: 17.2
+      w: 8
+      x: 8
+      y: 17.6
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "WSS\uFF1A{{ pod }}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: max (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod)/ max((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container, pod) * 100
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "RSS\uFF1A{{ pod }}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: max (container_memory_rss{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod)/ max((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container, pod) * 100
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "\u6D41\u5165:{{ pod}}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u6D41\u51FA:{{ pod}}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - binbps
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "Pod\u8D44\u6E90\u603B\u89C8"
+    name: "Pod\u6BCF\u79D2\u7F51\u7EDC\u5E26\u5BBD (\u53EF\u5173\u8054\u8282\u70B9\
+      )"
+    pos:
+      h: 17.2
+      w: 8
+      x: 16
+      y: 17.6
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "\u6D41\u5165:{{ pod}}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: max(max(irate(container_network_receive_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",namespace=~"#{NameSpace}",container
+          =~"#{Container}"}) by(pod,namespace) *8
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "\u6D41\u51FA:{{ pod}}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: max(max(irate(container_network_transmit_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",namespace=~"#{NameSpace}",container
+          =~"#{Container}"}) by(pod,namespace) *8
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: C
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: sum(sum(irate(container_network_receive_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}",pod=~".*#{Container}.*"}[2m]))
+          by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+          by(pod,namespace) *8
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: D
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 4
+        q: sum(sum(irate(container_network_transmit_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}",pod=~".*#{Container}.*"}[2m]))
+          by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}"})
+          by(pod,namespace) *8
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "CPU\u4F7F\u7528\uFF1A{{ pod }}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "Pod CPU\u9650\u5236\uFF1A{{ container}}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: line
+        colors:
+        - color: red
+          key: "/\u9650\u5236.*/"
+          name: "/\u9650\u5236.*/"
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+            sortBy: Max
+            sortDesc: true
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        sorderByOrder: desc
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "Pod\u8D44\u6E90\u603B\u89C8"
+    name: "Pod\u5BB9\u5668CPU\u6838\u4F7F\u7528"
+    pos:
+      h: 17.2
+      w: 8
+      x: 0
+      y: 34.7
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "CPU\u4F7F\u7528\uFF1A{{ pod }}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: max(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by (container, pod,node,namespace)
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "Pod CPU\u9650\u5236\uFF1A{{ container}}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: max(max((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",pod=~"#{Pod}",container =~"#{Container}",node=~"#{Node}",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container,pod,node,namespace)) by(container)
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "WSS\uFF1A{{ pod }}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "Pod\u5185\u5B58\u9650\u5236\uFF1A{{ container}}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: line
+        colors:
+        - color: red
+          key: "/.*\u9650\u5236/"
+          name: "/.*\u9650\u5236/"
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+            sortBy: Max
+            sortDesc: true
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        sorderByOrder: desc
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "Pod\u8D44\u6E90\u603B\u89C8"
+    name: "Pod\u5BB9\u5668WSS\u5185\u5B58\u4F7F\u7528(\u53EF\u5173\u8054\u8282\u70B9\
+      )"
+    pos:
+      h: 17.2
+      w: 8
+      x: 8
+      y: 34.7
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "WSS\uFF1A{{ pod }}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: max (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod,node,namespace)
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "Pod\u5185\u5B58\u9650\u5236\uFF1A{{ container}}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: max(max((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",pod=~"#{Pod}",container =~"#{Container}",node=~"#{Node}",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container,pod,node,namespace)) by(container)
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "RSS\uFF1A{{ pod }}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "Pod\u8D44\u6E90\u603B\u89C8"
+    name: "Pod\u5BB9\u5668RSS\u5185\u5B58\u4F7F\u7528(\u53EF\u5173\u8054\u8282\u70B9\
+      )"
+    pos:
+      h: 17.2
+      w: 8
+      x: 16
+      y: 34.7
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "RSS\uFF1A{{ pod }}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: max (container_memory_rss{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",container
+          =~"#{Container}",container !="",container!="POD",node=~"#{Node}",namespace=~"#{NameSpace}"})
+          by (container, pod,node,namespace)
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "\u603B\u6838\u6570\u4F7F\u7528"
+          key: promql_2
+          name: promql_2
+          queryCode: L
+        - alias: "\u5E73\u5747\u5185\u5B58%(RSS)"
+          key: promql_7
+          name: promql_7
+          queryCode: H
+        - alias: "\u603B\u5185\u5B58\u4F7F\u7528(RSS)"
+          key: promql_8
+          name: promql_8
+          queryCode: K
+        changeWorkspace: false
+        chartType: table
+        colors:
+        - color: blue
+          key: Pod
+          name: Pod
+        - color: blue
+          key: "/.*\u9650\u5236$/"
+          name: "/.*\u9650\u5236$/"
+        - color: orange
+          key: "/.*\u5185\u5B58\u4F7F\u7528$|.*\u6838\u4F7F\u7528$/"
+          name: "/.*\u5185\u5B58\u4F7F\u7528$|.*\u6838\u4F7F\u7528$/"
+        extend:
+          appearance:
+            fieldColorMode: thresholds
+            thresholdsMode: percentage
+          table:
+            align: center
+            footer:
+              reducer:
+              - sum
+              show: false
+            sortBy:
+            - desc: true
+              displayName: "\u5E73\u5747WSS\u5185\u5B58\u4F7F\u7528%"
+          tableColumns:
+          - align: center
+            field: namespace
+            order: 0
+            title: "\u547D\u540D\u7A7A\u95F4"
+            width: 92
+          - align: center
+            field: container
+            order: 1
+            title: "\u5BB9\u5668\u540D"
+            width: 187
+          - align: center
+            field: 'Value #G'
+            order: 2
+            title: Pod
+            width: 44
+          - align: center
+            field: 'Value #A'
+            order: 3
+            title: "\u5E73\u5747CPU\u4F7F\u7528%"
+            width: 116
+          - align: center
+            field: 'Value #I'
+            order: 4
+            title: "\u5E73\u5747WSS\u5185\u5B58\u4F7F\u7528%"
+            width: 165
+          - align: center
+            field: 'Value #H'
+            order: 5
+            title: "\u5E73\u5747RSS\u5185\u5B58\u4F7F\u7528%"
+            width: 141
+          - align: center
+            field: 'Value #C'
+            order: 6
+            title: "\u603BCPU\u9650\u5236"
+            width: 86
+          - align: center
+            field: 'Value #L'
+            order: 7
+            title: "\u603BCPU\u6838\u4F7F\u7528"
+            width: 100
+          - align: center
+            field: 'Value #F'
+            order: 8
+            title: "\u603B\u5185\u5B58\u9650\u5236"
+            width: 86
+          - align: center
+            field: 'Value #D'
+            order: 9
+            title: "\u603BWSS\u5185\u5B58\u4F7F\u7528"
+            width: 113
+          - align: center
+            field: 'Value #K'
+            order: 10
+            title: "\u603BRSS\u5185\u5B58\u4F7F\u7528"
+            width: 107
+          - align: center
+            field: 'Value #M'
+            order: 11
+            title: "\u5E73\u5747\u78C1\u76D8\u9650\u5236"
+            width: 96
+          - align: center
+            field: 'Value #J'
+            order: 12
+            title: "\u5E73\u5747\u78C1\u76D8\u4F7F\u7528"
+            width: 96
+          - align: center
+            field: 'Value #B'
+            order: 13
+            title: "\u603BCPU\u9700\u6C42"
+            width: 80
+          - align: center
+            field: 'Value #E'
+            order: 14
+            title: "\u603B\u5185\u5B58\u9700\u6C42"
+            width: 80
+          - align: center
+            field: .*%
+            title: .*%
+          - align: center
+            field: ".*\u5185\u5B58\u4F7F\u7528$|.*\u5185\u5B58\u9650\u5236$|.*\u5185\
+              \u5B58\u9700\u6C42$|.*\u78C1\u76D8\u4F7F\u7528$|.*\u78C1\u76D8\u9650\
+              \u5236$"
+            title: ".*\u5185\u5B58\u4F7F\u7528$|.*\u5185\u5B58\u9650\u5236$|.*\u5185\
+              \u5B58\u9700\u6C42$|.*\u78C1\u76D8\u4F7F\u7528$|.*\u78C1\u76D8\u9650\
+              \u5236$"
+          - align: center
+            field: "/.*\u9650\u5236$/"
+            title: "/.*\u9650\u5236$/"
+          - align: center
+            field: "/.*\u5185\u5B58\u4F7F\u7528$|.*\u6838\u4F7F\u7528$/"
+            title: "/.*\u5185\u5B58\u4F7F\u7528$|.*\u6838\u4F7F\u7528$/"
+        fixedTime: ''
+        isSampling: true
+        isTimeInterval: false
+        legendPostion: none
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        lineType: linear
+        mainMeasurementQueryCode: A
+        mainMeasurementSort: top
+        openThousandsSeparator: true
+        pageEnable: false
+        pageSize: 20
+        precision: '2'
+        queryMode: toGroupColumn
+        showColumns:
+        - "\u547D\u540D\u7A7A\u95F4"
+        - "\u5BB9\u5668\u540D"
+        - Pod
+        - "\u5E73\u5747CPU\u4F7F\u7528%"
+        - "\u5E73\u5747WSS\u5185\u5B58\u4F7F\u7528%"
+        - "\u5E73\u5747RSS\u5185\u5B58\u4F7F\u7528%"
+        - "\u603BCPU\u9650\u5236"
+        - "\u603BCPU\u6838\u4F7F\u7528"
+        - "\u603B\u5185\u5B58\u9650\u5236"
+        - "\u603BWSS\u5185\u5B58\u4F7F\u7528"
+        - "\u603BRSS\u5185\u5B58\u4F7F\u7528"
+        - "\u5E73\u5747\u78C1\u76D8\u9650\u5236"
+        - "\u5E73\u5747\u78C1\u76D8\u4F7F\u7528"
+        - "\u603BCPU\u9700\u6C42"
+        - "\u603B\u5185\u5B58\u9700\u6C42"
+        - .*%
+        - ".*\u5185\u5B58\u4F7F\u7528$|.*\u5185\u5B58\u9650\u5236$|.*\u5185\u5B58\u9700\
+          \u6C42$|.*\u78C1\u76D8\u4F7F\u7528$|.*\u78C1\u76D8\u9650\u5236$"
+        - "/.*\u9650\u5236$/"
+        - "/.*\u5185\u5B58\u4F7F\u7528$|.*\u6838\u4F7F\u7528$/"
+        showFieldMapping: false
+        showTableHead: true
+        showTitle: true
+        timeInterval: auto
+        titleDesc: Filesystem targets J/M require per-application-container container_fs_usage_bytes
+          / container_fs_limit_bytes with pod/container labels. Current k3s/containerd
+          telemetry does not provide these selected series. These fields remain No
+          data; node/root filesystem metrics do not substitute for per-container usage
+          or limits. No synthetic zero or additional collector permissions are used.
+        unitType: custom
+        units:
+        - key: .*%
+          name: .*%
+          unit: percentunit
+          units:
+          - percent
+          - percent_decimal
+        - key: ".*\u5185\u5B58\u4F7F\u7528$|.*\u5185\u5B58\u9650\u5236$|.*\u5185\u5B58\
+            \u9700\u6C42$|.*\u78C1\u76D8\u4F7F\u7528$|.*\u78C1\u76D8\u9650\u5236$"
+          name: ".*\u5185\u5B58\u4F7F\u7528$|.*\u5185\u5B58\u9650\u5236$|.*\u5185\u5B58\
+            \u9700\u6C42$|.*\u78C1\u76D8\u4F7F\u7528$|.*\u78C1\u76D8\u9650\u5236$"
+          unit: bytes
+          units:
+          - digital
+          - B
+    group:
+      name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8"
+    name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u7EDF\u8BA1"
+    pos:
+      h: 17.2
+      w: 24
+      x: 0
+      y: 6.2
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}[2m]))
+          by (container) / (sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}",resource="cpu",unit="core"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container))
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: L
+      name: "\u603B\u6838\u6570\u4F7F\u7528"
+      qtype: promql
+      query:
+        code: L
+        promqlCode: 2
+        q: sum(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}[2m]))
+          by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 3
+        q: sum((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",container =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 4
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",container =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: I
+      qtype: promql
+      query:
+        code: I
+        promqlCode: 5
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)/ sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: D
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 6
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: H
+      name: "\u5E73\u5747\u5185\u5B58%(RSS)"
+      qtype: promql
+      query:
+        code: H
+        promqlCode: 7
+        q: sum (container_memory_rss{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)/ sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: K
+      name: "\u603B\u5185\u5B58\u4F7F\u7528(RSS)"
+      qtype: promql
+      query:
+        code: K
+        promqlCode: 8
+        q: sum (container_memory_rss{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: E
+      qtype: promql
+      query:
+        code: E
+        promqlCode: 9
+        q: sum by(container) ((kube_pod_container_resource_requests{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",container =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1)))
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: F
+      qtype: promql
+      query:
+        code: F
+        promqlCode: 10
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="memory",
+          unit="byte",container =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: J
+      qtype: promql
+      query:
+        code: J
+        promqlCode: 11
+        q: avg(container_fs_usage_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: G
+      qtype: promql
+      query:
+        code: G
+        promqlCode: 12
+        q: count(kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by(container,namespace)
+        type: promql
+      type: table
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: M
+      qtype: promql
+      query:
+        code: M
+        promqlCode: 13
+        q: avg(container_fs_limit_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)
+        type: promql
+      type: table
+    type: table
+  - extend:
+      settings:
+        alias:
+        - alias: '{{ container}}'
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8"
+    name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u5E73\u5747CPU\u4F7F\u7528\u7387\
+      (\u6700\u5927100%)"
+    pos:
+      h: 13.4
+      w: 8
+      x: 0
+      y: 23.3
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: '{{ container}}'
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}[2m]))
+          by (container) / (sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}",resource="cpu",unit="core"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container)) * 100
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "WSS\uFF1A{{ container }}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "RSS\uFF1A{{ container }}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - percent
+        - percent
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8"
+    name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u5E73\u5747\u5185\u5B58\u4F7F\u7528\
+      \u7387"
+    pos:
+      h: 13.4
+      w: 8
+      x: 8
+      y: 23.3
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: A
+      name: "WSS\uFF1A{{ container }}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)/ sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container) * 100
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: B
+      name: "RSS\uFF1A{{ container }}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: sum (container_memory_rss{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)/ sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container) * 100
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "\u6D41\u5165:{{ container }}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u6D41\u51FA:{{ container }}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        - alias: -> {{ pod }}
+          key: promql_3
+          name: promql_3
+          queryCode: C
+        - alias: <- {{ pod }}
+          key: promql_4
+          name: promql_4
+          queryCode: D
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - binbps
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - last
+        - max
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8"
+    name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u6BCF\u79D2\u7F51\u7EDC\u5E26\u5BBD\
+      \ (\u53EF\u5173\u8054\u8282\u70B9)"
+    pos:
+      h: 13.4
+      w: 8
+      x: 16
+      y: 23.3
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "\u6D41\u5165:{{ container }}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum(sum(irate(container_network_receive_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",namespace=~"#{NameSpace}",container
+          =~"#{Container}"}) by(container) *8
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "\u6D41\u51FA:{{ container }}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: sum(sum(irate(container_network_transmit_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",node=~"#{Node}",namespace=~"#{NameSpace}"}[2m]))
+          by(pod,namespace)* on(pod,namespace) group_right kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",namespace=~"#{NameSpace}",container
+          =~"#{Container}"}) by(container) *8
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: C
+      name: -> {{ pod }}
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: sum (rate (container_network_receive_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}",pod=~".*#{Container}.*"}[2m]))
+          by(pod,namespace)
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: true
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        refId: D
+      name: <- {{ pod }}
+      qtype: promql
+      query:
+        code: D
+        promqlCode: 4
+        q: '- sum (rate (container_network_transmit_bytes_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",pod=~"#{Pod}",node=~"#{Node}",namespace=~"#{NameSpace}",pod=~".*#{Container}.*"}[2m]))
+          by(pod,namespace)'
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "CPU\u9650\u5236\uFF1A{{ container}}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "CPU\u6838\u4F7F\u7528\uFF1A{{ container}}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        changeWorkspace: false
+        chartType: line
+        colors:
+        - color: red
+          key: "/CPU\u9650\u5236.*/"
+          name: "/CPU\u9650\u5236.*/"
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+            sortBy: Max
+            sortDesc: true
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        sorderByOrder: desc
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8"
+    name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u6574\u4F53CPU\u4F7F\u7528\u6838"
+    pos:
+      h: 15.3
+      w: 8
+      x: 0
+      y: 36.6
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "CPU\u9650\u5236\uFF1A{{ container}}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",resource="cpu",
+          unit="core",container =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container)
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "CPU\u6838\u4F7F\u7528\uFF1A{{ container}}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: sum(irate(container_cpu_usage_seconds_total{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"}[2m]))
+          by (container)
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "WSS\uFF1A{{ container }}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        - alias: "\u5185\u5B58\u9650\u5236\uFF1A{{ container }}"
+          key: promql_2
+          name: promql_2
+          queryCode: B
+        - alias: "RSS\uFF1A{{ container }}"
+          key: promql_3
+          name: promql_3
+          queryCode: C
+        changeWorkspace: false
+        chartType: line
+        colors:
+        - color: red
+          key: "/\u5185\u5B58\u9650\u5236.*/"
+          name: "/\u5185\u5B58\u9650\u5236.*/"
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+            sortBy: Max
+            sortDesc: true
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - digital
+        - B
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        sorderByOrder: desc
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8"
+    name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u6574\u4F53\u5185\u5B58\u4F7F\u7528\
+      \u91CF"
+    pos:
+      h: 15.3
+      w: 8
+      x: 8
+      y: 36.6
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "WSS\uFF1A{{ container }}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: sum (container_memory_working_set_bytes{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: B
+      name: "\u5185\u5B58\u9650\u5236\uFF1A{{ container }}"
+      qtype: promql
+      query:
+        code: B
+        promqlCode: 2
+        q: sum((kube_pod_container_resource_limits{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}",resource="memory",unit="byte"}
+          and on(cluster,environment,namespace,pod,uid) max by(cluster,environment,namespace,pod,uid)(kube_pod_status_phase{job="kube-state-metrics",cluster=~"#{cluster}",environment=~"#{environment}",phase=~"Pending|Running|Unknown"}
+          == 1))) by (container)
+        type: promql
+      type: sequence
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: C
+      name: "RSS\uFF1A{{ container }}"
+      qtype: promql
+      query:
+        code: C
+        promqlCode: 3
+        q: sum (container_memory_rss{job="cadvisor",cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by (container)
+        type: promql
+      type: sequence
+    type: sequence
+  - extend:
+      settings:
+        alias:
+        - alias: "{{namespace}}\uFF1A{{ container }}"
+          key: promql_1
+          name: promql_1
+          queryCode: A
+        changeWorkspace: false
+        chartType: line
+        connectNulls: false
+        extend:
+          appearance:
+            axisCenteredZero: false
+            axisColorMode: text
+            axisPlacement: auto
+            barAlignment: 0
+            drawStyle: line
+            fieldColorMode: palette-classic
+            fillOpacity: 0
+            gradientMode: none
+            hideFrom:
+              legend: false
+              tooltip: false
+              viz: false
+            lineWidth: 1
+            pointMode: never
+            pointSize: 5
+            scaleDistribution:
+              type: linear
+            spanNulls: false
+            stackingGroup: A
+            thresholdsMode: absolute
+            thresholdsStyleMode: 'off'
+          legend:
+            displayMode: table
+          tooltip:
+            mode: multi
+            sort: desc
+        fixedTime: ''
+        globalUnit:
+        - custom
+        - none
+        isSampling: true
+        isTimeInterval: true
+        legendPostion: bottom
+        legendValues:
+        - max
+        - last
+        levels:
+        - bgColor: green
+          title: Level 1
+          value: 0
+        - bgColor: red
+          title: Level 2
+          value: 80
+        lineType: linear
+        mainMeasurementQueryCode: A
+        openStack: false
+        openThousandsSeparator: true
+        precision: '2'
+        showFieldMapping: false
+        showLegend: true
+        showLine: true
+        showTitle: true
+        stackType: time
+        timeInterval: auto
+        titleDesc: ''
+        unitType: global
+        xAxisShowType: time
+    group:
+      name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8"
+    name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)Pod\u6570"
+    pos:
+      h: 15.3
+      w: 8
+      x: 16
+      y: 36.6
+    queries:
+    - datasource: dataflux
+      disabled: false
+      extend:
+        datasource:
+          type: prometheus
+          uid: ${DS_METRICS}
+        editorMode: code
+        refId: A
+      name: "{{namespace}}\uFF1A{{ container }}"
+      qtype: promql
+      query:
+        code: A
+        promqlCode: 1
+        q: count(kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",container
+          =~"#{Container}",container !="",container!="POD",namespace=~"#{NameSpace}"})
+          by(container,namespace)
+        type: promql
+      type: sequence
+    type: sequence
+  groups:
+  - name: "\u8282\u70B9\u8D44\u6E90\u603B\u89C8"
+  - name: "Pod\u8D44\u6E90\u603B\u89C8"
+  - name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)\u8D44\u6E90\u603B\u89C8"
+  type: template
+  vars:
+  - code: cluster
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: kube_node_info
+      object: ''
+      tag: ''
+      value: label_values(kube_node_info,cluster)
+    extend:
+      originalType: query
+      refresh: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: false
+    name: cluster
+    seq: 0
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: environment
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: kube_node_info{cluster=~"#{cluster}"}
+      object: ''
+      tag: ''
+      value: label_values(kube_node_info{cluster=~"#{cluster}"},environment)
+    extend:
+      originalType: query
+      refresh: 1
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: false
+    name: environment
+    seq: 1
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: Node
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: kube_node_info{cluster=~"#{cluster}"
+      object: ''
+      tag: ''
+      value: label_values(kube_node_info{cluster=~"#{cluster}",environment=~"#{environment}"},node)
+    extend:
+      originalType: query
+      refresh: 1
+      skipUrlSync: false
+      sort: 5
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: false
+    name: "\u8282\u70B9"
+    seq: 2
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: NameSpace
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: kube_namespace_created{cluster=~"#{cluster}"
+      object: ''
+      tag: ''
+      value: label_values(kube_namespace_created{cluster=~"#{cluster}",environment=~"#{environment}"},namespace)
+    extend:
+      originalType: query
+      refresh: 1
+      skipUrlSync: false
+      sort: 5
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: false
+    name: "\u547D\u540D\u7A7A\u95F4"
+    seq: 3
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: Container
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: kube_pod_container_info{cluster=~"#{cluster}"
+      object: ''
+      tag: ''
+      value: label_values(kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",namespace=~"#{NameSpace}"},container)
+    extend:
+      originalType: query
+      refresh: 1
+      skipUrlSync: false
+      sort: 5
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: false
+    name: "\u5FAE\u670D\u52A1(\u5BB9\u5668\u540D)"
+    seq: 4
+    type: PROMQL_QUERY
+    valueSort: desc
+  - code: Pod
+    datasource: dataflux
+    definition:
+      defaultVal:
+        label: ''
+        value: ''
+      field: ''
+      metric: kube_pod_container_info{cluster=~"#{cluster}"
+      object: ''
+      tag: ''
+      value: label_values(kube_pod_container_info{cluster=~"#{cluster}",environment=~"#{environment}",namespace=~"#{NameSpace}",container=~"#{Container}"},pod)
+    extend:
+      originalType: query
+      refresh: 1
+      skipUrlSync: false
+      sort: 5
+      starMeaning: .*
+    hide: 0
+    includeStar: true
+    multiple: false
+    name: Pod
+    seq: 5
+    type: PROMQL_QUERY
+    valueSort: desc
+tags:
+- Kubernetes
+- Prometheus
+- StarsL.cn
+- kubernetes
+- starsl
+title: K8S Dashboard CN 20240513 StarsL.cn
+uid: StarsL_cn_K8S
