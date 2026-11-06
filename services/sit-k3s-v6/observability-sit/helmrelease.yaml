@@ -96,6 +96,13 @@ spec:
                 service: caddy
                 job: caddy
                 instance: caddy-ingress-caddy
+        - job_name: traefik
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['traefik-metrics.ingress-sit.svc:9100']
+              labels:
+                cluster: SIT-K3S-V6
+                environment: sit
         - job_name: kubelet
           scrape_interval: 15s
           scheme: https

@@ -19,9 +19,9 @@ spec:
     - match: Host(`accounts-sit.onwalk.net`) || Host(`accounts.sit.onwalk.net`)
       kind: Rule
       services:
-        - name: web-saas-accounts
+        - kind: TraefikService
+          name: web-saas-accounts
           namespace: web-saas-sit
-          port: 80
     # Billing
     - match: Host(`billing-sit.onwalk.net`) || Host(`billing.sit.onwalk.net`)
       kind: Rule
