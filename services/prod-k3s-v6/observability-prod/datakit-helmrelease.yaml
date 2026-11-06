@@ -9,7 +9,7 @@
 # 2. 停用商业服务 / 截断商业计费 (Stop / Cut-off Commercial Telemetry):
 #    - 方式 A (物理卸载，彻底停止上报): 在 kustomization.yaml 中注释 datakit-helmrelease.yaml，Flux 自动裁剪 DaemonSet
 #    - 方式 B (降级回免费版): 在 datakit-vault-secret.yaml 中将 key 改为 observability/datakit/bj-free
-#    - 方式 C (就地静默缩容): 在 values.nodeSelector 中指定不存在的标签 (如 commercial-telemetry: "disabled")，DaemonSet 缩为 0
+#    - 方式 C (就地静默缩容): 在 values.workload 中将 kind 设为 Deployment 并指定 replicas: 0，Pod 缩容为 0
 # ==============================================================================
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -35,7 +35,8 @@ spec:
       repository: pubrepo.guance.com/datakit/datakit
       tag: "2.16.1@sha256:1cd545f7f14dc08935ec6557936b1e6422a3d7d9728b57d6e1d6b57ea1703fc6"
     workload:
-      kind: DaemonSet
+      kind: Deployment
+      replicas: 0
     datakit:
       dataway_secret_create: false
       dataway_secret_enabled: true
