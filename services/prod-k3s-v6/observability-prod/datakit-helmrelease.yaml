@@ -97,6 +97,8 @@ spec:
               cluster = "PROD-K3S-V6"
               environment = "prod"
               env = "prod"
+              service = "kube-state-metrics"
+              job = "kube-state-metrics"
               host = "prod-k3s-v6"
       - name: node-exporter.conf
         path: /usr/local/datakit/conf.d/prom/node-exporter.conf
@@ -112,7 +114,56 @@ spec:
               cluster = "PROD-K3S-V6"
               environment = "prod"
               env = "prod"
+              service = "node-exporter"
+              job = "node-exporter"
+              node = "prod-k3s-v6"
+              nodename = "prod-k3s-v6"
+              instance = "prod-k3s-v6"
+              host = "prod-k3s-v6"
+      - name: cadvisor.conf
+        path: /usr/local/datakit/conf.d/prom/cadvisor.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["https://127.0.0.1:10250/metrics/cadvisor"]
+            source = "cadvisor"
+            interval = "15s"
+            measurement_name = "cadvisor"
+            keep_exist_metric_name = true
+            insecure_skip_verify = true
+            election = false
+            [inputs.prom.auth]
+              type = "bearer_token"
+              token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            [inputs.prom.tags]
+              cluster = "PROD-K3S-V6"
+              environment = "prod"
+              env = "prod"
+              service = "cadvisor"
+              job = "cadvisor"
+              node = "prod-k3s-v6"
+              host = "prod-k3s-v6"
+      - name: kubelet.conf
+        path: /usr/local/datakit/conf.d/prom/kubelet.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["https://127.0.0.1:10250/metrics"]
+            source = "kubelet"
+            interval = "15s"
+            measurement_name = "kubelet"
+            keep_exist_metric_name = true
+            insecure_skip_verify = true
+            election = false
+            [inputs.prom.auth]
+              type = "bearer_token"
+              token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            [inputs.prom.tags]
+              cluster = "PROD-K3S-V6"
+              environment = "prod"
+              env = "prod"
+              service = "kubelet"
+              job = "kubelet"
+              node = "prod-k3s-v6"
               host = "prod-k3s-v6"
     resources:
       requests: {cpu: 100m, memory: 128Mi}
-      limits: {cpu: 500m, memory: 512Mi}
+      limits: {cpu: 800m, memory: 768Mi}
