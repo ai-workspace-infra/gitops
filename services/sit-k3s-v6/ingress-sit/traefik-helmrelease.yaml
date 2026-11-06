@@ -41,7 +41,7 @@ spec:
         enabled: true
         single: true
         spec:
-          type: ClusterIP
+          type: LoadBalancer
       ports:
         web:
           port: 8000
