@@ -9,3 +9,4 @@ resources:
 - vault-secrets.yaml
 - database-vault-secrets.yaml
 - business-networkpolicy.yaml
+- canary-accounts.yaml

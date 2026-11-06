@@ -1,0 +1,74 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prod-platform-routes
+  namespace: ingress-prod
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    # Console (Frontend)
+    - match: Host(`console-selfhost-prod-v6.svc.plus`) || Host(`console.svc.plus`)
+      kind: Rule
+      services:
+        - name: web-saas-console
+          namespace: web-saas-prod
+          port: 80
+    # Extra Brand Console
+    - match: Host(`xworktech.com`)
+      kind: Rule
+      services:
+        - name: web-saas-console
+          namespace: web-saas-prod
+          port: 80
+    # Accounts (Auth / Sessions / API)
+    - match: Host(`accounts-selfhost-prod-v6.svc.plus`) || Host(`accounts.svc.plus`)
+      kind: Rule
+      services:
+        - name: web-saas-accounts
+          namespace: web-saas-prod
+          port: 80
+    # Billing
+    - match: Host(`billing-selfhost-prod-v6.svc.plus`) || Host(`billing.svc.plus`)
+      kind: Rule
+      services:
+        - name: web-saas-billing
+          namespace: web-saas-prod
+          port: 80
+    # Observability (Grafana)
+    - match: Host(`observability-k3s-v6.svc.plus`) || Host(`observability-selfhost-prod-v6.svc.plus`) || Host(`observability.svc.plus`)
+      kind: Rule
+      services:
+        - name: observability-observability-stack
+          namespace: observability-prod
+          port: 3000
+    # Vault UI
+    - match: Host(`vault-selfhost-prod-v6.svc.plus`) || Host(`vault.svc.plus`)
+      kind: Rule
+      services:
+        - name: vault
+          namespace: vault-prod
+          port: 8200
+          scheme: https
+  tls:
+    secretName: console-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prod-brand-console-route
+  namespace: ingress-prod
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`xworktech.com`)
+      kind: Rule
+      services:
+        - name: web-saas-console
+          namespace: web-saas-prod
+          port: 80
+  tls:
+    secretName: brand-console-tls
