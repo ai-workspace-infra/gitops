@@ -21,10 +21,11 @@ spec:
   # 每日凌晨 03:00 (UTC 19:00) 运行，避开业务高峰
   schedule: "0 19 * * *"
   concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      ttlSecondsAfterFinished: 300
       activeDeadlineSeconds: 1800
       backoffLimit: 2
       template:
