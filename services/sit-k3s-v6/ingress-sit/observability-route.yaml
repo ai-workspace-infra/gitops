@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sit-observability
+  namespace: ingress-sit
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`observability.svc.plus`)
+      kind: Rule
+      services:
+        - name: observability-observability-stack
+          namespace: observability-sit
+          port: 3000
+  tls:
+    secretName: observability-tls

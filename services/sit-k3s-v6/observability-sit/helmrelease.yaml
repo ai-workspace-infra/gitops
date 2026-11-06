@@ -147,7 +147,7 @@ spec:
             - target_label: environment
               replacement: prod
     grafana:
-      rootUrl: https://grafana-sit.onwalk.net/
+      rootUrl: https://observability.svc.plus/
       existingSecret: grafana-admin
       adminPasswordKey: password
       bundleChecksum: ee2a6472c61550a6568ea2f78afc85c2b9f2c800a1b4de2518188d8fef9e0253
