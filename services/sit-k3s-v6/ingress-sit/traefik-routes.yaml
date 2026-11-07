@@ -12,9 +12,9 @@ spec:
     - match: Host(`console-sit.onwalk.net`) || Host(`app-sit.onwalk.net`) || Host(`console.sit.onwalk.net`) || Host(`app.sit.onwalk.net`)
       kind: Rule
       services:
-        - name: web-saas-console
+        - kind: TraefikService
+          name: web-saas-console
           namespace: web-saas-sit
-          port: 80
     # Accounts (Auth / Sessions / API)
     - match: Host(`accounts-sit.onwalk.net`) || Host(`accounts.sit.onwalk.net`)
       kind: Rule

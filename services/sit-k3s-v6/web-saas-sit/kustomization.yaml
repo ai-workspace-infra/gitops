@@ -11,3 +11,4 @@ resources:
   - helmrelease.yaml
   - business-networkpolicy.yaml
   - canary-accounts.yaml
+  - canary-console.yaml
