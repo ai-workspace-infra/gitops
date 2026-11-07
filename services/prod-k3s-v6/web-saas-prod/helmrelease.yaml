@@ -51,6 +51,9 @@ spec:
                 name: web-saas-console
               spec:
                 template:
+                  metadata:
+                    annotations:
+                      delivery.svc.plus/rollout-revision: "portal-511-prod-retry-1"
                   spec:
                     containers:
                       - name: console
