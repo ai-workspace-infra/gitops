@@ -20,7 +20,7 @@ spec:
       - console.svc.plus
       - xworktech.com
   analysis:
-    interval: 15s
+    interval: 45s
     threshold: 5
     maxWeight: 50
     stepWeight: 10
