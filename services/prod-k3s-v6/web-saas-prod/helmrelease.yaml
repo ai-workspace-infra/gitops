@@ -204,7 +204,7 @@ spec:
     flagger:
       enabled: true
       meshProvider: traefik
-      metricsServer: http://observability-observability-stack.observability-prod:8428
+      metricsServer: http://observability-observability-stack-victoria-metrics.observability-prod:8428
       selectorLabels: websaas.io/workload,app.kubernetes.io/name,app
       crd:
         create: true

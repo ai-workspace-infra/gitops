@@ -80,15 +80,15 @@ spec:
               url_map:
                 - src_paths:
                     - "/api/v1/write"
-                  url_prefix: "http://observability-observability-stack.observability-prod.svc:8428"
+                  url_prefix: "http://observability-observability-stack-victoria-metrics.observability-prod.svc:8428"
                 - src_paths:
                     - "/insert/jsonline"
                     - "/insert/jsonline.*"
-                  url_prefix: "http://observability-observability-stack.observability-prod.svc:9428"
+                  url_prefix: "http://observability-observability-stack-victoria-logs.observability-prod.svc:9428"
                 - src_paths:
                     - "/v1/traces"
                     - "/insert/opentelemetry/v1/traces"
-                  url_prefix: "http://observability-observability-stack.observability-prod.svc:10428"
+                  url_prefix: "http://observability-observability-stack-victoria-traces.observability-prod.svc:10428"
   data:
   - secretKey: user
     remoteRef:

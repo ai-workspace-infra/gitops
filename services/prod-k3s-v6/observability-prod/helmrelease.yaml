@@ -4,40 +4,13 @@ metadata:
   name: observability
   namespace: observability-prod
 spec:
-  suspend: true
+  suspend: false
   interval: 5m
   releaseName: observability
   targetNamespace: observability-prod
   chartRef:
     kind: OCIRepository
     name: observability-stack-chart
-  valuesFrom:
-    - kind: ConfigMap
-      name: source-grafana-values
-      valuesKey: values.yaml
-  postRenderers:
-    - kustomize:
-        patches:
-          - target:
-              kind: Deployment
-              name: observability-observability-stack
-            patch: |
-              apiVersion: apps/v1
-              kind: Deployment
-              metadata:
-                name: observability-observability-stack
-              spec:
-                template:
-                  spec:
-                    containers:
-                      - name: grafana
-                        startupProbe:
-                          httpGet:
-                            path: /api/health
-                            port: grafana
-                          periodSeconds: 10
-                          timeoutSeconds: 3
-                          failureThreshold: 30
   values:
     victoriaMetrics:
       image:
@@ -184,6 +157,9 @@ spec:
             - target_label: environment
               replacement: prod
     grafana:
+      image:
+        repository: grafana/grafana
+        tag: "13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f"
       rootUrl: https://observability.svc.plus/
       existingSecret: grafana-admin
       adminPasswordKey: password
