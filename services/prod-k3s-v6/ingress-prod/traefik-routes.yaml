@@ -26,9 +26,9 @@ spec:
     - match: Host(`accounts-selfhost-prod-v6.svc.plus`) || Host(`accounts.svc.plus`)
       kind: Rule
       services:
-        - name: web-saas-accounts
+        - kind: TraefikService
+          name: web-saas-accounts
           namespace: web-saas-prod
-          port: 80
     # Billing
     - match: Host(`billing-selfhost-prod-v6.svc.plus`) || Host(`billing.svc.plus`)
       kind: Rule
