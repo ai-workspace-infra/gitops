@@ -12,16 +12,16 @@ spec:
     - match: Host(`console-selfhost-prod-v6.svc.plus`) || Host(`console.svc.plus`)
       kind: Rule
       services:
-        - name: web-saas-console
+        - kind: TraefikService
+          name: web-saas-console
           namespace: web-saas-prod
-          port: 80
     # Extra Brand Console
     - match: Host(`xworktech.com`)
       kind: Rule
       services:
-        - name: web-saas-console
+        - kind: TraefikService
+          name: web-saas-console
           namespace: web-saas-prod
-          port: 80
     # Accounts (Auth / Sessions / API)
     - match: Host(`accounts-selfhost-prod-v6.svc.plus`) || Host(`accounts.svc.plus`)
       kind: Rule
@@ -68,8 +68,8 @@ spec:
     - match: Host(`xworktech.com`)
       kind: Rule
       services:
-        - name: web-saas-console
+        - kind: TraefikService
+          name: web-saas-console
           namespace: web-saas-prod
-          port: 80
   tls:
     secretName: brand-console-tls
