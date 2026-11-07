@@ -36,6 +36,9 @@ spec:
     traefik:
       enabled: true
       deployment:
+        podLabels:
+          platform.svc.plus/cluster: sit-k3s-v6
+          platform.svc.plus/environment: sit
         replicas: 1
       service:
         enabled: true
