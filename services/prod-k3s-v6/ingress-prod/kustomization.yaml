@@ -11,3 +11,4 @@ resources:
 - traefik-serverstransport.yaml
 - traefik-metrics-service.yaml
 - traefik-routes.yaml
+- observability-ingest-route.yaml
