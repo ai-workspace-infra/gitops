@@ -36,7 +36,7 @@ spec:
       - accounts.sit.onwalk.net
   analysis:
     interval: 15s
-    threshold: 3
+    threshold: 5
     maxWeight: 50
     stepWeight: 10
     metrics:
@@ -46,4 +46,4 @@ spec:
           namespace: web-saas-sit
         thresholdRange:
           max: 1
-        interval: 1m
+        interval: 2m
