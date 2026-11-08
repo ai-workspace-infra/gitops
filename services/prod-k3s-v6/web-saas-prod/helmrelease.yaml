@@ -53,7 +53,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "portal-511-prod-retry-1"
+                      delivery.svc.plus/rollout-revision: "portal-520-prod-tree-matrix"
                   spec:
                     containers:
                       - name: console
@@ -69,7 +69,7 @@ spec:
                           - name: RUNTIME_DASHBOARD_URL
                             value: https://console.svc.plus
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-a70972777cc68c7efe627f9dfe07e3c65764ffa3@sha256:c1be09d661ecfb3adc6d4228240c630af61ba18b1fd66190302be12d154c85cd
+                            value: ghcr.io/ai-workspace-services/console:sha-c55f8a077689d8d8cd473c832f18665a23c9cb7d@sha256:97e80288b173968bd803129119324d2aaece2d3a79e1edd1e05521ad17c506c5
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -105,7 +105,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-a70972777cc68c7efe627f9dfe07e3c65764ffa3@sha256:c1be09d661ecfb3adc6d4228240c630af61ba18b1fd66190302be12d154c85cd
+        image: ghcr.io/ai-workspace-services/console:sha-c55f8a077689d8d8cd473c832f18665a23c9cb7d@sha256:97e80288b173968bd803129119324d2aaece2d3a79e1edd1e05521ad17c506c5
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
@@ -130,7 +130,7 @@ spec:
       enabled: true
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-84bc14499d9c59810c6aa21687f0271a88cae1f1@sha256:589dca5980f5863c83112b8cc88007d1aa8dfdd9631ef6e98dc0a9c327c77cf0
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-a9bba989f27754cde0457b20f8724b58b15a86b6@sha256:78f0aca3b4c36d3f875591e599dab105e4daadd3335a8266898b6b53aafdeedb
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -141,7 +141,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-84bc14499d9c59810c6aa21687f0271a88cae1f1@sha256:589dca5980f5863c83112b8cc88007d1aa8dfdd9631ef6e98dc0a9c327c77cf0
+        image: ghcr.io/ai-workspace-services/accounts:sha-a9bba989f27754cde0457b20f8724b58b15a86b6@sha256:78f0aca3b4c36d3f875591e599dab105e4daadd3335a8266898b6b53aafdeedb
         resources:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
