@@ -65,6 +65,28 @@ class V6ObservabilityAgentProbes(unittest.TestCase):
             self.assertNotIn('token: ', text)
             self.assertNotIn('sit-ingest-password', text)
 
+    def test_billing_canary_and_traefik_service_routes(self):
+        for cluster, canary_path, kustom_path, ingress_path, namespace in (
+            ('sit', 'services/sit-k3s-v6/web-saas-sit/canary-billing.yaml', 'services/sit-k3s-v6/web-saas-sit/kustomization.yaml', 'services/sit-k3s-v6/ingress-sit/traefik-routes.yaml', 'web-saas-sit'),
+            ('prod', 'services/prod-k3s-v6/web-saas-prod/canary-billing.yaml', 'services/prod-k3s-v6/web-saas-prod/kustomization.yaml', 'services/prod-k3s-v6/ingress-prod/traefik-routes.yaml', 'web-saas-prod'),
+        ):
+            canary = yaml.safe_load((ROOT / canary_path).read_text())
+            self.assertEqual(canary['kind'], 'Canary')
+            self.assertEqual(canary['metadata']['name'], 'web-saas-billing')
+            self.assertEqual(canary['metadata']['namespace'], namespace)
+            self.assertEqual(canary['spec']['provider'], 'traefik')
+            self.assertEqual(canary['spec']['targetRef']['name'], 'web-saas-billing')
+
+            kustom = yaml.safe_load((ROOT / kustom_path).read_text())
+            self.assertIn('canary-billing.yaml', kustom['resources'])
+
+            ingress_docs = [doc for doc in yaml.safe_load_all((ROOT / ingress_path).read_text()) if doc]
+            ingress = next(doc for doc in ingress_docs if doc.get('kind') == 'IngressRoute' and 'platform-routes' in doc['metadata']['name'])
+            billing_route = next(r for r in ingress['spec']['routes'] if any('billing' in h for h in r['match'].split('||')))
+            self.assertEqual(billing_route['services'][0]['kind'], 'TraefikService')
+            self.assertEqual(billing_route['services'][0]['name'], 'web-saas-billing')
+            self.assertEqual(billing_route['services'][0]['namespace'], namespace)
+
 
 if __name__ == '__main__':
     unittest.main()
