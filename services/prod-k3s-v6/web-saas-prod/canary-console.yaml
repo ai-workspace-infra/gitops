@@ -27,7 +27,7 @@ spec:
     metrics:
       - name: traefik-error-rate
         templateRef:
-          name: traefik-error-rate
+          name: traefik-release-error-rate
           namespace: web-saas-prod
         thresholdRange:
           max: 1

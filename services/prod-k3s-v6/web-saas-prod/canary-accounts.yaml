@@ -20,6 +20,25 @@ spec:
     ) or vector(0)
 ---
 apiVersion: flagger.app/v1beta1
+kind: MetricTemplate
+metadata:
+  name: traefik-release-error-rate
+  namespace: web-saas-prod
+spec:
+  provider:
+    type: prometheus
+    address: https://observability.svc.plus
+    insecureSkipVerify: false
+    secretRef:
+      name: observability-query-auth
+  query: |
+    100 - (
+      (sum(rate(traefik_service_requests_total{exported_service=~"web-saas-prod-{{ target }}-canary-80(@kubernetescrd)?",code!~"5.*"}[{{ interval }}])) or vector(0))
+      /
+      (sum(rate(traefik_service_requests_total{exported_service=~"web-saas-prod-{{ target }}-canary-80(@kubernetescrd)?"}[{{ interval }}])) > 0)
+    ) * 100
+---
+apiVersion: flagger.app/v1beta1
 kind: Canary
 metadata:
   name: web-saas-accounts
@@ -47,7 +66,7 @@ spec:
     metrics:
       - name: traefik-error-rate
         templateRef:
-          name: traefik-error-rate
+          name: traefik-release-error-rate
           namespace: web-saas-prod
         thresholdRange:
           max: 1
