@@ -14,7 +14,7 @@ data:
         "release"
       ],
       "schemaVersion": 39,
-      "version": 1,
+      "version": 2,
       "editable": true,
       "timezone": "browser",
       "refresh": "30s",
@@ -36,26 +36,26 @@ data:
             "type": "custom",
             "query": "prod,sit",
             "current": {
-              "text": "prod",
-              "value": "prod"
+              "text": "sit",
+              "value": "sit"
             }
           },
           {
             "name": "cluster",
             "type": "textbox",
-            "query": ".*",
+            "query": "SIT-K3S-V6",
             "current": {
-              "text": ".*",
-              "value": ".*"
+              "text": "SIT-K3S-V6",
+              "value": "SIT-K3S-V6"
             }
           },
           {
             "name": "namespace",
             "type": "textbox",
-            "query": "web-saas-prod",
+            "query": "web-saas-sit",
             "current": {
-              "text": "web-saas-prod",
-              "value": "web-saas-prod"
+              "text": "web-saas-sit",
+              "value": "web-saas-sit"
             }
           }
         ]
