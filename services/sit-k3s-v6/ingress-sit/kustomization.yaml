@@ -17,3 +17,4 @@ resources:
   - traefik-routes.yaml
   - traefik-metrics-service.yaml
   - shared-observability-routes.yaml
+  - shared-observability-vault-tls.yaml

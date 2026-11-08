@@ -1,0 +1,17 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultKubernetesJWTAuthRole
+metadata:
+  name: prod-k3s-v6-observability-ingest-reader
+  description: PROD ESO identity for the current shared observability ingestion receiver during cutover.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_subject: system:serviceaccount:observability-prod:observability-ingest-reader
+  bound_audiences: [vault-prod-k3s-v6-observability-ingest-reader]
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 10m
+  token_max_ttl: 10m
+  token_explicit_max_ttl: 10m
+  token_policies: [observability-ingest-reader]

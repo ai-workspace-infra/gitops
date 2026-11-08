@@ -9,6 +9,7 @@ resources:
 - oci-repository.yaml
 - helmrelease.yaml
 - agent-release.yaml
+- observability-remote-write-secret.yaml
 - datakit-helmrepository.yaml
 - datakit-helmrelease.yaml
 - business-networkpolicy.yaml

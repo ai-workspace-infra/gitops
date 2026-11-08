@@ -33,3 +33,23 @@ spec:
           port: 8427
   tls:
     secretName: console-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prod-observability-query
+  namespace: ingress-prod
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: >-
+        Host(`observability.svc.plus`) &&
+        (Path(`/api/v1/query`) || Path(`/api/v1/query_range`))
+      kind: Rule
+      priority: 1100
+      services:
+        - name: observability-ingest-auth
+          namespace: observability-prod
+          port: 8427
+  tls:
+    secretName: console-tls
