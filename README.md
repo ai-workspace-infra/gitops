@@ -109,6 +109,24 @@ declaration for the AWS GitHub Actions OIDC provider, role ARN, and the permitte
 the selfhost orchestrator consume this file. Do not put AWS keys, GitHub App keys, or Vault
 tokens in this declaration.
 
+### Personal AI Aggregator Topology Declarations
+
+Declarations for the selfhost/VPS AI Aggregator (New API gateway + single-account CPA OAuth instances + K3s Ingress/Caddy reverse proxy) are declared under:
+
+```
+topology/<env>/selfhost/ai-aggregator.yaml
+```
+
+Key attributes defined in this schema:
+- `spec.gateway.domain`: Primary public ingress domain (e.g. `ai.svc.plus`)
+- `spec.gateway.alias_domains`: Alias domains (e.g. `ai.sit.onwalk.net`)
+- `spec.gateway.ingress_provider`: Gateway ingress provider (`k3s-traefik` or `caddy`)
+- `spec.gateway.tls_secret`: Dedicated Kubernetes TLS secret (e.g. `shared-observability-tls`)
+- `spec.cpa.instances`: Array of isolated single-account CPA instances (`cpa-codex-01`, `cpa-claude-01`, `cpa-antigravity-01`, `cpa-grok-01`)
+- `spec.new_api.public_models`: Declared public model allowlist and channel mapping
+
+Consumer Playbook: [`playbooks: deploy_ai_aggregator_v1.yml`](https://github.com/ai-workspace-infra/playbooks/blob/main/deploy_ai_aggregator_v1.yml)
+
 ## Consuming this repository
 
 Pin a ref. A consumer that tracks a moving branch inherits every change here at the moment it
