@@ -66,7 +66,7 @@ data:
           "title": "",
           "type": "progressive-release-matrix-panel",
           "gridPos": {
-            "h": 32,
+            "h": 36,
             "w": 24,
             "x": 0,
             "y": 0
@@ -94,6 +94,20 @@ data:
               "refId": "C",
               "expr": "probe_duration_seconds{job=\"progressive-release-probes\", environment=~\"$environment\"}",
               "legendFormat": "{{service}} - {{route}} - duration",
+              "instant": true,
+              "format": "table"
+            },
+            {
+              "refId": "D",
+              "expr": "flagger_canary_status{environment=~\"$environment\"}",
+              "legendFormat": "{{name}} - status",
+              "instant": true,
+              "format": "table"
+            },
+            {
+              "refId": "E",
+              "expr": "flagger_canary_weight{environment=~\"$environment\"}",
+              "legendFormat": "{{workload}} - weight",
               "instant": true,
               "format": "table"
             }
