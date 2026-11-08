@@ -1,0 +1,52 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: observability-ingest-prefix
+  namespace: ingress-sit
+spec:
+  stripPrefix:
+    prefixes:
+      - /ingest/metrics
+      - /ingest/logs
+      - /ingest/otlp
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shared-observability-ingest
+  namespace: ingress-sit
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: >-
+        Host(`observability.svc.plus`) &&
+        (Path(`/ingest/metrics/api/v1/write`) || PathPrefix(`/ingest/logs/`) || PathPrefix(`/ingest/otlp/`))
+      kind: Rule
+      priority: 1000
+      middlewares:
+        - name: observability-ingest-prefix
+      services:
+        - name: observability-ingest-auth
+          namespace: observability-sit
+          port: 8427
+  tls:
+    secretName: shared-observability-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shared-observability-grafana
+  namespace: ingress-sit
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`observability.svc.plus`)
+      kind: Rule
+      services:
+        - name: observability-observability-stack
+          namespace: observability-sit
+          port: 3000
+  tls:
+    secretName: shared-observability-tls

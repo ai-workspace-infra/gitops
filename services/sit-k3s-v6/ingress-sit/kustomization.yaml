@@ -16,3 +16,4 @@ resources:
   - traefik-helmrelease.yaml
   - traefik-routes.yaml
   - traefik-metrics-service.yaml
+  - shared-observability-routes.yaml
