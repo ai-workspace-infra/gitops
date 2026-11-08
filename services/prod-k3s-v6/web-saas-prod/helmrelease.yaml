@@ -73,7 +73,7 @@ spec:
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-431a9617611d1c75f5e2167ddafcd11c0c812137@sha256:0bfbb79ebd0fe93fe0c5b7773a30f8c217510a1c700629a9cec5bf1ff18942c6
+                            value: ghcr.io/ai-workspace-services/console:sha-5e0cc88638a33add371a9d3733335d601fcc44eb@sha256:05ff753d955ccba74901dcd27e71334c0245f60b4f8d43a5a88797ab5d805746
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -109,7 +109,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-431a9617611d1c75f5e2167ddafcd11c0c812137@sha256:0bfbb79ebd0fe93fe0c5b7773a30f8c217510a1c700629a9cec5bf1ff18942c6
+        image: ghcr.io/ai-workspace-services/console:sha-5e0cc88638a33add371a9d3733335d601fcc44eb@sha256:05ff753d955ccba74901dcd27e71334c0245f60b4f8d43a5a88797ab5d805746
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
