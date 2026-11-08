@@ -50,8 +50,16 @@ data:
           {
             "name": "cluster",
             "label": "Cluster",
-            "type": "custom",
-            "query": "PROD-K3S-V6,SIT-K3S-V6",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_METRICS}"
+            },
+            "definition": "label_values(probe_success{environment=~\"$environment\"}, cluster)",
+            "query": "label_values(probe_success{environment=~\"$environment\"}, cluster)",
+            "refresh": 1,
+            "regex": "/^(PROD-K3S-V6|SIT-K3S-V6)$/",
+            "sort": 1,
             "current": {
               "selected": true,
               "text": "PROD-K3S-V6",
@@ -78,35 +86,35 @@ data:
           "targets": [
             {
               "refId": "A",
-              "expr": "probe_success{job=\"progressive-release-probes\", environment=~\"$environment\"}",
+              "expr": "probe_success{job=\"progressive-release-probes\", cluster=~\"$cluster\", environment=~\"$environment\"}",
               "legendFormat": "{{service}} - {{route}} - success",
               "instant": true,
               "format": "table"
             },
             {
               "refId": "B",
-              "expr": "probe_http_status_code{job=\"progressive-release-probes\", environment=~\"$environment\"}",
+              "expr": "probe_http_status_code{job=\"progressive-release-probes\", cluster=~\"$cluster\", environment=~\"$environment\"}",
               "legendFormat": "{{service}} - {{route}} - status_code",
               "instant": true,
               "format": "table"
             },
             {
               "refId": "C",
-              "expr": "probe_duration_seconds{job=\"progressive-release-probes\", environment=~\"$environment\"}",
+              "expr": "probe_duration_seconds{job=\"progressive-release-probes\", cluster=~\"$cluster\", environment=~\"$environment\"}",
               "legendFormat": "{{service}} - {{route}} - duration",
               "instant": true,
               "format": "table"
             },
             {
               "refId": "D",
-              "expr": "flagger_canary_status{environment=~\"$environment\"}",
+              "expr": "flagger_canary_status{cluster=~\"$cluster\", environment=~\"$environment\"}",
               "legendFormat": "{{name}} - status",
               "instant": true,
               "format": "table"
             },
             {
               "refId": "E",
-              "expr": "flagger_canary_weight{environment=~\"$environment\"}",
+              "expr": "flagger_canary_weight{cluster=~\"$cluster\", environment=~\"$environment\"}",
               "legendFormat": "{{workload}} - weight",
               "instant": true,
               "format": "table"
