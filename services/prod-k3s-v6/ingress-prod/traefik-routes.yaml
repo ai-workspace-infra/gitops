@@ -33,9 +33,9 @@ spec:
     - match: Host(`billing-selfhost-prod-v6.svc.plus`) || Host(`billing.svc.plus`)
       kind: Rule
       services:
-        - name: web-saas-billing
+        - kind: TraefikService
+          name: web-saas-billing
           namespace: web-saas-prod
-          port: 80
     # Observability (Grafana)
     - match: Host(`observability-k3s-v6.svc.plus`) || Host(`observability-selfhost-prod-v6.svc.plus`) || Host(`observability.svc.plus`)
       kind: Rule

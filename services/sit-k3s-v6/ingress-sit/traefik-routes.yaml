@@ -26,9 +26,9 @@ spec:
     - match: Host(`billing-sit.onwalk.net`) || Host(`billing.sit.onwalk.net`)
       kind: Rule
       services:
-        - name: web-saas-billing
+        - kind: TraefikService
+          name: web-saas-billing
           namespace: web-saas-sit
-          port: 80
     # Observability (Grafana)
     - match: Host(`grafana-sit.onwalk.net`) || Host(`grafana.sit.onwalk.net`)
       kind: Rule
