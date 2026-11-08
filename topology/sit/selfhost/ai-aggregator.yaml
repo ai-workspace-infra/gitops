@@ -1,0 +1,76 @@
+apiVersion: gitops.svc.plus/v1alpha1
+kind: PersonalAIAggregator
+metadata:
+  name: ai-aggregator
+  project: ai-workspace
+  environment: sit
+  mode: selfhost
+  topology: single-node
+spec:
+  enabled: true
+  delivery:
+    runtime: systemd
+    playbook: deploy_ai_aggregator_v1.yml
+    deployment_mode: embedded
+  entrypoint:
+    component: caddy-ingress
+    domain: ai.svc.plus
+    alias_domains:
+      - ai.sit.onwalk.net
+    tls: automatic
+    tls_secret: shared-observability-tls
+    public_port: 443
+  gateway:
+    entry_mode: gateway
+    adapter: caddy-ingress
+    client_token_source: new-api
+    mode: standalone
+  new_api:
+    node: gateway-01
+    bind_address: 127.0.0.1
+    port: 3000
+    public_models:
+      - gpt-5.5
+      - gpt-5.6-luna
+      - claude-sonnet-5
+      - claude-opus-5
+      - gemini-3-flash
+      - gemini-pro-agent
+      - grok-2
+      - grok-3
+    start_command: /opt/ai-aggregator/new-api/new-api
+  cpa_instances:
+    - id: cpa-codex-01
+      node: gateway-01
+      provider: openai
+      cli: codex
+      bind_address: 127.0.0.1
+      port: 8317
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-codex-01/auth
+    - id: cpa-claude-01
+      node: gateway-01
+      provider: anthropic
+      cli: claude-code
+      bind_address: 127.0.0.1
+      port: 8318
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-claude-01/auth
+    - id: cpa-antigravity-01
+      node: gateway-01
+      provider: google
+      cli: antigravity
+      bind_address: 127.0.0.1
+      port: 8319
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-antigravity-01/auth
+    - id: cpa-grok-01
+      node: gateway-01
+      provider: xai
+      cli: grok
+      bind_address: 127.0.0.1
+      port: 8320
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-grok-01/auth
+  nodes:
+    - id: gateway-01
+      inventory_host: sit-k3s-v6
+      role: gateway
+      roles: [gateway, cpa]
+      caddy_mode: reuse-existing
