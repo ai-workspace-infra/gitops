@@ -33,7 +33,7 @@ spec:
         # publish workflow, and ghcr.io/ai-workspace-infra/infrastructure-mcp-server is not
         # anonymously pullable. Pin a real tag/digest via the `images:` block in
         # kustomization.yaml once an image is published (or import a locally built one).
-        image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:latest
+        image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:v0.2.0-sit
         imagePullPolicy: IfNotPresent
         args:
         - "-config"
@@ -41,6 +41,16 @@ spec:
         - "-listen"
         - ":8080"
         env:
+        - name: VICTORIAMETRICS_URL
+          value: "http://observability-observability-stack-victoria-metrics.observability-sit.svc:8428"
+        - name: VICTORIALOGS_URL
+          value: "http://observability-observability-stack-victoria-logs.observability-sit.svc:9428"
+        - name: VICTORIATRACES_URL
+          value: "http://observability-observability-stack-victoria-traces.observability-sit.svc:10428"
+        - name: GRAFANA_URL
+          value: "http://observability-observability-stack-grafana.observability-sit.svc:3000"
+        - name: OBSERVABILITY_BASE_URL
+          value: "https://observability.svc.plus"
         # Created by the bootstrap playbook (see SECRETS.md). Optional so the pod can
         # start before the Secret exists.
         - name: MCP_SERVICE_TOKEN
