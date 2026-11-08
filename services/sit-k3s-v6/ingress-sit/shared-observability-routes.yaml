@@ -37,6 +37,26 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
+  name: shared-observability-query
+  namespace: ingress-sit
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: >-
+        Host(`observability.svc.plus`) &&
+        (Path(`/api/v1/query`) || Path(`/api/v1/query_range`))
+      kind: Rule
+      priority: 1100
+      services:
+        - name: observability-ingest-auth
+          namespace: observability-sit
+          port: 8427
+  tls:
+    secretName: shared-observability-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
   name: shared-observability-grafana
   namespace: ingress-sit
 spec:

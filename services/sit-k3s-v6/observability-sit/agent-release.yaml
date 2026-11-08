@@ -7,7 +7,7 @@ spec:
   interval: 5m
   url: oci://ghcr.io/ai-workspace-infra/observability-agent
   ref:
-    digest: sha256:4095ed924194c7a91aaa2ad00dd21cec3ccfdcd4c342951ac95aec56fe041f12
+    digest: sha256:5c4fb411cffad6b3ef03f4d899687c271649144f3ff5d311ca027b9121157893
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
@@ -38,15 +38,167 @@ spec:
     kubeStateMetrics:
       enabled: true
       resources:
-        requests: {cpu: 10m, memory: 32Mi}
-        limits: {cpu: 25m, memory: 48Mi}
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 25m
+          memory: 48Mi
     processExporter:
       enabled: true
       resources:
-        requests: {cpu: 20m, memory: 32Mi}
-        limits: {cpu: 150m, memory: 64Mi}
+        requests:
+          cpu: 20m
+          memory: 32Mi
+        limits:
+          cpu: 150m
+          memory: 64Mi
     vector:
       enabled: false
     resources:
-      requests: {cpu: 100m, memory: 128Mi}
-      limits: {cpu: 300m, memory: 256Mi}
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 300m
+        memory: 256Mi
+    blackboxExporter:
+      enabled: true
+      modules:
+        release_http_ok:
+          prober: http
+          timeout: 5s
+          http:
+            preferred_ip_protocol: ip4
+            valid_status_codes:
+            - 200
+            follow_redirects: false
+        release_login_redirect:
+          prober: http
+          timeout: 5s
+          http:
+            preferred_ip_protocol: ip4
+            valid_status_codes:
+            - 302
+            - 307
+            - 308
+            follow_redirects: false
+            fail_if_header_not_matches:
+            - header: Location
+              regexp: ^(/login|https?://[^/]+/login)([?].*)?$
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+    vmagent:
+      enabled: true
+      externalLabels:
+        cluster: SIT-K3S-V6
+        environment: sit
+      scrapeInterval: 30s
+      scrapeTimeout: 10s
+      scrapeConfigs:
+      - job_name: progressive-release-probes
+        metrics_path: /probe
+        scrape_interval: 30s
+        scrape_timeout: 10s
+        static_configs:
+        - targets:
+          - http://web-saas-console.web-saas-sit.svc/healthz
+          labels:
+            service: console
+            route: /healthz
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - http://web-saas-console.web-saas-sit.svc/login
+          labels:
+            service: console
+            route: /login
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - http://web-saas-console.web-saas-sit.svc/panel/agent
+          labels:
+            service: console
+            route: /panel/agent
+            probe_module: release_login_redirect
+            expected_status: '307'
+        - targets:
+          - http://web-saas-accounts.web-saas-sit.svc/healthz
+          labels:
+            service: accounts
+            route: /healthz
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - http://web-saas-accounts.web-saas-sit.svc/readyz
+          labels:
+            service: accounts
+            route: /readyz
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - http://web-saas-accounts.web-saas-sit.svc/api/ping
+          labels:
+            service: accounts
+            route: /api/ping
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - http://web-saas-accounts.web-saas-sit.svc/api/billing/plans
+          labels:
+            service: accounts
+            route: /api/billing/plans
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - http://web-saas-billing.web-saas-sit.svc/healthz
+          labels:
+            service: billing
+            route: /healthz
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - http://web-saas-billing.web-saas-sit.svc/readyz
+          labels:
+            service: billing
+            route: /readyz
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - http://web-saas-billing.web-saas-sit.svc/api/ping
+          labels:
+            service: billing
+            route: /api/ping
+            probe_module: release_http_ok
+            expected_status: '200'
+        relabel_configs:
+        - source_labels:
+          - __address__
+          target_label: __param_target
+        - source_labels:
+          - probe_module
+          target_label: __param_module
+        - source_labels:
+          - __param_target
+          target_label: instance
+        - target_label: __address__
+          replacement: observability-agent-blackbox.observability-sit.svc:9115
+      remoteWrite:
+        url: https://observability.svc.plus/ingest/metrics/api/v1/write
+        secretName: observability-ingest-auth
+        usernameKey: username
+        passwordKey: password
+        maxDiskUsagePerURL: 256Mi
+      bufferSizeLimit: 256Mi
+      resources:
+        requests:
+          cpu: 20m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 128Mi

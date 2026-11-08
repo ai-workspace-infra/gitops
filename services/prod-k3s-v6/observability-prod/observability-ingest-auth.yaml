@@ -73,6 +73,8 @@ spec:
     template:
       type: Opaque
       data:
+        username: "{{ .user }}"
+        password: "{{ .password }}"
         auth.yaml: |
           users:
             - username: "{{ .user }}"
@@ -80,6 +82,10 @@ spec:
               url_map:
                 - src_paths:
                     - "/api/v1/write"
+                  url_prefix: "http://observability-observability-stack-victoria-metrics.observability-prod.svc:8428"
+                - src_paths:
+                    - "/api/v1/query"
+                    - "/api/v1/query_range"
                   url_prefix: "http://observability-observability-stack-victoria-metrics.observability-prod.svc:8428"
                 - src_paths:
                     - "/insert/jsonline"

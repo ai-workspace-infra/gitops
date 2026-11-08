@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: observability-query-reader
+  namespace: web-saas-prod
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: observability-query-reader
+  namespace: web-saas-prod
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [observability-query-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: observability-query-reader
+  namespace: web-saas-prod
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: observability-query-reader
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: observability-query-reader
+  namespace: web-saas-prod
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-prod-k3s-prod-k3s-v6
+          role: prod-k3s-v6-observability-query-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: observability-query-reader
+            audiences: [vault-prod-k3s-v6-observability-query-reader]
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: observability-query-auth
+  namespace: web-saas-prod
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: observability-query-reader
+  target:
+    name: observability-query-auth
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: Opaque
+      data:
+        username: "{{ .user }}"
+        password: "{{ .password }}"
+  data:
+    - secretKey: user
+      remoteRef:
+        key: CICD/observability
+        property: user
+    - secretKey: password
+      remoteRef:
+        key: CICD/observability
+        property: password

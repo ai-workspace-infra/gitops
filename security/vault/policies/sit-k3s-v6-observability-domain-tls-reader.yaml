@@ -1,0 +1,12 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-observability-domain-tls-reader
+  description: Read only the public domain certificate needed by the shared SIT observability route.
+spec:
+  paths:
+    - path: kv/data/CICD/domains/svc.plus
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]

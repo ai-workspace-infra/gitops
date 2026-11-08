@@ -6,7 +6,10 @@ metadata:
 spec:
   provider:
     type: prometheus
-    address: http://observability-observability-stack-victoria-metrics.observability-prod:8428
+    address: https://observability.svc.plus
+    insecureSkipVerify: false
+    secretRef:
+      name: observability-query-auth
   query: |
     (
       100 - (
