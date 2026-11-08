@@ -7,15 +7,13 @@ metadata:
     app.kubernetes.io/name: infrastructure-mcp-server
     app.kubernetes.io/part-of: platform-mcp
 data:
-  # Dev-local backends only. The only downstream MCP backend is the in-cluster
-  # read-only mcp-grafana gateway (Service mcp-grafana, same namespace).
-  # Metrics/logs/traces MCP backends and all process-based backends (kubernetes,
-  # helm, vault, terraform, ...) are intentionally omitted (never enabled in dev).
+  # Downstream MCP servers aggregated by Infrastructure MCP Server.
+  # Grafana MCP + VictoriaMetrics MCP + VictoriaLogs MCP + VictoriaTraces MCP.
   config.json: |
     {
       "server": {
         "name": "infrastructure-mcp-server",
-        "version": "0.1.0"
+        "version": "0.3.0"
       },
       "backends": [
         {
@@ -23,6 +21,27 @@ data:
           "capability": "observability",
           "transport": "sse",
           "url": "http://mcp-grafana.platform-mcp-sit.svc.cluster.local:8000/v1/grafana/sse",
+          "enabled": true
+        },
+        {
+          "name": "observability-metrics",
+          "capability": "observability",
+          "transport": "streamable-http",
+          "url": "http://mcp-victoriametrics.platform-mcp-sit.svc.cluster.local:8088/mcp",
+          "enabled": true
+        },
+        {
+          "name": "observability-logs",
+          "capability": "observability",
+          "transport": "streamable-http",
+          "url": "http://mcp-victorialogs.platform-mcp-sit.svc.cluster.local:8083/mcp",
+          "enabled": true
+        },
+        {
+          "name": "observability-traces",
+          "capability": "observability",
+          "transport": "streamable-http",
+          "url": "http://mcp-victoriatraces.platform-mcp-sit.svc.cluster.local:8082/mcp",
           "enabled": true
         }
       ]
