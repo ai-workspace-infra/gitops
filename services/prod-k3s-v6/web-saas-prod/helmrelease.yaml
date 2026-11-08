@@ -69,7 +69,7 @@ spec:
                           - name: RUNTIME_DASHBOARD_URL
                             value: https://console.svc.plus
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-c55f8a077689d8d8cd473c832f18665a23c9cb7d@sha256:97e80288b173968bd803129119324d2aaece2d3a79e1edd1e05521ad17c506c5
+                            value: ghcr.io/ai-workspace-services/console:sha-c55f8a077689d8d8cd473c832f18665a23c9cb7d
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -105,7 +105,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-c55f8a077689d8d8cd473c832f18665a23c9cb7d@sha256:97e80288b173968bd803129119324d2aaece2d3a79e1edd1e05521ad17c506c5
+        image: ghcr.io/ai-workspace-services/console:sha-c55f8a077689d8d8cd473c832f18665a23c9cb7d
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
@@ -130,7 +130,7 @@ spec:
       enabled: true
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-a9bba989f27754cde0457b20f8724b58b15a86b6@sha256:78f0aca3b4c36d3f875591e599dab105e4daadd3335a8266898b6b53aafdeedb
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-a9bba989f27754cde0457b20f8724b58b15a86b6
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -141,7 +141,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-a9bba989f27754cde0457b20f8724b58b15a86b6@sha256:78f0aca3b4c36d3f875591e599dab105e4daadd3335a8266898b6b53aafdeedb
+        image: ghcr.io/ai-workspace-services/accounts:sha-a9bba989f27754cde0457b20f8724b58b15a86b6
         resources:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
