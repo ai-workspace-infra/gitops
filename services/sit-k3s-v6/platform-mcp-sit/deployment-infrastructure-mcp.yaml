@@ -33,7 +33,7 @@ spec:
         # publish workflow, and ghcr.io/ai-workspace-infra/infrastructure-mcp-server is not
         # anonymously pullable. Pin a real tag/digest via the `images:` block in
         # kustomization.yaml once an image is published (or import a locally built one).
-        image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:v0.2.0-sit
+        image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:v0.3.0-sit
         imagePullPolicy: IfNotPresent
         args:
         - "-config"

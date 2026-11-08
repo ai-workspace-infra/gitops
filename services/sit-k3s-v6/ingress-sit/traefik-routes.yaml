@@ -36,7 +36,7 @@ spec:
         - name: observability-observability-stack
           namespace: observability-sit
           port: 3000
-    # AI Infrastructure MCP Server
+    # AI Infrastructure MCP Server (Legacy onwalk.net aliases)
     - match: Host(`mcp-sit.onwalk.net`) || Host(`mcp.sit.onwalk.net`)
       kind: Rule
       services:
@@ -45,3 +45,28 @@ spec:
           port: 8080
   tls:
     secretName: console-tls
+---
+# Universal AI Infrastructure MCP Server (https://mcp.svc.plus)
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: sit-mcp-svc-plus-routes
+  namespace: ingress-sit
+  labels:
+    kustomize.toolkit.fluxcd.io/name: ingress-sit
+    kustomize.toolkit.fluxcd.io/namespace: flux-system
+    platform.svc.plus/cluster: sit-k3s-v6
+    platform.svc.plus/environment: sit
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`mcp.svc.plus`) || Host(`mcp-sit.svc.plus`)
+      kind: Rule
+      services:
+        - name: infrastructure-mcp-server
+          namespace: platform-mcp-sit
+          port: 8080
+  tls:
+    secretName: shared-observability-tls

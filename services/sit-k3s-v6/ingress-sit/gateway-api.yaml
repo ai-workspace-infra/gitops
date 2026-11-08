@@ -40,6 +40,7 @@ spec:
   parentRefs:
   - name: caddy-gateway
   hostnames:
+  - "mcp.svc.plus"
   - "console-sit.onwalk.net"
   - "accounts-sit.onwalk.net"
   - "billing-sit.onwalk.net"

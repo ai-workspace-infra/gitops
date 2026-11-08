@@ -67,6 +67,16 @@ spec:
             name: observability-observability-stack
             port:
               number: 3000
+  - host: mcp.svc.plus
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: infrastructure-mcp-server
+            port:
+              number: 8080
   - host: mcp-sit.onwalk.net
     http:
       paths:
