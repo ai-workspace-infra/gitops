@@ -12,6 +12,46 @@ spec:
       - /ingest/otlp
 ---
 apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: mcp-strip-mcp-prefix
+  namespace: ingress-sit
+spec:
+  stripPrefix:
+    prefixes:
+      - /mcp
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: mcp-metrics-prefix
+  namespace: ingress-sit
+spec:
+  stripPrefix:
+    prefixes:
+      - /mcp/v1/metrics
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: mcp-logs-prefix
+  namespace: ingress-sit
+spec:
+  stripPrefix:
+    prefixes:
+      - /mcp/v1/logs
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: mcp-traces-prefix
+  namespace: ingress-sit
+spec:
+  stripPrefix:
+    prefixes:
+      - /mcp/v1/traces
+---
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: shared-observability-ingest
@@ -51,6 +91,86 @@ spec:
         - name: observability-ingest-auth
           namespace: observability-sit
           port: 8427
+  tls:
+    secretName: shared-observability-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shared-observability-mcp-grafana
+  namespace: ingress-sit
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`observability.svc.plus`) && PathPrefix(`/mcp/v1/grafana`)
+      kind: Rule
+      priority: 1200
+      middlewares:
+        - name: mcp-strip-mcp-prefix
+      services:
+        - name: mcp-grafana
+          namespace: platform-mcp-sit
+          port: 8000
+  tls:
+    secretName: shared-observability-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shared-observability-mcp-metrics
+  namespace: ingress-sit
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`observability.svc.plus`) && PathPrefix(`/mcp/v1/metrics`)
+      kind: Rule
+      priority: 1200
+      middlewares:
+        - name: mcp-metrics-prefix
+      services:
+        - name: mcp-victoriametrics
+          namespace: platform-mcp-sit
+          port: 8088
+  tls:
+    secretName: shared-observability-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shared-observability-mcp-logs
+  namespace: ingress-sit
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`observability.svc.plus`) && PathPrefix(`/mcp/v1/logs`)
+      kind: Rule
+      priority: 1200
+      middlewares:
+        - name: mcp-logs-prefix
+      services:
+        - name: mcp-victorialogs
+          namespace: platform-mcp-sit
+          port: 8083
+  tls:
+    secretName: shared-observability-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shared-observability-mcp-traces
+  namespace: ingress-sit
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`observability.svc.plus`) && PathPrefix(`/mcp/v1/traces`)
+      kind: Rule
+      priority: 1200
+      middlewares:
+        - name: mcp-traces-prefix
+      services:
+        - name: mcp-victoriatraces
+          namespace: platform-mcp-sit
+          port: 8082
   tls:
     secretName: shared-observability-tls
 ---
