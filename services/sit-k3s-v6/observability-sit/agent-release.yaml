@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
   name: observability-agent-chart
-  namespace: observability-sit-sit
+  namespace: observability-sit
 spec:
   interval: 5m
   url: oci://ghcr.io/ai-workspace-infra/observability-agent
@@ -16,7 +16,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: observability-agent
-  namespace: observability-sit-sit
+  namespace: observability-sit
 spec:
   suspend: false
   interval: 5m
@@ -25,6 +25,30 @@ spec:
   chartRef:
     kind: OCIRepository
     name: observability-agent-chart
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: observability-agent-vmagent
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: observability-agent-vmagent
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: vmagent
+                        args:
+                          - -httpListenAddr=:8429
+                          - -promscrape.config=/etc/vmagent/scrape.yml
+                          - -remoteWrite.url=https://observability.svc.plus/ingest/metrics/api/v1/write
+                          - -remoteWrite.basicAuth.username=observability
+                          - -remoteWrite.basicAuth.passwordFile=/etc/vmagent/auth/password
+                          - -remoteWrite.tmpDataPath=/var/lib/vmagent
+                          - -remoteWrite.maxDiskUsagePerURL=256MiB
   values:
     fullnameOverride: observability-agent
     nodeExporter:

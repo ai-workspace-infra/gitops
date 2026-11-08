@@ -25,6 +25,30 @@ spec:
   chartRef:
     kind: OCIRepository
     name: observability-agent-chart
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: observability-agent-vmagent
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: observability-agent-vmagent
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: vmagent
+                        args:
+                          - -httpListenAddr=:8429
+                          - -promscrape.config=/etc/vmagent/scrape.yml
+                          - -remoteWrite.url=https://observability.svc.plus/ingest/metrics/api/v1/write
+                          - -remoteWrite.basicAuth.username=observability
+                          - -remoteWrite.basicAuth.passwordFile=/etc/vmagent/auth/password
+                          - -remoteWrite.tmpDataPath=/var/lib/vmagent
+                          - -remoteWrite.maxDiskUsagePerURL=256MiB
   values:
     fullnameOverride: observability-agent
     nodeExporter:
