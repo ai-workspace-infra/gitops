@@ -10,5 +10,6 @@ resources:
 - database-vault-secrets.yaml
 - business-networkpolicy.yaml
 - canary-accounts.yaml
+- canary-billing.yaml
 - canary-console.yaml
 - observability-query-auth.yaml
