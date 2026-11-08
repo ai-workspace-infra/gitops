@@ -279,7 +279,7 @@ spec:
       image:
         repository: grafana/grafana
         tag: "13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f"
-      rootUrl: https://grafana-sit.onwalk.net/
+      rootUrl: https://observability.svc.plus/
       existingSecret: grafana-admin
       adminPasswordKey: password
       bundleChecksum: ee2a6472c61550a6568ea2f78afc85c2b9f2c800a1b4de2518188d8fef9e0253
