@@ -14,8 +14,11 @@ spec:
     deployment_mode: embedded
   entrypoint:
     component: caddy-ingress
-    domain: ai.sit.onwalk.net
+    domain: ai.svc.plus
+    alias_domains:
+      - ai.sit.onwalk.net
     tls: automatic
+    tls_secret: shared-observability-tls
     public_port: 443
   gateway:
     entry_mode: gateway
@@ -33,6 +36,8 @@ spec:
       - claude-opus-5
       - gemini-3-flash
       - gemini-pro-agent
+      - grok-2
+      - grok-3
     start_command: /opt/ai-aggregator/new-api/new-api
   cpa_instances:
     - id: cpa-codex-01
@@ -56,6 +61,13 @@ spec:
       bind_address: 127.0.0.1
       port: 8319
       local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-antigravity-01/auth
+    - id: cpa-grok-01
+      node: gateway-01
+      provider: xai
+      cli: grok
+      bind_address: 127.0.0.1
+      port: 8320
+      local_auth_dir: /var/lib/ai-aggregator/cpa/cpa-grok-01/auth
   nodes:
     - id: gateway-01
       inventory_host: sit-k3s-v6
