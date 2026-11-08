@@ -11,7 +11,45 @@ spec:
   chartRef:
     kind: OCIRepository
     name: observability-stack-chart
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: observability-observability-stack-blackbox
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: observability-observability-stack-blackbox
+              spec:
+                template:
+                  spec:
+                    automountServiceAccountToken: false
+                    containers:
+                      - name: blackbox-exporter
+                        readinessProbe:
+                          httpGet:
+                            path: /-/healthy
   values:
+    blackboxExporter:
+      enabled: true
+      modules:
+        release_http_ok:
+          prober: http
+          timeout: 5s
+          http:
+            valid_status_codes: [200]
+            follow_redirects: false
+        release_login_redirect:
+          prober: http
+          timeout: 5s
+          http:
+            valid_status_codes: [307]
+            follow_redirects: false
+            fail_if_header_not_matches:
+              - header: Location
+                regexp: '^(/login|https?://[^/]+/login)([?].*)?$'
     victoriaMetrics:
       image:
         repository: victoriametrics/victoria-metrics
@@ -49,6 +87,90 @@ spec:
       kubernetes:
         enabled: true
       extraScrapeConfigs:
+        - job_name: progressive-release-probes
+          metrics_path: /probe
+          scrape_interval: 30s
+          scrape_timeout: 10s
+          static_configs:
+            - targets: ['http://web-saas-console.web-saas-sit.svc/healthz']
+              labels:
+                service: console
+                route: /healthz
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+            - targets: ['http://web-saas-console.web-saas-sit.svc/login']
+              labels:
+                service: console
+                route: /login
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+            - targets: ['http://web-saas-console.web-saas-sit.svc/panel/agent']
+              labels:
+                service: console
+                route: /panel/agent
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_login_redirect
+            - targets: ['http://web-saas-accounts.web-saas-sit.svc/healthz']
+              labels:
+                service: accounts
+                route: /healthz
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+            - targets: ['http://web-saas-accounts.web-saas-sit.svc/readyz']
+              labels:
+                service: accounts
+                route: /readyz
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+            - targets: ['http://web-saas-accounts.web-saas-sit.svc/api/ping']
+              labels:
+                service: accounts
+                route: /api/ping
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+            - targets: ['http://web-saas-accounts.web-saas-sit.svc/api/billing/plans']
+              labels:
+                service: accounts
+                route: /api/billing/plans
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+            - targets: ['http://web-saas-billing.web-saas-sit.svc/healthz']
+              labels:
+                service: billing
+                route: /healthz
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+            - targets: ['http://web-saas-billing.web-saas-sit.svc/readyz']
+              labels:
+                service: billing
+                route: /readyz
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+            - targets: ['http://web-saas-billing.web-saas-sit.svc/api/ping']
+              labels:
+                service: billing
+                route: /api/ping
+                environment: sit
+                cluster: SIT-K3S-V6
+                probe_module: release_http_ok
+          relabel_configs:
+            - source_labels: [__address__]
+              target_label: __param_target
+            - source_labels: [probe_module]
+              target_label: __param_module
+            - source_labels: [__param_target]
+              target_label: instance
+            - target_label: __address__
+              replacement: observability-observability-stack-blackbox.observability-sit.svc:9115
         - job_name: node-exporter
           scrape_interval: 15s
           static_configs:
@@ -172,6 +294,7 @@ spec:
           folderUid: ''
           path: general
           configMaps:
+            - progressive-release-dashboard
             - source-grafana-general-0
             - starsl-k8s-dashboard
             - caddy-dashboard

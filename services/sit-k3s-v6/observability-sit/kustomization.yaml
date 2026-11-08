@@ -5,6 +5,7 @@ commonLabels:
   platform.svc.plus/environment: sit
   platform.svc.plus/cluster: sit-k3s-v6
 resources:
+  - progressive-release-dashboard.yaml
   - oci-repository.yaml
   - grafana-empty-folder.yaml
   - grafana-restored-platform.yaml
