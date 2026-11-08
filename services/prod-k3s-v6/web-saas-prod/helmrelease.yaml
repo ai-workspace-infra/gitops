@@ -53,7 +53,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "portal-520-prod-tree-matrix"
+                      delivery.svc.plus/rollout-revision: "portal-521-flagger-metric-query-ui"
                   spec:
                     containers:
                       - name: console
@@ -68,8 +68,12 @@ spec:
                             value: http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
                           - name: RUNTIME_DASHBOARD_URL
                             value: https://console.svc.plus
+                          - name: OBSERVABILITY_AUTH_USER
+                            value: observability
+                          - name: OBSERVABILITY_AUTH_USERNAME
+                            value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-c55f8a077689d8d8cd473c832f18665a23c9cb7d@sha256:97e80288b173968bd803129119324d2aaece2d3a79e1edd1e05521ad17c506c5
+                            value: ghcr.io/ai-workspace-services/console:sha-431a9617611d1c75f5e2167ddafcd11c0c812137@sha256:0bfbb79ebd0fe93fe0c5b7773a30f8c217510a1c700629a9cec5bf1ff18942c6
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -105,7 +109,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-c55f8a077689d8d8cd473c832f18665a23c9cb7d@sha256:97e80288b173968bd803129119324d2aaece2d3a79e1edd1e05521ad17c506c5
+        image: ghcr.io/ai-workspace-services/console:sha-431a9617611d1c75f5e2167ddafcd11c0c812137@sha256:0bfbb79ebd0fe93fe0c5b7773a30f8c217510a1c700629a9cec5bf1ff18942c6
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
