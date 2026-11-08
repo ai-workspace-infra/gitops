@@ -76,11 +76,11 @@ spec:
                     reverse_proxy observability-observability-stack.observability-sit.svc.cluster.local:3000
                   }
 
-                  http://mcp.sit.onwalk.net:8080, http://mcp-sit.onwalk.net:8080 {
+                  http://mcp.svc.plus:8080, http://mcp.sit.onwalk.net:8080, http://mcp-sit.onwalk.net:8080 {
                     reverse_proxy infrastructure-mcp-server.platform-mcp-sit.svc.cluster.local:8080
                   }
 
-                  https://mcp.sit.onwalk.net:8443, https://mcp-sit.onwalk.net:8443 {
+                  https://mcp.svc.plus:8443, https://mcp.sit.onwalk.net:8443, https://mcp-sit.onwalk.net:8443 {
                     tls /tls/console/tls.crt /tls/console/tls.key
                     reverse_proxy infrastructure-mcp-server.platform-mcp-sit.svc.cluster.local:8080
                   }

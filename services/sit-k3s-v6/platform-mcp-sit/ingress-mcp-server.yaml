@@ -11,6 +11,16 @@ spec:
   # Only the infrastructure gateway is exposed; mcp-grafana stays cluster-internal.
   ingressClassName: caddy
   rules:
+  - host: mcp.svc.plus
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: infrastructure-mcp-server
+            port:
+              number: 8080
   - host: mcp.sit.onwalk.net
     http:
       paths:
