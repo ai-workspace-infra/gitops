@@ -45,7 +45,7 @@ spec:
     rbac:
       create: true
     telemetry:
-      cluster: SIT-K3S-V6
+      cluster: sit-k3s-v6
       environment: sit
       spanMetrics: true
       kubernetes:
@@ -56,7 +56,7 @@ spec:
           static_configs:
             - targets: ['observability-agent.observability-sit.svc:9100']
               labels:
-                cluster: SIT-K3S-V6
+                cluster: sit-k3s-v6
                 environment: sit
                 job: node-exporter
                 nodename: sit-k3s-v6
@@ -66,7 +66,7 @@ spec:
           static_configs:
             - targets: ['observability-agent-process.observability-sit.svc:9256']
               labels:
-                cluster: SIT-K3S-V6
+                cluster: sit-k3s-v6
                 environment: sit
                 job: process-exporter
                 instance: sit-k3s-v6
@@ -75,7 +75,7 @@ spec:
           static_configs:
             - targets: ['observability-agent-state.observability-sit.svc:8080']
               labels:
-                cluster: SIT-K3S-V6
+                cluster: sit-k3s-v6
                 environment: sit
                 job: kube-state-metrics
         - job_name: postgres-exporter
@@ -83,7 +83,7 @@ spec:
           static_configs:
             - targets: ['postgresql-postgresql-exporter.postgresql-sit.svc:9187']
               labels:
-                cluster: SIT-K3S-V6
+                cluster: sit-k3s-v6
                 environment: sit
                 service: postgresql
                 job: postgres-exporter
@@ -93,7 +93,7 @@ spec:
           static_configs:
             - targets: ['caddy-ingress-caddy.ingress-sit.svc:80']
               labels:
-                cluster: SIT-K3S-V6
+                cluster: sit-k3s-v6
                 environment: sit
                 service: caddy
                 job: caddy
@@ -103,7 +103,7 @@ spec:
           static_configs:
             - targets: ['traefik-metrics.ingress-sit.svc:9100']
               labels:
-                cluster: SIT-K3S-V6
+                cluster: sit-k3s-v6
                 environment: sit
         - job_name: kubelet
           scrape_interval: 15s
@@ -127,9 +127,9 @@ spec:
               replacement: $1:10250
               target_label: __address__
             - target_label: cluster
-              replacement: SIT-K3S-V6
+              replacement: sit-k3s-v6
             - target_label: environment
-              replacement: prod
+              replacement: sit
         - job_name: cadvisor
           scrape_interval: 15s
           scheme: https
@@ -152,9 +152,9 @@ spec:
               replacement: $1:10250
               target_label: __address__
             - target_label: cluster
-              replacement: SIT-K3S-V6
+              replacement: sit-k3s-v6
             - target_label: environment
-              replacement: prod
+              replacement: sit
     grafana:
       image:
         repository: grafana/grafana

@@ -45,7 +45,7 @@ spec:
     rbac:
       create: true
     telemetry:
-      cluster: PROD-K3S-V6
+      cluster: prod-k3s-v6
       environment: prod
       spanMetrics: true
       kubernetes:
@@ -56,7 +56,7 @@ spec:
           static_configs:
             - targets: ['observability-agent.observability-prod.svc:9100']
               labels:
-                cluster: PROD-K3S-V6
+                cluster: prod-k3s-v6
                 environment: prod
                 job: node-exporter
                 nodename: prod-k3s-v6
@@ -66,7 +66,7 @@ spec:
           static_configs:
             - targets: ['observability-agent-process.observability-prod.svc:9256']
               labels:
-                cluster: PROD-K3S-V6
+                cluster: prod-k3s-v6
                 environment: prod
                 job: process-exporter
                 instance: prod-k3s-v6
@@ -75,7 +75,7 @@ spec:
           static_configs:
             - targets: ['observability-agent-state.observability-prod.svc:8080']
               labels:
-                cluster: PROD-K3S-V6
+                cluster: prod-k3s-v6
                 environment: prod
                 job: kube-state-metrics
         - job_name: traefik
@@ -83,7 +83,7 @@ spec:
           static_configs:
             - targets: ['traefik-metrics.ingress-prod.svc:9100']
               labels:
-                cluster: PROD-K3S-V6
+                cluster: prod-k3s-v6
                 environment: prod
                 job: traefik
                 service: traefik-ingress
@@ -93,7 +93,7 @@ spec:
           static_configs:
             - targets: ['caddy-ingress-caddy.ingress-prod.svc:80']
               labels:
-                cluster: PROD-K3S-V6
+                cluster: prod-k3s-v6
                 environment: prod
                 job: caddy
                 service: caddy-ingress
@@ -103,7 +103,7 @@ spec:
           static_configs:
             - targets: ['postgresql-postgresql-exporter.postgresql-prod.svc:9187']
               labels:
-                cluster: PROD-K3S-V6
+                cluster: prod-k3s-v6
                 environment: prod
                 service: postgresql
                 job: postgres-exporter
@@ -130,7 +130,7 @@ spec:
               replacement: $1:10250
               target_label: __address__
             - target_label: cluster
-              replacement: PROD-K3S-V6
+              replacement: prod-k3s-v6
             - target_label: environment
               replacement: prod
         - job_name: cadvisor
@@ -155,7 +155,7 @@ spec:
               replacement: $1:10250
               target_label: __address__
             - target_label: cluster
-              replacement: PROD-K3S-V6
+              replacement: prod-k3s-v6
             - target_label: environment
               replacement: prod
     grafana:

@@ -173,7 +173,7 @@ spec:
     vmagent:
       enabled: true
       externalLabels:
-        cluster: SIT-K3S-V6
+        cluster: sit-k3s-v6
         environment: sit
       scrapeInterval: 30s
       scrapeTimeout: 10s

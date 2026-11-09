@@ -120,7 +120,7 @@ spec:
     vmagent:
       enabled: true
       externalLabels:
-        cluster: PROD-K3S-V6
+        cluster: prod-k3s-v6
         environment: prod
       scrapeInterval: 30s
       scrapeTimeout: 10s
