@@ -15,11 +15,21 @@ spec:
   entrypoint:
     component: caddy-ingress
     domain: ai.svc.plus
+    api_domain: api-ai.svc.plus
     alias_domains:
       - ai.sit.onwalk.net
+      - api-ai.sit.onwalk.net
     tls: automatic
     tls_secret: shared-observability-tls
     public_port: 443
+  desktop:
+    enabled: true
+    port: 8090
+    domain: desktop.svc.plus
+    alias_domains:
+      - desktop.sit.onwalk.net
+    tls: automatic
+    tls_secret: shared-observability-tls
   gateway:
     entry_mode: gateway
     adapter: caddy-ingress
