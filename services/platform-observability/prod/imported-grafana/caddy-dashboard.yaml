@@ -5,7 +5,7 @@ metadata:
   name: caddy-dashboard
   namespace: platform-observability
   annotations:
-    observability.svc.plus/source-sha256: de68f8d1d5d6479364f73de7d0244d9e0db74802d31f81b447921ebe5b2e89d0
+    observability.svc.plus/source-sha256: b343eee21c8d7639e9e044c8df8a58ee72a2c47959109570edc4df9e623e63ca
 data:
   caddy-dashboard.json: |
     {
@@ -2515,16 +2515,16 @@ data:
           },
           {
             "name": "instance",
-            "label": "Instance",
+            "label": "Node / AGENT_PROXY_DOMAIN",
             "type": "query",
             "datasource": {
               "type": "prometheus",
               "uid": "${datasource}"
             },
-            "definition": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\"},instance)",
+            "definition": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\"},instance)",
             "query": {
               "qryType": 1,
-              "query": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\",service=~\"$service\"},instance)",
+              "query": "label_values(caddy_config_last_reload_successful{environment=~\"$environment\",cluster=~\"$cluster\"},instance)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "refresh": 1,
