@@ -2938,10 +2938,10 @@ data:
     ,\n        \"refresh\": 1,\n        \"type\": \"datasource\"\n      },\n     \
     \ {\n        \"current\": {},\n        \"datasource\": {\n          \"type\":\
     \ \"prometheus\",\n          \"uid\": \"${DS_METRICS}\"\n        },\n        \"\
-    definition\": \"label_values(kube_node_info,cluster)\",\n        \"includeAll\"\
+    definition\": \"label_values(kube_node_info{cluster=~\\\"prod-k3s-v6|sit-k3s-v6\\\"},cluster)\",\n        \"includeAll\"\
     : false,\n        \"label\": \"cluster\",\n        \"multi\": false,\n       \
     \ \"name\": \"cluster\",\n        \"options\": [],\n        \"query\": {\n   \
-    \       \"query\": \"label_values(kube_node_info,cluster)\",\n          \"refId\"\
+    \       \"query\": \"label_values(kube_node_info{cluster=~\\\"prod-k3s-v6|sit-k3s-v6\\\"},cluster)\",\n          \"refId\"\
     : \"cluster\"\n        },\n        \"refresh\": 1,\n        \"type\": \"query\"\
     \n      },\n      {\n        \"current\": {},\n        \"datasource\": {\n   \
     \       \"type\": \"prometheus\",\n          \"uid\": \"${DS_METRICS}\"\n    \

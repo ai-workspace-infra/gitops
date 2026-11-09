@@ -28,7 +28,7 @@ spec:
       dataway_secret_enabled: true
       dataway_secret_key: ENV_DATAWAY
       dataway_secret_name: datakit-dataway-secret
-      global_tags: host=sit-k3s-v6,cluster=sit-k3s-v6,environment=dev,env=sit
+      global_tags: host=sit-k3s-v6,cluster=sit-k3s-v6,environment=sit,env=sit
       log: info
       default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,container,kubernetesprometheus,prom
     extraEnvs:

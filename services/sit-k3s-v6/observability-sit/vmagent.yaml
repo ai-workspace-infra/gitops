@@ -8,17 +8,7 @@ data:
     - target_label: cluster
       replacement: sit-k3s-v6
     - target_label: environment
-      replacement: dev
-  url-relabel-ev.yml: |
-    - target_label: cluster
-      replacement: ev-k3s-v6
-    - target_label: environment
-      replacement: dev
-  url-relabel-dev.yml: |
-    - target_label: cluster
-      replacement: dev-k3s-v6
-    - target_label: environment
-      replacement: dev
+      replacement: sit
   scrape.yml: |
     global:
       scrape_interval: 15s
@@ -35,7 +25,7 @@ data:
               job: node-exporter
               nodename: sit-k3s-v6
               instance: sit-k3s-v6
-              environment: dev
+              environment: sit
       - job_name: kube-state-metrics
         scrape_interval: 15s
         metric_relabel_configs:
@@ -46,7 +36,7 @@ data:
           - targets: ['observability-agent-state.observability-sit.svc:8080']
             labels:
               job: kube-state-metrics
-              environment: dev
+              environment: sit
       - job_name: postgres-exporter
         scrape_interval: 15s
         metric_relabel_configs:
@@ -59,7 +49,7 @@ data:
               service: postgresql
               job: postgres-exporter
               instance: prod-postgresql-0
-              environment: dev
+              environment: sit
       - job_name: caddy
         scrape_interval: 15s
         metric_relabel_configs:
@@ -72,7 +62,7 @@ data:
               service: caddy
               job: caddy
               instance: caddy-ingress-caddy
-              environment: dev
+              environment: sit
       - job_name: cadvisor
         scrape_interval: 15s
         scheme: https
@@ -95,7 +85,7 @@ data:
           - source_labels: [__meta_kubernetes_node_name]
             target_label: instance
           - target_label: environment
-            replacement: dev
+            replacement: sit
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -125,16 +115,6 @@ spec:
             - -remoteWrite.basicAuth.passwordFile=/etc/vmagent-secret/password
             - -remoteWrite.tlsInsecureSkipVerify=true
             - -remoteWrite.urlRelabelConfig=/config/url-relabel-sit.yml
-            - -remoteWrite.url=https://observability.svc.plus/ingest/metrics/api/v1/write
-            - -remoteWrite.basicAuth.username=observability
-            - -remoteWrite.basicAuth.passwordFile=/etc/vmagent-secret/password
-            - -remoteWrite.tlsInsecureSkipVerify=true
-            - -remoteWrite.urlRelabelConfig=/config/url-relabel-ev.yml
-            - -remoteWrite.url=https://observability.svc.plus/ingest/metrics/api/v1/write
-            - -remoteWrite.basicAuth.username=observability
-            - -remoteWrite.basicAuth.passwordFile=/etc/vmagent-secret/password
-            - -remoteWrite.tlsInsecureSkipVerify=true
-            - -remoteWrite.urlRelabelConfig=/config/url-relabel-dev.yml
             - -remoteWrite.tmpDataPath=/buffer
             - -remoteWrite.maxDiskUsagePerURL=1GB
           ports:

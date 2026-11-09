@@ -58,12 +58,12 @@ data:
             "definition": "label_values(probe_success{environment=~\"$environment\"}, cluster)",
             "query": "label_values(probe_success{environment=~\"$environment\"}, cluster)",
             "refresh": 1,
-            "regex": "/^(PROD-K3S-V6|SIT-K3S-V6)$/",
+            "regex": "/^(prod-k3s-v6|sit-k3s-v6)$/",
             "sort": 1,
             "current": {
               "selected": true,
-              "text": "PROD-K3S-V6",
-              "value": "PROD-K3S-V6"
+              "text": "prod-k3s-v6",
+              "value": "prod-k3s-v6"
             }
           }
         ]
