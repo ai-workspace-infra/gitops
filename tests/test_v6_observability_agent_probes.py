@@ -60,6 +60,22 @@ class V6ObservabilityAgentProbes(unittest.TestCase):
         policy = yaml.safe_load((ROOT / 'security/vault/policies/observability-ingest-reader.yaml').read_text())
         secret_policy = next(item for item in policy['spec']['paths'] if item['path'].startswith('kv/'))
         self.assertEqual(secret_policy['capabilities'], ['read'])
+        tls_docs = list(yaml.safe_load_all(
+            (ROOT / 'services/sit-k3s-v6/ingress-sit/shared-observability-vault-tls.yaml').read_text()
+        ))
+        tls_external = next(doc for doc in tls_docs if doc and doc['kind'] == 'ExternalSecret')
+        tls_store = next(doc for doc in tls_docs if doc and doc['kind'] == 'SecretStore')
+        ingest_store = next(doc for doc in docs if doc['kind'] == 'SecretStore')
+        for store in (tls_store, ingest_store):
+            vault = store['spec']['provider']['vault']
+            self.assertEqual((vault['path'], vault['version']), ('kv', 'v2'))
+        self.assertEqual(tls_external['spec']['secretStoreRef']['name'], tls_store['metadata']['name'])
+        self.assertEqual(external['spec']['secretStoreRef']['name'], ingest_store['metadata']['name'])
+        self.assertEqual(
+            {item['remoteRef']['key'] for item in tls_external['spec']['data']},
+            {'CICD/domains/svc.plus'},
+        )
+        self.assertEqual(secret_policy['path'], 'kv/data/CICD/observability')
         for path in ('services/sit-k3s-v6/ingress-sit/shared-observability-vault-tls.yaml', 'services/prod-k3s-v6/observability-prod/observability-remote-write-secret.yaml', 'services/prod-k3s-v6/web-saas-prod/observability-query-auth.yaml'):
             text = (ROOT / path).read_text()
             self.assertNotIn('token: ', text)
