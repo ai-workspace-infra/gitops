@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pvc-7e530154-f03a-49e9-8aaa-3809f2f70188
+  annotations:
+    pv.kubernetes.io/provisioned-by: rancher.io/local-path
+    local.path.provisioner/selected-node: sit-k3s-v6
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-path
+  local:
+    path: /var/lib/rancher/k3s/storage/pvc-7e530154-f03a-49e9-8aaa-3809f2f70188_observability-sit_observability-observability-stack-data
+  # Reserve by stable claim identity only; PVC UIDs change when a claim is rebuilt.
+  claimRef:
+    namespace: observability-sit
+    name: observability-observability-stack-data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - sit-k3s-v6
