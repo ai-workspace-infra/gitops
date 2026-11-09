@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pvc-6f08080a-7e6c-4554-8bbf-9487d81388b0
+  annotations:
+    pv.kubernetes.io/provisioned-by: rancher.io/local-path
+    local.path.provisioner/selected-node: sit-k3s-v6
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-path
+  local:
+    path: /var/lib/rancher/k3s/storage/pvc-6f08080a-7e6c-4554-8bbf-9487d81388b0_postgresql-sit_data-postgresql-postgresql-0
+  # Reserve by stable claim identity only; PVC UIDs change when a claim is rebuilt.
+  claimRef:
+    namespace: postgresql-sit
+    name: data-postgresql-postgresql-0
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - sit-k3s-v6
