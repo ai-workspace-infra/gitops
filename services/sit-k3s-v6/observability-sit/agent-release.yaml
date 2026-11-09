@@ -49,6 +49,59 @@ spec:
                           - -remoteWrite.basicAuth.passwordFile=/etc/vmagent/auth/password
                           - -remoteWrite.tmpDataPath=/var/lib/vmagent
                           - -remoteWrite.maxDiskUsagePerURL=256MiB
+          - target:
+              kind: DaemonSet
+              name: observability-agent
+            patch: |
+              apiVersion: apps/v1
+              kind: DaemonSet
+              metadata:
+                name: observability-agent
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: node-exporter
+                        livenessProbe:
+                          timeoutSeconds: 5
+                        readinessProbe:
+                          timeoutSeconds: 5
+          - target:
+              kind: DaemonSet
+              name: observability-agent-process
+            patch: |
+              apiVersion: apps/v1
+              kind: DaemonSet
+              metadata:
+                name: observability-agent-process
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: process-exporter
+                        startupProbe:
+                          timeoutSeconds: 5
+                        livenessProbe:
+                          timeoutSeconds: 5
+                        readinessProbe:
+                          timeoutSeconds: 5
+          - target:
+              kind: Deployment
+              name: observability-agent-state
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: observability-agent-state
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: kube-state-metrics
+                        livenessProbe:
+                          timeoutSeconds: 5
+                        readinessProbe:
+                          timeoutSeconds: 5
   values:
     fullnameOverride: observability-agent
     nodeExporter:
