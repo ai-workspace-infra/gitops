@@ -15,7 +15,7 @@ data:
         "saas"
       ],
       "schemaVersion": 39,
-      "version": 15,
+      "version": 16,
       "editable": true,
       "timezone": "browser",
       "refresh": "30s",
@@ -50,20 +50,16 @@ data:
           {
             "name": "cluster",
             "label": "Cluster",
-            "type": "query",
-            "datasource": {
-              "type": "prometheus",
-              "uid": "${DS_METRICS}"
-            },
-            "definition": "label_values(probe_success{environment=~\"$environment\"}, cluster)",
-            "query": "label_values(probe_success{environment=~\"$environment\"}, cluster)",
-            "refresh": 1,
-            "regex": "/^(prod-k3s-v6|sit-k3s-v6)$/",
-            "sort": 1,
+            "type": "custom",
+            "query": "prod-k3s-v6,sit-k3s-v6",
+            "includeAll": true,
+            "allValue": ".*",
+            "skipUrlSync": true,
+            "allowCustomValue": false,
             "current": {
               "selected": true,
-              "text": "prod-k3s-v6",
-              "value": "prod-k3s-v6"
+              "text": "All",
+              "value": "$__all"
             }
           }
         ]
