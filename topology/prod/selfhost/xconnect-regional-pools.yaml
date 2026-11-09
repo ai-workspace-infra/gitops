@@ -107,6 +107,12 @@ spec:
           enabled: true
           role: standalone
           weight: 100
+          service_identities:
+            xray_xhttp:
+              user: operator
+              group: operator
+              account_managed: false
+              previous_user: xray
     - name: tw
       region: tw
       entrypoint:
