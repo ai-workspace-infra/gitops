@@ -110,6 +110,7 @@ spec:
           service_identities:
             xray_xhttp:
               user: operator
+              group: operator
               account_managed: false
               previous_user: xray
     - name: tw
