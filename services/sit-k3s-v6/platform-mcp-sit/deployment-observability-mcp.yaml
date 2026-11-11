@@ -8,8 +8,13 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
+  # RollingUpdate with no unavailability: a new pod that cannot start (e.g. the
+  # platform-mcp Secret has not synced from Vault yet) leaves the old pod serving.
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: observability-mcp-gateway
@@ -42,13 +47,17 @@ spec:
         # In-cluster dev Grafana (observability-dev unit); never a production host.
         - name: GRAFANA_URL
           value: "https://observability.svc.plus/"
-        # Grafana Viewer service-account token, created by the bootstrap playbook (see SECRETS.md).
-        - name: GRAFANA_SERVICE_ACCOUNT_TOKEN
+        # Basic auth: username is non-secret (Git); password referenced from
+        # Secret platform-mcp key grafana-password (vault-secrets.yaml).
+        # SIT has no viewer account yet -> admin; read-only enforced by
+        # --disable-write/--disable-admin and the gateway tool filter.
+        - name: GRAFANA_USERNAME
+          value: admin
+        - name: GRAFANA_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: infra-mcp-auth
-              key: grafana-service-account-token
-              optional: true
+              name: platform-mcp
+              key: grafana-password
         ports:
         - name: grafana-sse
           containerPort: 8000

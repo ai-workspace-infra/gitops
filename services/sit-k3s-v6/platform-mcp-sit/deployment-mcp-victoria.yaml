@@ -8,8 +8,6 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: mcp-victoriametrics
@@ -54,8 +52,6 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: mcp-victorialogs
@@ -77,10 +73,8 @@ spec:
           value: http
         - name: MCP_LISTEN_ADDR
           value: "0.0.0.0:8083"
-        - name: PORT
-          value: "8083"
-        - name: READ_ONLY
-          value: "true"
+        # PORT / READ_ONLY removed: not read by mcp-victorialogs (not in its README env
+        # table). The server only exposes query tools; use MCP_DISABLED_TOOLS to restrict.
         ports:
         - containerPort: 8083
           name: mcp
@@ -102,8 +96,6 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: mcp-victoriatraces
@@ -125,8 +117,6 @@ spec:
           value: http
         - name: MCP_LISTEN_ADDR
           value: "0.0.0.0:8082"
-        - name: PORT
-          value: "8082"
         ports:
         - containerPort: 8082
           name: mcp
