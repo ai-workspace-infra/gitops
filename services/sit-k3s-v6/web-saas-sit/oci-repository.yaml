@@ -5,9 +5,9 @@ metadata:
   namespace: web-saas-sit
 spec:
   interval: 10m
-  url: oci://ghcr.io/ai-workspace-infra/distributed-web-saas-fullstack
+  url: oci://ghcr.io/ai-workspace-infra/web-saas-fullstack
   ref:
-    digest: sha256:9ff979e214f3355947d6033d8d0d108239bbf33c0912db8365c626a233d0e0dd
+    digest: sha256:8f8db066583002eb8146b2103ab02cbbe1f2a5b786605d66542dc51ab60a010f
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
