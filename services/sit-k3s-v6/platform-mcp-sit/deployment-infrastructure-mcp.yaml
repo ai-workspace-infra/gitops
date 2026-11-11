@@ -8,8 +8,13 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
+  # RollingUpdate with no unavailability: a new pod that cannot start (e.g. the
+  # platform-mcp Secret has not synced from Vault yet) leaves the old pod serving.
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: infrastructure-mcp-server
@@ -95,7 +100,6 @@ spec:
             secretKeyRef:
               name: platform-mcp
               key: mcp-service-token
-              optional: true
         resources:
           requests:
             cpu: 20m
@@ -153,7 +157,6 @@ spec:
               # Also used as bearer_token_env for the localhost ssh backend.
               name: platform-mcp
               key: mcp-service-token
-              optional: true
         ports:
         - name: http
           containerPort: 8080
@@ -207,7 +210,6 @@ spec:
       - name: ssh-mcp-key
         secret:
           secretName: platform-mcp
-          optional: true
           # 0600; with pod fsGroup 65532 kubelet adds group-read (effective 0640 root:65532).
           defaultMode: 0600
           items:

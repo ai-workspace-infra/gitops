@@ -39,6 +39,6 @@ All three land in one ExternalSecret/Secret, `platform-mcp` (each Vault field re
 | `grafana-password` | `kv/sit/platform/observability#grafana_admin_password` | mcp-grafana `GRAFANA_PASSWORD` (`GRAFANA_USERNAME=admin` in Git). Admin-level until a viewer SA token (`grafana_mcp_sa_token`) exists; read-only via `--disable-write --disable-admin` + gateway `disabled_tools`. |
 
 Identity: `security/vault/workload-identities/sit-k3s-v6-platform-mcp-reader.yaml`, policy
-`platform-mcp-reader` (read on those two paths). Until the fields, policy and role exist the
-references stay `optional: true`; the gateway remains Ready and reports backend errors in
-`infra.backends`. The bootstrap `infra-mcp-auth` Secret is no longer referenced (cleanup later).
+`platform-mcp-reader` (read on those two paths). References to `platform-mcp` are required:
+until the fields, policy and role exist, new gateway pods wait (CreateContainerConfigError /
+ContainerCreating) and the RollingUpdate (`maxUnavailable: 0`) keeps the previous pods serving. The bootstrap `infra-mcp-auth` Secret is no longer referenced (cleanup later).

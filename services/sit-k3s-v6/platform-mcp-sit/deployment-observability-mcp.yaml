@@ -8,8 +8,13 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
+  # RollingUpdate with no unavailability: a new pod that cannot start (e.g. the
+  # platform-mcp Secret has not synced from Vault yet) leaves the old pod serving.
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: observability-mcp-gateway
@@ -53,7 +58,6 @@ spec:
             secretKeyRef:
               name: platform-mcp
               key: grafana-password
-              optional: true
         ports:
         - name: grafana-sse
           containerPort: 8000
