@@ -53,3 +53,11 @@ metadata:
   labels:
     platform.svc.plus/environment: sit
     platform.svc.plus/cluster: sit-k3s-v6
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vpa-system
+  labels:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6

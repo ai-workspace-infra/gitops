@@ -8,6 +8,7 @@ resources:
   - cluster-identities-kustomization.yaml
   - postgresql-kustomization.yaml
   - observability-kustomization.yaml
+  - vpa-kustomization.yaml
   - platform-mcp-kustomization.yaml
   - ingress-kustomization.yaml
   - external-dns-kustomization.yaml

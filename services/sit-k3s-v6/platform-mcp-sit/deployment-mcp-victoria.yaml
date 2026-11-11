@@ -35,12 +35,13 @@ spec:
         - containerPort: 8088
           name: mcp
         resources:
+          # Raised after OOM kills at 256Mi; VPA (vpa.yaml) adjusts within its bounds.
           requests:
-            cpu: 50m
-            memory: 64Mi
-          limits:
-            cpu: 200m
+            cpu: 100m
             memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
 ---
 apiVersion: apps/v1
 kind: Deployment

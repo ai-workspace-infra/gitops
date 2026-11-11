@@ -13,6 +13,7 @@ resources:
 - ingress-mcp-server.yaml
 - business-networkpolicy.yaml
 - vault-secrets.yaml
+- vpa.yaml
 labels:
 - includeSelectors: false
   pairs:
@@ -22,3 +23,14 @@ labels:
 images:
 - name: ghcr.io/ai-workspace-infra/infrastructure-mcp-server
   newTag: v0.4.0-sit
+# Shared VPA policy, defined once for every VerticalPodAutoscaler in this unit.
+# controlledValues is the API default RequestsAndLimits (limit/request ratio preserved).
+patches:
+- target:
+    kind: VerticalPodAutoscaler
+  patch: |-
+    - op: add
+      path: /spec/updatePolicy
+      value:
+        updateMode: InPlaceOrRecreate
+        minReplicas: 1

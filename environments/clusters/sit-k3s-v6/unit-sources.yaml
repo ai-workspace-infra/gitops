@@ -81,3 +81,15 @@ spec:
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
     branch: main
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: vpa-sit-config
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: main
