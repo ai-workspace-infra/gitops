@@ -1,0 +1,83 @@
+# VerticalPodAutoscalers for platform-mcp-sit. Only targets and per-container bounds live
+# here; the shared policy (updateMode, minReplicas, controlledValues) is applied once to
+# every VPA by the patch in kustomization.yaml. No HPA targets these Deployments.
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: mcp-victoriametrics
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mcp-victoriametrics
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "*"
+      minAllowed: {cpu: 100m, memory: 256Mi}
+      maxAllowed: {cpu: 1, memory: 1Gi}
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: mcp-victorialogs
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mcp-victorialogs
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "*"
+      minAllowed: {cpu: 50m, memory: 128Mi}
+      maxAllowed: {cpu: 500m, memory: 512Mi}
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: mcp-victoriatraces
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mcp-victoriatraces
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "*"
+      minAllowed: {cpu: 20m, memory: 64Mi}
+      maxAllowed: {cpu: 500m, memory: 512Mi}
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: observability-mcp-gateway
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: observability-mcp-gateway
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "*"
+      minAllowed: {cpu: 20m, memory: 64Mi}
+      maxAllowed: {cpu: 500m, memory: 512Mi}
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: infrastructure-mcp-server
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: infrastructure-mcp-server
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "infrastructure-mcp-server"
+      minAllowed: {cpu: 20m, memory: 32Mi}
+      maxAllowed: {cpu: 500m, memory: 256Mi}
+    - containerName: "ssh-mcp-server"
+      minAllowed: {cpu: 20m, memory: 96Mi}
+      maxAllowed: {cpu: 500m, memory: 512Mi}
+    - containerName: "render-ssh-config"
+      minAllowed: {cpu: 10m, memory: 32Mi}
+      maxAllowed: {cpu: 100m, memory: 128Mi}

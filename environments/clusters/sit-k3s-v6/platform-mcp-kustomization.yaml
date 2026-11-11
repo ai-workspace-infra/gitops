@@ -9,6 +9,8 @@ spec:
   prune: true
   wait: true
   timeout: 10m
+  dependsOn:
+    - name: vpa-sit
   sourceRef:
     kind: GitRepository
     name: platform-mcp-sit-config
