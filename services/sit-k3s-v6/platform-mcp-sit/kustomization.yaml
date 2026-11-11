@@ -34,3 +34,24 @@ patches:
       value:
         updateMode: InPlaceOrRecreate
         minReplicas: 1
+# Pod Security "restricted" baseline (namespace enforces it), defined once for the
+# three VictoriaMetrics/Logs/Traces MCP Deployments.
+- target:
+    kind: Deployment
+    labelSelector: app.kubernetes.io/name in (mcp-victoriametrics,mcp-victorialogs,mcp-victoriatraces)
+  patch: |-
+    - op: add
+      path: /spec/template/spec/securityContext
+      value:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+    - op: add
+      path: /spec/template/spec/containers/0/securityContext
+      value:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL
