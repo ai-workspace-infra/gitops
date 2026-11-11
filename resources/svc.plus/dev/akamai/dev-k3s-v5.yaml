@@ -1,3 +1,4 @@
+# LEGACY (non-V6): status offline — see topology/legacy-offline.yaml (marker only).
 # On-demand Dev K3s host on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
 # 2 vCPU / 4 GB shared (g6-standard-2), Debian 12 to match the current Dev host.
 # Disposable: created/destroyed on demand by the Toolkit dev-host lifecycle dispatch.

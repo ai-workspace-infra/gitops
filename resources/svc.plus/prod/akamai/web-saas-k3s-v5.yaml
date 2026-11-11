@@ -1,3 +1,4 @@
+# LEGACY (non-V6): status offline — see topology/legacy-offline.yaml (marker only).
 # Kubernetes PROD Web SaaS on Akamai Cloud/Linode Tokyo 3 (jp-tyo-3)
 # 2 vCPU / 4 GB, Debian 13 (linode/debian13)
 # Isolated state namespace: web-saas-k3s-v5

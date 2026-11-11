@@ -1,3 +1,4 @@
+# LEGACY (non-V6): status offline — see topology/legacy-offline.yaml (marker only).
 global:
   provider: akamai-cloud
   environment: prod

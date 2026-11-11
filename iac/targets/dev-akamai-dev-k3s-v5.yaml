@@ -36,6 +36,6 @@ targets:
       reason: Disposable Dev K3s host for feature lanes. Create/destroy on demand; no business data, DNS or volumes are owned here.
   namespace: dev-k3s-v5
   lifecycle:
-    status: active
+    status: retired
     persistent: false
     on_demand: true
