@@ -38,7 +38,14 @@ spec:
     - read
     - update
     - list
+  - path: kv/data/prod/platform/domains/*
+    capabilities:
+    - read
   - path: kv/metadata/CICD/domains/*
+    capabilities:
+    - list
+    - read
+  - path: kv/metadata/prod/platform/domains/*
     capabilities:
     - list
     - read

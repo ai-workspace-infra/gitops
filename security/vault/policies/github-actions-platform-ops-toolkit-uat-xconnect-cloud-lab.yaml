@@ -48,7 +48,14 @@ spec:
   - path: kv/data/CICD/domains/svc.plus
     capabilities:
     - read
+  - path: kv/data/sit/platform/domains/svc.plus
+    capabilities:
+    - read
   - path: kv/metadata/CICD/domains/svc.plus
+    capabilities:
+    - list
+    - read
+  - path: kv/metadata/sit/platform/domains/svc.plus
     capabilities:
     - list
     - read
