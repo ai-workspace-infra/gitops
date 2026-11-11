@@ -33,6 +33,8 @@ spec:
         # publish workflow, and ghcr.io/ai-workspace-infra/infrastructure-mcp-server is not
         # anonymously pullable. Pin a real tag/digest via the `images:` block in
         # kustomization.yaml once an image is published (or import a locally built one).
+        # A tag-triggered GHCR publish workflow is proposed in Infrastructure-MCP-Server#17;
+        # the package must then be made public or an imagePullSecret added (G7).
         image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:v0.3.0-sit
         imagePullPolicy: IfNotPresent
         args:
@@ -52,7 +54,9 @@ spec:
         - name: OBSERVABILITY_BASE_URL
           value: "https://observability.svc.plus"
         # Created by the bootstrap playbook (see SECRETS.md). Optional so the pod can
-        # start before the Secret exists.
+        # start before the Secret exists. Enforced as inbound Bearer auth by images built
+        # from Infrastructure-MCP-Server#17 or later; when unset the server logs a warning
+        # and stays unauthenticated.
         - name: MCP_SERVICE_TOKEN
           valueFrom:
             secretKeyRef:

@@ -6,7 +6,7 @@ All references are `optional: true`, so pods start even if keys are missing.
 
 | Secret | Namespace | Key | Used by | Purpose |
 | --- | --- | --- | --- | --- |
-| `infra-mcp-auth` | `platform-mcp-dev` | `mcp-service-token` | `infrastructure-mcp-server` (env `MCP_SERVICE_TOKEN`) | Random service token for the gateway. NOTE: the current Go server does not enforce it itself; reserved for a fronting proxy / future auth. |
+| `infra-mcp-auth` | `platform-mcp-dev` | `mcp-service-token` | `infrastructure-mcp-server` (env `MCP_SERVICE_TOKEN`) | Random service token for the gateway. Enforced as inbound `Authorization: Bearer` on `/mcp`, `/sse`, `/api/v1/*` by Infrastructure-MCP-Server builds that include ai-workspace-infra/Infrastructure-MCP-Server#17 (`/healthz` stays open for probes). Older images ignore it. Once enforced, every client of `mcp.svc.plus` must send the token. |
 | `infra-mcp-auth` | `platform-mcp-dev` | `grafana-service-account-token` | `mcp-grafana` (env `GRAFANA_SERVICE_ACCOUNT_TOKEN`) | Grafana **Viewer** service-account token for the in-cluster dev Grafana (`observability-dev`). Without it mcp-grafana cannot query Grafana (the gateway itself stays Ready). |
 
 Example (placeholders only):
