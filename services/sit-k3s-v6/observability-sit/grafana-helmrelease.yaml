@@ -46,6 +46,15 @@ spec:
     plugins:
     - victoriametrics-logs-datasource@0.33.1
     - marcusolsson-treemap-panel@2.1.1
+    # Progressive Release Matrix panel (unsigned, built from artifacts main; checksum-verified
+    # by the chart's plugin installer). Release: artifacts progressive-release-matrix-panel-v1.0.6.
+    unsignedPlugins:
+    - progressive-release-matrix-panel
+    pluginArchives:
+    - id: progressive-release-matrix-panel
+      version: 1.0.6
+      url: https://github.com/ai-workspace-infra/artifacts/releases/download/progressive-release-matrix-panel-v1.0.6/progressive-release-matrix-panel-1.0.6.zip
+      sha256: f2e5288c40429abf6160ba55723f47d8de647c6de853026b5907f6e438a6c0ef
     dashboardProviders:
     - name: import-general
       folder: ''
