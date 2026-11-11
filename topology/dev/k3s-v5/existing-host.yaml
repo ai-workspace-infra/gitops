@@ -1,3 +1,4 @@
+# LEGACY (non-V6): status offline — see topology/legacy-offline.yaml (marker only).
 apiVersion: gitops.svc.plus/v1alpha1
 kind: ExistingHostDeclaration
 metadata:

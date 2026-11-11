@@ -1,0 +1,174 @@
+# Legacy (non-V6) environments marked offline. Marker only:
+# - nothing is deleted; no running server, Flux root or PROD workload is changed;
+# - no Flux prune; IaC lifecycle is set to `retired` only for non-PROD targets
+#   (retired targets cannot plan/apply/destroy; state keys are unchanged);
+# - PROD v5 entries keep their lifecycle until a reviewed maintenance change.
+# Current environments: SIT-K3S-V6 (environments/clusters/sit-k3s-v6),
+# PROD-K3S-V6 (environments/clusters/prod-k3s-v6). Hostnames only.
+apiVersion: gitops.svc.plus/v1alpha1
+kind: LegacyOfflineRegistry
+metadata:
+  name: legacy-offline
+  marked_at: '2026-11-11'
+  authorized_by: owner (t568u)
+items:
+- kind: cluster
+  path: environments/clusters/dev-k3s-v5
+  status: offline
+  description: "DEV-K3S-V5 Flux root (incl. platform-mcp-dev -> services/platform-mcp/dev-k3s-v5)"
+  superseded_by: "environments/clusters/sit-k3s-v6"
+- kind: cluster
+  path: environments/clusters/prod-web-saas-k3s-v5
+  status: offline
+  description: "PROD web-saas K3s v5 Flux root"
+  superseded_by: "environments/clusters/prod-k3s-v6"
+- kind: cluster
+  path: environments/clusters/prod-web-saas-k3s-v5-observability-bridge
+  status: offline
+  description: "PROD v5 observability bridge"
+  superseded_by: "environments/clusters/prod-k3s-v6"
+- kind: cluster
+  path: environments/clusters/prod
+  status: offline
+  description: "pre-K3s PROD Flux root (accounts/console/postgresql/observability)"
+  superseded_by: "environments/clusters/prod-k3s-v6"
+- kind: cluster
+  path: environments/clusters/pre
+  status: offline
+  description: "pre-K3s PRE Flux root (accounts/console/stunnel-client)"
+  superseded_by: "environments/clusters/sit-k3s-v6"
+- kind: service
+  path: services/platform-mcp/dev-k3s-v5
+  status: offline
+  description: "legacy MCP gateway unit (dev-k3s-v5)"
+  superseded_by: "services/sit-k3s-v6/platform-mcp-sit"
+- kind: service
+  path: services/dev-k3s-v6/platform-mcp-dev
+  status: offline
+  description: "orphan MCP gateway unit (no cluster root references it)"
+  superseded_by: "services/sit-k3s-v6/platform-mcp-sit"
+- kind: host
+  path: topology/dev/k3s-v5/existing-host.yaml
+  status: offline
+  description: "existing host dev-k3s-v5 (dev-k3s-v5.svc.plus)"
+  superseded_by: "sit-k3s-v6 (CMDB)"
+- kind: iac-target
+  path: iac/targets/dev-akamai-dev-k3s-v5.yaml
+  status: offline
+  description: "IaC target dev-akamai-dev-k3s-v5 (lifecycle -> retired)"
+  superseded_by: "iac/targets/prod-akamai-k3s-v6.yaml / sit"
+- kind: iac-target
+  path: iac/migrations/targets/uat-akamai-web-saas-k3s-v5.yaml
+  status: offline
+  description: "IaC migration target uat-akamai-web-saas-k3s-v5 (lifecycle -> retired)"
+  superseded_by: "V6"
+- kind: iac-target
+  path: iac/targets/prod-akamai-web-saas-k3s-v5.yaml
+  status: offline
+  description: "PROD IaC target web-saas-k3s-v5 (marker only; lifecycle unchanged, PROD)"
+  superseded_by: "iac/targets/prod-akamai-k3s-v6.yaml"
+- kind: iac-target
+  path: iac/targets/prod-akamai-web-saas-prod-v5.yaml
+  status: offline
+  description: "PROD IaC target web-saas-prod-v5 (marker only; lifecycle unchanged, PROD)"
+  superseded_by: "iac/targets/prod-akamai-k3s-v6.yaml"
+- kind: resource
+  path: resources/svc.plus/dev/akamai/dev-k3s-v5.yaml
+  status: offline
+  description: "resource manifest dev-k3s-v5"
+  superseded_by: "V6"
+- kind: resource
+  path: resources/svc.plus/prod/akamai/web-saas-k3s-v5.yaml
+  status: offline
+  description: "resource manifest web-saas-k3s-v5 (PROD, marker only)"
+  superseded_by: "resources/svc.plus/prod/akamai/prod-k3s-v6.yaml"
+- kind: resource
+  path: resources/svc.plus/prod/akamai/web-saas-prod-v5.yaml
+  status: offline
+  description: "resource manifest web-saas-prod-v5 (PROD, marker only)"
+  superseded_by: "resources/svc.plus/prod/akamai/prod-k3s-v6.yaml"
+deprecated_references:
+- kind: vault-path
+  pattern: kv/CICD/* (kv/data/CICD/*)
+  status: deprecated
+  replacement: kv/<env>/platform/* and kv/<env>/security/* (secrets only)
+  note: referenced files are left unchanged; migrate when each consumer is touched
+  files:
+  - compose/web-saas/ingress/prod.yaml
+  - docs/prod-k3s-v6-credential-source-plan.md
+  - docs/prod-k3s-v6-gitops-hierarchy.md
+  - docs/prod-k3s-v6-isolated-cluster-plan.md
+  - docs/prod-k3s-v6-node-cluster-preflight.md
+  - iac/targets/dev-akamai-dev-k3s-v5.yaml
+  - iac/targets/prod-akamai-ai-aggregator.yaml
+  - iac/targets/prod-akamai-k3s-v6.yaml
+  - iac/targets/prod-akamai-web-saas-k3s-v5.yaml
+  - iac/targets/prod-akamai-web-saas-prod-v5.yaml
+  - iac/targets/prod-gcp-identity.yaml
+  - iac/targets/uat-akamai-agent-proxy-jp.yaml
+  - iac/targets/uat-akamai-agent-proxy-sg.yaml
+  - iac/targets/uat-akamai-agent-proxy-us.yaml
+  - iac/targets/uat-akamai-ai-aggregator.yaml
+  - iac/targets/uat-akamai-ai-workspace.yaml
+  - iac/targets/uat-akamai-open-platform.yaml
+  - iac/targets/uat-akamai-web-saas.yaml
+  - iac/targets/uat-gcp-identity.yaml
+  - operations/workload-identities/prod-k3s-v6/postgresql-admin-reader.yaml
+  - operations/workload-identities/prod-k3s-v6/postgresql-auditor-reader.yaml
+  - operations/workload-identities/prod-k3s-v6/postgresql-operator-reader.yaml
+  - operations/workload-identities/prod-k3s-v6/vault-tls-reader.yaml
+  - operations/workload-identities/prod-k3s-v6/web-saas-secrets-reader.yaml
+  - resources/svc.plus/prod/aws/bootstrap-identity.yaml
+  - resources/svc.plus/shared/vault/server.yaml
+  - resources/svc.plus/uat/iam/identity-integrations.yaml
+  - security/vault-exceptions/cross-env-paths.yaml
+  - security/vault/policies/github-actions-accounts.yaml
+  - security/vault/policies/github-actions-artifacts.yaml
+  - security/vault/policies/github-actions-billing-service.yaml
+  - security/vault/policies/github-actions-console.yaml
+  - security/vault/policies/github-actions-content-service.yaml
+  - security/vault/policies/github-actions-docs.yaml
+  - security/vault/policies/github-actions-gitops.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-dev.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-prod-aws-bootstrap.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-prod-gcp-bootstrap-xworktech.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-prod-gcp-oidc-xworktech.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-prod-k3s-v6-bootstrap.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-prod-k3s-v6-iac.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-prod-k3s-v6-vault-tls-access.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-prod-release.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-prod.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-shared-gcp-bootstrap-open-platform-prod.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-shared-gcp-bootstrap-open-platform-shared.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-shared-gcp-oidc-open-platform-prod.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-shared-gcp-oidc-open-platform-shared.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-shared-vault-monitoring.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-shared-vault-snapshot.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-shared-vault-xconnect.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-shared-xconnect-network.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-sit.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-tls-rotation.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat-aws-bootstrap.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat-compute-cleanup.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat-gcp-bootstrap-xworktech.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat-gcp-oidc-open-platform-prod.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat-gcp-oidc-xworktech.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat-observability.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat-xconnect-cloud-lab.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat-xconnect-existing-one.yaml
+  - security/vault/policies/github-actions-platform-ops-toolkit-uat.yaml
+  - security/vault/policies/github-actions-playbooks-feature-lane-sit.yaml
+  - security/vault/policies/github-actions-playbooks-feature-seed-sit.yaml
+  - security/vault/policies/github-actions-postgresql.yaml
+  - security/vault/policies/observability-ingest-reader.yaml
+  - security/vault/policies/prod-k3s-tls-reader.yaml
+  - security/vault/policies/prod-k3s-v6-ingress-tls-reader.yaml
+  - security/vault/policies/prod-k3s-v6-vault-tls-reader.yaml
+  - security/vault/policies/sit-k3s-v6-observability-domain-tls-reader.yaml
+  - security/vault/templates/akamai-oidc-policy.yaml
+  - services/distributed-web-saas-fullstack/dev/README.md
+  - topology/prod/runtime-selection.yaml
+  - topology/sit/xconnect-lab.yaml
+  - vpn-overlay/shared/xconnect-vault-shared.yaml
+  - vpn-overlay/uat/xconnect-lab.yaml
+  - vpn-overlay/uat/xconnect-zero.yaml

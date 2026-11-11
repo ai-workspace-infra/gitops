@@ -37,7 +37,7 @@ targets:
         until the state is verified empty or explicitly handed off.
   namespace: web-saas-k3s-v5
   lifecycle:
-    status: migration
+    status: retired
     persistent: true
   provenance:
     commit: 110c7d38747daca070aaffc98e88321ca136a201
