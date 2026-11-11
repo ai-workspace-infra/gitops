@@ -21,4 +21,4 @@ labels:
 # Pin a real tag/digest here once the infrastructure-mcp-server image is published.
 images:
 - name: ghcr.io/ai-workspace-infra/infrastructure-mcp-server
-  newTag: latest
+  newTag: v0.4.0-sit

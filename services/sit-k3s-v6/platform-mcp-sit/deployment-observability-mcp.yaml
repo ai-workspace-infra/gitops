@@ -42,14 +42,17 @@ spec:
         # In-cluster dev Grafana (observability-dev unit); never a production host.
         - name: GRAFANA_URL
           value: "https://observability.svc.plus/"
-        # Grafana Viewer service-account token, created by the bootstrap playbook (see SECRETS.md).
-        - name: GRAFANA_SERVICE_ACCOUNT_TOKEN
+        # Basic auth: username is non-secret (Git); password referenced from
+        # kv/sit/platform/observability#grafana_admin_password via mcp-grafana-auth.
+        # SIT has no viewer account yet -> admin; read-only enforced by
+        # --disable-write/--disable-admin and the gateway tool filter.
+        - name: GRAFANA_USERNAME
+          value: admin
+        - name: GRAFANA_PASSWORD
           valueFrom:
             secretKeyRef:
-              # Viewer SA token synced from Vault (vault-secrets.yaml); the
-              # bootstrap infra-mcp-auth copy returned 401 in 2026-11 smoke tests.
-              name: mcp-grafana-token
-              key: grafana-service-account-token
+              name: mcp-grafana-auth
+              key: password
               optional: true
         ports:
         - name: grafana-sse

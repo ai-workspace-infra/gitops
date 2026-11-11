@@ -30,10 +30,10 @@ spec:
       # This pod is the OPS-role executor (CMDB host role "ops"; today sit-k3s-v6,
       # temporarily). Other agents reach SSH tools only via mcp.svc.plus + Bearer.
       initContainers:
-      # Render the ssh-mcp-server config from CMDB host resources (hostnames only).
-      # Addresses for short names come from the optional Vault-sourced host map.
+      # Render the ssh-mcp-server config from CMDB host resources (GitOps-declared
+      # hostnames/FQDNs + auditor; no addresses from Vault).
       - name: render-ssh-config
-        image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:v0.3.0-sit
+        image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:v0.4.0-sit
         imagePullPolicy: IfNotPresent
         args:
         - "-render-ssh-config"
@@ -43,8 +43,6 @@ spec:
         env:
         - name: SSH_MCP_PRIVATE_KEY_PATH
           value: /var/run/secrets/ssh-mcp/ssh-private-key
-        - name: INFRA_SSH_HOST_MAP_FILE
-          value: /var/run/secrets/ssh-mcp-hosts/ssh-host-map
         - name: INFRA_CMDB_BASE_DIR
           value: /etc/infrastructure-mcp-server/cmdb
         resources:
@@ -63,9 +61,6 @@ spec:
         volumeMounts:
         - name: ssh-mcp-config
           mountPath: /run/ssh-mcp
-        - name: ssh-mcp-host-map
-          mountPath: /var/run/secrets/ssh-mcp-hosts
-          readOnly: true
       containers:
       # classfang/ssh-mcp-server, HTTP transport bound to 127.0.0.1 (not exposed by
       # the Service). Read-only command whitelist comes from the rendered config;
@@ -129,7 +124,7 @@ spec:
         # kustomization.yaml once an image is published (or import a locally built one).
         # A tag-triggered GHCR publish workflow is proposed in Infrastructure-MCP-Server#17;
         # the package must then be made public or an imagePullSecret added (G7).
-        image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:v0.3.0-sit
+        image: ghcr.io/ai-workspace-infra/infrastructure-mcp-server:v0.4.0-sit
         imagePullPolicy: IfNotPresent
         args:
         - "-config"
@@ -154,7 +149,8 @@ spec:
         - name: MCP_SERVICE_TOKEN
           valueFrom:
             secretKeyRef:
-              name: infra-mcp-auth
+              # Synced from kv/sit/platform/mcp#mcp_service_token (vault-secrets.yaml).
+              name: infra-mcp-service-token
               key: mcp-service-token
               optional: true
         # Bearer for the localhost ssh-mcp-server backend (config: bearer_token_env).
@@ -222,8 +218,3 @@ spec:
           items:
           - key: ssh-private-key
             path: ssh-private-key
-      - name: ssh-mcp-host-map
-        secret:
-          secretName: infra-mcp-ssh-host-map
-          optional: true
-          defaultMode: 0440

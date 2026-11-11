@@ -3,7 +3,7 @@ apiVersion: security.gitops/v1alpha1
 kind: VaultKubernetesJWTAuthRole
 metadata:
   name: sit-k3s-v6-platform-mcp-reader
-  description: SIT ESO identity for the MCP gateway (SSH executor key, Grafana MCP token).
+  description: SIT ESO identity for the MCP stack (kv/sit/platform/mcp + read of kv/sit/platform/observability).
 spec:
   role_type: jwt
   user_claim: sub

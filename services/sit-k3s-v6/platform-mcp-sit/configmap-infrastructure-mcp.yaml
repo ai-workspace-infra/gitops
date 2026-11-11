@@ -22,6 +22,7 @@ data:
           "capability": "observability",
           "transport": "sse",
           "url": "http://mcp-grafana.platform-mcp-sit.svc.cluster.local:8000/v1/grafana/sse",
+          "disabled_tools": ["create_*", "update_*", "delete_*", "add_*", "patch_*", "manage_*", "upsert_*"],
           "enabled": true
         },
         {

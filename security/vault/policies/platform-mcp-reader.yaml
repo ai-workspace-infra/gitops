@@ -4,10 +4,13 @@ kind: VaultACLPolicy
 metadata:
   name: platform-mcp-reader
 spec:
-  # Fields (values never in Git): ssh_private_key, ssh_host_map, ssh_mcp_http_token,
-  # grafana_service_account_token. Read-only for the platform-mcp ESO identity.
+  # Secrets only (values never in Git):
+  #   kv/sit/platform/mcp           mcp_service_token, ssh_private_key, ssh_mcp_http_token
+  #   kv/sit/platform/observability vmauth_password, grafana_admin_password (read by mcp-grafana)
   paths:
-    - path: kv/data/CICD/infrastructure-mcp
+    - path: kv/data/sit/platform/mcp
+      capabilities: [read]
+    - path: kv/data/sit/platform/observability
       capabilities: [read]
     - path: auth/token/renew-self
       capabilities: [update]

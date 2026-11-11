@@ -8,8 +8,6 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: mcp-victoriametrics
@@ -54,8 +52,6 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: mcp-victorialogs
@@ -100,8 +96,6 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 spec:
   replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: mcp-victoriatraces
