@@ -20,6 +20,9 @@ spec:
       app.kubernetes.io/name: infrastructure-mcp-server
   template:
     metadata:
+      # Bump when configmap-infrastructure-mcp.yaml changes so the gateway reloads its backends.
+      annotations:
+        platform.svc.plus/config-rev: "2026-11-11-grafana-mcp-server"
       labels:
         app.kubernetes.io/name: infrastructure-mcp-server
         app.kubernetes.io/part-of: platform-mcp

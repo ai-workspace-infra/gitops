@@ -28,17 +28,15 @@ Vault holds secrets only; usernames, URLs, hostnames and the `auditor` user are 
 | Vault path (API `kv/data/...`) | Fields | Owner |
 | --- | --- | --- |
 | `kv/sit/platform/mcp` | `mcp_service_token`, `ssh_private_key_b64` (single-line base64) | MCP stack only |
-| `kv/sit/platform/observability` | `vmauth_password`, `grafana_admin_password` | Observability stack (MCP only reads `grafana_admin_password`) |
 
-All three land in one ExternalSecret/Secret, `platform-mcp` (each Vault field referenced once):
+Both land in one ExternalSecret/Secret, `platform-mcp` (each Vault field referenced once):
 
 | Secret key | ← Vault field | Used by |
 | --- | --- | --- |
 | `mcp-service-token` | `kv/sit/platform/mcp#mcp_service_token` | gateway inbound Bearer (`MCP_SERVICE_TOKEN`, enforced from Infrastructure-MCP-Server#17) **and** ssh-mcp-server sidecar `SSH_MCP_HTTP_TOKEN`; the gateway's ssh backend sends it via `bearer_token_env: MCP_SERVICE_TOKEN` |
 | `ssh-private-key` | `kv/sit/platform/mcp#ssh_private_key_b64` (ESO `decodingStrategy: Base64` → raw key) | sidecar file `/var/run/secrets/ssh-mcp/ssh-private-key` (0600; kubelet adds group-read for fsGroup). Shared root/auditor/operator key; the sidecar logs in as `auditor`, so access is bounded by the OS account. Never leaves the pod. |
-| `grafana-password` | `kv/sit/platform/observability#grafana_admin_password` | mcp-grafana `GRAFANA_PASSWORD` (`GRAFANA_USERNAME=admin` in Git). Admin-level until a viewer SA token (`grafana_mcp_sa_token`) exists; read-only via `--disable-write --disable-admin` + gateway `disabled_tools`. |
 
 Identity: `security/vault/workload-identities/sit-k3s-v6-platform-mcp-reader.yaml`, policy
-`platform-mcp-reader` (read on those two paths). References to `platform-mcp` are required:
+`platform-mcp-reader` (read on `kv/sit/platform/mcp`; the observability path is no longer referenced here). References to `platform-mcp` are required:
 until the fields, policy and role exist, new gateway pods wait (CreateContainerConfigError /
 ContainerCreating) and the RollingUpdate (`maxUnavailable: 0`) keeps the previous pods serving. The bootstrap `infra-mcp-auth` Secret is no longer referenced (cleanup later).

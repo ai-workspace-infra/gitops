@@ -6,8 +6,6 @@ resources:
 - configmap-infrastructure-mcp.yaml
 - deployment-infrastructure-mcp.yaml
 - service-infrastructure-mcp.yaml
-- deployment-observability-mcp.yaml
-- service-observability-mcp.yaml
 - deployment-mcp-victoria.yaml
 - service-mcp-victoria.yaml
 - ingress-mcp-server.yaml
