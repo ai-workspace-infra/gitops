@@ -18,6 +18,7 @@ resources:
   - observability-ingest-auth.yaml
   - agent-release.yaml
   - helmrelease.yaml
+  - grafana-helmrelease.yaml
   - datakit-helmrepository.yaml
   - datakit-helmrelease.yaml
   - vmagent.yaml
