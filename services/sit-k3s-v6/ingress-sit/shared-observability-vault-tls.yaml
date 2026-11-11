@@ -74,11 +74,11 @@ spec:
   data:
     - secretKey: tls_fullchain
       remoteRef:
-        key: CICD/domains/svc.plus
+        key: sit/platform/domains/svc.plus
         property: tls_fullchain_pem_b64
         decodingStrategy: Base64
     - secretKey: tls_key
       remoteRef:
-        key: CICD/domains/svc.plus
+        key: sit/platform/domains/svc.plus
         property: tls_key_pem_b64
         decodingStrategy: Base64

@@ -73,7 +73,7 @@ class V6ObservabilityAgentProbes(unittest.TestCase):
         self.assertEqual(external['spec']['secretStoreRef']['name'], ingest_store['metadata']['name'])
         self.assertEqual(
             {item['remoteRef']['key'] for item in tls_external['spec']['data']},
-            {'CICD/domains/svc.plus'},
+            {'sit/platform/domains/svc.plus'},
         )
         self.assertEqual(secret_policy['path'], 'kv/data/CICD/observability')
         for path in ('services/sit-k3s-v6/ingress-sit/shared-observability-vault-tls.yaml', 'services/prod-k3s-v6/observability-prod/observability-remote-write-secret.yaml', 'services/prod-k3s-v6/web-saas-prod/observability-query-auth.yaml'):
