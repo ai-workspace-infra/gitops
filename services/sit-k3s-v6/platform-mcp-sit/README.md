@@ -5,12 +5,13 @@ Infrastructure MCP Server for the single-node dev cluster (namespace `platform-m
 ```text
 https://mcp-sit.onwalk.net  (Caddy ingress, ingress-sit)
   \-- /  -> infrastructure-mcp-server:8080   (CMDB, Environment Graph, safe CLI exec)
-              \-- in-cluster SSE -> mcp-grafana:8000/v1/grafana/sse   (cluster-internal only)
-                                     \-- http://observability-observability-stack.observability-dev.svc:3000
+              \-- in-cluster SSE -> grafana-mcp-server.observability-sit:8000/v1/grafana/sse
+                     (mcp-grafana, deployed by the grafana chart with mcp.enabled=true; cluster-internal only)
 ```
 
-- `observability-mcp-gateway` (mcp-grafana, `--disable-write --disable-admin`) is kept because it is
-  the only backend providing the observability tools; it is not exposed via ingress.
+- mcp-grafana (`--disable-write --disable-admin`) is no longer in this unit: it runs next to Grafana as
+  `grafana-mcp-server` (HelmRelease `observability-grafana` in `observability-sit`, `mcp.enabled: true`)
+  and reuses the Grafana admin Secret there, so this unit holds no Grafana credential.
 - No Vault/ESO; Secret `infra-mcp-auth` is created by the playbook (see `SECRETS.md`).
 - The Go server has no PostgreSQL support (CMDB/graph are in-memory), so no DB is configured.
 - Requests total 100m CPU / 128Mi. Restricted PSA, read-only root FS, NetworkPolicy

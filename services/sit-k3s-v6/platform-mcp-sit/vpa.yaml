@@ -49,21 +49,6 @@ spec:
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: observability-mcp-gateway
-spec:
-  targetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: observability-mcp-gateway
-  resourcePolicy:
-    containerPolicies:
-    - containerName: "*"
-      minAllowed: {cpu: 20m, memory: 64Mi}
-      maxAllowed: {cpu: 500m, memory: 512Mi}
----
-apiVersion: autoscaling.k8s.io/v1
-kind: VerticalPodAutoscaler
-metadata:
   name: infrastructure-mcp-server
 spec:
   targetRef:

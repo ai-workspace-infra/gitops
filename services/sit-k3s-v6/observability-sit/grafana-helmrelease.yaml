@@ -7,7 +7,7 @@ spec:
   interval: 10m
   url: oci://ghcr.io/ai-workspace-infra/grafana
   ref:
-    digest: sha256:646a84e883f844a14c40b65864e26b38a42aa1fff4931db4898815190139c470
+    digest: sha256:da43e6c43dd0b874289d5a308f3839e83a47aaf463ae205b87258b46c3442169
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
@@ -101,3 +101,7 @@ spec:
       subPath: grafana
     vpa:
       updateMode: 'Off'
+    # Read-only grafana-mcp-server (mcp-grafana), registered as backend "observability-grafana"
+    # in platform-mcp-sit's infrastructure-mcp-server gateway.
+    mcp:
+      enabled: true
