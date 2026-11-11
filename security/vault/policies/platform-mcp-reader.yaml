@@ -1,0 +1,15 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: platform-mcp-reader
+spec:
+  # Fields (values never in Git): ssh_private_key, ssh_host_map, ssh_mcp_http_token,
+  # grafana_service_account_token. Read-only for the platform-mcp ESO identity.
+  paths:
+    - path: kv/data/CICD/infrastructure-mcp
+      capabilities: [read]
+    - path: auth/token/renew-self
+      capabilities: [update]
+    - path: auth/token/lookup-self
+      capabilities: [read]

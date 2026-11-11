@@ -8,7 +8,8 @@ metadata:
     app.kubernetes.io/part-of: platform-mcp
 data:
   # Downstream MCP servers aggregated by Infrastructure MCP Server.
-  # Grafana MCP + VictoriaMetrics MCP + VictoriaLogs MCP + VictoriaTraces MCP.
+  # Grafana MCP + VictoriaMetrics MCP + VictoriaLogs MCP + VictoriaTraces MCP
+  # + ssh-mcp-server (sidecar in the gateway pod, localhost only; targets rendered from CMDB).
   config.json: |
     {
       "server": {
@@ -42,6 +43,17 @@ data:
           "capability": "observability",
           "transport": "streamable-http",
           "url": "http://mcp-victoriatraces.platform-mcp-sit.svc.cluster.local:8082/mcp",
+          "enabled": true
+        },
+        {
+          "name": "ssh",
+          "capability": "runtime",
+          "transport": "streamable-http",
+          "url": "http://127.0.0.1:3000/mcp",
+          "bearer_token_env": "SSH_MCP_HTTP_TOKEN",
+          "timeout_seconds": 30,
+          "allowed_tools": ["list-servers", "execute-command"],
+          "disabled_tools": ["write-file", "upload", "download", "read-file", "job-*"],
           "enabled": true
         }
       ]

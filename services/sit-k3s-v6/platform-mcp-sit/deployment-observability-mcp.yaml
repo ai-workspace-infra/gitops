@@ -46,7 +46,9 @@ spec:
         - name: GRAFANA_SERVICE_ACCOUNT_TOKEN
           valueFrom:
             secretKeyRef:
-              name: infra-mcp-auth
+              # Viewer SA token synced from Vault (vault-secrets.yaml); the
+              # bootstrap infra-mcp-auth copy returned 401 in 2026-11 smoke tests.
+              name: mcp-grafana-token
               key: grafana-service-account-token
               optional: true
         ports:

@@ -12,6 +12,7 @@ resources:
 - service-mcp-victoria.yaml
 - ingress-mcp-server.yaml
 - business-networkpolicy.yaml
+- vault-secrets.yaml
 labels:
 - includeSelectors: false
   pairs:
