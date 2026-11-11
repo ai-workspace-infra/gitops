@@ -51,7 +51,7 @@ data:
           "capability": "runtime",
           "transport": "streamable-http",
           "url": "http://127.0.0.1:3000/mcp",
-          "bearer_token_env": "SSH_MCP_HTTP_TOKEN",
+          "bearer_token_env": "MCP_SERVICE_TOKEN",
           "timeout_seconds": 30,
           "allowed_tools": ["list-servers", "execute-command"],
           "disabled_tools": ["write-file", "upload", "download", "read-file", "job-*"],

@@ -89,11 +89,12 @@ spec:
           value: /tmp/npm-cache
         - name: npm_config_update_notifier
           value: "false"
+        # Same token as the gateway's inbound MCP_SERVICE_TOKEN (one Vault field).
         - name: SSH_MCP_HTTP_TOKEN
           valueFrom:
             secretKeyRef:
-              name: infra-mcp-ssh
-              key: ssh-mcp-http-token
+              name: platform-mcp
+              key: mcp-service-token
               optional: true
         resources:
           requests:
@@ -149,16 +150,9 @@ spec:
         - name: MCP_SERVICE_TOKEN
           valueFrom:
             secretKeyRef:
-              # Synced from kv/sit/platform/mcp#mcp_service_token (vault-secrets.yaml).
-              name: infra-mcp-service-token
+              # Also used as bearer_token_env for the localhost ssh backend.
+              name: platform-mcp
               key: mcp-service-token
-              optional: true
-        # Bearer for the localhost ssh-mcp-server backend (config: bearer_token_env).
-        - name: SSH_MCP_HTTP_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: infra-mcp-ssh
-              key: ssh-mcp-http-token
               optional: true
         ports:
         - name: http
@@ -212,7 +206,7 @@ spec:
           sizeLimit: 256Mi
       - name: ssh-mcp-key
         secret:
-          secretName: infra-mcp-ssh
+          secretName: platform-mcp
           optional: true
           # 0600; with pod fsGroup 65532 kubelet adds group-read (effective 0640 root:65532).
           defaultMode: 0600

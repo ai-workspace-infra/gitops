@@ -43,7 +43,7 @@ spec:
         - name: GRAFANA_URL
           value: "https://observability.svc.plus/"
         # Basic auth: username is non-secret (Git); password referenced from
-        # kv/sit/platform/observability#grafana_admin_password via mcp-grafana-auth.
+        # Secret platform-mcp key grafana-password (vault-secrets.yaml).
         # SIT has no viewer account yet -> admin; read-only enforced by
         # --disable-write/--disable-admin and the gateway tool filter.
         - name: GRAFANA_USERNAME
@@ -51,8 +51,8 @@ spec:
         - name: GRAFANA_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mcp-grafana-auth
-              key: password
+              name: platform-mcp
+              key: grafana-password
               optional: true
         ports:
         - name: grafana-sse

@@ -4,9 +4,7 @@ kind: VaultACLPolicy
 metadata:
   name: platform-mcp-reader
 spec:
-  # Secrets only (values never in Git):
-  #   kv/sit/platform/mcp           mcp_service_token, ssh_private_key_b64, ssh_mcp_http_token
-  #   kv/sit/platform/observability vmauth_password, grafana_admin_password (read by mcp-grafana)
+  # Secrets only; field list: services/sit-k3s-v6/platform-mcp-sit/SECRETS.md.
   paths:
     - path: kv/data/sit/platform/mcp
       capabilities: [read]

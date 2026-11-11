@@ -7,10 +7,6 @@ All references are `optional: true`, so pods start even if keys are missing.
 | Secret | Namespace | Key | Used by | Purpose |
 | --- | --- | --- | --- | --- |
 | `infra-mcp-auth` | `platform-mcp-dev` | `mcp-service-token` | `infrastructure-mcp-server` (env `MCP_SERVICE_TOKEN`) | Random service token for the gateway. Enforced as inbound `Authorization: Bearer` on `/mcp`, `/sse`, `/api/v1/*` by Infrastructure-MCP-Server builds that include ai-workspace-infra/Infrastructure-MCP-Server#17 (`/healthz` stays open for probes). Older images ignore it. Once enforced, every client of `mcp.svc.plus` must send the token. |
-| `infra-mcp-service-token` (ExternalSecret) | `platform-mcp-sit` | `mcp-service-token` ← `kv/sit/platform/mcp#mcp_service_token` | `infrastructure-mcp-server` (env `MCP_SERVICE_TOKEN`) | Gateway inbound Bearer token; replaces the bootstrap `infra-mcp-auth/mcp-service-token`. |
-| `mcp-grafana-auth` (ExternalSecret) | `platform-mcp-sit` | `password` ← `kv/sit/platform/observability#grafana_admin_password` | `mcp-grafana` (env `GRAFANA_PASSWORD`; `GRAFANA_USERNAME=admin` in Git) | Shared observability credential, referenced not copied. Admin-level (no viewer SA in SIT yet); read-only enforced by `--disable-write --disable-admin` + gateway `disabled_tools`. Replace with a viewer SA token (`grafana_mcp_sa_token`) when available. |
-| `infra-mcp-ssh` (ExternalSecret) | `platform-mcp-sit` | `ssh-private-key` ← Vault `kv/sit/platform/mcp#ssh_private_key_b64` (single-line base64; ESO `decodingStrategy: Base64` → raw key) | `ssh-mcp-server` sidecar (file `/var/run/secrets/ssh-mcp/ssh-private-key`) | Private key of the read-only `auditor` account on CMDB host targets. Never leaves the pod; other agents use SSH only via `mcp.svc.plus`. |
-| `infra-mcp-ssh` (ExternalSecret) | `platform-mcp-sit` | `ssh-mcp-http-token` ← `kv/sit/platform/mcp#ssh_mcp_http_token` | sidecar `SSH_MCP_HTTP_TOKEN` + gateway backend `bearer_token_env` | Random token for the localhost-only ssh-mcp-server HTTP endpoint (defence in depth). |
 
 Example (placeholders only):
 
@@ -31,8 +27,16 @@ Vault holds secrets only; usernames, URLs, hostnames and the `auditor` user are 
 
 | Vault path (API `kv/data/...`) | Fields | Owner |
 | --- | --- | --- |
-| `kv/sit/platform/mcp` | `mcp_service_token`, `ssh_private_key_b64`, `ssh_mcp_http_token` | MCP stack only |
+| `kv/sit/platform/mcp` | `mcp_service_token`, `ssh_private_key_b64` (single-line base64) | MCP stack only |
 | `kv/sit/platform/observability` | `vmauth_password`, `grafana_admin_password` | Observability stack (MCP only reads `grafana_admin_password`) |
+
+All three land in one ExternalSecret/Secret, `platform-mcp` (each Vault field referenced once):
+
+| Secret key | ← Vault field | Used by |
+| --- | --- | --- |
+| `mcp-service-token` | `kv/sit/platform/mcp#mcp_service_token` | gateway inbound Bearer (`MCP_SERVICE_TOKEN`, enforced from Infrastructure-MCP-Server#17) **and** ssh-mcp-server sidecar `SSH_MCP_HTTP_TOKEN`; the gateway's ssh backend sends it via `bearer_token_env: MCP_SERVICE_TOKEN` |
+| `ssh-private-key` | `kv/sit/platform/mcp#ssh_private_key_b64` (ESO `decodingStrategy: Base64` → raw key) | sidecar file `/var/run/secrets/ssh-mcp/ssh-private-key` (0600; kubelet adds group-read for fsGroup). Shared root/auditor/operator key; the sidecar logs in as `auditor`, so access is bounded by the OS account. Never leaves the pod. |
+| `grafana-password` | `kv/sit/platform/observability#grafana_admin_password` | mcp-grafana `GRAFANA_PASSWORD` (`GRAFANA_USERNAME=admin` in Git). Admin-level until a viewer SA token (`grafana_mcp_sa_token`) exists; read-only via `--disable-write --disable-admin` + gateway `disabled_tools`. |
 
 Identity: `security/vault/workload-identities/sit-k3s-v6-platform-mcp-reader.yaml`, policy
 `platform-mcp-reader` (read on those two paths). Until the fields, policy and role exist the
