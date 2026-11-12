@@ -106,11 +106,8 @@ patches:
         path: /spec/suspend
         value: true
 
-  # Pin every GitRepository in this candidate root to a reviewed main SHA.
-  # Service unit paths at this SHA already include the Contabo overlay.
-  # Do not change environments/clusters/sit-k3s-v6/source.yaml: the old
-  # cluster still follows branch main. Playbooks declarative_active will
-  # additionally pin the root source to the handover checkout SHA.
+  # Release tag is created on the merged commit containing this overlay.
+  # Issue a new immutable tag when advancing this candidate.
   - target:
       group: source.toolkit.fluxcd.io
       version: v1
@@ -119,4 +116,4 @@ patches:
       - op: replace
         path: /spec/ref
         value:
-          commit: 8fae9c2db8da3ef0994558ad24278912df411738
+          tag: sit-k3s-v6-contabo-r1
