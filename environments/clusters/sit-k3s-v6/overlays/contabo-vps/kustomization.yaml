@@ -1,0 +1,104 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../namespaces.yaml
+  - ../../root.yaml
+  - ../../source.yaml
+  - ../../unit-sources.yaml
+  - ../../postgresql-kustomization.yaml
+  - ../../observability-kustomization.yaml
+  - ../../vpa-kustomization.yaml
+  - ../../platform-mcp-kustomization.yaml
+  - ../../ingress-kustomization.yaml
+  - ../../external-dns-kustomization.yaml
+  - ../../web-saas-kustomization.yaml
+  - external-secrets-kustomization.yaml
+patches:
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: sit-k3s
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./environments/clusters/sit-k3s-v6/overlays/contabo-vps
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: postgresql-sit
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./services/sit-k3s-v6/overlays/contabo-vps/postgresql-sit
+      - op: replace
+        path: /spec/suspend
+        value: true
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: observability-sit
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./services/sit-k3s-v6/overlays/contabo-vps/observability-sit
+      - op: replace
+        path: /spec/suspend
+        value: true
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: vpa-sit
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./services/sit-k3s-v6/overlays/contabo-vps/vpa-sit
+      - op: replace
+        path: /spec/suspend
+        value: true
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: platform-mcp-sit
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./services/sit-k3s-v6/overlays/contabo-vps/platform-mcp-sit
+      - op: replace
+        path: /spec/suspend
+        value: true
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: ingress-sit
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./services/sit-k3s-v6/overlays/contabo-vps/ingress-sit
+      - op: replace
+        path: /spec/suspend
+        value: true
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: web-saas-sit
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/path
+        value: ./services/sit-k3s-v6/overlays/contabo-vps/web-saas-sit
+      - op: replace
+        path: /spec/suspend
+        value: true
