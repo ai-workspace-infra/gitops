@@ -1,0 +1,47 @@
+# SIT K3s V6 replacement host on Contabo VPS (manually created external host).
+# Scope of this declaration: Kubernetes identity (k3s_identity_*) only.
+# IaC/provider fields (account, region, instance, volume, firewall) are added
+# after IaC verifies the target; do not invent provider resource IDs here.
+# No IP addresses: the host is resolved by name through CMDB / operator inventory.
+global:
+  provider: contabo
+  environment: sit
+  project: svc.plus
+
+hosts:
+  - name: sit-k3s-v6
+    host_vars:
+      # Consumed by playbooks k3s_identity_bootstrap.yml (keys ^k3s_(platform|identity)_).
+      # Credentials are generated on the master and delivered to OS users
+      # root / operator / auditor as ~/.kube/identity-config (0600).
+      # The API endpoint is node-local; remote use requires a separate endpoint.
+      k3s_identity_environment: sit
+      k3s_identity_cluster: sit-k3s-v6
+      k3s_identity_api_server: https://127.0.0.1:6443
+      # K3s upstream default data dir; confirm on the host before the first run.
+      k3s_identity_tls_dir: /var/lib/rancher/k3s/server/tls
+      k3s_platform_install_dir: /var/lib/rancher/k3s
+      k3s_identity_vault_writer_role: github-actions-platform-ops-toolkit-sit-k3s-v6-identity-writer
+      k3s_identity_checks:
+        root:
+          - {verb: get, resource: nodes, namespace: flux-system, allowed: true}
+          - {verb: impersonate, resource: users, namespace: flux-system, allowed: true}
+        operator:
+          - {verb: get, resource: pods, namespace: web-saas-sit, allowed: true}
+          - {verb: get, resource: events, namespace: web-saas-sit, allowed: true}
+          - {verb: list, resource: replicasets.apps, namespace: web-saas-sit, allowed: true}
+          - {verb: update, resource: deployments/scale, namespace: web-saas-sit, allowed: true}
+          - {verb: get, resource: secrets, namespace: web-saas-sit, allowed: false}
+          - {verb: get, resource: pods/log, namespace: web-saas-sit, allowed: false}
+          - {verb: patch, resource: deployments.apps, namespace: web-saas-sit, allowed: false}
+          - {verb: get, resource: secrets, namespace: postgresql-sit, allowed: false}
+        auditor:
+          - {verb: get, resource: nodes, namespace: web-saas-sit, allowed: true}
+          - {verb: list, resource: pods, namespace: web-saas-sit, allowed: true}
+          - {verb: patch, resource: deployments.apps, namespace: web-saas-sit, allowed: false}
+          - {verb: create, resource: pods/exec, namespace: web-saas-sit, allowed: false}
+      # Identity verification waits until this Flux-owned RBAC graph has
+      # reconciled the GitOps commit selected for the run.
+      k3s_identity_rbac_kustomizations:
+        - name: cluster-identities-sit
+          namespace: flux-system
