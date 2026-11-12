@@ -13,6 +13,9 @@ resources:
   - ../../external-dns-kustomization.yaml
   - ../../web-saas-kustomization.yaml
   - external-secrets-kustomization.yaml
+  # Cluster-scoped RBAC for the root/operator/auditor Kubernetes identities;
+  # k3s_identity waits for this Kustomization before issuing credentials.
+  - ../../cluster-identities-kustomization.yaml
 patches:
   - target:
       group: kustomize.toolkit.fluxcd.io
