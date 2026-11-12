@@ -9,7 +9,13 @@ spec:
   - path: kv/data/CICD/domains/svc.plus
     capabilities:
     - read
+  - path: kv/data/prod/platform/domains/svc.plus
+    capabilities:
+    - read
   - path: kv/data/CICD/domains/xworktech.com
+    capabilities:
+    - read
+  - path: kv/data/prod/platform/domains/xworktech.com
     capabilities:
     - read
   - path: auth/token/lookup-self

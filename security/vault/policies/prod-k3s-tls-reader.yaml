@@ -6,5 +6,7 @@ spec:
   paths:
   - path: kv/data/CICD/domains/svc.plus
     capabilities: [read]
+  - path: kv/data/prod/platform/domains/svc.plus
+    capabilities: [read]
   - path: auth/token/lookup-self
     capabilities: [read]

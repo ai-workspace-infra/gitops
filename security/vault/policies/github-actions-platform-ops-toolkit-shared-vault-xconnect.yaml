@@ -12,6 +12,12 @@ spec:
   - path: kv/data/CICD/domains/svc.plus
     capabilities:
     - read
+  - path: kv/data/sit/platform/domains/svc.plus
+    capabilities:
+    - read
+  - path: kv/data/prod/platform/domains/svc.plus
+    capabilities:
+    - read
   - path: kv/data/CICD/github-app/daily-snapshot
     capabilities:
     - read
