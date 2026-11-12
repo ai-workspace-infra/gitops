@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../postgresql-sit
+patches:
+  - target:
+      version: v1
+      kind: PersistentVolume
+      name: pvc-6f08080a-7e6c-4554-8bbf-9487d81388b0
+    patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: PersistentVolume
+      metadata:
+        name: pvc-6f08080a-7e6c-4554-8bbf-9487d81388b0

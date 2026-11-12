@@ -1,0 +1,17 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultKubernetesJWTAuthRole
+metadata:
+  name: sit-k3s-v6-contabo-vps-observability-domain-tls-reader
+  description: SIT Contabo replacement cluster ESO identity for the shared observability TLS certificate.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_subject: system:serviceaccount:ingress-sit:observability-domain-tls-reader
+  bound_audiences: [vault-sit-k3s-v6-contabo-vps-observability-domain-tls-reader]
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 10m
+  token_max_ttl: 10m
+  token_explicit_max_ttl: 10m
+  token_policies: [sit-k3s-v6-observability-domain-tls-reader]

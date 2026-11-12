@@ -1,0 +1,31 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../ingress-sit
+patches:
+  - target:
+      group: external-secrets.io
+      version: v1
+      kind: SecretStore
+      name: observability-domain-tls-reader
+      namespace: ingress-sit
+    path: identity-patch.yaml
+  - target:
+      version: v1
+      kind: Ingress
+      name: sit-platform-ingress
+      namespace: ingress-sit
+    patch: |-
+      - op: replace
+        path: /metadata/annotations/external-dns.alpha.kubernetes.io~1target
+        value: sit-k3s-v6.svc.plus
+  - target:
+      group: gateway.networking.k8s.io
+      version: v1
+      kind: Gateway
+      name: caddy-gateway
+      namespace: ingress-sit
+    patch: |-
+      - op: replace
+        path: /metadata/annotations/external-dns.alpha.kubernetes.io~1target
+        value: sit-k3s-v6.svc.plus
