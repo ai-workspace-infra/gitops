@@ -18,9 +18,10 @@ hosts:
       k3s_identity_environment: sit
       k3s_identity_cluster: sit-k3s-v6
       k3s_identity_api_server: https://127.0.0.1:6443
-      # K3s upstream default data dir; confirm on the host before the first run.
-      k3s_identity_tls_dir: /var/lib/rancher/k3s/server/tls
-      k3s_platform_install_dir: /var/lib/rancher/k3s
+      # Verified on the host (auditor, 2026-11-12): /etc/rancher/k3s/config.yaml
+      # data-dir is /opt/rancher/k3s, the playbooks k3s_platform_install_dir
+      # default, so install_dir is not restated here.
+      k3s_identity_tls_dir: /opt/rancher/k3s/server/tls
       k3s_identity_vault_writer_role: github-actions-platform-ops-toolkit-sit-k3s-v6-identity-writer
       k3s_identity_checks:
         root:
