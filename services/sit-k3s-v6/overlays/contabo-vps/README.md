@@ -8,11 +8,13 @@ ownership changes the address behind that alias. The overlay itself contains no
 public IP and does not perform DNS writes.
 
 The environment root remains `environments/clusters/sit-k3s-v6`. The host-scoped
-Flux root is `environments/clusters/sit-k3s-v6/overlays/contabo-vps`; initially it
-installs namespaces and External Secrets only. The old SIT cluster RBAC identity
-unit remains suspended because it is not the replacement cluster's identity.
-Application units are added in ordered rollout stages after Vault workload
-identity and service-secret readiness are verified.
+Flux root is `environments/clusters/sit-k3s-v6/overlays/contabo-vps`; the first
+phase installs namespaces, External Secrets, and `cluster-identities-sit` (the
+RBAC graph that `k3s_identity` waits on). Application units stay suspended and
+are enabled in ordered rollout stages after Vault workload identity and
+service-secret readiness are verified. Every GitRepository in this overlay is
+pinned to the reviewed commit `8fae9c2db8da3ef0994558ad24278912df411738`
+(main as of gitops#890 / #896). The old cluster's root sources stay on `main`.
 
 The PostgreSQL and observability overlays deliberately remove the base static
 PersistentVolumes. Their Helm releases create fresh `local-path` claims on this
