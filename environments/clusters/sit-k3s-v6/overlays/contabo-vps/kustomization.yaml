@@ -129,4 +129,4 @@ patches:
       - op: replace
         path: /spec/ref
         value:
-          tag: sit-k3s-v6-contabo-r6
+          tag: sit-k3s-v6-contabo-r7
