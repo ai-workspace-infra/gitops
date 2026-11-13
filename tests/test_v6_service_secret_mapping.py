@@ -17,7 +17,21 @@ class ServiceSecrets(unittest.TestCase):
         for namespace, name, path, field in cases:
             docs = list(yaml.safe_load_all((ROOT/f'services/prod-k3s-v6/{namespace}/vault-secrets.yaml').read_text()))
             external = next(d for d in docs if d['kind'] == 'ExternalSecret' and d['metadata']['name'] == name)
-            self.assertEqual(external['spec']['data'], [{'secretKey': field, 'remoteRef': {'key': path, 'property': field}}])
+            if name == 'web-saas-secrets':
+                expected = [
+                    {'secretKey': 'INTERNAL_SERVICE_TOKEN', 'remoteRef': {'key': path, 'property': field}},
+                    {'secretKey': 'SMTP_USERNAME', 'remoteRef': {'key': 'prod/platform/smtp/google', 'property': 'username'}},
+                    {'secretKey': 'SMTP_PASSWORD', 'remoteRef': {'key': 'prod/platform/smtp/google', 'property': 'password'}},
+                ]
+                self.assertEqual(external['spec']['data'], expected)
+                template = external['spec']['target']['template']
+                self.assertEqual(template['data'], {
+                    'SMTP_HOST': 'smtp.gmail.com',
+                    'SMTP_PORT': '587',
+                    'SMTP_FROM': 'XWorkmate <{{ .SMTP_USERNAME }}>',
+                })
+            else:
+                self.assertEqual(external['spec']['data'], [{'secretKey': field, 'remoteRef': {'key': path, 'property': field}}])
             principal = external['spec']['secretStoreRef']['name']
             store = next(d for d in docs if d['kind'] == 'SecretStore' and d['metadata']['name'] == principal)
             jwt = store['spec']['provider']['vault']['auth']['jwt']
@@ -27,6 +41,8 @@ class ServiceSecrets(unittest.TestCase):
             self.assertEqual(jwt['kubernetesServiceAccountToken']['serviceAccountRef']['name'], operation['serviceAccount'])
             self.assertEqual(jwt['kubernetesServiceAccountToken']['audiences'], [operation['audience']])
             self.assertEqual(operation['allowedPath'], 'kv/data/' + path)
+            if name == 'web-saas-secrets':
+                self.assertNotIn('additionalAllowedPaths', operation)
             self.assertNotEqual(operation['deniedPath'], operation['allowedPath'])
             roles.add((operation['role'], operation['mount']))
         self.assertEqual(len(roles), 4)
