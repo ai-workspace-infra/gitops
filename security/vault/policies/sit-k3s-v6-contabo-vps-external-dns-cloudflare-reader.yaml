@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-contabo-vps-external-dns-cloudflare-reader
+  description: Read only the existing SIT Cloudflare provider token for Contabo ExternalDNS dry-run.
+spec:
+  paths:
+    - path: kv/data/sit/platform/cloudflare/feature-dns
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]

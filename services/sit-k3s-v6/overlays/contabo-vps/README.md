@@ -10,11 +10,13 @@ public IP and does not perform DNS writes.
 The environment root remains `environments/clusters/sit-k3s-v6`. The host-scoped
 Flux root is `environments/clusters/sit-k3s-v6/overlays/contabo-vps`; the first
 phase installs namespaces, External Secrets, and `cluster-identities-sit` (the
-RBAC graph that `k3s_identity` waits on). Application units stay suspended and
-are enabled in ordered rollout stages after Vault workload identity and
-service-secret readiness are verified. Every GitRepository in this overlay is
-pinned to the reviewed commit `8fae9c2db8da3ef0994558ad24278912df411738`
-(main as of gitops#890 / #896). The old cluster's root sources stay on `main`.
+RBAC graph that `k3s_identity` waits on). VPA is active after r3. The Contabo
+ExternalDNS unit is enabled separately with `--dry-run`; it reads the existing
+SIT Cloudflare token through ESO and must not write records. PostgreSQL,
+observability, MCP, ingress, and Web SaaS remain suspended. Every GitRepository
+in this overlay is pinned to the release tag `sit-k3s-v6-contabo-r4`, created
+on the merge commit containing this overlay. The old cluster's root sources
+stay on `main`.
 
 The PostgreSQL and observability overlays deliberately remove the base static
 PersistentVolumes. Their Helm releases create fresh `local-path` claims on this
@@ -34,10 +36,13 @@ K3s issuer before any ExternalSecret consumer is enabled.
 2. The
    root overlay points Flux at this directory while retaining the logical SIT
    cluster root and the existing `config-sit` Git source.
-3. The `external-secrets` unit installs the pinned ESO chart and its CRDs. Every
-   application Kustomization, including VPA, remains suspended in this initial
-   stage. `external-dns-sit` remains suspended in its existing root declaration;
-   this overlay does not write DNS.
+3. The `external-secrets` unit installs the pinned ESO chart and its CRDs. VPA
+   is already active. This overlay enables only ExternalDNS among the remaining
+   units, with an explicit `--dry-run` argument and domain filters for
+   `onwalk.net` and `svc.plus`; all other application Kustomizations remain
+   suspended. The ExternalDNS Vault role is limited to reading the existing
+   `feature-dns` credential. Verify Cloudflare zone-read access and dry-run
+   logs. DNS record changes remain a separate, later action.
 4. `security/vault/workload-identities/sit-k3s-v6-contabo-vps-*.yaml` declares
    three target-specific read-only role contracts. The approved Playbooks Vault
    identity owner must configure the dedicated JWT auth mount using the target
@@ -53,10 +58,11 @@ K3s issuer before any ExternalSecret consumer is enabled.
    observability overlays delete the old static PV declarations so Helm creates
    new claims. Do not enable web SaaS until its required Vault fields are
    migrated from plaintext placeholders and verified.
-7. Change DNS only after ingress and service acceptance. Keep the alias
-   `sit-k3s-v6.svc.plus` aimed at the old target until the new endpoint passes
-   HTTPS, application, and rollback checks; then update the authoritative DNS
-   record in its separately owned workflow.
+7. Keep ExternalDNS in dry-run while validating DNS intent. Change DNS only
+   after ingress and service acceptance. Keep the alias `sit-k3s-v6.svc.plus`
+   aimed at the old target until the new endpoint passes HTTPS, application,
+   and rollback checks; then update the authoritative DNS record in its
+   separately owned workflow.
 
 ## Validation
 

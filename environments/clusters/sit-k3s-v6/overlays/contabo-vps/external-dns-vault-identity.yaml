@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: external-dns-cloudflare-reader
+  namespace: external-dns
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: external-dns-cloudflare-reader
+  namespace: external-dns
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [external-dns-cloudflare-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: external-dns-cloudflare-reader
+  namespace: external-dns
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: external-dns-cloudflare-reader
