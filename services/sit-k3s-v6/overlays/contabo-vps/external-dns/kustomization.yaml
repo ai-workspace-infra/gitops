@@ -15,6 +15,9 @@ patches:
       - op: add
         path: /spec/values/domainFilters/-
         value: svc.plus
+      - op: replace
+        path: /spec/values/txtOwnerId
+        value: sit-k3s-v6-contabo-vps
       - op: add
         path: /spec/values/sources/-
         value: traefik-proxy

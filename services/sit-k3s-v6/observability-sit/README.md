@@ -18,3 +18,4 @@
   - 默认剔除 `host_processes` 进程采集，保护每日免费时间序列额度；
   - DataWay 凭据由 `datakit-dataway-reader` ESO 身份按只读 Vault policy 交付；不将 token/endpoint 值写入 Git。
   - PROD `prod-k3s-v6` 使用独立映射 `observability/datakit/bj-free`，两个集群只复用既有 KV mount 下的不同记录。
+  - Contabo SIT overlay 用 Flux Helm post-renderer 从固定版本 DataKit chart `2.16.1` 的 ClusterRole 中移除不需要的 `pods/exec` 权限；升级 chart 时必须复核该补丁仍定位到同一权限项。

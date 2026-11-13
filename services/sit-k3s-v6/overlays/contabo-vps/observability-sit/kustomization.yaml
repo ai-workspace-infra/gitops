@@ -7,6 +7,26 @@ resources:
   - vmagent-vault-secret.yaml
 patches:
   - target:
+      group: helm.toolkit.fluxcd.io
+      version: v2
+      kind: HelmRelease
+      name: datakit
+      namespace: observability-sit
+    patch: |-
+      - op: add
+        path: /spec/postRenderers
+        value:
+          - kustomize:
+              patches:
+                - target:
+                    group: rbac.authorization.k8s.io
+                    version: v1
+                    kind: ClusterRole
+                    name: datakit
+                  patch: |-
+                    - op: remove
+                      path: /rules/1/resources/11
+  - target:
       group: external-secrets.io
       version: v1
       kind: SecretStore
