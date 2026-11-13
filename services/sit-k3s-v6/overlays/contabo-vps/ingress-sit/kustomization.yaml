@@ -4,6 +4,25 @@ resources:
   - ../../../ingress-sit
 patches:
   - target:
+      group: helm.toolkit.fluxcd.io
+      version: v2
+      kind: HelmRelease
+      name: traefik-ingress
+      namespace: ingress-sit
+    patch: |-
+      apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      metadata:
+        name: traefik-ingress
+        namespace: ingress-sit
+      spec:
+        values:
+          service:
+            labels:
+              external-dns: contabo-sit
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: sit-k3s-v6-ingress.sit.onwalk.net
+  - target:
       group: external-secrets.io
       version: v1
       kind: SecretStore

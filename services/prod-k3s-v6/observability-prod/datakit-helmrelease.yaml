@@ -1,14 +1,14 @@
 # ==============================================================================
 # GitOps 商业可观测性服务控制契约 (Guance Cloud 香港商业版)
 # ==============================================================================
-# 1. 启用商业服务 (Enable Commercial Telemetry):
+# 1. 配置 DataKit 凭据映射 (Configure DataKit credential mapping):
 #    - spec.suspend: false
 #    - kustomization.yaml 正常纳管 datakit-helmrelease.yaml
-#    - datakit-vault-secret.yaml 绑定 key: observability/datakit/hk-commercial
+#    - PROD datakit-vault-secret.yaml 绑定 key: observability/datakit/bj-free
 #
 # 2. 停用商业服务 / 截断商业计费 (Stop / Cut-off Commercial Telemetry):
 #    - 方式 A (物理卸载，彻底停止上报): 在 kustomization.yaml 中注释 datakit-helmrelease.yaml，Flux 自动裁剪 DaemonSet
-#    - 方式 B (降级回免费版): 在 datakit-vault-secret.yaml 中将 key 改为 observability/datakit/bj-free
+#    - SIT 使用 observability/datakit/hk-commercial；PROD 使用 observability/datakit/bj-free。
 #    - 方式 C (就地静默缩容): 在 values.workload 中将 kind 设为 Deployment 并指定 replicas: 0，Pod 缩容为 0
 # ==============================================================================
 apiVersion: helm.toolkit.fluxcd.io/v2

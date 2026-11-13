@@ -46,7 +46,7 @@ spec:
   tls:
     secretName: console-tls
 ---
-# Universal AI Infrastructure MCP Server (https://mcp.svc.plus)
+# SIT AI Infrastructure MCP Server alias (https://mcp-sit.svc.plus)
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -62,7 +62,32 @@ spec:
     - web
     - websecure
   routes:
-    - match: Host(`mcp.svc.plus`) || Host(`mcp-sit.svc.plus`)
+    - match: Host(`mcp-sit.svc.plus`)
+      kind: Rule
+      services:
+        - name: infrastructure-mcp-server
+          namespace: platform-mcp-sit
+          port: 8080
+  tls:
+    secretName: shared-observability-tls
+---
+# Shared AI Infrastructure MCP Server alias stays with its existing DNS owner.
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: shared-mcp-svc-plus-route
+  namespace: ingress-sit
+  labels:
+    kustomize.toolkit.fluxcd.io/name: ingress-sit
+    kustomize.toolkit.fluxcd.io/namespace: flux-system
+    platform.svc.plus/cluster: sit-k3s-v6
+    platform.svc.plus/environment: sit
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    - match: Host(`mcp.svc.plus`)
       kind: Rule
       services:
         - name: infrastructure-mcp-server

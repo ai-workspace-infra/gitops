@@ -15,3 +15,9 @@ patches:
       - op: add
         path: /spec/values/domainFilters/-
         value: svc.plus
+      - op: add
+        path: /spec/values/sources/-
+        value: traefik-proxy
+      - op: add
+        path: /spec/values/extraArgs/-
+        value: --label-filter=external-dns=contabo-sit

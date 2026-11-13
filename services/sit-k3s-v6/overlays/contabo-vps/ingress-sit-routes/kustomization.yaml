@@ -6,6 +6,38 @@ resources:
   - internal-observability-write.yaml
 patches:
   - target:
+      group: traefik.io
+      version: v1alpha1
+      kind: IngressRoute
+      name: sit-platform-routes
+      namespace: ingress-sit
+    patch: |-
+      apiVersion: traefik.io/v1alpha1
+      kind: IngressRoute
+      metadata:
+        name: sit-platform-routes
+        namespace: ingress-sit
+        labels:
+          external-dns: contabo-sit
+        annotations:
+          external-dns.alpha.kubernetes.io/target: sit-k3s-v6-ingress.sit.onwalk.net
+  - target:
+      group: traefik.io
+      version: v1alpha1
+      kind: IngressRoute
+      name: sit-mcp-svc-plus-routes
+      namespace: ingress-sit
+    patch: |-
+      apiVersion: traefik.io/v1alpha1
+      kind: IngressRoute
+      metadata:
+        name: sit-mcp-svc-plus-routes
+        namespace: ingress-sit
+        labels:
+          external-dns: contabo-sit
+        annotations:
+          external-dns.alpha.kubernetes.io/target: sit-k3s-v6-ingress.sit.onwalk.net
+  - target:
       version: v1
       kind: ServiceAccount
       name: ingress-tls-reader
