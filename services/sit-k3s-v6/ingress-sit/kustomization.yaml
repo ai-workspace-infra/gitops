@@ -5,12 +5,5 @@ commonLabels:
   platform.svc.plus/environment: sit
   platform.svc.plus/cluster: sit-k3s-v6
 resources:
-  - vault-tls.yaml
-  - oci-repository.yaml
-  - business-networkpolicy.yaml
-  - traefik-crds.yaml
-  - traefik-helmrelease.yaml
-  - traefik-routes.yaml
-  - traefik-metrics-service.yaml
-  - shared-observability-routes.yaml
-  - shared-observability-vault-tls.yaml
+  - controller
+  - routes

@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../../ingress-sit/routes
+patches:
+  - target:
+      group: external-secrets.io
+      version: v1
+      kind: SecretStore
+      name: observability-domain-tls-reader
+      namespace: ingress-sit
+    path: ../ingress-sit/identity-patch.yaml

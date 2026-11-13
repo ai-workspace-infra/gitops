@@ -37,7 +37,7 @@ class V6ObservabilityAgentProbes(unittest.TestCase):
 
     def test_shared_query_routes_and_flagger_use_authenticated_vmauth(self):
         for path, service_namespace in (
-            ('services/sit-k3s-v6/ingress-sit/shared-observability-routes.yaml', 'observability-sit'),
+            ('services/sit-k3s-v6/ingress-sit/routes/shared-observability-routes.yaml', 'observability-sit'),
             ('services/prod-k3s-v6/ingress-prod/observability-ingest-route.yaml', 'observability-prod'),
         ):
             docs = [doc for doc in yaml.safe_load_all((ROOT / path).read_text()) if doc]
@@ -61,7 +61,7 @@ class V6ObservabilityAgentProbes(unittest.TestCase):
         secret_policy = next(item for item in policy['spec']['paths'] if item['path'].startswith('kv/'))
         self.assertEqual(secret_policy['capabilities'], ['read'])
         tls_docs = list(yaml.safe_load_all(
-            (ROOT / 'services/sit-k3s-v6/ingress-sit/shared-observability-vault-tls.yaml').read_text()
+            (ROOT / 'services/sit-k3s-v6/ingress-sit/routes/shared-observability-vault-tls.yaml').read_text()
         ))
         tls_external = next(doc for doc in tls_docs if doc and doc['kind'] == 'ExternalSecret')
         tls_store = next(doc for doc in tls_docs if doc and doc['kind'] == 'SecretStore')
@@ -76,14 +76,14 @@ class V6ObservabilityAgentProbes(unittest.TestCase):
             {'sit/platform/domains/svc.plus'},
         )
         self.assertEqual(secret_policy['path'], 'kv/data/CICD/observability')
-        for path in ('services/sit-k3s-v6/ingress-sit/shared-observability-vault-tls.yaml', 'services/prod-k3s-v6/observability-prod/observability-remote-write-secret.yaml', 'services/prod-k3s-v6/web-saas-prod/observability-query-auth.yaml'):
+        for path in ('services/sit-k3s-v6/ingress-sit/routes/shared-observability-vault-tls.yaml', 'services/prod-k3s-v6/observability-prod/observability-remote-write-secret.yaml', 'services/prod-k3s-v6/web-saas-prod/observability-query-auth.yaml'):
             text = (ROOT / path).read_text()
             self.assertNotIn('token: ', text)
             self.assertNotIn('sit-ingest-password', text)
 
     def test_billing_canary_and_traefik_service_routes(self):
         for cluster, canary_path, kustom_path, ingress_path, namespace in (
-            ('sit', 'services/sit-k3s-v6/web-saas-sit/canary-billing.yaml', 'services/sit-k3s-v6/web-saas-sit/kustomization.yaml', 'services/sit-k3s-v6/ingress-sit/traefik-routes.yaml', 'web-saas-sit'),
+            ('sit', 'services/sit-k3s-v6/web-saas-sit/canary-billing.yaml', 'services/sit-k3s-v6/web-saas-sit/kustomization.yaml', 'services/sit-k3s-v6/ingress-sit/routes/traefik-routes.yaml', 'web-saas-sit'),
             ('prod', 'services/prod-k3s-v6/web-saas-prod/canary-billing.yaml', 'services/prod-k3s-v6/web-saas-prod/kustomization.yaml', 'services/prod-k3s-v6/ingress-prod/traefik-routes.yaml', 'web-saas-prod'),
         ):
             canary = yaml.safe_load((ROOT / canary_path).read_text())
