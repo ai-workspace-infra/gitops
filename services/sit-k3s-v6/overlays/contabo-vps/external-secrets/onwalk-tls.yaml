@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sit-onwalk-tls-reader
+  namespace: external-secrets
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sit-onwalk-tls-reader
+  namespace: external-secrets
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [sit-onwalk-tls-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sit-onwalk-tls-reader
+  namespace: external-secrets
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sit-onwalk-tls-reader
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: sit-onwalk-tls-reader
+  namespace: external-secrets
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-sit-k3s-v6-contabo-vps
+          role: sit-k3s-v6-contabo-vps-onwalk-tls-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: sit-onwalk-tls-reader
+            audiences: [vault-sit-k3s-v6-contabo-vps-onwalk-tls-reader]
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: sit-domains-onwalk-net
+  namespace: external-secrets
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: SecretStore
+    name: sit-onwalk-tls-reader
+  target:
+    name: sit-domains-onwalk-net
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+    - secretKey: tls_fullchain_pem_b64
+      remoteRef:
+        key: CICD/domains/onwalk.net
+        property: tls_fullchain_pem_b64
+    - secretKey: tls_key_pem_b64
+      remoteRef:
+        key: CICD/domains/onwalk.net
+        property: tls_key_pem_b64
