@@ -46,6 +46,17 @@ class ServiceSecrets(unittest.TestCase):
             self.assertNotEqual(operation['deniedPath'], operation['allowedPath'])
             roles.add((operation['role'], operation['mount']))
         self.assertEqual(len(roles), 4)
+
+    def test_accounts_config_template_uses_real_workspace_smtp(self):
+        docs = list(yaml.safe_load_all((ROOT/'services/prod-k3s-v6/web-saas-prod/vault-secrets.yaml').read_text()))
+        external = next(d for d in docs if d.get('kind') == 'ExternalSecret' and d['metadata']['name'] == 'accounts-controller-config')
+        refs = {(item['secretKey'], item['remoteRef']['key'], item['remoteRef']['property']) for item in external['spec']['data']}
+        self.assertIn(('smtp-username', 'prod/platform/smtp/google', 'username'), refs)
+        self.assertIn(('smtp-password', 'prod/platform/smtp/google', 'password'), refs)
+        template = external['spec']['target']['template']['data']['account.yaml']
+        self.assertIn('smtp.gmail.com', template)
+        self.assertIn('.smtp-username', template)
+        self.assertIn('.smtp-password', template)
         admin = 'github-actions-platform-ops-toolkit-prod-k3s-v6-service-secret-admin'
         policy = yaml.safe_load((ROOT/f'security/vault/policies/{admin}.yaml').read_text())['spec']['paths']
         paths = {entry['path'] for entry in policy}

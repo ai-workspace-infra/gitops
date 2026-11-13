@@ -142,6 +142,7 @@ spec:
           XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
         secretRefs:
         - web-saas-secrets
+        - accounts-controller-config
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
