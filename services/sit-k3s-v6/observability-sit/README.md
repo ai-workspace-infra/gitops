@@ -11,7 +11,6 @@
 - **Vault 权威路径**：`kv/data/observability/datakit/bj-free`
 - **目标网关端点**：`https://cn3-openway.guance.com`
 - **指标集规范**：
-  - `caddy` (:80/metrics)
   - `postgresql` (:9187/metrics)
   - `kube-state-metrics` (:8080/metrics)
   - `node-exporter` (:9100/metrics)

@@ -88,16 +88,6 @@ spec:
                 service: postgresql
                 job: postgres-exporter
                 instance: prod-postgresql-0
-        - job_name: caddy
-          scrape_interval: 15s
-          static_configs:
-            - targets: ['caddy-ingress-caddy.ingress-sit.svc:80']
-              labels:
-                cluster: sit-k3s-v6
-                environment: sit
-                service: caddy
-                job: caddy
-                instance: caddy-ingress-caddy
         - job_name: traefik
           scrape_interval: 15s
           static_configs:
