@@ -44,7 +44,8 @@ spec:
                         args:
                           - -httpListenAddr=:8429
                           - -promscrape.config=/etc/vmagent/scrape.yml
-                          - -remoteWrite.url=http://observability-ingest-auth.observability-sit.svc:8427/api/v1/write
+                          - -remoteWrite.url=https://traefik-ingress.ingress-sit.svc.cluster.local/api/v1/write
+                          - -remoteWrite.tlsServerName=observability.svc.plus
                           - -remoteWrite.basicAuth.username=$(REMOTE_WRITE_USERNAME)
                           - -remoteWrite.basicAuth.passwordFile=/etc/vmagent/auth/password
                           - -remoteWrite.tmpDataPath=/var/lib/vmagent
@@ -272,7 +273,7 @@ spec:
         - target_label: __address__
           replacement: observability-agent-blackbox.observability-sit.svc:9115
       remoteWrite:
-        url: http://observability-ingest-auth.observability-sit.svc:8427/api/v1/write
+        url: https://traefik-ingress.ingress-sit.svc.cluster.local/api/v1/write
         secretName: observability-ingest-auth
         usernameKey: username
         passwordKey: password

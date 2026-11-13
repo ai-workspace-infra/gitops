@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: internal-observability-write
+  namespace: ingress-sit
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`traefik-ingress.ingress-sit.svc.cluster.local`) && Path(`/api/v1/write`)
+      kind: Rule
+      services:
+        - name: observability-ingest-auth
+          namespace: observability-sit
+          port: 8427
+  tls:
+    secretName: shared-observability-tls
