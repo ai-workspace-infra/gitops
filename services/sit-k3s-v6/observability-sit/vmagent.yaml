@@ -50,19 +50,6 @@ data:
               job: postgres-exporter
               instance: prod-postgresql-0
               environment: sit
-      - job_name: caddy
-        scrape_interval: 15s
-        metric_relabel_configs:
-          - source_labels: [__name__]
-            regex: 'caddy_.*'
-            action: keep
-        static_configs:
-          - targets: ['caddy-ingress-caddy.ingress-sit.svc:80']
-            labels:
-              service: caddy
-              job: caddy
-              instance: caddy-ingress-caddy
-              environment: sit
       - job_name: cadvisor
         scrape_interval: 15s
         scheme: https
