@@ -20,6 +20,7 @@ patches:
         labels:
           external-dns: contabo-sit
         annotations:
+          platform.svc.plus/external-dns-scope: contabo-sit
           external-dns.alpha.kubernetes.io/target: sit-k3s-v6-ingress.sit.onwalk.net
   - target:
       group: traefik.io
@@ -36,6 +37,7 @@ patches:
         labels:
           external-dns: contabo-sit
         annotations:
+          platform.svc.plus/external-dns-scope: contabo-sit
           external-dns.alpha.kubernetes.io/target: sit-k3s-v6-ingress.sit.onwalk.net
   - target:
       version: v1

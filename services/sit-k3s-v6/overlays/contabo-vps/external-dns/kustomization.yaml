@@ -21,3 +21,6 @@ patches:
       - op: add
         path: /spec/values/extraArgs/-
         value: --label-filter=external-dns=contabo-sit
+      - op: add
+        path: /spec/values/annotationFilter
+        value: platform.svc.plus/external-dns-scope=contabo-sit
