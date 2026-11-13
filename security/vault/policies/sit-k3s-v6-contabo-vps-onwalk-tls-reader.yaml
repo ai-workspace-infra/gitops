@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-contabo-vps-onwalk-tls-reader
+  description: Read only the SIT onwalk.net TLS material for ingress delivery.
+spec:
+  paths:
+    - path: kv/data/CICD/domains/onwalk.net
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]

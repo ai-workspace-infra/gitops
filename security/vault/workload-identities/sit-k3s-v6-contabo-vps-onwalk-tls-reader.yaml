@@ -1,0 +1,16 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultKubernetesJWTAuthRole
+metadata:
+  name: sit-k3s-v6-contabo-vps-onwalk-tls-reader
+  description: SIT Contabo reader for the onwalk.net TLS source.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_subject: system:serviceaccount:external-secrets:sit-onwalk-tls-reader
+  bound_audiences: [vault-sit-k3s-v6-contabo-vps-onwalk-tls-reader]
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 10m
+  token_max_ttl: 10m
+  token_explicit_max_ttl: 10m
+  token_policies: [sit-k3s-v6-contabo-vps-onwalk-tls-reader]
