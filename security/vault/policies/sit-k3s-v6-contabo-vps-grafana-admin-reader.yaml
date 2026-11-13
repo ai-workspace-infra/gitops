@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-contabo-vps-grafana-admin-reader
+  description: Read only the SIT Contabo Grafana admin credential.
+spec:
+  paths:
+    - path: kv/data/sit/observability/grafana
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]
