@@ -1,0 +1,16 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultKubernetesJWTAuthRole
+metadata:
+  name: sit-k3s-v6-contabo-vps-postgresql-admin-reader
+  description: SIT Contabo PostgreSQL admin credential reader.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_subject: system:serviceaccount:postgresql-sit:postgresql-admin-reader
+  bound_audiences: [vault-sit-k3s-v6-contabo-vps-postgresql-admin-reader]
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 10m
+  token_max_ttl: 10m
+  token_explicit_max_ttl: 10m
+  token_policies: [sit-k3s-v6-contabo-vps-postgresql-admin-reader]

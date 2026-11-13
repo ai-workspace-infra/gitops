@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-contabo-vps-postgresql-operator-reader
+  description: SIT Contabo PostgreSQL operator credential reader.
+spec:
+  paths:
+    - path: kv/data/sit/database/postgresql/operator
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]
