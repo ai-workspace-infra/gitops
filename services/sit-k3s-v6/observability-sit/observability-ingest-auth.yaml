@@ -187,6 +187,9 @@ spec:
         - podSelector:
             matchLabels:
               app.kubernetes.io/component: vmagent
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: observability-vmagent
       ports:
         - protocol: TCP
           port: 8427

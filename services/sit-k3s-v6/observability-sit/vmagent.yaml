@@ -97,13 +97,19 @@ spec:
           image: victoriametrics/vmagent:v1.101.0
           args:
             - -promscrape.config=/config/scrape.yml
-            - -remoteWrite.url=https://observability.svc.plus/ingest/metrics/api/v1/write
-            - -remoteWrite.basicAuth.username=observability
+            - -remoteWrite.url=http://observability-ingest-auth.observability-sit.svc:8427/api/v1/write
+            - -remoteWrite.basicAuth.username=$(REMOTE_WRITE_USERNAME)
             - -remoteWrite.basicAuth.passwordFile=/etc/vmagent-secret/password
             - -remoteWrite.tlsInsecureSkipVerify=true
             - -remoteWrite.urlRelabelConfig=/config/url-relabel-sit.yml
             - -remoteWrite.tmpDataPath=/buffer
             - -remoteWrite.maxDiskUsagePerURL=1GB
+          env:
+            - name: REMOTE_WRITE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: observability-remote-write
+                  key: username
           ports:
             - name: http
               containerPort: 8429
