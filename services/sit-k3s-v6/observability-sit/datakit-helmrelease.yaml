@@ -24,6 +24,7 @@ spec:
     workload:
       kind: DaemonSet
     datakit:
+      cluster_name_k8s: sit-k3s-v6
       dataway_secret_create: false
       dataway_secret_enabled: true
       dataway_secret_key: ENV_DATAWAY
