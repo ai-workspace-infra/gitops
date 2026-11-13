@@ -14,8 +14,6 @@ resources:
   - ../../external-dns-kustomization.yaml
   - ../../web-saas-kustomization.yaml
   - web-saas-canary-kustomization.yaml
-  - ../../../../../security/vault/policies/sit-k3s-v6-contabo-vps-web-saas-runtime-reader.yaml
-  - ../../../../../security/vault/workload-identities/sit-k3s-v6-contabo-vps-web-saas-runtime-reader.yaml
   - external-secrets-kustomization.yaml
   # Cluster-scoped RBAC for the root/operator/auditor Kubernetes identities;
   # k3s_identity waits for this Kustomization before issuing credentials.
@@ -156,4 +154,4 @@ patches:
       - op: replace
         path: /spec/ref
         value:
-          tag: sit-k3s-v6-contabo-r18
+          tag: sit-k3s-v6-contabo-r19
