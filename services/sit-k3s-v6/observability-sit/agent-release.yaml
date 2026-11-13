@@ -44,11 +44,17 @@ spec:
                         args:
                           - -httpListenAddr=:8429
                           - -promscrape.config=/etc/vmagent/scrape.yml
-                          - -remoteWrite.url=https://observability.svc.plus/ingest/metrics/api/v1/write
-                          - -remoteWrite.basicAuth.username=observability
+                          - -remoteWrite.url=http://observability-ingest-auth.observability-sit.svc:8427/api/v1/write
+                          - -remoteWrite.basicAuth.username=$(REMOTE_WRITE_USERNAME)
                           - -remoteWrite.basicAuth.passwordFile=/etc/vmagent/auth/password
                           - -remoteWrite.tmpDataPath=/var/lib/vmagent
                           - -remoteWrite.maxDiskUsagePerURL=256MiB
+                        env:
+                          - name: REMOTE_WRITE_USERNAME
+                            valueFrom:
+                              secretKeyRef:
+                                name: observability-ingest-auth
+                                key: username
           - target:
               kind: DaemonSet
               name: observability-agent
@@ -266,7 +272,7 @@ spec:
         - target_label: __address__
           replacement: observability-agent-blackbox.observability-sit.svc:9115
       remoteWrite:
-        url: https://observability.svc.plus/ingest/metrics/api/v1/write
+        url: http://observability-ingest-auth.observability-sit.svc:8427/api/v1/write
         secretName: observability-ingest-auth
         usernameKey: username
         passwordKey: password

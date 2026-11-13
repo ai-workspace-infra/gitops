@@ -2,7 +2,62 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - ../../../ingress-sit/routes
+  - onwalk-tls-cluster-secret-store.yaml
 patches:
+  - target:
+      version: v1
+      kind: ServiceAccount
+      name: ingress-tls-reader
+      namespace: ingress-sit
+    patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: ServiceAccount
+      metadata:
+        name: ingress-tls-reader
+        namespace: ingress-sit
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: ClusterRole
+      name: ingress-tls-reader-cluster
+    patch: |-
+      $patch: delete
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: ingress-tls-reader-cluster
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: ClusterRoleBinding
+      name: ingress-tls-reader-binding
+    patch: |-
+      $patch: delete
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: ingress-tls-reader-binding
+  - target:
+      group: external-secrets.io
+      version: v1
+      kind: SecretStore
+      name: ingress-tls-reader
+      namespace: ingress-sit
+    patch: |-
+      $patch: delete
+      apiVersion: external-secrets.io/v1
+      kind: SecretStore
+      metadata:
+        name: ingress-tls-reader
+        namespace: ingress-sit
+  - target:
+      group: external-secrets.io
+      version: v1
+      kind: ExternalSecret
+      name: '^(console-tls|accounts-tls|billing-tls)$'
+      namespace: ingress-sit
+    path: onwalk-tls-external-secret-patch.yaml
   - target:
       group: external-secrets.io
       version: v1
