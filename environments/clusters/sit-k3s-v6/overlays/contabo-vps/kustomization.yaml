@@ -53,7 +53,7 @@ patches:
         value: ./services/sit-k3s-v6/overlays/contabo-vps/observability-sit
       - op: replace
         path: /spec/suspend
-        value: true
+        value: false
   - target:
       group: kustomize.toolkit.fluxcd.io
       version: v1
@@ -143,4 +143,4 @@ patches:
       - op: replace
         path: /spec/ref
         value:
-          tag: sit-k3s-v6-contabo-r10
+          tag: sit-k3s-v6-contabo-r12
