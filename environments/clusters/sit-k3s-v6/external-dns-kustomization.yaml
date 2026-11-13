@@ -4,8 +4,8 @@ metadata:
   name: external-dns-sit
   namespace: flux-system
 spec:
-  # 可选开关：suspend: false 为开启，suspend: true 为关闭（默认挂起，待注入 Cloudflare 凭据后按需激活）
-  suspend: true
+  # ExternalDNS 自动更新由 GitOps 管理；要暂停 DNS 写入时显式 suspend。
+  suspend: false
   interval: 5m
   prune: true
   wait: false

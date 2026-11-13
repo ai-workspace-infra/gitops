@@ -13,8 +13,5 @@ patches:
       namespace: external-dns
     patch: |-
       - op: add
-        path: /spec/values/extraArgs/-
-        value: --dry-run
-      - op: add
         path: /spec/values/domainFilters/-
         value: svc.plus
