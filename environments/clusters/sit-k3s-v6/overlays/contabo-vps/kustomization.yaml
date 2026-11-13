@@ -5,7 +5,6 @@ resources:
   - ../../root.yaml
   - ../../source.yaml
   - ../../unit-sources.yaml
-  - external-dns-vault-identity.yaml
   - ../../postgresql-kustomization.yaml
   - ../../observability-kustomization.yaml
   - ../../vpa-kustomization.yaml
@@ -130,4 +129,4 @@ patches:
       - op: replace
         path: /spec/ref
         value:
-          tag: sit-k3s-v6-contabo-r4
+          tag: sit-k3s-v6-contabo-r5
