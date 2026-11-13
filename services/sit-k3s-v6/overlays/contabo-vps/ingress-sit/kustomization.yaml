@@ -10,22 +10,38 @@ patches:
       name: observability-domain-tls-reader
       namespace: ingress-sit
     path: identity-patch.yaml
-  - target:
-      version: v1
+  - patch: |-
+      $patch: delete
+      apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      metadata:
+        name: caddy-ingress
+        namespace: ingress-sit
+  - patch: |-
+      $patch: delete
+      apiVersion: networking.k8s.io/v1
       kind: Ingress
-      name: sit-platform-ingress
-      namespace: ingress-sit
-    patch: |-
-      - op: replace
-        path: /metadata/annotations/external-dns.alpha.kubernetes.io~1target
-        value: sit-k3s-v6.svc.plus
-  - target:
-      group: gateway.networking.k8s.io
-      version: v1
+      metadata:
+        name: sit-platform-ingress
+        namespace: ingress-sit
+  - patch: |-
+      $patch: delete
+      apiVersion: gateway.networking.k8s.io/v1
       kind: Gateway
-      name: caddy-gateway
-      namespace: ingress-sit
-    patch: |-
-      - op: replace
-        path: /metadata/annotations/external-dns.alpha.kubernetes.io~1target
-        value: sit-k3s-v6.svc.plus
+      metadata:
+        name: caddy-gateway
+        namespace: ingress-sit
+  - patch: |-
+      $patch: delete
+      apiVersion: gateway.networking.k8s.io/v1
+      kind: HTTPRoute
+      metadata:
+        name: sit-platform-routes
+        namespace: ingress-sit
+  - patch: |-
+      $patch: delete
+      apiVersion: networking.k8s.io/v1
+      kind: NetworkPolicy
+      metadata:
+        name: caddy-ingress-metrics
+        namespace: ingress-sit
