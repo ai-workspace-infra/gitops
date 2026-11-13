@@ -97,10 +97,10 @@ spec:
           image: victoriametrics/vmagent:v1.101.0
           args:
             - -promscrape.config=/config/scrape.yml
-            - -remoteWrite.url=http://observability-ingest-auth.observability-sit.svc:8427/api/v1/write
+            - -remoteWrite.url=https://traefik-ingress.ingress-sit.svc.cluster.local/api/v1/write
             - -remoteWrite.basicAuth.username=$(REMOTE_WRITE_USERNAME)
             - -remoteWrite.basicAuth.passwordFile=/etc/vmagent-secret/password
-            - -remoteWrite.tlsInsecureSkipVerify=true
+            - -remoteWrite.tlsServerName=observability.svc.plus
             - -remoteWrite.urlRelabelConfig=/config/url-relabel-sit.yml
             - -remoteWrite.tmpDataPath=/buffer
             - -remoteWrite.maxDiskUsagePerURL=1GB

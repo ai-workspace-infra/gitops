@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - ../../../ingress-sit/routes
   - onwalk-tls-cluster-secret-store.yaml
+  - internal-observability-write.yaml
 patches:
   - target:
       version: v1
