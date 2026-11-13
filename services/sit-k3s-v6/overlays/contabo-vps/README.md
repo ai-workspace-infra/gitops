@@ -14,7 +14,7 @@ RBAC graph that `k3s_identity` waits on). VPA is active after r3. The Contabo
 ExternalDNS unit is enabled separately with `--dry-run`; it reads the existing
 SIT Cloudflare token through ESO and must not write records. PostgreSQL,
 observability, MCP, ingress, and Web SaaS remain suspended. Every GitRepository
-in this overlay is pinned to the release tag `sit-k3s-v6-contabo-r4`, created
+in this overlay is pinned to the release tag `sit-k3s-v6-contabo-r5`, created
 on the merge commit containing this overlay. The old cluster's root sources
 stay on `main`.
 
