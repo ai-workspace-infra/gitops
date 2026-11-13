@@ -1,0 +1,33 @@
+apiVersion: flagger.app/v1beta1
+kind: Canary
+metadata:
+  name: web-saas-billing
+  namespace: web-saas-sit
+spec:
+  provider: traefik
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: web-saas-billing
+  progressDeadlineSeconds: 120
+  service:
+    port: 80
+    targetPort: 8080
+    gateways:
+      - traefik
+    hosts:
+      - billing-sit.onwalk.net
+      - billing.sit.onwalk.net
+  analysis:
+    interval: 15s
+    threshold: 5
+    maxWeight: 50
+    stepWeight: 10
+    metrics:
+      - name: traefik-error-rate
+        templateRef:
+          name: traefik-error-rate
+          namespace: web-saas-sit
+        thresholdRange:
+          max: 1
+        interval: 2m

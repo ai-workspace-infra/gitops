@@ -13,6 +13,9 @@ resources:
   - ../../ingress-routes-kustomization.yaml
   - ../../external-dns-kustomization.yaml
   - ../../web-saas-kustomization.yaml
+  - web-saas-canary-kustomization.yaml
+  - ../../../../../security/vault/policies/sit-k3s-v6-contabo-vps-web-saas-runtime-reader.yaml
+  - ../../../../../security/vault/workload-identities/sit-k3s-v6-contabo-vps-web-saas-runtime-reader.yaml
   - external-secrets-kustomization.yaml
   # Cluster-scoped RBAC for the root/operator/auditor Kubernetes identities;
   # k3s_identity waits for this Kustomization before issuing credentials.
@@ -132,6 +135,16 @@ patches:
       - op: replace
         path: /spec/suspend
         value: false
+  - target:
+      group: kustomize.toolkit.fluxcd.io
+      version: v1
+      kind: Kustomization
+      name: web-saas-sit-canary
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/suspend
+        value: false
 
   # Release tag is created on the merged commit containing this overlay.
   # Issue a new immutable tag when advancing this candidate.
@@ -143,4 +156,4 @@ patches:
       - op: replace
         path: /spec/ref
         value:
-          tag: sit-k3s-v6-contabo-r17
+          tag: sit-k3s-v6-contabo-r18
