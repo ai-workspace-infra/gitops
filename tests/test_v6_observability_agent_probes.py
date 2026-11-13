@@ -49,6 +49,8 @@ class V6ObservabilityAgentProbes(unittest.TestCase):
         template = next(yaml.safe_load_all((ROOT / 'services/prod-k3s-v6/web-saas-prod/canary-accounts.yaml').read_text()))
         provider = template['spec']['provider']
         self.assertEqual(provider['address'], 'https://observability.svc.plus')
+        self.assertIn('service=~', template['spec']['query'])
+        self.assertNotIn('exported_service', template['spec']['query'])
         self.assertFalse(provider['insecureSkipVerify'])
         self.assertEqual(provider['secretRef']['name'], 'observability-query-auth')
 
