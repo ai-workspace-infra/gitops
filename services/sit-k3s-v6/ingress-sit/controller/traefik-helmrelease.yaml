@@ -8,62 +8,68 @@ spec:
   interval: 5m
   releaseName: traefik-ingress
   targetNamespace: ingress-sit
-  dependsOn:
-    - name: traefik-crds
-  chartRef:
-    kind: OCIRepository
-    name: web-saas-fullstack-chart
+  chart:
+    spec:
+      chart: traefik
+      version: "42.3.0"
+      sourceRef:
+        kind: HelmRepository
+        name: traefik
+        namespace: ingress-sit
   install:
+    crds: CreateReplace
     remediation:
       retries: 2
   upgrade:
+    crds: CreateReplace
     remediation:
       retries: 2
   values:
-    global:
-      environment: sit
-      expectedNamespace: ingress-sit
-    console: {enabled: false}
-    accounts: {enabled: false}
-    billing: {enabled: false}
-    content: {enabled: false}
-    edgeGateway: {enabled: false}
-    postgresql: {enabled: false}
-    caddy: {enabled: false}
-    stunnelClient: {enabled: false}
-    stunnelServer: {enabled: false}
-    flagger: {enabled: false}
-    traefik:
+    commonLabels:
+      platform.svc.plus/cluster: sit-k3s-v6
+      platform.svc.plus/environment: sit
+    deployment:
       enabled: true
-      deployment:
-        podLabels:
-          platform.svc.plus/cluster: sit-k3s-v6
-          platform.svc.plus/environment: sit
-        replicas: 1
-      service:
+      kind: Deployment
+      replicas: 1
+      podLabels:
+        platform.svc.plus/cluster: sit-k3s-v6
+        platform.svc.plus/environment: sit
+    service:
+      enabled: true
+      single: true
+      spec:
+        type: LoadBalancer
+    ports:
+      web:
+        port: 8000
+        exposedPort: 80
+      websecure:
+        port: 8443
+        exposedPort: 443
+      metrics:
+        port: 9100
+        expose:
+          default: false
+    providers:
+      kubernetesCRD:
         enabled: true
-        single: true
-        spec:
-          type: LoadBalancer
-      ports:
-        web:
-          port: 8000
-          exposedPort: 80
-        websecure:
-          port: 8443
-          exposedPort: 443
-      providers:
-        kubernetesCRD:
-          enabled: true
-          allowCrossNamespace: true
-        kubernetesIngress:
-          enabled: true
-          publishedService:
-            enabled: false
-      resources:
-        requests:
-          cpu: 50m
-          memory: 64Mi
-        limits:
-          cpu: 200m
-          memory: 128Mi
+        allowCrossNamespace: true
+        allowExternalNameServices: true
+      kubernetesIngress:
+        enabled: true
+        publishedService:
+          enabled: false
+    metrics:
+      prometheus:
+        entryPoint: metrics
+        addRoutersLabels: true
+        service:
+          enabled: false
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
