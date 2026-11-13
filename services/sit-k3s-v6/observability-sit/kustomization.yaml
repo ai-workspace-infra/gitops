@@ -13,6 +13,7 @@ resources:
   - grafana-restored-postgres.yaml
   - source-grafana-general-0.yaml
   - starsl-k8s-dashboard.yaml
+  - caddy-dashboard.yaml
   - postgres-unified-dashboard.yaml
   - observability-ingest-auth.yaml
   - agent-release.yaml

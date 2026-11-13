@@ -64,6 +64,7 @@ spec:
       - progressive-release-dashboard
       - source-grafana-general-0
       - starsl-k8s-dashboard
+      - caddy-dashboard
       - postgres-unified-dashboard
       - grafana-restored-postgres
     - name: import-alerts
