@@ -144,8 +144,10 @@ patches:
         path: /spec/suspend
         value: false
 
-  # Release tag is created on the merged commit containing this overlay.
-  # Issue a new immutable tag when advancing this candidate.
+  # Release model: the root source `config-sit` watches branch `main`; the
+  # release tag below is configuration inside `main` and pins every child
+  # source. To advance a release: merge a PR that bumps this tag, then create
+  # the immutable tag on that merge commit (Flux picks it up from `main`).
   - target:
       group: source.toolkit.fluxcd.io
       version: v1
@@ -154,4 +156,16 @@ patches:
       - op: replace
         path: /spec/ref
         value:
-          tag: sit-k3s-v6-contabo-r20
+          tag: sit-k3s-v6-contabo-r21
+  # Root source follows main (applied after the tag patch above).
+  - target:
+      group: source.toolkit.fluxcd.io
+      version: v1
+      kind: GitRepository
+      name: config-sit
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/ref
+        value:
+          branch: main
