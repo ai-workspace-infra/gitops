@@ -4,8 +4,15 @@
 # The Hub runs on the node as systemd service qmd-hub-syncd (playbooks role
 # roles/vhosts/qmd_hub), bound only to the CNI bridge address 10.42.0.1:8182
 # (host ufw allows 10.42.0.0/16 only). Traefik terminates TLS with the existing
-# *.svc.plus certificate and forwards only /api/v1/sync/*; the API itself
-# enforces a Bearer token. The MCP/QMD query listener (127.0.0.1:8181) is not exposed.
+# *.svc.plus certificate. Every path of qmd.svc.plus passes the forwardAuth
+# middleware below first (no anonymous path, /health included). Accepted
+# credentials, same model as desktop.svc.plus (ai-desktop-lab/xworkmate-remote-desktop):
+#   - PROD accounts.svc.plus session: Bearer token or `xc_session` cookie
+#     (domain .svc.plus), introspected at https://accounts.svc.plus/api/auth/session
+#     and limited to allowed roles/emails (role vars qmd_hub_allowed_*);
+#   - the Spoke machine sync token (0600 file on the Hub, never in Git).
+# The backend re-checks the same credentials. The MCP/QMD query listener
+# (127.0.0.1:8181) is not exposed.
 apiVersion: v1
 kind: Service
 metadata:
@@ -43,6 +50,26 @@ endpoints:
       ready: true
 ---
 apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: qmd-hub-accounts-auth
+  namespace: ingress-sit
+  labels:
+    app.kubernetes.io/part-of: qmd-hub
+spec:
+  forwardAuth:
+    address: http://qmd-hub-sync.ingress-sit.svc.cluster.local:8182/api/v1/sync/auth
+    trustForwardHeader: false
+    authRequestHeaders:
+      - Authorization
+      - Cookie
+      - Accept
+    authResponseHeaders:
+      - X-Auth-Method
+      - X-Auth-Email
+    maxResponseBodySize: 65536
+---
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: qmd-hub-sync-route
@@ -61,8 +88,10 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`qmd.svc.plus`) && PathPrefix(`/api/v1/sync/`)
+    - match: Host(`qmd.svc.plus`)
       kind: Rule
+      middlewares:
+        - name: qmd-hub-accounts-auth
       services:
         - name: qmd-hub-sync
           port: 8182
