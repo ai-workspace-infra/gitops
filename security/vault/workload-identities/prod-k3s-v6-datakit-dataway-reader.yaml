@@ -1,0 +1,17 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultKubernetesJWTAuthRole
+metadata:
+  name: prod-k3s-v6-datakit-dataway-reader
+  description: PROD DataKit ESO identity for the declared Beijing DataWay record.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_subject: system:serviceaccount:observability-prod:datakit-dataway-reader
+  bound_audiences: [vault-prod-k3s-v6-datakit-dataway-reader]
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 10m
+  token_max_ttl: 10m
+  token_explicit_max_ttl: 10m
+  token_policies: [prod-k3s-v6-datakit-dataway-reader]

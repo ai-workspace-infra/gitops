@@ -24,6 +24,7 @@ spec:
     workload:
       kind: DaemonSet
     datakit:
+      cluster_name_k8s: sit-k3s-v6
       dataway_secret_create: false
       dataway_secret_enabled: true
       dataway_secret_key: ENV_DATAWAY
@@ -47,10 +48,10 @@ spec:
             election = false
             [inputs.prom.tags]
               cluster = "sit-k3s-v6"
-              environment = "dev"
+              environment = "sit"
               env = "sit"
               service = "postgresql"
-              instance = "prod-postgresql-0"
+              instance = "postgresql-postgresql-0"
               db_instance = "postgresql"
               host = "sit-k3s-v6"
       - name: kube-state-metrics.conf
@@ -65,7 +66,7 @@ spec:
             election = false
             [inputs.prom.tags]
               cluster = "sit-k3s-v6"
-              environment = "dev"
+              environment = "sit"
               env = "sit"
               service = "kube-state-metrics"
               job = "kube-state-metrics"
@@ -82,7 +83,7 @@ spec:
             election = false
             [inputs.prom.tags]
               cluster = "sit-k3s-v6"
-              environment = "dev"
+              environment = "sit"
               env = "sit"
               service = "node-exporter"
               job = "node-exporter"
@@ -106,7 +107,7 @@ spec:
               token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
             [inputs.prom.tags]
               cluster = "sit-k3s-v6"
-              environment = "dev"
+              environment = "sit"
               env = "sit"
               service = "cadvisor"
               job = "cadvisor"
@@ -128,7 +129,7 @@ spec:
               token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
             [inputs.prom.tags]
               cluster = "sit-k3s-v6"
-              environment = "dev"
+              environment = "sit"
               env = "sit"
               service = "kubelet"
               job = "kubelet"

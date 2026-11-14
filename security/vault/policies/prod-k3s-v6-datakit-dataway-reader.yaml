@@ -1,0 +1,12 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: prod-k3s-v6-datakit-dataway-reader
+  description: PROD DataKit may read only the declared DataWay runtime record.
+spec:
+  paths:
+    - path: kv/data/observability/datakit/bj-free
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]

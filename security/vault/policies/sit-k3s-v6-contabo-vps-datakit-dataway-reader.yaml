@@ -1,0 +1,12 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-contabo-vps-datakit-dataway-reader
+  description: SIT Contabo DataKit may read only the declared DataWay runtime record.
+spec:
+  paths:
+    - path: kv/data/observability/datakit/hk-commercial
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]
