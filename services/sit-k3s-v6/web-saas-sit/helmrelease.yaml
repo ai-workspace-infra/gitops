@@ -139,6 +139,7 @@ spec:
           POSTGRES_USER: postgres
           DB_NAME: account
           XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
+          SUBSCRIPTION_GRACE_PERIOD: "72h"
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
@@ -158,6 +159,7 @@ spec:
           DB_NAME: account
           BILLING_INGEST_MODE: push
           DEFAULT_REGION: jp
+          ARREARS_SUSPEND_THRESHOLD: "72h"
           IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.03.4@sha256:0dbbe1fc63685ba9f9703114210d7e3e61d962b77f62ad87be145354a7e9bc3d
         secretRefs:
         - web-saas-secrets

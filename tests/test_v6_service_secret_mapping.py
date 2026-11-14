@@ -54,6 +54,17 @@ class ServiceSecrets(unittest.TestCase):
             self.assertIn('sys/policies/acl/' + role, paths)
             self.assertIn('auth/' + mount + '/role/' + role, paths)
 
+    def test_accounts_stripe_external_secret_includes_portal_configuration_id(self):
+        docs = list(yaml.safe_load_all((ROOT / 'services/prod-k3s-v6/web-saas-prod/vault-secrets.yaml').read_text()))
+        external = next(d for d in docs if d['kind'] == 'ExternalSecret' and d['metadata']['name'] == 'accounts-stripe')
+        self.assertEqual(external['spec']['secretStoreRef']['name'], 'web-saas-secrets-reader')
+        self.assertEqual(external['spec']['data'], [
+            {'secretKey': 'STRIPE_MODE', 'remoteRef': {'key': 'prod/accounts/runtime', 'property': 'STRIPE_MODE'}},
+            {'secretKey': 'STRIPE_SECRET_KEY', 'remoteRef': {'key': 'prod/accounts/runtime', 'property': 'STRIPE_SECRET_KEY'}},
+            {'secretKey': 'STRIPE_WEBHOOK_SECRET', 'remoteRef': {'key': 'prod/accounts/runtime', 'property': 'STRIPE_WEBHOOK_SECRET'}},
+            {'secretKey': 'STRIPE_PORTAL_CONFIGURATION_ID', 'remoteRef': {'key': 'prod/accounts/runtime', 'property': 'STRIPE_PORTAL_CONFIGURATION_ID'}},
+        ])
+
 
 if __name__ == '__main__':
     unittest.main()
