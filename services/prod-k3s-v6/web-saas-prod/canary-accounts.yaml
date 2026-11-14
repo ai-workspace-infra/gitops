@@ -60,7 +60,7 @@ spec:
       - accounts.svc.plus
   analysis:
     interval: 15s
-    threshold: 5
+    threshold: 10
     maxWeight: 50
     stepWeight: 10
     metrics:
