@@ -109,7 +109,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:v2026.11.14-r2@sha256:a5668682293a13e9489eb69fb6df79500a11da78b4154ee9406fb85bfc0781a0
+        image: ghcr.io/ai-workspace-services/console:v2026.11.14-r3@sha256:89d26b2d0e31817404b986762cec23d56449ff49ee9c1a570a28c4cc2fa1ea9d
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
@@ -134,7 +134,7 @@ spec:
       enabled: true
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.14-r2@sha256:095f42bcca6f88db839ce03ae961df76b4a1788ecde1bd9ef52eb5699a08636a
+          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.14-r3@sha256:3e0ce7323fce30ada579e820ddb633d280b045e086bc8737fc1546613cf7f15e
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -146,7 +146,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:v2026.11.14-r2@sha256:095f42bcca6f88db839ce03ae961df76b4a1788ecde1bd9ef52eb5699a08636a
+        image: ghcr.io/ai-workspace-services/accounts:v2026.11.14-r3@sha256:3e0ce7323fce30ada579e820ddb633d280b045e086bc8737fc1546613cf7f15e
         resources:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 256Mi}
@@ -161,11 +161,11 @@ spec:
           BILLING_INGEST_MODE: push
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
-          IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.14-r2@sha256:cdea4ff2f21be3ca26a0c537cfd4be191043e806271eb26ddadfb1c11455a7a1
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.14-r3@sha256:9c81eefa5724b57ec8a46bd2717dda582870b11f64e2256f6493973984d09a61
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
-        image: ghcr.io/ai-workspace-services/billing-service:v2026.11.14-r2@sha256:cdea4ff2f21be3ca26a0c537cfd4be191043e806271eb26ddadfb1c11455a7a1
+        image: ghcr.io/ai-workspace-services/billing-service:v2026.11.14-r3@sha256:9c81eefa5724b57ec8a46bd2717dda582870b11f64e2256f6493973984d09a61
         probes:
           startupProbe:
             httpGet:
