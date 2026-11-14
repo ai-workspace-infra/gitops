@@ -1,91 +1,106 @@
-# Legacy (non-V6) environments marked offline. Marker only:
-# - nothing is deleted; no running server, Flux root or PROD workload is changed;
-# - no Flux prune; IaC lifecycle is set to `retired` only for non-PROD targets
-#   (retired targets cannot plan/apply/destroy; state keys are unchanged);
-# - PROD v5 entries keep their lifecycle until a reviewed maintenance change.
-# Current environments: SIT-K3S-V6 (environments/clusters/sit-k3s-v6),
-# PROD-K3S-V6 (environments/clusters/prod-k3s-v6). Hostnames only.
+# Legacy (non-V6) environments marked offline and purged.
+# Historical note:
+# - Marked offline on 2026-11-11 by owner (t568u)
+# - Physically purged on 2026-11-14 per cleanup chore (PR #928)
+# - Active environments: SIT-K3S-V6 (environments/clusters/sit-k3s-v6),
+#   PROD-K3S-V6 (environments/clusters/prod-k3s-v6).
 apiVersion: gitops.svc.plus/v1alpha1
 kind: LegacyOfflineRegistry
 metadata:
   name: legacy-offline
   marked_at: '2026-11-11'
+  purged_at: '2026-11-14'
   authorized_by: owner (t568u)
 items:
 - kind: cluster
   path: environments/clusters/dev-k3s-v5
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "DEV-K3S-V5 Flux root (incl. platform-mcp-dev -> services/platform-mcp/dev-k3s-v5)"
   superseded_by: "environments/clusters/sit-k3s-v6"
 - kind: cluster
   path: environments/clusters/prod-web-saas-k3s-v5
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "PROD web-saas K3s v5 Flux root"
   superseded_by: "environments/clusters/prod-k3s-v6"
 - kind: cluster
   path: environments/clusters/prod-web-saas-k3s-v5-observability-bridge
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "PROD v5 observability bridge"
   superseded_by: "environments/clusters/prod-k3s-v6"
 - kind: cluster
   path: environments/clusters/prod
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "pre-K3s PROD Flux root (accounts/console/postgresql/observability)"
   superseded_by: "environments/clusters/prod-k3s-v6"
 - kind: cluster
   path: environments/clusters/pre
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "pre-K3s PRE Flux root (accounts/console/stunnel-client)"
   superseded_by: "environments/clusters/sit-k3s-v6"
 - kind: service
   path: services/platform-mcp/dev-k3s-v5
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "legacy MCP gateway unit (dev-k3s-v5)"
   superseded_by: "services/sit-k3s-v6/platform-mcp-sit"
 - kind: service
   path: services/dev-k3s-v6/platform-mcp-dev
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "orphan MCP gateway unit (no cluster root references it)"
   superseded_by: "services/sit-k3s-v6/platform-mcp-sit"
 - kind: host
   path: topology/dev/k3s-v5/existing-host.yaml
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "existing host dev-k3s-v5 (dev-k3s-v5.svc.plus)"
   superseded_by: "sit-k3s-v6 (CMDB)"
 - kind: iac-target
   path: iac/targets/dev-akamai-dev-k3s-v5.yaml
-  status: offline
-  description: "IaC target dev-akamai-dev-k3s-v5 (lifecycle -> retired)"
+  status: purged
+  purged_at: '2026-11-14'
+  description: "IaC target dev-akamai-dev-k3s-v5 (lifecycle -> retired -> purged)"
   superseded_by: "iac/targets/prod-akamai-k3s-v6.yaml / sit"
 - kind: iac-target
   path: iac/migrations/targets/uat-akamai-web-saas-k3s-v5.yaml
-  status: offline
-  description: "IaC migration target uat-akamai-web-saas-k3s-v5 (lifecycle -> retired)"
+  status: purged
+  purged_at: '2026-11-14'
+  description: "IaC migration target uat-akamai-web-saas-k3s-v5 (lifecycle -> retired -> purged)"
   superseded_by: "V6"
 - kind: iac-target
   path: iac/targets/prod-akamai-web-saas-k3s-v5.yaml
-  status: offline
-  description: "PROD IaC target web-saas-k3s-v5 (marker only; lifecycle unchanged, PROD)"
+  status: purged
+  purged_at: '2026-11-14'
+  description: "PROD IaC target web-saas-k3s-v5 (purged)"
   superseded_by: "iac/targets/prod-akamai-k3s-v6.yaml"
 - kind: iac-target
   path: iac/targets/prod-akamai-web-saas-prod-v5.yaml
-  status: offline
-  description: "PROD IaC target web-saas-prod-v5 (marker only; lifecycle unchanged, PROD)"
+  status: purged
+  purged_at: '2026-11-14'
+  description: "PROD IaC target web-saas-prod-v5 (purged)"
   superseded_by: "iac/targets/prod-akamai-k3s-v6.yaml"
 - kind: resource
   path: resources/svc.plus/dev/akamai/dev-k3s-v5.yaml
-  status: offline
+  status: purged
+  purged_at: '2026-11-14'
   description: "resource manifest dev-k3s-v5"
   superseded_by: "V6"
 - kind: resource
   path: resources/svc.plus/prod/akamai/web-saas-k3s-v5.yaml
-  status: offline
-  description: "resource manifest web-saas-k3s-v5 (PROD, marker only)"
+  status: purged
+  purged_at: '2026-11-14'
+  description: "resource manifest web-saas-k3s-v5"
   superseded_by: "resources/svc.plus/prod/akamai/prod-k3s-v6.yaml"
 - kind: resource
   path: resources/svc.plus/prod/akamai/web-saas-prod-v5.yaml
-  status: offline
-  description: "resource manifest web-saas-prod-v5 (PROD, marker only)"
+  status: purged
+  purged_at: '2026-11-14'
+  description: "resource manifest web-saas-prod-v5"
   superseded_by: "resources/svc.plus/prod/akamai/prod-k3s-v6.yaml"
 deprecated_references:
 - kind: vault-path
@@ -99,11 +114,8 @@ deprecated_references:
   - docs/prod-k3s-v6-gitops-hierarchy.md
   - docs/prod-k3s-v6-isolated-cluster-plan.md
   - docs/prod-k3s-v6-node-cluster-preflight.md
-  - iac/targets/dev-akamai-dev-k3s-v5.yaml
   - iac/targets/prod-akamai-ai-aggregator.yaml
   - iac/targets/prod-akamai-k3s-v6.yaml
-  - iac/targets/prod-akamai-web-saas-k3s-v5.yaml
-  - iac/targets/prod-akamai-web-saas-prod-v5.yaml
   - iac/targets/prod-gcp-identity.yaml
   - iac/targets/uat-akamai-agent-proxy-jp.yaml
   - iac/targets/uat-akamai-agent-proxy-sg.yaml
