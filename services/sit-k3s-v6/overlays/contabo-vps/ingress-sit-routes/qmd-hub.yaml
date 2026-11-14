@@ -1,0 +1,99 @@
+# QMD Hub Delta Sync API (Hub-Spoke centre on sit-k3s-v6), https://qmd.svc.plus
+# Baseline: ai-workspace-services/knowledge#400
+#   docs/reference/platform-delivery/architecture/QMD单体运行与分布式异步同步架构规范.md
+# The Hub runs on the node as systemd service qmd-hub-syncd (playbooks role
+# roles/vhosts/qmd_hub), bound only to the CNI bridge address 10.42.0.1:8182
+# (host ufw allows 10.42.0.0/16 only). Traefik terminates TLS with the existing
+# *.svc.plus certificate. Every path of qmd.svc.plus passes the forwardAuth
+# middleware below first (no anonymous path, /health included). Accepted
+# credentials, same model as desktop.svc.plus (ai-desktop-lab/xworkmate-remote-desktop):
+#   - PROD accounts.svc.plus session: Bearer token or `xc_session` cookie
+#     (domain .svc.plus), introspected at https://accounts.svc.plus/api/auth/session
+#     and limited to allowed roles/emails (role vars qmd_hub_allowed_*);
+#   - the Spoke machine sync token (0600 file on the Hub, never in Git).
+# The backend re-checks the same credentials. The MCP/QMD query listener
+# (127.0.0.1:8181) is not exposed.
+apiVersion: v1
+kind: Service
+metadata:
+  name: qmd-hub-sync
+  namespace: ingress-sit
+  labels:
+    app.kubernetes.io/name: qmd-hub-sync
+    app.kubernetes.io/part-of: qmd-hub
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 8182
+      targetPort: 8182
+      protocol: TCP
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: qmd-hub-sync-node
+  namespace: ingress-sit
+  labels:
+    kubernetes.io/service-name: qmd-hub-sync
+    endpointslice.kubernetes.io/managed-by: gitops.svc.plus
+    app.kubernetes.io/part-of: qmd-hub
+addressType: IPv4
+ports:
+  - name: http
+    port: 8182
+    protocol: TCP
+endpoints:
+  # Node-local CNI bridge (cni0) of sit-k3s-v6; not a public address.
+  - addresses: ["10.42.0.1"]
+    conditions:
+      ready: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: qmd-hub-accounts-auth
+  namespace: ingress-sit
+  labels:
+    app.kubernetes.io/part-of: qmd-hub
+spec:
+  forwardAuth:
+    address: http://qmd-hub-sync.ingress-sit.svc.cluster.local:8182/api/v1/sync/auth
+    trustForwardHeader: false
+    authRequestHeaders:
+      - Authorization
+      - Cookie
+      - Accept
+    authResponseHeaders:
+      - X-Auth-Method
+      - X-Auth-Email
+    maxResponseBodySize: 65536
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: qmd-hub-sync-route
+  namespace: ingress-sit
+  labels:
+    app.kubernetes.io/name: qmd-hub-sync
+    app.kubernetes.io/part-of: qmd-hub
+    external-dns: contabo-sit
+  annotations:
+    platform.svc.plus/external-dns-scope: contabo-sit
+    # IngressRoute has no load-balancer status; ExternalDNS (traefik-proxy
+    # source, upsert-only) needs an explicit target: the Traefik LB VIP.
+    external-dns.alpha.kubernetes.io/target: 5.189.172.69
+    external-dns.alpha.kubernetes.io/ttl: "300"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`qmd.svc.plus`)
+      kind: Rule
+      middlewares:
+        - name: qmd-hub-accounts-auth
+      services:
+        - name: qmd-hub-sync
+          port: 8182
+  tls:
+    secretName: shared-observability-tls
