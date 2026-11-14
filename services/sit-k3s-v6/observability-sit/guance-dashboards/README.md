@@ -45,7 +45,7 @@
 
 ```mermaid
 flowchart TD
-    subgraph K3s Cluster ["SIT / DEV K3s Cluster (172.237.9.58)"]
+    subgraph K3s Cluster ["SIT K3s Cluster (5.189.172.69)"]
         Workloads["Pods: Caddy / PostgreSQL / K8s"]
         Exporters["node-exporter / state-metrics / cadvisor / caddy / postgres-exporter"]
         DataKit["DataKit DaemonSet (2.16.1)"]

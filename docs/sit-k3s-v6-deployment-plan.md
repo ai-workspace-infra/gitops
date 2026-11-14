@@ -3,7 +3,7 @@
 
 > **核心原则**：**分层解耦、服务模块化、乐高式灵活组合（Composable Modular Architecture）**。  
 > 生产环境（`prod-k3s-v6`）与测试环境（`sit-k3s-v6`）不再维护相互割裂的死板配置，而是抽象出标准化的**基础模块（Base Infra）**、**平台服务模块（Platform Services）**与**业务模块（Business Workloads）**。通过声明式 GitOps 编排与环境变量/Values 补丁，实现不同环境的灵活装配与按需裁剪；在保障生产零触碰的前提下，一键拉起 SIT 环境，并原生赋能 **Per Feature $\rightarrow$ SIT 业务特性发布流**。  
-> **目标主机**：`ssh root@172.237.9.58`（Ubuntu 26.10, 2 vCPU / 4 GB RAM / 80 GB SSD）  
+> **目标主机**：`ssh root@5.189.172.69`（Contabo VPS, 4 vCPU / 6 GB RAM / 100 GB SSD，原历史东京节点 `172.237.9.58` 已完成下线销毁）  
 > **交付模式**：Playbook 节点底座引导（不依赖 GitHub Actions） + GitOps (FluxCD) 声明式模块装配。
 
 ---
@@ -160,7 +160,7 @@ gitops/
 
 ### 阶段二：Playbook 基础引导 (无 GitHub Actions)
 - 在 `playbooks-dev-k3s-v6` 工作区编写 `sit_k3s_v6_bootstrap.yml`。
-- 对 `172.237.9.58` 执行自动化安装：
+- 对当前目标节点执行自动化安装：
   1. 操作系统调优与安全加固。
   2. K3s 单节点安装（启用 ServiceLB，禁用 Traefik）。
   3. FluxCD 控制面安装。
