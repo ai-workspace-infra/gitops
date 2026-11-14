@@ -148,7 +148,7 @@ spec:
         image: ghcr.io/ai-workspace-services/accounts:sha-a9bba989f27754cde0457b20f8724b58b15a86b6@sha256:411f29af4242b09af4623fc6f8286b7640e4f90602cba1055f95933a664764f8
         resources:
           requests: {cpu: 25m, memory: 96Mi}
-          limits: {cpu: 100m, memory: 128Mi}
+          limits: {cpu: 100m, memory: 256Mi}
     billing:
       enabled: true
       workload:
