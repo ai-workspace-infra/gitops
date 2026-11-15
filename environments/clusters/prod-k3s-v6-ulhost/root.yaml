@@ -1,0 +1,19 @@
+# The stable environment root selects this isolated deployment batch.
+# Flux owns the active child graph; dependencies and health checks gate progress.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: prod-k3s
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 5m
+  prune: false
+  # Once released, the root reconciles management objects only and does not wait
+  # for independently gated child Kustomizations.
+  wait: false
+  timeout: 15m
+  sourceRef:
+    kind: GitRepository
+    name: config-prod
+  path: ./environments/clusters/prod-k3s-v6-ulhost
