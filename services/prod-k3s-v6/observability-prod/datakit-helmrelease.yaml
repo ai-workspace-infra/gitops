@@ -49,23 +49,6 @@ spec:
       - name: ENV_INPUT_CONTAINER_ENDPOINTS
         value: unix:///var/run/k3s/containerd/containerd.sock
     dkconfig:
-      - name: caddy-metrics.conf
-        path: /usr/local/datakit/conf.d/prom/caddy-metrics.conf
-        value: |-
-          [[inputs.prom]]
-            urls = ["http://caddy-ingress-caddy.ingress-prod:80/metrics"]
-            source = "caddy"
-            interval = "15s"
-            measurement_name = "caddy"
-            keep_exist_metric_name = true
-            election = false
-            [inputs.prom.tags]
-              cluster = "prod-k3s-v6"
-              environment = "prod"
-              env = "prod"
-              service = "caddy-ingress"
-              instance = "caddy-ingress-caddy"
-              host = "prod-k3s-v6"
       - name: postgresql-exporter.conf
         path: /usr/local/datakit/conf.d/prom/postgresql-exporter.conf
         value: |-

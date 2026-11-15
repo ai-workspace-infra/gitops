@@ -24,7 +24,7 @@ metadata:
   name: accounts-migration-listener
   namespace: accounts-migration
 spec:
-  replicas: 1
+  replicas: 0
   strategy:
     type: Recreate
   selector:
