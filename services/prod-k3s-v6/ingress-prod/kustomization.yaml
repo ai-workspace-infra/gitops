@@ -5,7 +5,6 @@ namespace: ingress-prod
 resources:
 - vault-tls.yaml
 - oci-repository.yaml
-- helmrelease.yaml
 - business-networkpolicy.yaml
 - traefik-helmrelease.yaml
 - traefik-serverstransport.yaml
