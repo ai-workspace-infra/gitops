@@ -5,6 +5,29 @@ resources:
   - onwalk-tls-cluster-secret-store.yaml
   - internal-observability-write.yaml
   - qmd-hub.yaml
+  - xconnect-gateway.yaml
+# Both host-native backends use the same node bridge and Traefik LB.
+replacements:
+  - source:
+      kind: EndpointSlice
+      name: qmd-hub-sync-node
+      fieldPath: endpoints.0.addresses.0
+    targets:
+      - select:
+          kind: EndpointSlice
+          name: xconnect-gateway-node
+        fieldPaths:
+          - endpoints.0.addresses.0
+  - source:
+      kind: IngressRoute
+      name: qmd-hub-sync-route
+      fieldPath: metadata.annotations.[external-dns.alpha.kubernetes.io/target]
+    targets:
+      - select:
+          kind: IngressRoute
+          name: xconnect-gateway
+        fieldPaths:
+          - metadata.annotations.[external-dns.alpha.kubernetes.io/target]
 patches:
   - target:
       version: v1
