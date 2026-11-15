@@ -39,6 +39,7 @@ global:
 # Do not add a terraform tree, state key, or provider-side resource creation here.
 hosts:
   - name: prod-k3s-v6
+    region: hk
     logical_region: hk
     provider_region: hk-02
     resource_ref: cmdb://nodes/prod-k3s-v6#ulighthost
