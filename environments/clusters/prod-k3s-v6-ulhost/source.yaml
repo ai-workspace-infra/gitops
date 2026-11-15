@@ -1,0 +1,16 @@
+# Candidate (empty environment) entrypoint. Bootstrap passes the reviewed commit
+# through K3S_GITOPS_SHA; before any business traffic this ref must be repinned to
+# an immutable tag/commit (migration plan D3).
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: config-prod
+  namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+spec:
+  suspend: false
+  interval: 1m
+  url: https://github.com/ai-workspace-infra/gitops.git
+  ref:
+    branch: main

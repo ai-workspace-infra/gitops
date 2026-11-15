@@ -1,0 +1,18 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: postgresql-prod
+  namespace: flux-system
+spec:
+  suspend: false
+  interval: 5m
+  prune: false
+  wait: true
+  timeout: 15m
+  dependsOn:
+    # SecretStore and ExternalSecret resources require ESO CRDs.
+    - name: external-secrets
+  sourceRef:
+    kind: GitRepository
+    name: postgresql-prod-config
+  path: ./services/prod-k3s-v6/postgresql-prod
