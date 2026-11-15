@@ -1,5 +1,9 @@
 # Kubernetes PROD Web SaaS — same-generation host swap candidate (ULightHost, Hong Kong)
 #
+# The node keeps the canonical hostname prod-k3s-v6: after the swap it IS the
+# production node. The file name carries the provider boundary so both the
+# current Akamai node and this candidate can be recorded during the transition.
+#
 # Owner: Playbooks + GitOps. This declaration is INERT until a bootstrap run
 # selects this host: nothing in the live prod-k3s-v6 cluster consumes this path.
 # Facts below come from cloud-init instance-data.json and read-only host
@@ -23,22 +27,21 @@ global:
   environment: prod
   project: svc.plus
   account: ucloud-ulighthost
-  workspace: prod-k3s-v6-hk
+  workspace: prod-k3s-v6-ulhost
   management_mode: existing
   provisioner: ansible
   lifecycle: external
   inventory_backend: s3
-  inventory_key: inventory/prod/svc.plus/ulighthost/ucloud-ulighthost/prod-k3s-v6-hk.json
-  vault_path: kv/data/prod/ulighthost/prod-k3s-v6-hk
+  inventory_key: inventory/prod/svc.plus/ulighthost/ucloud-ulighthost/prod-k3s-v6-ulhost.json
+  vault_path: kv/data/prod/ulighthost/prod-k3s-v6-ulhost
 
 # Existing ULightHost boundary: this node is created and owned outside Terraform.
 # Do not add a terraform tree, state key, or provider-side resource creation here.
 hosts:
-  - name: prod-k3s-v6-hk
+  - name: prod-k3s-v6
     logical_region: hk
     provider_region: hk-02
-    inventory_host: prod-k3s-v6-hk.svc.plus
-    resource_ref: cmdb://nodes/prod-k3s-v6-hk
+    resource_ref: cmdb://nodes/prod-k3s-v6#ulighthost
     instance_id: ulhost-1xqu78soic3q
     public_ipv4: 103.14.33.60
     private_ipv4: 10.7.109.8
@@ -46,7 +49,7 @@ hosts:
     os_image: Rocky Linux 10.1 (Red Quartz)
     role: standalone
     groups: [web_saas, prod, rocky, ulighthost, k3s_server, k3s]
-    tags: [svc-plus, prod, prod-k3s-v6-hk, ulighthost, rocky10]
+    tags: [svc-plus, prod, prod-k3s-v6, ulighthost, rocky10]
     host_vars:
       role: primary
       cloud_provider: ulighthost
@@ -56,7 +59,7 @@ hosts:
       deployment_mode: kubernetes
       k8s_cluster_name: PROD-K3S-V6
       k3s_platform_cluster_name: PROD-K3S-V6
-      k3s_platform_node_name: prod-k3s-v6-hk
+      k3s_platform_node_name: prod-k3s-v6
       k3s_platform_k3s_version: v1.37.1+k3s1
       # New, non-overlapping networks: the source cluster owns 10.52.0.0/16 and
       # 10.53.0.0/16 while the swap keeps both hosts online.
@@ -77,15 +80,16 @@ hosts:
       k3s_platform_git_url: https://github.com/ai-workspace-infra/gitops.git
       k3s_platform_flux_source_name: config-prod
       k3s_platform_flux_root_name: prod-k3s
-      k3s_platform_flux_root_path: ./environments/clusters/prod-k3s-v6-hk
+      k3s_platform_flux_root_path: ./environments/clusters/prod-k3s-v6-swap
       k3s_identity_environment: prod
-      # New cluster identity: never reuse the live cluster's CA, UID or machine id.
-      k3s_identity_cluster: prod-k3s-v6-hk
+      # The node hostname is prod-k3s-v6, but the credential namespace stays
+      # distinct so the current node's Vault keys survive for rollback.
+      k3s_identity_cluster: prod-k3s-v6-ulhost
       k3s_identity_api_server: https://127.0.0.1:6443
       k3s_identity_tls_dir: /opt/rancher/k3s/server/tls
-      k3s_identity_vault_writer_role: github-actions-platform-ops-toolkit-prod-k3s-v6-hk-identity-writer
-      k3s_platform_vault_bootstrap_reader_role: github-actions-platform-ops-toolkit-prod-k3s-v6-hk-bootstrap-reader
-      k3s_platform_vault_ssh_key_path: kv/data/prod/platform/prod-k3s-v6-hk/ssh
+      k3s_identity_vault_writer_role: github-actions-platform-ops-toolkit-prod-k3s-v6-ulhost-identity-writer
+      k3s_platform_vault_bootstrap_reader_role: github-actions-platform-ops-toolkit-prod-k3s-v6-ulhost-bootstrap-reader
+      k3s_platform_vault_ssh_key_path: kv/data/prod/platform/prod-k3s-v6-ulhost/ssh
       k3s_platform_vault_ssh_key_field: SSH_PRIVATE_KEY
       k3s_identity_checks:
         root:
