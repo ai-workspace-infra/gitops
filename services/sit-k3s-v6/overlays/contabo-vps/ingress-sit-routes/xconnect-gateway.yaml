@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: xconnect-gateway
+  namespace: ingress-sit
+spec:
+  type: ClusterIP
+  ports:
+    - name: xhttp
+      port: 18183
+      targetPort: 18183
+      protocol: TCP
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: xconnect-gateway-node
+  namespace: ingress-sit
+  labels:
+    kubernetes.io/service-name: xconnect-gateway
+    endpointslice.kubernetes.io/managed-by: gitops.svc.plus
+addressType: IPv4
+ports:
+  - name: xhttp
+    port: 18183
+    protocol: TCP
+endpoints:
+  - addresses: ["CNI_BRIDGE_ADDRESS"]
+    conditions:
+      ready: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: xconnect-gateway
+  namespace: ingress-sit
+  labels:
+    external-dns: contabo-sit
+  annotations:
+    platform.svc.plus/external-dns-scope: contabo-sit
+    external-dns.alpha.kubernetes.io/target: TRAEFIK_LB_ADDRESS
+    external-dns.alpha.kubernetes.io/ttl: "300"
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`xconnect-gateway.svc.plus`) && PathPrefix(`/xconnect/`)
+      kind: Rule
+      services:
+        - name: xconnect-gateway
+          port: 18183
+          scheme: h2c
+          passHostHeader: true
+          responseForwarding:
+            flushInterval: -1ms
+  tls:
+    secretName: shared-observability-tls

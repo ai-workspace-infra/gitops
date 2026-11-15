@@ -157,6 +157,19 @@ patches:
         path: /spec/ref
         value:
           tag: sit-k3s-v6-contabo-r21
+  # Advance only the ingress source. The chart/controller manifests are
+  # identical to r21; the ingress routes add the XConnect host backend.
+  - target:
+      group: source.toolkit.fluxcd.io
+      version: v1
+      kind: GitRepository
+      name: ingress-sit-config
+      namespace: flux-system
+    patch: |-
+      - op: replace
+        path: /spec/ref
+        value:
+          tag: sit-k3s-v6-contabo-ingress-r1
   # Root source follows main (applied after the tag patch above).
   - target:
       group: source.toolkit.fluxcd.io
