@@ -1,0 +1,20 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-platform-ops-toolkit-prod-k3s-v6-ulhost-identity-writer
+  description: Initial issuance only for the same-generation ULightHost candidate. CAS=0 is enforced by the Playbooks node-side writer. No update/delete/list/metadata access; the live prod-k3s-v6 identity paths are not reachable from this policy.
+spec:
+  paths:
+  - path: kv/data/prod/prod-k3s-v6-ulhost/root
+    capabilities:
+    - create
+    - read
+  - path: kv/data/prod/prod-k3s-v6-ulhost/operator
+    capabilities:
+    - create
+    - read
+  - path: kv/data/prod/prod-k3s-v6-ulhost/auditor
+    capabilities:
+    - create
+    - read
