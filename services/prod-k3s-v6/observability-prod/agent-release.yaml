@@ -254,6 +254,20 @@ spec:
             service: postgresql
             job: postgres-exporter
             instance: prod-postgresql-0
+      - job_name: kubernetes-apiserver
+        scrape_interval: 30s
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: false
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        static_configs:
+        - targets:
+          - kubernetes.default.svc:443
+          labels:
+            job: kubernetes-apiserver
+            component: k3s-server
+            instance: prod-k3s-v6
       remoteWrite:
         url: https://observability.svc.plus/ingest/metrics/api/v1/write
         secretName: observability-remote-write

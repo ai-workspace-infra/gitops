@@ -1,0 +1,34 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: observability-prod-apiserver-metrics-reader
+  labels:
+    app.kubernetes.io/name: observability-agent
+    app.kubernetes.io/component: metrics-scraper
+rules:
+  - nonResourceURLs:
+      - /metrics
+    verbs:
+      - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: observability-prod-apiserver-metrics-reader
+  labels:
+    app.kubernetes.io/name: observability-agent
+    app.kubernetes.io/component: metrics-scraper
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: observability-prod-apiserver-metrics-reader
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: observability-prod
+  - kind: ServiceAccount
+    name: observability-agent
+    namespace: observability-prod
+  - kind: ServiceAccount
+    name: observability-agent-vmagent
+    namespace: observability-prod
