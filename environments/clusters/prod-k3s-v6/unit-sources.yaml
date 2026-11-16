@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   suspend: false
-  interval: 1m
+  interval: 5m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
     branch: main
@@ -18,7 +18,7 @@ metadata:
   namespace: flux-system
 spec:
   suspend: false
-  interval: 1m
+  interval: 5m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
     branch: main
@@ -30,7 +30,7 @@ metadata:
   namespace: flux-system
 spec:
   suspend: false
-  interval: 1m
+  interval: 5m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
     branch: main
@@ -42,7 +42,7 @@ metadata:
   namespace: flux-system
 spec:
   suspend: false
-  interval: 1m
+  interval: 5m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
     branch: main
@@ -54,7 +54,7 @@ metadata:
   namespace: flux-system
 spec:
   suspend: false
-  interval: 1m
+  interval: 5m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
     branch: main
