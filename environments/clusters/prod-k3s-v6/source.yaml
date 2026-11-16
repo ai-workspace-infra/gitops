@@ -8,7 +8,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
 spec:
   suspend: false
-  interval: 1m
+  interval: 5m
   url: https://github.com/ai-workspace-infra/gitops.git
   ref:
     branch: main
