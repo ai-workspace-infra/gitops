@@ -19,10 +19,12 @@ spec:
   install:
     # A sealed Vault may exceed the initial install timeout. Retry as an
     # upgrade so recovery does not uninstall the stateful release.
+    disableWait: true
     strategy:
       name: RetryOnFailure
       retryInterval: 2m
   upgrade:
+    disableWait: true
     remediation:
       retries: 0
   values:
