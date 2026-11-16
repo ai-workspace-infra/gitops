@@ -43,14 +43,14 @@ hosts:
     logical_region: hk
     provider_region: hk-02
     resource_ref: cmdb://nodes/prod-k3s-v6#ulighthost
-    instance_id: ulhost-1xqu78soic3q
-    public_ipv4: 103.14.33.60
-    private_ipv4: 10.7.109.8
-    machine_id: c500382886913147ee2a250d0c7930ee
-    os_image: Rocky Linux 10.1 (Red Quartz)
+    instance_id: ulhost-1xrikvuh05hc
+    public_ipv4: 152.32.131.48
+    private_ipv4: 10.7.11.78
+    machine_id: b1f65513bae2a6ed833eb6ded5d197db
+    os_image: Debian 12 (bookworm)
     role: standalone
     groups: [web_saas, prod, rocky, ulighthost, k3s_server, k3s]
-    tags: [svc-plus, prod, prod-k3s-v6, ulighthost, rocky10]
+    tags: [svc-plus, prod, prod-k3s-v6, ulighthost, debian12]
     host_vars:
       role: primary
       cloud_provider: ulighthost
