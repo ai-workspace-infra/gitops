@@ -107,6 +107,8 @@ spec:
       enabled: false
     console:
       enabled: true
+      vpa:
+        enabled: false
       deploymentProfile: single-container
       singleContainer:
         image: ghcr.io/ai-workspace-services/console:v2026.11.14-r3@sha256:89d26b2d0e31817404b986762cec23d56449ff49ee9c1a570a28c4cc2fa1ea9d
@@ -132,6 +134,8 @@ spec:
             mountPath: /tmp
     accounts:
       enabled: true
+      vpa:
+        enabled: false
       workload:
         env:
           IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.14-r3@sha256:3e0ce7323fce30ada579e820ddb633d280b045e086bc8737fc1546613cf7f15e
@@ -152,6 +156,8 @@ spec:
           limits: {cpu: 100m, memory: 256Mi}
     billing:
       enabled: true
+      vpa:
+        enabled: false
       workload:
         env:
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
@@ -194,6 +200,8 @@ spec:
           limits: {cpu: 100m, memory: 128Mi}
     content:
       enabled: true
+      vpa:
+        enabled: false
       workload:
         env:
           KNOWLEDGE_REPO_PATH: /tmp/knowledge
