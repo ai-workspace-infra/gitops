@@ -28,6 +28,11 @@ ssh_keys:
 hosts:
   - name: prod-k3s-v6
     region: jp-tyo-3
+    provider_region: jp-tyo-3a
+    resource_ref: cmdb://nodes/prod-k3s-v6#akamai
+    instance_id: linode-53492817
+    public_ipv4: 172.237.24.232
+    private_ipv4: 192.168.136.23
     type: g6-standard-2
     image: linode/debian13
     private_ip: true
