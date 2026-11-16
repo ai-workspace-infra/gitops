@@ -144,4 +144,4 @@ hosts:
         postgresql.svc.plus: postgresql-selfhost-prod-v6.svc.plus
         vault.svc.plus: vault-selfhost-prod-v6.svc.plus
         xworktech.com: console-selfhost-prod-v6.svc.plus
-      public_dns_cutover: false
+      public_dns_cutover: true
