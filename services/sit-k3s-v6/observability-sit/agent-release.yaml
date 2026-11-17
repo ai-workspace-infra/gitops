@@ -149,6 +149,28 @@ spec:
     blackboxExporter:
       enabled: true
       modules:
+        # 全局边缘入口的可用性与证书到期探测。
+        # 这组探测原先由每台边缘主机上的 blackbox_exporter + Vector 用
+        # scrape_interval_secs=15 各自执行: 4 台机器 × 9 个域名 × 每天 5760 轮
+        # ≈ 21 万次外部 HTTPS 请求/天, 只为得到一个"证书若干天后过期"的天级信号。
+        # 收到中心集群每小时探测一次即可, 边缘主机不再承担对外探活。
+        https_ssl:
+          prober: http
+          timeout: 5s
+          http:
+            method: GET
+            preferred_ip_protocol: ip4
+            # TLS 握手失败仍然会让 probe_success 归 0; 3xx/401/403/404 依旧是
+            # 有效的证书到期观测目标, 不能当成 probe 失败。
+            valid_status_codes:
+            - 200
+            - 301
+            - 302
+            - 307
+            - 308
+            - 401
+            - 403
+            - 404
         release_http_ok:
           prober: http
           timeout: 5s
@@ -185,6 +207,48 @@ spec:
       scrapeInterval: 30s
       scrapeTimeout: 10s
       scrapeConfigs:
+      # 全局边缘入口探测: 由中心集群统一执行, 取代每台边缘主机各自的 15s 探活。
+      # 证书过期是天级信号, 1h 一次足够; 30s 会在边缘侧放大成每天二十余万次外部请求。
+      # 命中目标是生产域名, 因此显式打 target_environment=prod 与
+      # probe_source=center, 避免看板把"从 SIT 探测到的生产可用性"误读成 SIT 自身状态。
+      - job_name: global-edge-https-probes
+        metrics_path: /probe
+        scrape_interval: 1h
+        scrape_timeout: 30s
+        # 模块用 job 级 params 选择, 与 services/platform-observability/
+        # prod-vmagent/scrape.yml 的 blackbox-* job 写法保持一致; 不用
+        # relabel 从标签推导, 避免依赖 static_configs.labels 在 relabel 阶段的可见性。
+        params:
+          module:
+          - https_ssl
+        static_configs:
+        - targets:
+          - https://jp-xhttp.svc.plus
+          - https://tky-proxy.svc.plus
+          - https://www.svc.plus
+          - https://jp-xconnect.svc.plus
+          - https://us-xconnect.svc.plus
+          - https://hk-xconnect.svc.plus
+          - https://ph-xconnect.svc.plus
+          - https://console.svc.plus
+          - https://accounts.svc.plus
+          labels:
+            service: edge-entry
+            probe_source: center
+            target_environment: prod
+            target_project: svc.plus
+        relabel_configs:
+        - source_labels:
+          - __address__
+          target_label: __param_target
+        - source_labels:
+          - __param_target
+          target_label: instance
+        - source_labels:
+          - __param_target
+          target_label: target
+        - target_label: __address__
+          replacement: observability-agent-blackbox.observability-sit.svc:9115
       - job_name: progressive-release-probes
         metrics_path: /probe
         scrape_interval: 30s
