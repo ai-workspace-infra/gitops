@@ -111,7 +111,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:v2026.11.14-r3@sha256:89d26b2d0e31817404b986762cec23d56449ff49ee9c1a570a28c4cc2fa1ea9d
+        image: ghcr.io/ai-workspace-services/console:sha-8498351ac09b9c9c41fd44db03d7d1f47162687c@sha256:fd011ae1898b2c68b5eddf2dec55ccc156a43810021faaaf20804d85a821a505
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
