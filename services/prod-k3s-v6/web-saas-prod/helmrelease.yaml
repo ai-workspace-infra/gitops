@@ -41,6 +41,21 @@ spec:
                           - name: accounts-controller-config
                             mountPath: /var/run/accounts-controller-config
                             readOnly: true
+                        readinessProbe:
+                          httpGet:
+                            path: /readyz
+                            port: 8080
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 3
+                        livenessProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          initialDelaySeconds: 20
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 3
           - target:
               kind: Deployment
               name: web-saas-console
@@ -174,8 +189,8 @@ spec:
         - accounts-stripe
         image: ghcr.io/ai-workspace-services/accounts:v2026.11.19-r2@sha256:93e7410a13453c1bf2c079cc2f4c70655345fd8317d2854988a105fec89feeec
         resources:
-          requests: {cpu: 25m, memory: 96Mi}
-          limits: {cpu: 100m, memory: 256Mi}
+          requests: {cpu: 100m, memory: 128Mi}
+          limits: {cpu: 500m, memory: 384Mi}
     billing:
       enabled: true
       vpa:
