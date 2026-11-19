@@ -76,6 +76,28 @@ spec:
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
+                        startupProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          periodSeconds: 5
+                          timeoutSeconds: 3
+                          failureThreshold: 18
+                        readinessProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 3
+                        livenessProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          initialDelaySeconds: 20
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 3
           - target:
               kind: Deployment
               name: web-saas-content
@@ -111,7 +133,7 @@ spec:
         image: ghcr.io/ai-workspace-services/console:daily-build-2026.11.18-r1@sha256:3c924d89f7f77f8634042e685382299792eab7a5b2c6902f019c3006a45babd1
         resources:
           requests: {cpu: 50m, memory: 128Mi}
-          limits: {cpu: 125m, memory: 192Mi}
+          limits: {cpu: 250m, memory: 256Mi}
         volumes:
           - name: nginx-config
             configMap:
