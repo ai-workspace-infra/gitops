@@ -32,7 +32,7 @@ spec:
       enabled: true
       vpa:
         enabled: false
-      image: ghcr.io/ai-workspace-services/postgresql:v2026.11.19-r1@sha256:6ffcc102e82909259ad065e56060482270a762ca90cf90168ae49745cc3a1c09
+      image: ghcr.io/ai-workspace-services/postgresql:v2026.11.19-r2@sha256:d523ce772d4e9586afbbdb79090cf5441346c477cf8f8921cf7159cd2577b3af
       username: postgres
       database: account
       existingSecret: postgresql-admin
