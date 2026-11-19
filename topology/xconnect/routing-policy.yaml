@@ -4,8 +4,9 @@
 # declarative target state, not execution code.
 # Consumed by accounts control-plane (subscription & RoutingPolicy sync),
 # Web Console GitOps editor (/panel/gateway), and xconnect-edge-agent / Playbooks.
-# Pro-EC2-Pool is reminder-first: media_on_pro_action defaults to "allow";
-# "blackhole" remains an optional strict mode that must be set explicitly.
+# Pro-EC2-Pool is high-speed quota traffic: media_on_pro_action defaults to "allow"
+# (no streaming or download restriction; Pro subscription accesses Media-Pool + Pro-EC2-Pool,
+# while Plus/Free/Shared subscriptions only see Media-Pool).
 version: 1
 revision: "2026-11-19.1"
 
@@ -36,7 +37,7 @@ pools:
     public_resource: true
     media_on_pro_action: "allow"
     fallback_default: false
-    description: "公共 EC2 精品池（t4g.small / c8g 等）：AI / 开发 / 商务办公低延迟优先；不做严格白名单限制，正常请求均放行，高流量流媒体 / 游戏下载 / 测速以客户端提醒 + 服务端流量管控为主"
+    description: "公共高速流量池（Pro-EC2-Pool，EC2 t4g.small / c8g 等）：定义为高速流量，不再限制流媒体与下载（默认 allow）；Pro 订阅可用 Media-Pool + Pro-EC2-Pool（如 50 元套餐：30GB 高速 + 50GB VPS），Plus 订阅仅可用 Media-Pool 且 Pro 节点不可见"
     pricing_groups:
       - pro
     url_test:
