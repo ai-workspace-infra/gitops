@@ -72,7 +72,7 @@ spec:
                           - name: RUNTIME_DASHBOARD_URL
                             value: https://console.svc.plus
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:v2026.11.14-r3@sha256:89d26b2d0e31817404b986762cec23d56449ff49ee9c1a570a28c4cc2fa1ea9d
+                            value: ghcr.io/ai-workspace-services/console:daily-build-2026.11.18-r1@sha256:3c924d89f7f77f8634042e685382299792eab7a5b2c6902f019c3006a45babd1
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -108,7 +108,7 @@ spec:
       enabled: true
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:v2026.11.14-r3@sha256:89d26b2d0e31817404b986762cec23d56449ff49ee9c1a570a28c4cc2fa1ea9d
+        image: ghcr.io/ai-workspace-services/console:daily-build-2026.11.18-r1@sha256:3c924d89f7f77f8634042e685382299792eab7a5b2c6902f019c3006a45babd1
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 125m, memory: 192Mi}
@@ -133,7 +133,7 @@ spec:
       enabled: true
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.14-r3@sha256:3e0ce7323fce30ada579e820ddb633d280b045e086bc8737fc1546613cf7f15e
+          IMAGE: ghcr.io/ai-workspace-services/accounts:daily-build-2026.11.18-r1@sha256:de567a3ef863d3e503ec3613a258c3214ac5125dbfbda44e0fa421d1d4bef196
           DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -145,7 +145,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:v2026.11.14-r3@sha256:3e0ce7323fce30ada579e820ddb633d280b045e086bc8737fc1546613cf7f15e
+        image: ghcr.io/ai-workspace-services/accounts:daily-build-2026.11.18-r1@sha256:de567a3ef863d3e503ec3613a258c3214ac5125dbfbda44e0fa421d1d4bef196
         resources:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
@@ -160,11 +160,11 @@ spec:
           BILLING_INGEST_MODE: push
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
-          IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.14-r3@sha256:9c81eefa5724b57ec8a46bd2717dda582870b11f64e2256f6493973984d09a61
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:daily-build-2026.11.18-r1@sha256:ef17d7529b6f2a06e8e8a9e5581eb32b444dc0af8c77cb6e1b28ad77890e8ca5
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
-        image: ghcr.io/ai-workspace-services/billing-service:v2026.11.14-r3@sha256:9c81eefa5724b57ec8a46bd2717dda582870b11f64e2256f6493973984d09a61
+        image: ghcr.io/ai-workspace-services/billing-service:daily-build-2026.11.18-r1@sha256:ef17d7529b6f2a06e8e8a9e5581eb32b444dc0af8c77cb6e1b28ad77890e8ca5
         probes:
           startupProbe:
             httpGet:
@@ -197,7 +197,7 @@ spec:
         env:
           KNOWLEDGE_REPO_PATH: /tmp/knowledge
           KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
-        image: ghcr.io/ai-workspace-services/docs@sha256:e6e791437bd3b57a4dec0bc9dc2527b681dd52960b6f692be6ff16322018788e
+        image: ghcr.io/ai-workspace-services/docs:daily-build-2026.11.18-r1@sha256:5577fbcbe7fe1ddb4dd0cfe90c4caaa0fd0c9299d69f49afbdc819ede577157e
         secretRefs:
         - web-saas-secrets
         resources:

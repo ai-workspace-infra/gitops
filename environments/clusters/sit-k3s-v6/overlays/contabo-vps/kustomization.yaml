@@ -156,7 +156,7 @@ patches:
       - op: replace
         path: /spec/ref
         value:
-          tag: sit-k3s-v6-contabo-r23
+          tag: sit-k3s-v6-contabo-r24
   # Advance only the ingress source. The chart/controller manifests are
   # identical to r21; the ingress routes add the XConnect host backend.
   - target:

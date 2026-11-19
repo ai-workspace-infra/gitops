@@ -55,7 +55,7 @@ spec:
       enabled: false
     postgresql:
       enabled: true
-      image: ghcr.io/ai-workspace-services/postgresql@sha256:56f4179bafafa52061ac21003dc80c1a0b7ceb63fffb2c7bd05f29237b62b85e
+      image: ghcr.io/ai-workspace-services/postgresql:daily-build-2026.11.18-r1@sha256:e2ebf33a90fc495c87c9ee3e9ff8d54110535ae6ac2c205f717fcfc220283129
       username: postgres
       database: account
       existingSecret: postgresql-admin
