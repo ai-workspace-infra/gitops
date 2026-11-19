@@ -20,14 +20,14 @@ spec:
       - console.svc.plus
       - xworktech.com
   analysis:
-    interval: 45s
-    threshold: 5
+    interval: 15s
+    threshold: 10
     maxWeight: 50
     stepWeight: 10
     metrics:
       - name: traefik-error-rate
         templateRef:
-          name: traefik-release-error-rate
+          name: traefik-error-rate
           namespace: web-saas-prod
         thresholdRange:
           max: 1
