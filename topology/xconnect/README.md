@@ -17,7 +17,9 @@ consumed by the accounts control plane (RoutingPolicy sync and subscription
 rendering), the portal `/panel/gateway` GitOps editor (which opens a PR against
 this file), and `xconnect-edge-agent` / Playbooks when rendering Xray routing.
 
-`Pro-EC2-Pool` is reminder-first: `media_on_pro_action` is `allow` by default,
-so normal requests are never blocked and heavy streaming / game downloads /
-speedtests are handled by client reminders plus server-side traffic control.
-`blackhole` stays available as an explicit opt-in strict mode.
+`Pro-EC2-Pool` is defined as **high-speed quota traffic** (`media_on_pro_action`
+defaults to `allow`, with no streaming/download restrictions or client reminder
+prompts). `Pro` subscriptions can use both `Media-Pool` (VPS quota) and
+`Pro-EC2-Pool` (high-speed quota, e.g. 50 RMB plan = 30GB high-speed + 50GB VPS),
+while `Plus` (and `Free`/`Shared`) subscriptions only use `Media-Pool` with
+`Pro-EC2-Pool` nodes kept invisible.
