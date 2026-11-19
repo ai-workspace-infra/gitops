@@ -133,7 +133,7 @@ spec:
       enabled: true
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.14-r3@sha256:3e0ce7323fce30ada579e820ddb633d280b045e086bc8737fc1546613cf7f15e
+          IMAGE: ghcr.io/ai-workspace-services/accounts:daily-build-2026.11.18-r1@sha256:de567a3ef863d3e503ec3613a258c3214ac5125dbfbda44e0fa421d1d4bef196
           DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
