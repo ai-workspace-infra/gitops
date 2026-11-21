@@ -44,13 +44,13 @@ pools:
       url: "https://cp.cloudflare.com/generate_204"
       interval: 180
     nodes:
-      - "jp-xconnect-02.svc.plus"
+      - "jp-xconnect-pro-01.svc.plus"
 
   Custom-Dedicated:
     public_resource: false
     media_on_pro_action: "allow"
     fallback_default: false
-    description: "非公共专属节点（Custom 白名单绑定）：绝不进入公共池，客户端与服务端均无限制"
+    description: "非公共专属节点（Custom 白名单绑定机制）：绝不进入公共池，没有使用限制"
     pricing_groups:
       - custom
       - team
