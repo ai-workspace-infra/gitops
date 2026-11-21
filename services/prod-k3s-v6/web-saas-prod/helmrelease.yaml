@@ -88,7 +88,7 @@ spec:
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:v2026.11.19-r2@sha256:bff6de8b227d98c7f41bcf91f98d718c3f6ff879a66c84085b41750f5f909488
+                            value: ghcr.io/ai-workspace-services/console:sha-9933f0a8b0dac81cb008efe3bce6fb4a5122ea56@sha256:04233be73e83ab30f79ce3204d65604f6a416de94aed4d609320f06679132042
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -148,7 +148,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:v2026.11.19-r2@sha256:bff6de8b227d98c7f41bcf91f98d718c3f6ff879a66c84085b41750f5f909488
+        image: ghcr.io/ai-workspace-services/console:sha-9933f0a8b0dac81cb008efe3bce6fb4a5122ea56@sha256:04233be73e83ab30f79ce3204d65604f6a416de94aed4d609320f06679132042
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
@@ -175,7 +175,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.19-r2@sha256:93e7410a13453c1bf2c079cc2f4c70655345fd8317d2854988a105fec89feeec
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-e5ed8720bfbca2a21e7ebc37b0273a1310f414cc@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -188,7 +188,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:v2026.11.19-r2@sha256:93e7410a13453c1bf2c079cc2f4c70655345fd8317d2854988a105fec89feeec
+        image: ghcr.io/ai-workspace-services/accounts:sha-e5ed8720bfbca2a21e7ebc37b0273a1310f414cc@sha256:400a4873b838d1b89194d982c45e5fb3cda4593fbfd7e08a02e76b03b21166f0
         resources:
           requests: {cpu: 100m, memory: 128Mi}
           limits: {cpu: 500m, memory: 384Mi}
@@ -206,11 +206,11 @@ spec:
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
           DUAL_BUCKET_QUOTA_ENFORCE: "false"
-          IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.19-r2@sha256:373fc9961eff277ec1a21d3dfa7fca4fdc8dc310aa80e83ec9e5ceb83cbeff04
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-ec2c64f08a1cce9a458caf7eee232bd3151da046@sha256:d596b8b00a3dfea27b9a7ea256d7b7f9a753fdd891319cbee99ef1b2206e6a3f
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
-        image: ghcr.io/ai-workspace-services/billing-service:v2026.11.19-r2@sha256:373fc9961eff277ec1a21d3dfa7fca4fdc8dc310aa80e83ec9e5ceb83cbeff04
+        image: ghcr.io/ai-workspace-services/billing-service:sha-ec2c64f08a1cce9a458caf7eee232bd3151da046@sha256:d596b8b00a3dfea27b9a7ea256d7b7f9a753fdd891319cbee99ef1b2206e6a3f
         probes:
           startupProbe:
             httpGet:
