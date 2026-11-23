@@ -62,6 +62,7 @@ spec:
     cdn_bandwidth_alarm_bps: 500000000
     cdn_alarm_contact_group: ""
     cdn_cas_cert_id: ""
+    cdn_tls_vault_path: kv/CICD/domains/svc.plus
     cors_allowed_origins:
       - https://console.svc.plus
       - https://xworktech.com
