@@ -1,11 +1,12 @@
 workload:
-  kind: DaemonSet
+  kind: Deployment
+  replicas: 0
 datakit:
   dataway_secret_create: false
   dataway_secret_enabled: true
   dataway_secret_key: ENV_DATAWAY
   dataway_secret_name: datakit-dataway-secret
-  default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,host_processes,container,kubernetesprometheus,opentelemetry,prom
+  default_enabled_inputs: dk,cpu,disk,diskio,mem,swap,system,hostobject,net,prom
   global_tags: host=prod-k3s-v5,cluster=web-saas-k3s-v5-prod,env=prod
   log: info
 extraEnvs:
