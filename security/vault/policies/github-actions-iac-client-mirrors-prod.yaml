@@ -1,0 +1,44 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-iac-client-mirrors-prod
+  description: Least-privilege Vault policy for ai-workspace-infra/iac_modules client-mirrors dual-mirror provisioning and storage KV sync.
+spec:
+  paths:
+  - path: kv/data/prod/platform/cloudflare
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/cloudflare
+    capabilities:
+    - read
+  - path: kv/data/prod/platform/alicloud
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/alicloud
+    capabilities:
+    - read
+  - path: kv/data/CICD/prod/iac_state
+    capabilities:
+    - read
+  - path: kv/metadata/CICD/prod/iac_state
+    capabilities:
+    - read
+  - path: kv/data/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - create
+    - update
+    - read
+  - path: kv/metadata/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - read
+    - list
+  - path: kv/data/prod/platform/storage/aliyun-oss
+    capabilities:
+    - create
+    - update
+    - read
+  - path: kv/metadata/prod/platform/storage/aliyun-oss
+    capabilities:
+    - read
+    - list
