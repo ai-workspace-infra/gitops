@@ -24,6 +24,9 @@ spec:
                 name: web-saas-accounts
               spec:
                 template:
+                  metadata:
+                    annotations:
+                      delivery.svc.plus/rollout-revision: "v2026.11.23-r1"
                   spec:
                     volumes:
                       - name: accounts-controller-config
