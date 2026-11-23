@@ -90,6 +90,10 @@ spec:
                             value: observability
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
+                          - name: DOWNLOAD_CHANNELS_CONFIG_PATH
+                            value: /etc/console/download-channels.json
+                          - name: ALLOW_REMOTE_DL_FETCH
+                            value: "true"
                           - name: FRONTEND_IMAGE
                             value: ghcr.io/ai-workspace-services/console:sha-fbaca9980589535b15b1b29cf15a9791c62cf131@sha256:ce3cdffd364e151e84271cd7ba73d411ddc1a39f2fe3475c38a8f0f3ea1fa484
                         securityContext:
@@ -159,6 +163,9 @@ spec:
           - name: nginx-config
             configMap:
               name: web-saas-console-nginx-relative-redirects
+          - name: download-channels
+            configMap:
+              name: web-saas-download-channels
           - name: tmp
             emptyDir: {}
         volumeMounts:
@@ -169,6 +176,10 @@ spec:
           - name: nginx-config
             mountPath: /etc/nginx/conf.d/default.conf
             subPath: default.conf
+            readOnly: true
+          - name: download-channels
+            mountPath: /etc/console/download-channels.json
+            subPath: download-channels.json
             readOnly: true
           - name: tmp
             mountPath: /tmp

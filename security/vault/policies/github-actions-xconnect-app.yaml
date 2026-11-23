@@ -1,0 +1,25 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-xconnect-app
+  description: Read-only storage mirror and Android release signing credentials for ai-workspace-xstream/xconnect-app CI release matrix sync.
+spec:
+  paths:
+  - path: kv/data/prod/platform/storage/aliyun-oss
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/aliyun-oss
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - list
+    - read
+  - path: kv/data/github-actions/xconnect-app
+    capabilities:
+    - read
