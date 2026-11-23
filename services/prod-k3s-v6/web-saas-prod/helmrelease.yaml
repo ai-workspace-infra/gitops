@@ -71,7 +71,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.23-r1"
+                      delivery.svc.plus/rollout-revision: "v2026.11.23-r2"
                   spec:
                     containers:
                       - name: console
@@ -95,7 +95,7 @@ spec:
                           - name: ALLOW_REMOTE_DL_FETCH
                             value: "true"
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-fbaca9980589535b15b1b29cf15a9791c62cf131@sha256:ce3cdffd364e151e84271cd7ba73d411ddc1a39f2fe3475c38a8f0f3ea1fa484
+                            value: ghcr.io/ai-workspace-services/console:sha-ea9863148164a250f55516af7647b61cbfa122d6@sha256:616e036234a49320f85e99a9680039eb5769c6948b0d68c562855ab352c2fb20
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -155,7 +155,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-fbaca9980589535b15b1b29cf15a9791c62cf131@sha256:ce3cdffd364e151e84271cd7ba73d411ddc1a39f2fe3475c38a8f0f3ea1fa484
+        image: ghcr.io/ai-workspace-services/console:sha-ea9863148164a250f55516af7647b61cbfa122d6@sha256:616e036234a49320f85e99a9680039eb5769c6948b0d68c562855ab352c2fb20
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
