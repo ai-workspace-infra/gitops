@@ -175,7 +175,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-e5ed8720bfbca2a21e7ebc37b0273a1310f414cc@sha256:37802e0431058b8fb0e7d9fbb7bbf2a5f6f7b9437ccf14ed1aedaca851c48191
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-2110cf13ed0de226af1471ddd268efc8b51789d0@sha256:0109943998fba6ea65303857cec007888183068da70f6cbe1b919d06fdfa529a
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -188,7 +188,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-e5ed8720bfbca2a21e7ebc37b0273a1310f414cc@sha256:37802e0431058b8fb0e7d9fbb7bbf2a5f6f7b9437ccf14ed1aedaca851c48191
+        image: ghcr.io/ai-workspace-services/accounts:sha-2110cf13ed0de226af1471ddd268efc8b51789d0@sha256:0109943998fba6ea65303857cec007888183068da70f6cbe1b919d06fdfa529a
         resources:
           requests: {cpu: 100m, memory: 128Mi}
           limits: {cpu: 500m, memory: 384Mi}
@@ -206,11 +206,11 @@ spec:
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
           DUAL_BUCKET_QUOTA_ENFORCE: "false"
-          IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-ec2c64f08a1cce9a458caf7eee232bd3151da046@sha256:d596b8b00a3dfea27b9a7ea256d7b7f9a753fdd891319cbee99ef1b2206e6a3f
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
-        image: ghcr.io/ai-workspace-services/billing-service:sha-ec2c64f08a1cce9a458caf7eee232bd3151da046@sha256:d596b8b00a3dfea27b9a7ea256d7b7f9a753fdd891319cbee99ef1b2206e6a3f
+        image: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
         probes:
           startupProbe:
             httpGet:
