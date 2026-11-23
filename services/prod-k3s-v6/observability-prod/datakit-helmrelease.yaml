@@ -44,18 +44,17 @@ spec:
       dataway_secret_name: datakit-dataway-secret
       global_tags: host=prod-k3s-v6,cluster=prod-k3s-v6,environment=prod,env=prod
       log: info
-      default_enabled_inputs: statsd,dk,cpu,disk,diskio,mem,swap,system,hostobject,net,container,kubernetesprometheus,prom
-    extraEnvs:
-      - name: ENV_INPUT_CONTAINER_ENDPOINTS
-        value: unix:///var/run/k3s/containerd/containerd.sock
+      default_enabled_inputs: dk,cpu,disk,diskio,mem,swap,system,hostobject,net,prom
     dkconfig:
+      # 默认关闭高基数采集 (cadvisor / kubelet / kube-state-metrics / container / kubernetesprometheus)
+      # 仅保留低基数核心指标且拉长抓取周期为 60s
       - name: postgresql-exporter.conf
         path: /usr/local/datakit/conf.d/prom/postgresql-exporter.conf
         value: |-
           [[inputs.prom]]
             urls = ["http://postgresql-postgresql-exporter.postgresql-prod:9187/metrics"]
             source = "postgresql"
-            interval = "15s"
+            interval = "60s"
             measurement_name = "postgresql"
             keep_exist_metric_name = true
             election = false
@@ -67,30 +66,13 @@ spec:
               instance = "prod-postgresql-0"
               db_instance = "postgresql"
               host = "prod-k3s-v6"
-      - name: kube-state-metrics.conf
-        path: /usr/local/datakit/conf.d/prom/kube-state-metrics.conf
-        value: |-
-          [[inputs.prom]]
-            urls = ["http://observability-agent-state.observability-prod:8080/metrics"]
-            source = "kube-state-metrics"
-            interval = "15s"
-            measurement_name = "kube-state-metrics"
-            keep_exist_metric_name = true
-            election = false
-            [inputs.prom.tags]
-              cluster = "prod-k3s-v6"
-              environment = "prod"
-              env = "prod"
-              service = "kube-state-metrics"
-              job = "kube-state-metrics"
-              host = "prod-k3s-v6"
       - name: node-exporter.conf
         path: /usr/local/datakit/conf.d/prom/node-exporter.conf
         value: |-
           [[inputs.prom]]
             urls = ["http://observability-agent.observability-prod:9100/metrics"]
             source = "node-exporter"
-            interval = "15s"
+            interval = "60s"
             measurement_name = "node-exporter"
             keep_exist_metric_name = true
             election = false
@@ -103,50 +85,6 @@ spec:
               node = "prod-k3s-v6"
               nodename = "prod-k3s-v6"
               instance = "prod-k3s-v6"
-              host = "prod-k3s-v6"
-      - name: cadvisor.conf
-        path: /usr/local/datakit/conf.d/prom/cadvisor.conf
-        value: |-
-          [[inputs.prom]]
-            urls = ["https://127.0.0.1:10250/metrics/cadvisor"]
-            source = "cadvisor"
-            interval = "15s"
-            measurement_name = "cadvisor"
-            keep_exist_metric_name = true
-            insecure_skip_verify = true
-            election = false
-            [inputs.prom.auth]
-              type = "bearer_token"
-              token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-            [inputs.prom.tags]
-              cluster = "prod-k3s-v6"
-              environment = "prod"
-              env = "prod"
-              service = "cadvisor"
-              job = "cadvisor"
-              node = "prod-k3s-v6"
-              host = "prod-k3s-v6"
-      - name: kubelet.conf
-        path: /usr/local/datakit/conf.d/prom/kubelet.conf
-        value: |-
-          [[inputs.prom]]
-            urls = ["https://127.0.0.1:10250/metrics"]
-            source = "kubelet"
-            interval = "15s"
-            measurement_name = "kubelet"
-            keep_exist_metric_name = true
-            insecure_skip_verify = true
-            election = false
-            [inputs.prom.auth]
-              type = "bearer_token"
-              token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-            [inputs.prom.tags]
-              cluster = "prod-k3s-v6"
-              environment = "prod"
-              env = "prod"
-              service = "kubelet"
-              job = "kubelet"
-              node = "prod-k3s-v6"
               host = "prod-k3s-v6"
     resources:
       requests: {cpu: 100m, memory: 128Mi}
