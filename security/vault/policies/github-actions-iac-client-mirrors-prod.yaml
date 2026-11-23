@@ -6,10 +6,10 @@ metadata:
   description: Least-privilege Vault policy for ai-workspace-infra/iac_modules client-mirrors dual-mirror provisioning and storage KV sync.
 spec:
   paths:
-  - path: kv/data/prod/platform/cloudflare
+  - path: kv/data/prod/serverless/cloudflare
     capabilities:
     - read
-  - path: kv/metadata/prod/platform/cloudflare
+  - path: kv/metadata/prod/serverless/cloudflare
     capabilities:
     - read
   - path: kv/data/prod/platform/alicloud

@@ -9,6 +9,7 @@ spec:
   global:
     zone_name: svc.plus
     managed_by: terraform-client-mirrors
+    saas_role: playbooks/roles/saas/client_mirrors
     state:
       project: svc.plus
       environment: prod
@@ -28,7 +29,7 @@ spec:
       prefixes:
         - offline-package/open-platform/
   admin_vault_sources:
-    cloudflare: kv/prod/platform/cloudflare
+    cloudflare: kv/prod/serverless/cloudflare
     alicloud: kv/prod/platform/alicloud
     iac_state: kv/CICD/prod/iac_state
   cloudflare_r2:
