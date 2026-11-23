@@ -5,6 +5,7 @@ namespace: web-saas-prod
 resources:
 - oci-repository.yaml
 - console-nginx-configmap.yaml
+- download-channels-configmap.yaml
 - helmrelease.yaml
 - vault-secrets.yaml
 - database-vault-secrets.yaml
