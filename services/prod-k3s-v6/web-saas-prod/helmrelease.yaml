@@ -26,7 +26,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.23-r1"
+                      delivery.svc.plus/rollout-revision: "v2026.11.24-r1"
                   spec:
                     volumes:
                       - name: accounts-controller-config
@@ -189,7 +189,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-cabf381fa6c6ada678fbd698b3bf7618c7638f7d@sha256:90bc16b4c5ed3d9529fee38d3c8753561bffa5c19de9c9297f967890cdfdd476
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-952a8d4cf8f34f0680eb2704e1f6d3ef56f39216@sha256:2af85faa9978f8364d8c91dce58568e2afaaba5be1a513306b3ebfbfedd8f77b
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -202,10 +202,10 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-cabf381fa6c6ada678fbd698b3bf7618c7638f7d@sha256:90bc16b4c5ed3d9529fee38d3c8753561bffa5c19de9c9297f967890cdfdd476
+        image: ghcr.io/ai-workspace-services/accounts:sha-952a8d4cf8f34f0680eb2704e1f6d3ef56f39216@sha256:2af85faa9978f8364d8c91dce58568e2afaaba5be1a513306b3ebfbfedd8f77b
         resources:
           requests: {cpu: 100m, memory: 128Mi}
-          limits: {cpu: 500m, memory: 384Mi}
+          limits: {cpu: 500m, memory: 512Mi}
     billing:
       enabled: true
       vpa:
