@@ -1,0 +1,50 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-distribution-prod
+  description: Read-only Vault policy for ai-workspace-lab/distribution prod package repository sync and GPG signing.
+spec:
+  paths:
+  - path: kv/data/prod/platform/storage/cloudflare-r2-repo
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/cloudflare-r2-repo
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/storage/aliyun-oss-repo
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/aliyun-oss-repo
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/storage/aliyun-oss
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/aliyun-oss
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/signing/svc-plus-repo-gpg
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/signing/svc-plus-repo-gpg
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/distribution/github-pat
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/distribution/github-pat
+    capabilities:
+    - list
+    - read

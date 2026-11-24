@@ -36,3 +36,21 @@ spec:
     capabilities:
     - read
     - list
+  - path: kv/data/prod/platform/storage/cloudflare-r2-repo
+    capabilities:
+    - create
+    - update
+    - read
+  - path: kv/metadata/prod/platform/storage/cloudflare-r2-repo
+    capabilities:
+    - read
+    - list
+  - path: kv/data/prod/platform/storage/aliyun-oss-repo
+    capabilities:
+    - create
+    - update
+    - read
+  - path: kv/metadata/prod/platform/storage/aliyun-oss-repo
+    capabilities:
+    - read
+    - list

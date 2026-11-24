@@ -1,0 +1,24 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultJWTAuthRole
+metadata:
+  name: github-actions-distribution-prod
+  description: Protected prod GitHub Actions OIDC JWT role for ai-workspace-lab/distribution sync-distribution workflow.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_audiences:
+  - vault
+  bound_claims_type: glob
+  bound_claims:
+    repository: ai-workspace-lab/distribution
+    workflow_ref: ai-workspace-lab/distribution/.github/workflows/sync-distribution.yml@*
+    environment: prod
+    ref:
+    - refs/heads/main
+  token_policies:
+  - github-actions-distribution-prod
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 15m
+  token_max_ttl: 15m

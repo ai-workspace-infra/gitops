@@ -250,6 +250,37 @@ spec:
           target_label: instance
         - target_label: __address__
           replacement: observability-agent-blackbox.observability-prod.svc:9115
+      - job_name: package-repo-mirror-probes
+        metrics_path: /probe
+        scrape_interval: 60s
+        scrape_timeout: 10s
+        static_configs:
+        - targets:
+          - https://repo.svc.plus/repo/_health/probe.json
+          labels:
+            service: package-repo-global
+            route: /repo/_health/probe.json
+            probe_module: release_http_ok
+            expected_status: '200'
+        - targets:
+          - https://cn-repo.svc.plus/repo/_health/probe.json
+          labels:
+            service: package-repo-cn
+            route: /repo/_health/probe.json
+            probe_module: release_http_ok
+            expected_status: '200'
+        relabel_configs:
+        - source_labels:
+          - __address__
+          target_label: __param_target
+        - source_labels:
+          - probe_module
+          target_label: __param_module
+        - source_labels:
+          - __param_target
+          target_label: instance
+        - target_label: __address__
+          replacement: observability-agent-blackbox.observability-prod.svc:9115
       - job_name: traefik
         scrape_interval: 15s
         static_configs:
