@@ -1,0 +1,24 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultJWTAuthRole
+metadata:
+  name: github-actions-xworkmate-remote-desktop
+  description: GitHub Actions OIDC JWT role for ai-desktop-lab/xworkmate-remote-desktop dual-mirror release sync.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_audiences:
+  - vault
+  bound_claims_type: glob
+  bound_claims:
+    repository: ai-desktop-lab/xworkmate-remote-desktop
+    workflow_ref: ai-desktop-lab/xworkmate-remote-desktop/.github/workflows/build-and-release.yml@*
+    ref:
+    - refs/heads/main
+    - refs/tags/v*
+  token_policies:
+  - github-actions-client-release-mirrors-prod
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 15m
+  token_max_ttl: 15m

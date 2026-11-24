@@ -1,0 +1,24 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultJWTAuthRole
+metadata:
+  name: github-actions-xconnect-gateway
+  description: GitHub Actions OIDC JWT role for ai-workspace-xstream/xconnect-gateway dual-mirror release sync.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_audiences:
+  - vault
+  bound_claims_type: glob
+  bound_claims:
+    repository: ai-workspace-xstream/xconnect-gateway
+    workflow_ref: ai-workspace-xstream/xconnect-gateway/.github/workflows/ci.yml@*
+    ref:
+    - refs/heads/main
+    - refs/tags/v*
+  token_policies:
+  - github-actions-client-release-mirrors-prod
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 15m
+  token_max_ttl: 15m
