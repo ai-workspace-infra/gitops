@@ -1,0 +1,29 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-client-release-mirrors-prod
+  description: Read-only dual-mirror storage (Cloudflare R2 + Aliyun OSS) and distribution dispatch credentials for Wave 1 client/agent release pipelines.
+spec:
+  paths:
+  - path: kv/data/prod/platform/storage/aliyun-oss
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/aliyun-oss
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/distribution/dispatch-token
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/distribution/dispatch-token
+    capabilities:
+    - list
+    - read
