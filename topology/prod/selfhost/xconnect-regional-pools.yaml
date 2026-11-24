@@ -32,6 +32,39 @@ spec:
         - "*.gz"
         - "*.[0-9]"
         - "*.old"
+    sysctl:
+      tcp_slow_start_after_idle: 0
+      tcp_notsent_lowat: 131072
+      tcp_keepalive_time: 600
+      tcp_keepalive_intvl: 30
+      tcp_keepalive_probes: 5
+      rmem_max: 33554432
+      wmem_max: 33554432
+      tcp_rmem: "4096 87380 33554432"
+      tcp_wmem: "4096 65536 33554432"
+    haproxy:
+      bufsize: 65536
+      h2_initial_window_size: 4194304
+      pipesize: 262144
+      timeout_tunnel: "3600s"
+      timeout_http_keep_alive: "120s"
+      clitcpka: true
+      srvtcpka: true
+      http_no_delay: true
+    fluxgate:
+      version: "0.2.1"
+      h2_stream_window_size: 4194304
+      h2_connection_window_size: 16777216
+      h2_ping_interval_secs: 15
+      max_h2_streams: 256
+      read_timeout_secs: 3600
+      idle_timeout_secs: 3600
+    xray:
+      buffer_size_kb: 128
+      handshake_timeout_seconds: 30
+      connection_idle_timeout_seconds: 3600
+      uplink_only_timeout_seconds: 15
+      downlink_only_timeout_seconds: 30
   # Akamai Cloud regions are declared in the IaC CMDB; PH and TW remain
   # Vault-backed manually supplied edges. The runtime contract is one pool per
   # region.
