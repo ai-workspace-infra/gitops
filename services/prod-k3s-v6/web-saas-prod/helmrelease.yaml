@@ -95,7 +95,7 @@ spec:
                           - name: ALLOW_REMOTE_DL_FETCH
                             value: "true"
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-ea9863148164a250f55516af7647b61cbfa122d6@sha256:616e036234a49320f85e99a9680039eb5769c6948b0d68c562855ab352c2fb20
+                            value: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -155,7 +155,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-ea9863148164a250f55516af7647b61cbfa122d6@sha256:616e036234a49320f85e99a9680039eb5769c6948b0d68c562855ab352c2fb20
+        image: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
@@ -189,7 +189,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-2110cf13ed0de226af1471ddd268efc8b51789d0@sha256:0109943998fba6ea65303857cec007888183068da70f6cbe1b919d06fdfa529a
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-99ea7d1847b20fdbe8438a6968a854018040a726@sha256:8d47614a1f7b769412dab68e3c7c65b039416c82692d71c5769c70704388ea61
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -202,7 +202,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-2110cf13ed0de226af1471ddd268efc8b51789d0@sha256:0109943998fba6ea65303857cec007888183068da70f6cbe1b919d06fdfa529a
+        image: ghcr.io/ai-workspace-services/accounts:sha-99ea7d1847b20fdbe8438a6968a854018040a726@sha256:8d47614a1f7b769412dab68e3c7c65b039416c82692d71c5769c70704388ea61
         resources:
           requests: {cpu: 100m, memory: 128Mi}
           limits: {cpu: 500m, memory: 384Mi}
