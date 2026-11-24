@@ -54,6 +54,13 @@ class XConnectRegionalPoolsTest(unittest.TestCase):
             self.assertEqual(xray.get("buffer_size_kb"), 128)
             self.assertEqual(xray.get("uplink_only_timeout_seconds"), 15)
             self.assertEqual(xray.get("downlink_only_timeout_seconds"), 30)
+            journald = nm.get("journald", {})
+            self.assertEqual(journald.get("system_max_use"), "64M")
+            self.assertEqual(journald.get("system_max_file_size"), "8M")
+            self.assertEqual(journald.get("max_retention"), "3day")
+            self.assertEqual(journald.get("runtime_max_use"), "16M")
+            self.assertEqual(journald.get("service_memory_high"), "24M")
+            self.assertEqual(journald.get("service_memory_max"), "48M")
 
 if __name__ == "__main__":
     unittest.main()

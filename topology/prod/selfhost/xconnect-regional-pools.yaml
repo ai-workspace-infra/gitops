@@ -12,20 +12,25 @@ spec:
       log_message_max_bytes: 4096
       sink_batch_max_bytes: 1048576
       sink_batch_timeout_secs: 5
-      sink_buffer_max_events: 500
+      sink_buffer_max_events: 250
       threads: 1
-      memory_high: 150M
-      memory_max: 250M
+      memory_high: 96M
+      memory_max: 160M
       tls_verify: true
     journald:
       compress: true
-      system_max_use: 300M
+      system_max_use: 64M
       system_keep_free: 1G
-      system_max_file_size: 50M
-      max_retention: 14day
-      runtime_max_use: 64M
+      system_max_file_size: 8M
+      max_file_sec: 1day
+      max_retention: 3day
+      runtime_max_use: 16M
+      runtime_max_file_size: 4M
       rate_limit_interval: 30s
-      rate_limit_burst: 2000
+      rate_limit_burst: 500
+      vacuum_on_calendar: daily
+      service_memory_high: 24M
+      service_memory_max: 48M
     rotated_logs:
       keep_days: 14
       patterns:
