@@ -95,7 +95,7 @@ spec:
                           - name: ALLOW_REMOTE_DL_FETCH
                             value: "true"
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
+                            value: ghcr.io/ai-workspace-services/console:sha-2b049ee50b845065c968ef8d1c21170a3923f195@sha256:1a070da9d84e5e9243e207aa71c3e86281f879394b8c3e5ddf0aeb0802f0755c
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -155,7 +155,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
+        image: ghcr.io/ai-workspace-services/console:sha-2b049ee50b845065c968ef8d1c21170a3923f195@sha256:1a070da9d84e5e9243e207aa71c3e86281f879394b8c3e5ddf0aeb0802f0755c
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
