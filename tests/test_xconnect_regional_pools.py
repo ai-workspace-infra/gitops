@@ -30,5 +30,30 @@ class XConnectRegionalPoolsTest(unittest.TestCase):
         self.assertIn("jpn-tky", hosts)
         self.assertIn("us-ca", hosts)
 
+    def test_low_latency_edge_tuning_persisted_in_prod_and_uat(self):
+        for rel in (
+            "topology/prod/selfhost/xconnect-regional-pools.yaml",
+            "topology/uat/selfhost/xconnect-regional-pool.yaml",
+        ):
+            with open(REPO_ROOT / rel) as f:
+                data = yaml.safe_load(f)
+            nm = data.get("spec", {}).get("node_maintenance", {})
+            sysctl = nm.get("sysctl", {})
+            self.assertEqual(sysctl.get("tcp_slow_start_after_idle"), 0)
+            self.assertEqual(sysctl.get("tcp_notsent_lowat"), 131072)
+            haproxy = nm.get("haproxy", {})
+            self.assertEqual(haproxy.get("bufsize"), 65536)
+            self.assertEqual(haproxy.get("h2_initial_window_size"), 4194304)
+            self.assertEqual(haproxy.get("pipesize"), 262144)
+            self.assertTrue(haproxy.get("http_no_delay"))
+            fluxgate = nm.get("fluxgate", {})
+            self.assertEqual(fluxgate.get("version"), "0.2.1")
+            self.assertEqual(fluxgate.get("h2_stream_window_size"), 4194304)
+            self.assertEqual(fluxgate.get("h2_connection_window_size"), 16777216)
+            xray = nm.get("xray", {})
+            self.assertEqual(xray.get("buffer_size_kb"), 128)
+            self.assertEqual(xray.get("uplink_only_timeout_seconds"), 15)
+            self.assertEqual(xray.get("downlink_only_timeout_seconds"), 30)
+
 if __name__ == "__main__":
     unittest.main()
