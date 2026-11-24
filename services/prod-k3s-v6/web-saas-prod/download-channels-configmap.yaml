@@ -27,6 +27,24 @@ data:
           "enabled": true
         }
       },
+      "repos": {
+        "cn": {
+          "id": "cn-repo-oss",
+          "provider": "aliyun-oss",
+          "baseUrl": "https://cn-repo.svc.plus",
+          "label": "China Mainland Package Repo (Aliyun OSS)",
+          "labelZh": "中国大陆包仓库（阿里云 OSS）",
+          "enabled": true
+        },
+        "global": {
+          "id": "global-repo-r2",
+          "provider": "cloudflare-r2",
+          "baseUrl": "https://repo.svc.plus",
+          "label": "Global Package Repo (Cloudflare R2)",
+          "labelZh": "全球包仓库（Cloudflare R2）",
+          "enabled": true
+        }
+      },
       "products": {
         "xconnect": {
           "matrixPath": "/releases/xconnect/release-matrix.json",

@@ -1,0 +1,87 @@
+---
+apiVersion: gitops.svc.plus/v1alpha1
+kind: ClientMirrorStack
+metadata:
+  name: svc-plus-client-repos
+  project: svc.plus
+  environment: prod
+spec:
+  global:
+    zone_name: svc.plus
+    probe_path: repo/_health/probe.json
+    managed_by: terraform-client-mirrors
+    saas_role: playbooks/roles/saas/client_mirrors
+    state:
+      project: svc.plus
+      environment: prod
+      account: svc-plus-prod
+      namespace: repos
+  products:
+    - slug: xconnect
+      prefixes:
+        - apt/
+        - rpm/
+        - homebrew/
+        - scoop/
+        - winget/
+    - slug: xworkmate
+      prefixes:
+        - apt/
+        - rpm/
+        - homebrew/
+        - scoop/
+        - winget/
+  admin_vault_sources:
+    cloudflare: kv/prod/serverless/cloudflare
+    alicloud: kv/prod/platform/alicloud
+    iac_state: kv/CICD/prod/iac_state
+  cloudflare_r2:
+    id: global_repo_r2
+    bucket_name: svc-plus-repo-global
+    custom_domain: repo.svc.plus
+    location: apac
+    min_tls: "1.2"
+    cors_allowed_origins:
+      - https://console.svc.plus
+      - https://xworktech.com
+    cors_allowed_methods:
+      - GET
+      - HEAD
+    cors_max_age_seconds: 3600
+    token_name: svc-plus-client-repos-r2-rw
+    vault_kv_path: prod/platform/storage/cloudflare-r2-repo
+  aliyun_oss_cdn:
+    id: cn_repo_oss_cdn
+    bucket_name: svc-plus-repo-cn-hk
+    oss_region: cn-hongkong
+    oss_acl: public-read
+    cdn_domain: cn-repo.svc.plus
+    cdn_type: web
+    cdn_scope: overseas
+    cdn_rate_limit: 10m
+    cdn_rate_limit_after: 1m
+    cdn_bandwidth_alarm_bps: 500000000
+    cdn_alarm_contact_group: ""
+    cdn_cas_cert_id: ""
+    cdn_tls_vault_path: kv/CICD/domains/svc.plus
+    oss_policy_prefixes:
+      - "apt/*"
+      - "rpm/*"
+      - "homebrew/*"
+      - "scoop/*"
+      - "winget/*"
+      - "keys/*"
+      - "repo/*"
+      - "install.*"
+      - "index.html"
+      - "repo-index.json"
+    cors_allowed_origins:
+      - https://console.svc.plus
+      - https://xworktech.com
+    cors_allowed_methods:
+      - GET
+      - HEAD
+    cors_max_age_seconds: 3600
+    ram_user_name: ci-client-repos-oss-rw
+    ram_policy_name: ci-client-repos-oss-rw-policy
+    vault_kv_path: prod/platform/storage/aliyun-oss-repo

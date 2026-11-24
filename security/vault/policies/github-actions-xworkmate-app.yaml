@@ -1,0 +1,32 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-xworkmate-app
+  description: Read-only storage mirror, release signing, and distribution dispatch credentials for ai-workspace-lab/xworkmate-app CI release sync.
+spec:
+  paths:
+  - path: kv/data/prod/platform/storage/aliyun-oss
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/aliyun-oss
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/storage/cloudflare-r2
+    capabilities:
+    - list
+    - read
+  - path: kv/data/prod/platform/distribution/dispatch-token
+    capabilities:
+    - read
+  - path: kv/metadata/prod/platform/distribution/dispatch-token
+    capabilities:
+    - list
+    - read
+  - path: kv/data/github-actions/xworkmate-app
+    capabilities:
+    - read
