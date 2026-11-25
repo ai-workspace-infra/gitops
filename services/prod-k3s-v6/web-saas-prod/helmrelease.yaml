@@ -24,9 +24,6 @@ spec:
                 name: web-saas-accounts
               spec:
                 template:
-                  metadata:
-                    annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.24-r1"
                   spec:
                     volumes:
                       - name: accounts-controller-config
@@ -44,21 +41,6 @@ spec:
                           - name: accounts-controller-config
                             mountPath: /var/run/accounts-controller-config
                             readOnly: true
-                        readinessProbe:
-                          httpGet:
-                            path: /readyz
-                            port: 8080
-                          periodSeconds: 10
-                          timeoutSeconds: 3
-                          failureThreshold: 3
-                        livenessProbe:
-                          httpGet:
-                            path: /healthz
-                            port: 8080
-                          initialDelaySeconds: 20
-                          periodSeconds: 10
-                          timeoutSeconds: 3
-                          failureThreshold: 3
           - target:
               kind: Deployment
               name: web-saas-console
@@ -71,7 +53,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.23-r2"
+                      delivery.svc.plus/rollout-revision: "v2026.11.19-r2"
                   spec:
                     containers:
                       - name: console
@@ -90,12 +72,8 @@ spec:
                             value: observability
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
-                          - name: DOWNLOAD_CHANNELS_CONFIG_PATH
-                            value: /etc/console/download-channels.json
-                          - name: ALLOW_REMOTE_DL_FETCH
-                            value: "true"
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-2b049ee50b845065c968ef8d1c21170a3923f195@sha256:1a070da9d84e5e9243e207aa71c3e86281f879394b8c3e5ddf0aeb0802f0755c
+                            value: ghcr.io/ai-workspace-services/console:sha-62c65bb5e122410ef2d755fcf679de9caea021f2@sha256:4fb0488b78ce4b1a3185c43a22ad4b2a628f0ef119e38fec51e13db03b1084f9
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -155,7 +133,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-2b049ee50b845065c968ef8d1c21170a3923f195@sha256:1a070da9d84e5e9243e207aa71c3e86281f879394b8c3e5ddf0aeb0802f0755c
+        image: ghcr.io/ai-workspace-services/console:sha-62c65bb5e122410ef2d755fcf679de9caea021f2@sha256:4fb0488b78ce4b1a3185c43a22ad4b2a628f0ef119e38fec51e13db03b1084f9
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
@@ -163,9 +141,6 @@ spec:
           - name: nginx-config
             configMap:
               name: web-saas-console-nginx-relative-redirects
-          - name: download-channels
-            configMap:
-              name: web-saas-download-channels
           - name: tmp
             emptyDir: {}
         volumeMounts:
@@ -177,10 +152,6 @@ spec:
             mountPath: /etc/nginx/conf.d/default.conf
             subPath: default.conf
             readOnly: true
-          - name: download-channels
-            mountPath: /etc/console/download-channels.json
-            subPath: download-channels.json
-            readOnly: true
           - name: tmp
             mountPath: /tmp
     accounts:
@@ -189,23 +160,22 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-952a8d4cf8f34f0680eb2704e1f6d3ef56f39216@sha256:2af85faa9978f8364d8c91dce58568e2afaaba5be1a513306b3ebfbfedd8f77b
+          IMAGE: ghcr.io/ai-workspace-services/accounts:v2026.11.19-r2@sha256:93e7410a13453c1bf2c079cc2f4c70655345fd8317d2854988a105fec89feeec
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
           DB_NAME: account
           XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
           SUBSCRIPTION_GRACE_PERIOD: "72h"
-          DUAL_BUCKET_PRO_GATE_ENABLED: "false"
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-952a8d4cf8f34f0680eb2704e1f6d3ef56f39216@sha256:2af85faa9978f8364d8c91dce58568e2afaaba5be1a513306b3ebfbfedd8f77b
+        image: ghcr.io/ai-workspace-services/accounts:v2026.11.19-r2@sha256:93e7410a13453c1bf2c079cc2f4c70655345fd8317d2854988a105fec89feeec
         resources:
-          requests: {cpu: 100m, memory: 128Mi}
-          limits: {cpu: 500m, memory: 512Mi}
+          requests: {cpu: 25m, memory: 96Mi}
+          limits: {cpu: 100m, memory: 256Mi}
     billing:
       enabled: true
       vpa:
@@ -219,12 +189,11 @@ spec:
           BILLING_INGEST_MODE: push
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
-          DUAL_BUCKET_QUOTA_ENFORCE: "false"
-          IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.19-r2@sha256:373fc9961eff277ec1a21d3dfa7fca4fdc8dc310aa80e83ec9e5ceb83cbeff04
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
-        image: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
+        image: ghcr.io/ai-workspace-services/billing-service:v2026.11.19-r2@sha256:373fc9961eff277ec1a21d3dfa7fca4fdc8dc310aa80e83ec9e5ceb83cbeff04
         probes:
           startupProbe:
             httpGet:
