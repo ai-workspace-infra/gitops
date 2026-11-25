@@ -61,6 +61,18 @@ class XConnectRegionalPoolsTest(unittest.TestCase):
             self.assertEqual(journald.get("runtime_max_use"), "16M")
             self.assertEqual(journald.get("service_memory_high"), "24M")
             self.assertEqual(journald.get("service_memory_max"), "48M")
+            vector = nm.get("vector", {})
+            self.assertIs(vector.get("system_logs_enabled"), False)
+            self.assertEqual(vector.get("billing_disk_buffer_max_bytes"), 268435488)
+            self.assertEqual(vector.get("prometheus_batch_max_events"), 250)
+            self.assertEqual(vector.get("prometheus_buffer_max_events"), 500)
+            self.assertEqual(vector.get("sink_batch_max_bytes"), 262144)
+            self.assertEqual(vector.get("tokio_worker_threads"), 1)
+            self.assertEqual(vector.get("malloc_arena_max"), 2)
+            self.assertIn("thp:never", vector.get("malloc_conf", ""))
+            self.assertIn("narenas:1", vector.get("malloc_conf", ""))
+            self.assertEqual(vector.get("memory_high"), "72M")
+            self.assertEqual(vector.get("memory_max"), "128M")
 
 if __name__ == "__main__":
     unittest.main()

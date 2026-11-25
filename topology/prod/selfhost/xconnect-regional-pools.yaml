@@ -10,12 +10,19 @@ spec:
       internal_metrics_scrape_interval_secs: 30
       reverse_proxy_drop_substring: http.handlers.reverse_proxy
       log_message_max_bytes: 4096
-      sink_batch_max_bytes: 1048576
+      system_logs_enabled: false
+      billing_disk_buffer_max_bytes: 268435488
+      prometheus_batch_max_events: 250
+      prometheus_buffer_max_events: 500
+      sink_batch_max_bytes: 262144
       sink_batch_timeout_secs: 5
       sink_buffer_max_events: 250
       threads: 1
-      memory_high: 96M
-      memory_max: 160M
+      tokio_worker_threads: 1
+      malloc_arena_max: 2
+      malloc_conf: narenas:1,dirty_decay_ms:1000,muzzy_decay_ms:0,thp:never,retain:false
+      memory_high: 72M
+      memory_max: 128M
       tls_verify: true
     journald:
       compress: true
