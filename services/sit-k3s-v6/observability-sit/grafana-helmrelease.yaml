@@ -57,9 +57,9 @@ spec:
       url: https://github.com/ai-workspace-infra/artifacts/releases/download/progressive-release-matrix-panel-v1.0.6/progressive-release-matrix-panel-1.0.6.zip
       sha256: f2e5288c40429abf6160ba55723f47d8de647c6de853026b5907f6e438a6c0ef
     - id: xconnect-topology-roi-panel
-      version: 1.0.0
-      url: https://github.com/ai-workspace-infra/artifacts/releases/download/xconnect-topology-roi-panel-v1.0.0/xconnect-topology-roi-panel-1.0.0.zip
-      sha256: a8a4cbb7fbc3bd1713b4ffa235bbd25cf29ebcb6e3e09b0168ab35c103428138
+      version: 1.1.1
+      url: https://github.com/ai-workspace-infra/artifacts/releases/download/xconnect-topology-roi-panel-v1.1.1/xconnect-topology-roi-panel-1.1.1.zip
+      sha256: 61553889f82f9e7b15eef55520dddc2991e6765afbaf9360827411dc8eee0c26
     dashboardProviders:
     - name: import-general
       folder: ''
