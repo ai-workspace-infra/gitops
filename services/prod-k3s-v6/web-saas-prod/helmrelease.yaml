@@ -167,15 +167,39 @@ spec:
           DB_NAME: account
           XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
           SUBSCRIPTION_GRACE_PERIOD: "72h"
+          GOMEMLIMIT: "400MiB"
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
         image: ghcr.io/ai-workspace-services/accounts:v2026.11.19-r2@sha256:93e7410a13453c1bf2c079cc2f4c70655345fd8317d2854988a105fec89feeec
+        probes:
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: primary
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: primary
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: primary
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 5
         resources:
-          requests: {cpu: 25m, memory: 96Mi}
-          limits: {cpu: 100m, memory: 256Mi}
+          requests: {cpu: 100m, memory: 192Mi}
+          limits: {cpu: 500m, memory: 512Mi}
     billing:
       enabled: true
       vpa:
