@@ -59,7 +59,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.26-ddtrace-r2"
+                      delivery.svc.plus/rollout-revision: "v2026.11.26-ddtrace-r3"
                   spec:
                     containers:
                       - name: console
@@ -72,6 +72,12 @@ spec:
                             value: http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
                           - name: RUNTIME_XCONNECT_ZERO_URL
                             value: http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                          - name: RUNTIME_DOCS_SERVICE_URL
+                            value: http://web-saas-content.web-saas-prod.svc.cluster.local:80
+                          - name: RUNTIME_BILLING_SERVICE_URL
+                            value: http://web-saas-billing.web-saas-prod.svc.cluster.local:80
+                          - name: CONSOLE_PING_UPSTREAM_PROBE
+                            value: "true"
                           - name: RUNTIME_DASHBOARD_URL
                             value: https://console.svc.plus
                           - name: OBSERVABILITY_AUTH_USER
@@ -79,7 +85,7 @@ spec:
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-1d6ec0bcf2fbabf669b94cf5a91f6cb1f78a4d74@sha256:35be6d4e0a7bab1a930a9b52ecb6f19fa6c71d9d2f93d964d126af5dee120a7d
+                            value: ghcr.io/ai-workspace-services/console:sha-1cbc38d321a07b6f5ea9f6a0f52ac45e559a620c@sha256:2f6c811befbc5b862a0e93695202d9f68ba0a9eee8ccf2d7f3a593f21a6e7ee9
                           - name: DD_TRACE_ENABLED
                             value: "true"
                           - name: DD_AGENT_HOST
@@ -151,7 +157,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-1d6ec0bcf2fbabf669b94cf5a91f6cb1f78a4d74@sha256:35be6d4e0a7bab1a930a9b52ecb6f19fa6c71d9d2f93d964d126af5dee120a7d
+        image: ghcr.io/ai-workspace-services/console:sha-1cbc38d321a07b6f5ea9f6a0f52ac45e559a620c@sha256:2f6c811befbc5b862a0e93695202d9f68ba0a9eee8ccf2d7f3a593f21a6e7ee9
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
