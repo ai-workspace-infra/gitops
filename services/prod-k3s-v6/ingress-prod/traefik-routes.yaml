@@ -22,6 +22,14 @@ spec:
         - kind: TraefikService
           name: web-saas-console
           namespace: web-saas-prod
+    # XConnect Controller (Autonomous Overlay Device/Gateway Endpoints - Stage 1 Cutover)
+    - match: (Host(`accounts-selfhost-prod-v6.svc.plus`) || Host(`accounts.svc.plus`)) && (PathPrefix(`/api/overlay/v1/device/session`) || PathPrefix(`/api/overlay/v1/enrollment/`) || PathPrefix(`/api/overlay/v1/gateway/signed-config`) || PathPrefix(`/api/overlay/v1/join-tokens/exchange`) || PathPrefix(`/api/overlay/v1/registrations`))
+      kind: Rule
+      priority: 200
+      services:
+        - name: xconnect-controller
+          namespace: web-saas-prod
+          port: 80
     # Accounts (Auth / Sessions / API)
     - match: Host(`accounts-selfhost-prod-v6.svc.plus`) || Host(`accounts.svc.plus`)
       kind: Rule
