@@ -60,6 +60,8 @@ class TestDataKitDDTraceContract(unittest.TestCase):
             values = doc["spec"]["values"]
             for comp in ("accounts", "billing", "content"):
                 env = values[comp]["workload"]["env"]
+                self.assertIn(env["DD_TRACE_ENABLED"], ("true", "false"))
+                self.assertIsInstance(env["DD_TRACE_ENABLED"], str)
                 self.assertEqual(env["DD_AGENT_HOST"], expected_host)
                 self.assertEqual(env["DD_TRACE_AGENT_PORT"], "9529")
                 self.assertIsInstance(env["DD_TRACE_AGENT_PORT"], str)
@@ -72,11 +74,25 @@ class TestDataKitDDTraceContract(unittest.TestCase):
             )
             patch_doc = yaml.safe_load(console_patch)
             c_env = {e["name"]: e["value"] for e in patch_doc["spec"]["template"]["spec"]["containers"][0]["env"]}
+            self.assertIn(c_env["DD_TRACE_ENABLED"], ("true", "false"))
+            self.assertIsInstance(c_env["DD_TRACE_ENABLED"], str)
             self.assertEqual(c_env["DD_AGENT_HOST"], expected_host)
             self.assertEqual(c_env["DD_TRACE_AGENT_PORT"], "9529")
             self.assertIsInstance(c_env["DD_TRACE_AGENT_PORT"], str)
             self.assertEqual(c_env["DD_SERVICE"], "web-saas-console")
             self.assertEqual(c_env["DD_ENV"], expected_env)
+
+    def test_prod_datakit_binds_hk_commercial_cn6_vault_record(self):
+        policy = yaml.safe_load((ROOT / "security/vault/policies/prod-k3s-v6-datakit-dataway-reader.yaml").read_text())
+        self.assertIn("kv/data/observability/datakit/hk-commercial", {p["path"] for p in policy["spec"]["paths"]})
+        for rel in (
+            "services/prod-k3s-v6/observability-prod/datakit-vault-secret.yaml",
+            "services/prod-k3s-v6-ulhost/observability-prod/datakit-vault-secret.yaml",
+        ):
+            docs = list(yaml.safe_load_all((ROOT / rel).read_text()))
+            ext = next(d for d in docs if d["kind"] == "ExternalSecret")
+            for item in ext["spec"]["data"]:
+                self.assertEqual(item["remoteRef"]["key"], "observability/datakit/hk-commercial", rel)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@
 | 集群环境 | 观测云空间版本 | Vault KV v2 权威路径 | 目标网关域名 | 计费与配额策略 |
 | :--- | :--- | :--- | :--- | :--- |
 | **SIT (`sit-k3s-v6`)** | 香港商业版 (cn6) | `kv/data/observability/datakit/hk-commercial` | `https://cn6-openway.guance.com` | SIT 指标上报到指定香港商业空间 |
-| **PROD (`prod-k3s-v6`)** | 北京免费版 (cn3) | `kv/data/observability/datakit/bj-free` | `https://cn3-openway.guance.com` | PROD 指标上报到指定北京免费空间 |
+| **PROD (`prod-k3s-v6`)** | 香港商业版 (cn6) | `kv/data/observability/datakit/hk-commercial` | `https://cn6-openway.guance.com` | PROD 指标上报到指定香港商业空间 |
 
 ---
 
@@ -20,7 +20,7 @@
 ### 1. 正常运行
 - `datakit-helmrelease.yaml`：`spec.suspend: false`；
 - `kustomization.yaml`：包含 `datakit-helmrelease.yaml`；
-- `datakit-vault-secret.yaml`：`remoteRef.key: observability/datakit/bj-free`。
+- `datakit-vault-secret.yaml`：`remoteRef.key: observability/datakit/hk-commercial`。
 
 ### 2. 停用采集器
 
@@ -35,7 +35,7 @@
 - **效果**：Flux 剪除该 HelmRelease 后，由 Helm 控制器卸载采集器；须检查实际运行状态和云端写入停止情况。
 
 #### 级别 2：调整凭据来源
-- 当前约定 PROD 使用 `observability/datakit/bj-free`。若需变更，由凭据所有者确认后更新声明，并验收采集器及云端数据。
+- 当前约定 PROD 与 SIT 统一使用香港商业版 `observability/datakit/hk-commercial`（`https://cn6-openway.guance.com`）。若需变更，由凭据所有者确认后更新声明，并验收采集器及云端数据。
 
 #### 级别 3：静默保持 / 临时暂停同步
 - **操作**：修改 `datakit-helmrelease.yaml` 中的 `spec.suspend: true`。

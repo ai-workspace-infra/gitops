@@ -1,3 +1,9 @@
+# ==============================================================================
+# DDTrace 链路追踪快速开关 (GitOps HelmRelease Values):
+# - 业务侧快速关闭: 将下方各组件 env 中 DD_TRACE_ENABLED 设为 "false"
+#   (升级至 chart >= 0.2.20 后可直接通过 values.global.tracing.ddtrace.enabled: true/false 统一控制)
+# - 采集器侧快速关闭: 将 observability-prod/datakit-helmrelease.yaml 的 workload.replicas 设为 0
+# ==============================================================================
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -74,6 +80,8 @@ spec:
                             value: observability
                           - name: FRONTEND_IMAGE
                             value: ghcr.io/ai-workspace-services/console:sha-62c65bb5e122410ef2d755fcf679de9caea021f2@sha256:4fb0488b78ce4b1a3185c43a22ad4b2a628f0ef119e38fec51e13db03b1084f9
+                          - name: DD_TRACE_ENABLED
+                            value: "true"
                           - name: DD_AGENT_HOST
                             value: datakit-service.observability-prod.svc
                           - name: DD_TRACE_AGENT_PORT
@@ -182,6 +190,7 @@ spec:
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_KEY_ID: "zero-signing-current"
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_PUBLIC_KEY: "s5yiz7WTECJKgBSapXGM9WOdoud/76xZbmHGbdK4y7o="
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_NOT_AFTER: "2026-12-03T00:00:00Z"
+          DD_TRACE_ENABLED: "true"
           DD_AGENT_HOST: datakit-service.observability-prod.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-accounts
@@ -233,6 +242,7 @@ spec:
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
           IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.19-r2@sha256:373fc9961eff277ec1a21d3dfa7fca4fdc8dc310aa80e83ec9e5ceb83cbeff04
+          DD_TRACE_ENABLED: "true"
           DD_AGENT_HOST: datakit-service.observability-prod.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-billing
@@ -276,6 +286,7 @@ spec:
         env:
           KNOWLEDGE_REPO_PATH: /tmp/knowledge
           KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
+          DD_TRACE_ENABLED: "true"
           DD_AGENT_HOST: datakit-service.observability-prod.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-content
