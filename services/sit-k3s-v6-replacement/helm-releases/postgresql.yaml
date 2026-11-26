@@ -10,7 +10,7 @@ spec:
   chartRef:
     kind: OCIRepository
     name: web-saas-fullstack-chart
-  suspend: true
+  suspend: false
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository

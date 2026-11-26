@@ -15,7 +15,7 @@ spec:
         name: traefik
         namespace: ingress-sit
       version: 42.3.0
-  suspend: true
+  suspend: false
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository

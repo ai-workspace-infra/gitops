@@ -20,7 +20,7 @@ metadata:
 spec:
   interval: 5m
   releaseName: platform-mcp
-  suspend: true
+  suspend: false
   chartRef:
     kind: OCIRepository
     name: platform-mcp-chart
