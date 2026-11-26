@@ -11,7 +11,7 @@ class TestDataKitDDTraceContract(unittest.TestCase):
         expected_replicas = [
             ("services/prod-k3s-v6/observability-prod/datakit-helmrelease.yaml", 1),
             ("services/sit-k3s-v6/observability-sit/datakit-helmrelease.yaml", 1),
-            ("services/prod-k3s-v6-ulhost/observability-prod/datakit-helmrelease.yaml", 0),
+            ("services/prod-k3s-v6-ulhost/observability-prod/datakit-helmrelease.yaml", 1),
         ]
         for rel, replicas in expected_replicas:
             doc = yaml.safe_load((ROOT / rel).read_text())
@@ -29,6 +29,7 @@ class TestDataKitDDTraceContract(unittest.TestCase):
     def test_prod_and_sit_datakit_include_plan_a_progressive_release_probes_and_flagger(self):
         for rel, expected_svc_ns in (
             ("services/prod-k3s-v6/observability-prod/datakit-helmrelease.yaml", "observability-prod"),
+            ("services/prod-k3s-v6-ulhost/observability-prod/datakit-helmrelease.yaml", "observability-prod"),
             ("services/sit-k3s-v6/observability-sit/datakit-helmrelease.yaml", "observability-sit"),
         ):
             doc = yaml.safe_load((ROOT / rel).read_text())

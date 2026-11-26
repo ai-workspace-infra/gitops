@@ -36,7 +36,7 @@ spec:
       tag: "2.16.1@sha256:1cd545f7f14dc08935ec6557936b1e6422a3d7d9728b57d6e1d6b57ea1703fc6"
     workload:
       kind: Deployment
-      replicas: 0
+      replicas: 1
     datakit:
       dataway_secret_create: false
       dataway_secret_enabled: true
@@ -62,6 +62,215 @@ spec:
         value: |-
           [[inputs.ddtrace]]
             endpoints = ["/v0.3/traces", "/v0.4/traces", "/v0.5/traces"]
+      - name: progressive-release-probes.conf
+        path: /usr/local/datakit/conf.d/prom/progressive-release-probes.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Fconsole.svc.plus%2Fhealthz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "console"
+              route = "/healthz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://console.svc.plus/healthz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Fconsole.svc.plus%2Flogin&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "console"
+              route = "/login"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://console.svc.plus/login"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Fconsole.svc.plus%2Fpanel%2Fagent&module=release_login_redirect"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "console"
+              route = "/panel/agent"
+              probe_module = "release_login_redirect"
+              expected_status = "307"
+              instance = "https://console.svc.plus/panel/agent"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Faccounts.svc.plus%2Fhealthz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "accounts"
+              route = "/healthz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://accounts.svc.plus/healthz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Faccounts.svc.plus%2Freadyz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "accounts"
+              route = "/readyz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://accounts.svc.plus/readyz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Faccounts.svc.plus%2Fapi%2Fping&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "accounts"
+              route = "/api/ping"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://accounts.svc.plus/api/ping"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Faccounts.svc.plus%2Fapi%2Fbilling%2Fplans&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "accounts"
+              route = "/api/billing/plans"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://accounts.svc.plus/api/billing/plans"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Fbilling.svc.plus%2Fhealthz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "billing"
+              route = "/healthz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://billing.svc.plus/healthz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Fbilling.svc.plus%2Freadyz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "billing"
+              route = "/readyz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://billing.svc.plus/readyz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-prod.svc:9115/probe?target=https%3A%2F%2Fbilling.svc.plus%2Fapi%2Fping&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "billing"
+              route = "/api/ping"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "https://billing.svc.plus/api/ping"
+      - name: flagger-metrics.conf
+        path: /usr/local/datakit/conf.d/prom/flagger-metrics.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://web-saas-flagger-metrics.web-saas-prod.svc:8080/metrics"]
+            source = "flagger"
+            interval = "30s"
+            measurement_name = "flagger"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              namespace = "web-saas-prod"
+              service = "flagger"
+              job = "flagger"
+              host = "prod-k3s-v6"
+      - name: traefik-canary.conf
+        path: /usr/local/datakit/conf.d/prom/traefik-canary.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://traefik-metrics.ingress-prod.svc:9100/metrics"]
+            source = "traefik"
+            interval = "30s"
+            measurement_name = "traefik"
+            keep_exist_metric_name = true
+            metric_name_filter = ["traefik_service_requests_total"]
+            election = false
+            [inputs.prom.tags]
+              cluster = "prod-k3s-v6"
+              environment = "prod"
+              env = "prod"
+              service = "traefik-ingress"
+              job = "traefik"
+              host = "prod-k3s-v6"
       # 默认关闭高基数采集 (cadvisor / kubelet / kube-state-metrics / container / kubernetesprometheus)
       # 仅保留低基数核心指标且拉长抓取周期为 60s
       - name: postgresql-exporter.conf
