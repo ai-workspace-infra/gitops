@@ -53,3 +53,21 @@ spec:
           port: 8427
   tls:
     secretName: console-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prod-datakit-ddtrace
+  namespace: ingress-prod
+spec:
+  entryPoints: [websecure]
+  routes:
+    - match: Host(`prod-k3s-v6.svc.plus`)
+      kind: Rule
+      priority: 1050
+      services:
+        - name: datakit-service
+          namespace: observability-prod
+          port: 9529
+  tls:
+    secretName: console-tls
