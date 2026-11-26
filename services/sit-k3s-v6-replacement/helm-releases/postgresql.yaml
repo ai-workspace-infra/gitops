@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: postgresql
+  namespace: postgresql-sit
+spec:
+  interval: 5m
+  releaseName: postgresql
+  targetNamespace: postgresql-sit
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  suspend: true
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: web-saas-fullstack-chart
+  namespace: postgresql-sit
+spec:
+  interval: 10m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    digest: sha256:8f8db066583002eb8146b2103ab02cbbe1f2a5b786605d66542dc51ab60a010f
+  url: oci://ghcr.io/ai-workspace-infra/web-saas-fullstack
