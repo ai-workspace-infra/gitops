@@ -59,7 +59,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.19-r2"
+                      delivery.svc.plus/rollout-revision: "v2026.11.26-ddtrace-r1"
                   spec:
                     containers:
                       - name: console
@@ -79,7 +79,7 @@ spec:
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-62c65bb5e122410ef2d755fcf679de9caea021f2@sha256:4fb0488b78ce4b1a3185c43a22ad4b2a628f0ef119e38fec51e13db03b1084f9
+                            value: ghcr.io/ai-workspace-services/console:sha-fb0f0cfcdbedb3258d91a1680d7a80c12e1a1d57@sha256:9d0db476ef4697075714c7d37a85a9db58693baa67ecf6e0eb6305cf6915f332
                           - name: DD_TRACE_ENABLED
                             value: "true"
                           - name: DD_AGENT_HOST
@@ -151,7 +151,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-62c65bb5e122410ef2d755fcf679de9caea021f2@sha256:4fb0488b78ce4b1a3185c43a22ad4b2a628f0ef119e38fec51e13db03b1084f9
+        image: ghcr.io/ai-workspace-services/console:sha-fb0f0cfcdbedb3258d91a1680d7a80c12e1a1d57@sha256:9d0db476ef4697075714c7d37a85a9db58693baa67ecf6e0eb6305cf6915f332
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
@@ -178,7 +178,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-e5bf72dd0446267aaff5c6b8c6664809fd76838c@sha256:20e6475989344c04b11860ffaef82742d51c6e8e28d981a8c080f2212f6426e2
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-96cdaf48832d5e2624efe696a37a84e06459b0dd@sha256:a5f2ad0c73e2c698840c3f9a57bd4922b2d72658fea5fae0005cb67b13b4b2c7
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -201,7 +201,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-e5bf72dd0446267aaff5c6b8c6664809fd76838c@sha256:20e6475989344c04b11860ffaef82742d51c6e8e28d981a8c080f2212f6426e2
+        image: ghcr.io/ai-workspace-services/accounts:sha-96cdaf48832d5e2624efe696a37a84e06459b0dd@sha256:a5f2ad0c73e2c698840c3f9a57bd4922b2d72658fea5fae0005cb67b13b4b2c7
         probes:
           startupProbe:
             httpGet:
@@ -241,7 +241,7 @@ spec:
           BILLING_INGEST_MODE: push
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
-          IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.19-r2@sha256:373fc9961eff277ec1a21d3dfa7fca4fdc8dc310aa80e83ec9e5ceb83cbeff04
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-2c7bb92495007fa4c2f1e2982ea451e0c831ccf5@sha256:56450b9851b80b69540b4920403c5f9ff884dad245ae69d101d18987c3b5dda4
           DD_TRACE_ENABLED: "true"
           DD_AGENT_HOST: datakit-service.observability-prod.svc
           DD_TRACE_AGENT_PORT: "9529"
@@ -251,7 +251,7 @@ spec:
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
-        image: ghcr.io/ai-workspace-services/billing-service:v2026.11.19-r2@sha256:373fc9961eff277ec1a21d3dfa7fca4fdc8dc310aa80e83ec9e5ceb83cbeff04
+        image: ghcr.io/ai-workspace-services/billing-service:sha-2c7bb92495007fa4c2f1e2982ea451e0c831ccf5@sha256:56450b9851b80b69540b4920403c5f9ff884dad245ae69d101d18987c3b5dda4
         probes:
           startupProbe:
             httpGet:
@@ -292,7 +292,7 @@ spec:
           DD_SERVICE: web-saas-content
           DD_ENV: prod
           DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
-        image: ghcr.io/ai-workspace-services/docs:v2026.11.19-r2@sha256:98757169fcb9d2b890a449d5ee74dcfe98c189cb5c664ba87dd8f8b25cd4728e
+        image: ghcr.io/ai-workspace-services/docs:sha-19815909a37dba49b498297fd9a60133ab0c9407@sha256:0dd798943b5f9cd149bf36dca2045405bf38c91b15ea85fd9cae46094bc1044a
         secretRefs:
         - web-saas-secrets
         resources:
