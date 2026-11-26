@@ -53,7 +53,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.19-r2"
+                      delivery.svc.plus/rollout-revision: "v2026.11.26-r1"
                   spec:
                     containers:
                       - name: console
@@ -73,7 +73,7 @@ spec:
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-62c65bb5e122410ef2d755fcf679de9caea021f2@sha256:4fb0488b78ce4b1a3185c43a22ad4b2a628f0ef119e38fec51e13db03b1084f9
+                            value: ghcr.io/ai-workspace-services/console:sha-2d5d8c472d171bd370ad505636c2790c9412804c@sha256:0b4b992243680694fbecb9b950921ac83b76bde5e87ce7e1fb9d6720c82a4603
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -133,7 +133,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-62c65bb5e122410ef2d755fcf679de9caea021f2@sha256:4fb0488b78ce4b1a3185c43a22ad4b2a628f0ef119e38fec51e13db03b1084f9
+        image: ghcr.io/ai-workspace-services/console:sha-2d5d8c472d171bd370ad505636c2790c9412804c@sha256:0b4b992243680694fbecb9b950921ac83b76bde5e87ce7e1fb9d6720c82a4603
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
