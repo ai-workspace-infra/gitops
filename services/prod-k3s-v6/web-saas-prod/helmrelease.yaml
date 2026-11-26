@@ -59,7 +59,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.26-ddtrace-r3"
+                      delivery.svc.plus/rollout-revision: "v2026.11.26-ddtrace-off-r1"
                   spec:
                     containers:
                       - name: console
@@ -77,7 +77,7 @@ spec:
                           - name: RUNTIME_BILLING_SERVICE_URL
                             value: http://web-saas-billing.web-saas-prod.svc.cluster.local:80
                           - name: CONSOLE_PING_UPSTREAM_PROBE
-                            value: "true"
+                            value: "false"
                           - name: RUNTIME_DASHBOARD_URL
                             value: https://console.svc.plus
                           - name: OBSERVABILITY_AUTH_USER
@@ -87,7 +87,7 @@ spec:
                           - name: FRONTEND_IMAGE
                             value: ghcr.io/ai-workspace-services/console:sha-1cbc38d321a07b6f5ea9f6a0f52ac45e559a620c@sha256:2f6c811befbc5b862a0e93695202d9f68ba0a9eee8ccf2d7f3a593f21a6e7ee9
                           - name: DD_TRACE_ENABLED
-                            value: "true"
+                            value: "false"
                           - name: DD_AGENT_HOST
                             value: datakit-service.observability-prod.svc
                           - name: DD_TRACE_AGENT_PORT
@@ -196,7 +196,7 @@ spec:
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_KEY_ID: "zero-signing-current"
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_PUBLIC_KEY: "s5yiz7WTECJKgBSapXGM9WOdoud/76xZbmHGbdK4y7o="
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_NOT_AFTER: "2026-12-03T00:00:00Z"
-          DD_TRACE_ENABLED: "true"
+          DD_TRACE_ENABLED: "false"
           DD_AGENT_HOST: datakit-service.observability-prod.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-accounts
@@ -248,7 +248,7 @@ spec:
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
           IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-3f78d10f1d475976b8af047757307a62800dc13d@sha256:6bea9270368f46a15df1478725a659b3f2c46c1d307816ddaa6fddedee494334
-          DD_TRACE_ENABLED: "true"
+          DD_TRACE_ENABLED: "false"
           DD_AGENT_HOST: datakit-service.observability-prod.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-billing
@@ -292,7 +292,7 @@ spec:
         env:
           KNOWLEDGE_REPO_PATH: /tmp/knowledge
           KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
-          DD_TRACE_ENABLED: "true"
+          DD_TRACE_ENABLED: "false"
           DD_AGENT_HOST: datakit-service.observability-prod.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-content

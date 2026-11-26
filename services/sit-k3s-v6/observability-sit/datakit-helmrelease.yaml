@@ -1,7 +1,7 @@
 # ==============================================================================
-# 观测云 DataKit 已激活 (replicas: 1):
-# - 当前 workload.kind: Deployment + replicas: 1，接收 DDTrace 与指标采集
-# - 如需静默缩容可调回 replicas: 0
+# 观测云 DataKit 已就地静默缩容 (replicas: 0):
+# - 当前 workload.kind: Deployment + replicas: 0，保留 DDTrace 与指标采集配置
+# - 如需开启可随时调回 replicas: 1
 # ==============================================================================
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -28,7 +28,7 @@ spec:
       tag: "2.16.1@sha256:1cd545f7f14dc08935ec6557936b1e6422a3d7d9728b57d6e1d6b57ea1703fc6"
     workload:
       kind: Deployment
-      replicas: 1
+      replicas: 0
     datakit:
       cluster_name_k8s: sit-k3s-v6
       dataway_secret_create: false
