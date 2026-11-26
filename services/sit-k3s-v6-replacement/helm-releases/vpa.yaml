@@ -15,7 +15,7 @@ spec:
         name: fairwinds-stable
         namespace: vpa-system
       version: 5.1.0
-  suspend: true
+  suspend: false
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository

@@ -4,6 +4,7 @@ resources:
 - external-secrets.yaml
 - ingress-controller.yaml
 - observability.yaml
+- datakit.yaml
 - postgresql.yaml
 - vpa.yaml
 - web-saas.yaml
