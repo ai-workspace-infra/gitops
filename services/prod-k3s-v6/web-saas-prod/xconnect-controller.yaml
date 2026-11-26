@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: xconnect-controller
-          image: ghcr.io/ai-workspace-services/xconnect-controller:sha-4d2b91f7b08c5d91d98d203097f2d4c38be504c2@sha256:61593d2558fed73c6f18a917d7429572edfdf12d4f37121ca8f97fcf1db6dc87
+          image: ghcr.io/ai-workspace-services/xconnect-controller:sha-0466f6b7cfc6a1f4d746f278cdbe77273bd8cd1a@sha256:ccff01ff454f6c46db689b4c1144ce10cc451e4e1db9f25a0d84de3f15e68674
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
