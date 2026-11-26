@@ -160,7 +160,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-b81b1a544750918614531da7b25ecfcdabfbc854@sha256:3a20e0813c42eedeab73afe18b72bd9a5a3bf3320ef09130c18a453d1e647537
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-e5bf72dd0446267aaff5c6b8c6664809fd76838c@sha256:20e6475989344c04b11860ffaef82742d51c6e8e28d981a8c080f2212f6426e2
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -168,12 +168,16 @@ spec:
           XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
           SUBSCRIPTION_GRACE_PERIOD: "72h"
           GOMEMLIMIT: "400MiB"
+          XCONNECT_OVERLAY_REQUIRE_SIGNING_KEY: "true"
+          XCONNECT_OVERLAY_PREVIOUS_SIGNING_KEY_ID: "zero-signing-current"
+          XCONNECT_OVERLAY_PREVIOUS_SIGNING_PUBLIC_KEY: "s5yiz7WTECJKgBSapXGM9WOdoud/76xZbmHGbdK4y7o="
+          XCONNECT_OVERLAY_PREVIOUS_SIGNING_NOT_AFTER: "2026-12-03T00:00:00Z"
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-b81b1a544750918614531da7b25ecfcdabfbc854@sha256:3a20e0813c42eedeab73afe18b72bd9a5a3bf3320ef09130c18a453d1e647537
+        image: ghcr.io/ai-workspace-services/accounts:sha-e5bf72dd0446267aaff5c6b8c6664809fd76838c@sha256:20e6475989344c04b11860ffaef82742d51c6e8e28d981a8c080f2212f6426e2
         probes:
           startupProbe:
             httpGet:
