@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: traefik-ingress
+  namespace: ingress-sit
+spec:
+  interval: 5m
+  releaseName: traefik-ingress
+  targetNamespace: ingress-sit
+  chart:
+    spec:
+      chart: traefik
+      sourceRef:
+        kind: HelmRepository
+        name: traefik
+        namespace: ingress-sit
+      version: 42.3.0
+  suspend: true
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: traefik
+  namespace: ingress-sit
+spec:
+  interval: 1h
+  url: https://traefik.github.io/charts

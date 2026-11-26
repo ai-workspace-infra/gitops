@@ -1,0 +1,57 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: observability
+  namespace: observability-sit
+spec:
+  interval: 5m
+  releaseName: observability
+  targetNamespace: observability-sit
+  chartRef:
+    kind: OCIRepository
+    name: observability-stack-chart
+  suspend: true
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: observability-grafana
+  namespace: observability-sit
+spec:
+  interval: 5m
+  releaseName: observability-grafana
+  targetNamespace: observability-sit
+  chartRef:
+    kind: OCIRepository
+    name: grafana-chart
+  dependsOn:
+  - name: observability
+  suspend: true
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: grafana-chart
+  namespace: observability-sit
+spec:
+  interval: 10m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    digest: sha256:da43e6c43dd0b874289d5a308f3839e83a47aaf463ae205b87258b46c3442169
+  url: oci://ghcr.io/ai-workspace-infra/grafana
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: observability-stack-chart
+  namespace: observability-sit
+spec:
+  interval: 10m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    digest: sha256:5773f62a8c0df0235891a2c778cffcd535e29534c254caaf72d573406dce60cf
+  url: oci://ghcr.io/ai-workspace-infra/observability-stack
