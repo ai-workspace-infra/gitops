@@ -1,0 +1,287 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgresql-admin-reader
+  namespace: postgresql-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: postgresql-admin-reader
+  namespace: postgresql-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [postgresql-admin-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: postgresql-admin-reader
+  namespace: postgresql-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: postgresql-admin-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgresql-operator-reader
+  namespace: postgresql-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: postgresql-operator-reader
+  namespace: postgresql-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [postgresql-operator-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: postgresql-operator-reader
+  namespace: postgresql-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: postgresql-operator-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: postgresql-auditor-reader
+  namespace: postgresql-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: postgresql-auditor-reader
+  namespace: postgresql-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [postgresql-auditor-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: postgresql-auditor-reader
+  namespace: postgresql-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: postgresql-auditor-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: observability-ingest-reader
+  namespace: observability-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: observability-ingest-reader
+  namespace: observability-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [observability-ingest-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: observability-ingest-reader
+  namespace: observability-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: observability-ingest-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana-admin-reader
+  namespace: observability-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: grafana-admin-reader
+  namespace: observability-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [grafana-admin-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: grafana-admin-reader
+  namespace: observability-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: grafana-admin-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: platform-mcp-reader
+  namespace: platform-mcp-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: platform-mcp-reader
+  namespace: platform-mcp-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [platform-mcp-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: platform-mcp-reader
+  namespace: platform-mcp-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: platform-mcp-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: web-saas-runtime-reader
+  namespace: web-saas-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: web-saas-runtime-reader
+  namespace: web-saas-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [web-saas-runtime-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: web-saas-runtime-reader
+  namespace: web-saas-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: web-saas-runtime-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: onwalk-tls-reader
+  namespace: ingress-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: onwalk-tls-reader
+  namespace: ingress-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [onwalk-tls-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: onwalk-tls-reader
+  namespace: ingress-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: onwalk-tls-reader
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: svc-plus-tls-reader
+  namespace: ingress-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: svc-plus-tls-reader
+  namespace: ingress-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [svc-plus-tls-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: svc-plus-tls-reader
+  namespace: ingress-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: svc-plus-tls-reader

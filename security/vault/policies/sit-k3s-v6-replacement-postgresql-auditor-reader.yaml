@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-replacement-postgresql-auditor-reader
+  description: SIT candidate PostgreSQL auditor credential reader.
+spec:
+  paths:
+    - path: kv/data/sit/services/k3s-v6-replacement/postgresql/auditor
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]

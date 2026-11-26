@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-replacement-onwalk-tls-reader
+  description: SIT candidate ingress reader for the existing onwalk.net TLS certificate.
+spec:
+  paths:
+    - path: kv/data/CICD/domains/onwalk.net
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]
