@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-replacement-postgresql-admin-reader
+  description: Read only the replacement SIT postgresql-admin record.
+spec:
+  paths:
+    - path: kv/data/sit/k3s-v6-replacement/database/postgresql/admin
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]

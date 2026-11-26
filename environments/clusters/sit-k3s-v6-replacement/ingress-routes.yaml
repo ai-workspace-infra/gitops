@@ -1,0 +1,21 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: replacement-ingress-routes
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 5m
+  prune: true
+  wait: true
+  timeout: 20m
+  sourceRef:
+    kind: GitRepository
+    name: sit-replacement-config
+  path: ./services/sit-k3s-v6-replacement/ingress-routes
+  dependsOn:
+  - name: replacement-external-secrets
+  - name: replacement-ingress-controller
+  - name: replacement-platform-mcp
+  - name: replacement-observability
+  - name: replacement-web-saas

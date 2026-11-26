@@ -1,0 +1,53 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: platform-mcp-sit
+resources:
+- configmap-infrastructure-mcp.yaml
+- deployment-infrastructure-mcp.yaml
+- service-infrastructure-mcp.yaml
+- deployment-mcp-victoria.yaml
+- service-mcp-victoria.yaml
+- business-networkpolicy.yaml
+- vault-secrets.yaml
+- vpa.yaml
+labels:
+- includeSelectors: false
+  pairs:
+    platform.svc.plus/environment: sit
+    platform.svc.plus/cluster: sit-k3s-v6-replacement
+# Pin a real tag/digest here once the infrastructure-mcp-server image is published.
+images:
+- name: ghcr.io/ai-workspace-infra/infrastructure-mcp-server
+  newTag: v0.4.0-sit
+# Shared VPA policy, defined once for every VerticalPodAutoscaler in this unit.
+# controlledValues is the API default RequestsAndLimits (limit/request ratio preserved).
+patches:
+- target:
+    kind: VerticalPodAutoscaler
+  patch: |-
+    - op: add
+      path: /spec/updatePolicy
+      value:
+        updateMode: InPlaceOrRecreate
+        minReplicas: 1
+# Pod Security "restricted" baseline (namespace enforces it), defined once for the
+# three VictoriaMetrics/Logs/Traces MCP Deployments.
+- target:
+    kind: Deployment
+    labelSelector: app.kubernetes.io/name in (mcp-victoriametrics,mcp-victorialogs,mcp-victoriatraces)
+  patch: |-
+    - op: add
+      path: /spec/template/spec/securityContext
+      value:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+    - op: add
+      path: /spec/template/spec/containers/0/securityContext
+      value:
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+          - ALL

@@ -1,0 +1,26 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: business-namespaces-ingress
+  namespace: platform-mcp-sit
+# Ingress only. Egress is intentionally unrestricted (no Egress policyType): the
+# ssh-mcp-server sidecar dials SSH (tcp/22) to CMDB host targets and npx fetches the
+# pinned package from registry.npmjs.org (tcp/443) at start. Target hosts must allow
+# SSH from this node's egress address (managed outside Git; no IPs here).
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+          - web-saas-sit
+          - postgresql-sit
+          - ingress-sit
+          - observability-sit
+          - platform-mcp-sit

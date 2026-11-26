@@ -1,0 +1,182 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sit-onwalk-tls-reader
+  namespace: external-secrets
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sit-onwalk-tls-reader
+  namespace: external-secrets
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - serviceaccounts/token
+  resourceNames:
+  - sit-onwalk-tls-reader
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sit-onwalk-tls-reader
+  namespace: external-secrets
+subjects:
+- kind: ServiceAccount
+  name: external-secrets
+  namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sit-onwalk-tls-reader
+---
+apiVersion: external-secrets.io/v1
+kind: ClusterSecretStore
+metadata:
+  name: sit-onwalk-tls-reader
+spec:
+  conditions:
+  - namespaces:
+    - ingress-sit
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-sit-k3s-v6-replacement
+          role: sit-k3s-v6-replacement-onwalk-tls-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: sit-onwalk-tls-reader
+              namespace: external-secrets
+            audiences:
+            - vault-sit-k3s-v6-replacement-onwalk-tls-reader
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: console-tls
+  namespace: ingress-sit
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: sit-onwalk-tls-reader
+  target:
+    name: console-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: '{{ .tls_fullchain }}'
+        tls.key: '{{ .tls_key }}'
+  data:
+  - secretKey: tls_fullchain
+    remoteRef:
+      key: sit/k3s-v6-replacement/domains/onwalk.net
+      property: tls_fullchain_pem_b64
+      decodingStrategy: Base64
+  - secretKey: tls_key
+    remoteRef:
+      key: sit/k3s-v6-replacement/domains/onwalk.net
+      property: tls_key_pem_b64
+      decodingStrategy: Base64
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: observability-domain-tls-reader
+  namespace: ingress-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: observability-domain-tls-reader
+  namespace: ingress-sit
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - serviceaccounts/token
+  resourceNames:
+  - observability-domain-tls-reader
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: observability-domain-tls-reader
+  namespace: ingress-sit
+subjects:
+- kind: ServiceAccount
+  name: external-secrets
+  namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: observability-domain-tls-reader
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: observability-domain-tls-reader
+  namespace: ingress-sit
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-sit-k3s-v6-replacement
+          role: sit-k3s-v6-replacement-observability-domain-tls-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: observability-domain-tls-reader
+            audiences:
+            - vault-sit-k3s-v6-replacement-observability-domain-tls-reader
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: shared-observability-tls
+  namespace: ingress-sit
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: observability-domain-tls-reader
+  target:
+    name: shared-observability-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: '{{ .tls_fullchain }}'
+        tls.key: '{{ .tls_key }}'
+  data:
+  - secretKey: tls_fullchain
+    remoteRef:
+      key: sit/k3s-v6-replacement/domains/svc.plus
+      property: tls_fullchain_pem_b64
+      decodingStrategy: Base64
+  - secretKey: tls_key
+    remoteRef:
+      key: sit/k3s-v6-replacement/domains/svc.plus
+      property: tls_key_pem_b64
+      decodingStrategy: Base64

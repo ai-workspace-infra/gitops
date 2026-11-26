@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: accounts-controller-config
+  namespace: web-saas-sit
+type: Opaque
+stringData:
+  account.yaml: |
+    mode: server-agent
+    log:
+      level: info
+    auth:
+      enable: true
+      token:
+        publicToken: ${AUTH_TOKEN_PUBLIC_TOKEN}
+        refreshSecret: ${AUTH_TOKEN_REFRESH_SECRET}
+        accessSecret: ${AUTH_TOKEN_ACCESS_SECRET}
+        accessExpiry: 1h
+        refreshExpiry: 168h
+    server:
+      addr: :8080
+      readTimeout: 15s
+      writeTimeout: 15s
+      publicUrl: https://accounts-sit.onwalk.net
+      allowedOrigins:
+        - https://console-sit.onwalk.net
+        - https://accounts-sit.onwalk.net
+        - https://billing-sit.onwalk.net
+      tls:
+        enabled: false
+    store:
+      driver: postgres
+      dsn: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable
+      maxOpenConns: 10
+      maxIdleConns: 2
+    session:
+      ttl: 24h
+      cache: memory
+    reviewAccount:
+      enabled: false
+    xray:
+      sync:
+        enabled: false
+    agent:
+      id: accounts-sit-replacement
+      controllerUrl: http://web-saas-accounts.web-saas-sit.svc.cluster.local
+      apiToken: ${AGENT_API_TOKEN}
+      httpTimeout: 15s

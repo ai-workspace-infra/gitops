@@ -1,0 +1,141 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: observability-vmagent-config
+  namespace: observability-sit
+data:
+  url-relabel-sit.yml: |
+    - target_label: cluster
+      replacement: sit-k3s-v6-replacement
+    - target_label: environment
+      replacement: sit
+  scrape.yml: |
+    global:
+      scrape_interval: 15s
+    scrape_configs:
+      - job_name: node-exporter
+        scrape_interval: 15s
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'node_.*'
+            action: keep
+        static_configs:
+          - targets: ['observability-agent.observability-sit.svc:9100']
+            labels:
+              job: node-exporter
+              nodename: sit-k3s-v6-replacement
+              instance: sit-k3s-v6-replacement
+              environment: sit
+      - job_name: kube-state-metrics
+        scrape_interval: 15s
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'kube_.*'
+            action: keep
+        static_configs:
+          - targets: ['observability-agent-state.observability-sit.svc:8080']
+            labels:
+              job: kube-state-metrics
+              environment: sit
+      - job_name: postgres-exporter
+        scrape_interval: 15s
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: 'pg_.*'
+            action: keep
+        static_configs:
+          - targets: ['postgresql-postgresql-exporter.postgresql-sit.svc:9187']
+            labels:
+              service: postgresql
+              job: postgres-exporter
+              instance: prod-postgresql-0
+              environment: sit
+      - job_name: cadvisor
+        scrape_interval: 15s
+        scheme: https
+        metrics_path: /metrics/cadvisor
+        authorization:
+          type: Bearer
+          credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+          insecure_skip_verify: true
+        kubernetes_sd_configs:
+          - role: node
+        metric_relabel_configs:
+          - source_labels: [__name__]
+            regex: '(container_.*|machine_.*|cadvisor_.*)'
+            action: keep
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_node_name]
+            target_label: node
+          - source_labels: [__meta_kubernetes_node_name]
+            target_label: instance
+          - target_label: environment
+            replacement: sit
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: observability-vmagent
+  namespace: observability-sit
+  labels:
+    app.kubernetes.io/name: observability-vmagent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: observability-vmagent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: observability-vmagent
+    spec:
+      serviceAccountName: default
+      containers:
+        - name: vmagent
+          image: victoriametrics/vmagent:v1.101.0
+          args:
+            - -promscrape.config=/config/scrape.yml
+            - -remoteWrite.url=http://observability-ingest-auth.observability-sit.svc.cluster.local:8427/api/v1/write
+            - -remoteWrite.basicAuth.username=$(REMOTE_WRITE_USERNAME)
+            - -remoteWrite.basicAuth.passwordFile=/etc/vmagent-secret/password
+            - -remoteWrite.urlRelabelConfig=/config/url-relabel-sit.yml
+            - -remoteWrite.tmpDataPath=/buffer
+            - -remoteWrite.maxDiskUsagePerURL=1GB
+          env:
+            - name: REMOTE_WRITE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: observability-remote-write
+                  key: username
+          ports:
+            - name: http
+              containerPort: 8429
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: secret
+              mountPath: /etc/vmagent-secret
+              readOnly: true
+            - name: buffer
+              mountPath: /buffer
+      volumes:
+        - name: config
+          configMap:
+            name: observability-vmagent-config
+        - name: secret
+          secret:
+            secretName: observability-remote-write
+            defaultMode: 0440
+        - name: buffer
+          emptyDir:
+            sizeLimit: 1Gi

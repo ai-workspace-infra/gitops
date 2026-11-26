@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-replacement-platform-mcp-reader
+  description: Read only the replacement SIT platform-mcp record.
+spec:
+  paths:
+    - path: kv/data/sit/k3s-v6-replacement/platform/mcp
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]

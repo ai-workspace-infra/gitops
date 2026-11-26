@@ -1,0 +1,20 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: replacement-ingress-controller
+  namespace: flux-system
+spec:
+  suspend: true
+  interval: 5m
+  prune: true
+  wait: true
+  timeout: 15m
+  sourceRef:
+    kind: GitRepository
+    name: sit-replacement-config
+  path: ./services/sit-k3s-v6-replacement/ingress-controller
+  postBuild:
+    substituteFrom:
+      - kind: ConfigMap
+        name: sit-replacement-runtime
+        optional: false

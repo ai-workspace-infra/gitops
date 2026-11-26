@@ -1,0 +1,9 @@
+- op: replace
+  path: /spec/provider/vault/auth/jwt/path
+  value: jwt-sit-k3s-v6-replacement
+- op: replace
+  path: /spec/provider/vault/auth/jwt/role
+  value: sit-k3s-v6-replacement-observability-ingest-reader
+- op: replace
+  path: /spec/provider/vault/auth/jwt/kubernetesServiceAccountToken/audiences/0
+  value: vault-sit-k3s-v6-replacement-observability-ingest-reader

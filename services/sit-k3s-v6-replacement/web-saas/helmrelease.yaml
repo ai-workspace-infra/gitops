@@ -1,0 +1,253 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: web-saas-sit
+  namespace: web-saas-sit
+spec:
+  suspend: false
+  interval: 5m
+  releaseName: web-saas
+  targetNamespace: web-saas-sit
+  upgrade:
+    crds: Skip
+    remediation:
+      retries: 0
+      remediateLastFailure: true
+      strategy: rollback
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: web-saas-accounts
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-accounts
+              spec:
+                template:
+                  spec:
+                    volumes:
+                      - name: accounts-controller-config
+                        secret:
+                          secretName: accounts-controller-config
+                          defaultMode: 0400
+                    containers:
+                      - name: accounts
+                        env:
+                          - name: CONFIG_TEMPLATE
+                            value: /var/run/accounts-controller-config/account.yaml
+                          - name: CONFIG_PATH
+                            value: /tmp/accounts-controller-config.yaml
+                        volumeMounts:
+                          - name: accounts-controller-config
+                            mountPath: /var/run/accounts-controller-config
+                            readOnly: true
+          - target:
+              kind: Deployment
+              name: web-saas-console
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-console
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: console
+                        env:
+                          - name: PORT
+                            value: '3000'
+                          - name: RUNTIME_ENV
+                            value: sit
+                          - name: RUNTIME_AUTH_URL
+                            value: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
+                          - name: RUNTIME_XCONNECT_ZERO_URL
+                            value: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
+                          - name: RUNTIME_DASHBOARD_URL
+                            value: https://console-sit.onwalk.net
+                          - name: DOWNLOAD_CHANNELS_CONFIG_PATH
+                            value: /etc/console/download-channels.json
+                          - name: ALLOW_REMOTE_DL_FETCH
+                            value: "false"
+                          - name: FRONTEND_IMAGE
+                            value: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
+                        securityContext:
+                          capabilities:
+                            add: [CHOWN, SETUID, SETGID]
+                        startupProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          periodSeconds: 5
+                          timeoutSeconds: 3
+                          failureThreshold: 18
+                        readinessProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 3
+                        livenessProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          initialDelaySeconds: 20
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 3
+          - target:
+              kind: Deployment
+              name: web-saas-content
+            patch: |
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: web-saas-content
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: content
+                        startupProbe:
+                          httpGet:
+                            path: /healthz
+                            port: 8080
+                          periodSeconds: 10
+                          timeoutSeconds: 3
+                          failureThreshold: 30
+  values:
+    global:
+      environment: sit
+      expectedNamespace: web-saas-sit
+    caddy:
+      enabled: false
+    postgresql:
+      enabled: false
+    console:
+      enabled: true
+      deploymentProfile: single-container
+      singleContainer:
+        image: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
+        resources:
+          requests: {cpu: 50m, memory: 128Mi}
+          limits: {cpu: 250m, memory: 256Mi}
+        volumes:
+          - name: nginx-config
+            configMap:
+              name: web-saas-console-nginx-relative-redirects
+          - name: download-channels
+            configMap:
+              name: web-saas-download-channels
+          - name: tmp
+            emptyDir: {}
+        volumeMounts:
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf
+            readOnly: true
+          - name: nginx-config
+            mountPath: /etc/nginx/conf.d/default.conf
+            subPath: default.conf
+            readOnly: true
+          - name: download-channels
+            mountPath: /etc/console/download-channels.json
+            subPath: download-channels.json
+            readOnly: true
+          - name: tmp
+            mountPath: /tmp
+    accounts:
+      enabled: true
+      workload:
+        env:
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-cabf381fa6c6ada678fbd698b3bf7618c7638f7d@sha256:90bc16b4c5ed3d9529fee38d3c8753561bffa5c19de9c9297f967890cdfdd476
+          DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
+          DB_PORT: '5432'
+          POSTGRES_USER: accounts_runtime
+          DB_NAME: account
+          XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
+          SUBSCRIPTION_GRACE_PERIOD: "72h"
+          DUAL_BUCKET_PRO_GATE_ENABLED: "false"
+        secretRefs:
+        - web-saas-secrets
+        - accounts-db-runtime
+        - accounts-bootstrap
+        - accounts-stripe
+        image: ghcr.io/ai-workspace-services/accounts:sha-cabf381fa6c6ada678fbd698b3bf7618c7638f7d@sha256:90bc16b4c5ed3d9529fee38d3c8753561bffa5c19de9c9297f967890cdfdd476
+        resources:
+          requests: {cpu: 25m, memory: 96Mi}
+          limits: {cpu: 100m, memory: 128Mi}
+    billing:
+      enabled: true
+      workload:
+        env:
+          DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
+          DB_PORT: '5432'
+          POSTGRES_USER: billing_runtime
+          DB_NAME: account
+          BILLING_INGEST_MODE: push
+          DEFAULT_REGION: jp
+          ARREARS_SUSPEND_THRESHOLD: "72h"
+          DUAL_BUCKET_QUOTA_ENFORCE: "false"
+          IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
+        secretRefs:
+        - web-saas-secrets
+        - billing-db-runtime
+        image: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
+        probes:
+          startupProbe:
+            httpGet:
+              path: /api/ping
+              port: primary
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 18
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: primary
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/ping
+              port: primary
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+        resources:
+          requests: {cpu: 25m, memory: 96Mi}
+          limits: {cpu: 100m, memory: 128Mi}
+    content:
+      enabled: true
+      workload:
+        env:
+          KNOWLEDGE_REPO_PATH: /tmp/knowledge
+          KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
+        image: ghcr.io/ai-workspace-services/docs:daily-build-2026.11.18-r1@sha256:5577fbcbe7fe1ddb4dd0cfe90c4caaa0fd0c9299d69f49afbdc819ede577157e
+        secretRefs:
+        - web-saas-secrets
+        resources:
+          requests: {cpu: 100m, memory: 128Mi}
+          limits: {cpu: 500m, memory: 256Mi}
+    edgeGateway:
+      enabled: false
+    stunnelClient:
+      enabled: false
+    stunnelServer:
+      enabled: false
+    flagger:
+      enabled: true
+      meshProvider: traefik
+      metricsServer: http://observability-observability-stack-victoria-metrics.observability-sit:8428
+      selectorLabels: websaas.io/workload,app.kubernetes.io/name,app
+      crd:
+        create: true

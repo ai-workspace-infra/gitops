@@ -1,0 +1,78 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: grafana-chart
+  namespace: observability-sit
+spec:
+  interval: 10m
+  url: oci://ghcr.io/ai-workspace-infra/grafana
+  ref:
+    digest: sha256:da43e6c43dd0b874289d5a308f3839e83a47aaf463ae205b87258b46c3442169
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: observability-grafana
+  namespace: observability-sit
+spec:
+  interval: 5m
+  releaseName: observability-grafana
+  targetNamespace: observability-sit
+  # observability must first drop its own Grafana Deployment/Services (grafana.enabled=false)
+  # so this release can take over the same Service names and the shared data PVC.
+  dependsOn:
+    - name: observability
+  chartRef:
+    kind: OCIRepository
+    name: grafana-chart
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    image:
+      repository: grafana/grafana
+      tag: 13.2.4@sha256:dbbc38ea21103cefb50396340cd88afec779c7e070b0a7bf5a75b4ce46651d3f
+    rootUrl: https://grafana-sit.onwalk.net/
+    existingSecret: grafana-admin
+    adminPasswordKey: password
+    bundleChecksum: ee2a6472c61550a6568ea2f78afc85c2b9f2c800a1b4de2518188d8fef9e0253
+    appsConfigMap: ''
+    plugins:
+    - victoriametrics-logs-datasource@0.33.1
+    dashboardProviders: []
+    backendFullname: observability-observability-stack
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    pluginInstallerResources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 50m
+        memory: 96Mi
+    service:
+      aliases:
+      - observability-observability-stack
+      - observability-observability-stack-grafana
+    persistence:
+      enabled: true
+      storageClass: replacement-local-path
+      size: 5Gi
+      subPath: grafana
+    vpa:
+      updateMode: 'Off'
+    # Read-only grafana-mcp-server (mcp-grafana), registered as backend "observability-grafana"
+    # in platform-mcp-sit's infrastructure-mcp-server gateway.
+    mcp:
+      enabled: true
