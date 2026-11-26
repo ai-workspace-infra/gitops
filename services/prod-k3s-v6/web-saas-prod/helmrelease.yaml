@@ -74,6 +74,16 @@ spec:
                             value: observability
                           - name: FRONTEND_IMAGE
                             value: ghcr.io/ai-workspace-services/console:sha-62c65bb5e122410ef2d755fcf679de9caea021f2@sha256:4fb0488b78ce4b1a3185c43a22ad4b2a628f0ef119e38fec51e13db03b1084f9
+                          - name: DD_AGENT_HOST
+                            value: datakit-service.observability-prod.svc
+                          - name: DD_TRACE_AGENT_PORT
+                            value: "9529"
+                          - name: DD_SERVICE
+                            value: web-saas-console
+                          - name: DD_ENV
+                            value: prod
+                          - name: DD_TRACE_PROPAGATION_STYLE
+                            value: datadog,tracecontext
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -172,6 +182,11 @@ spec:
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_KEY_ID: "zero-signing-current"
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_PUBLIC_KEY: "s5yiz7WTECJKgBSapXGM9WOdoud/76xZbmHGbdK4y7o="
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_NOT_AFTER: "2026-12-03T00:00:00Z"
+          DD_AGENT_HOST: datakit-service.observability-prod.svc
+          DD_TRACE_AGENT_PORT: "9529"
+          DD_SERVICE: web-saas-accounts
+          DD_ENV: prod
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
@@ -218,6 +233,11 @@ spec:
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
           IMAGE: ghcr.io/ai-workspace-services/billing-service:v2026.11.19-r2@sha256:373fc9961eff277ec1a21d3dfa7fca4fdc8dc310aa80e83ec9e5ceb83cbeff04
+          DD_AGENT_HOST: datakit-service.observability-prod.svc
+          DD_TRACE_AGENT_PORT: "9529"
+          DD_SERVICE: web-saas-billing
+          DD_ENV: prod
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
@@ -256,6 +276,11 @@ spec:
         env:
           KNOWLEDGE_REPO_PATH: /tmp/knowledge
           KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
+          DD_AGENT_HOST: datakit-service.observability-prod.svc
+          DD_TRACE_AGENT_PORT: "9529"
+          DD_SERVICE: web-saas-content
+          DD_ENV: prod
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         image: ghcr.io/ai-workspace-services/docs:v2026.11.19-r2@sha256:98757169fcb9d2b890a449d5ee74dcfe98c189cb5c664ba87dd8f8b25cd4728e
         secretRefs:
         - web-saas-secrets

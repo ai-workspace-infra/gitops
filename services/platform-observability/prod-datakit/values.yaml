@@ -6,7 +6,7 @@ datakit:
   dataway_secret_enabled: true
   dataway_secret_key: ENV_DATAWAY
   dataway_secret_name: datakit-dataway-secret
-  default_enabled_inputs: dk,cpu,disk,diskio,mem,swap,system,hostobject,net,prom
+  default_enabled_inputs: dk,cpu,disk,diskio,mem,swap,system,hostobject,net,host_processes,prom,ddtrace
   global_tags: host=prod-k3s-v5,cluster=web-saas-k3s-v5-prod,env=prod
   log: info
 extraEnvs:
@@ -33,6 +33,22 @@ resources:
     cpu: 500m
     memory: 512Mi
 dkconfig:
+- name: host-processes.conf
+  path: /usr/local/datakit/conf.d/host/host_processes.conf
+  value: |
+    [[inputs.host_processes]]
+      min_run_time = "10m"
+      open_metric = true
+      object_interval = "5m"
+      metric_interval = "60s"
+      enable_listen_ports = false
+      enable_open_files = false
+      only_container_processes = false
+- name: ddtrace.conf
+  path: /usr/local/datakit/conf.d/ddtrace/ddtrace.conf
+  value: |
+    [[inputs.ddtrace]]
+      endpoints = ["/v0.3/traces", "/v0.4/traces", "/v0.5/traces"]
 - name: caddy-metrics.conf
   path: /usr/local/datakit/conf.d/prom/caddy-metrics.conf
   value: "[[inputs.prom]]\n  urls = [\"http://web-saas-caddy-metrics.web-saas-k3s-v5:9180/metrics\"\

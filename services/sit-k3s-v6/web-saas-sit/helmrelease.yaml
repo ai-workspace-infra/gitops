@@ -77,6 +77,16 @@ spec:
                             value: "true"
                           - name: FRONTEND_IMAGE
                             value: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
+                          - name: DD_AGENT_HOST
+                            value: datakit-service.observability-sit.svc
+                          - name: DD_TRACE_AGENT_PORT
+                            value: "9529"
+                          - name: DD_SERVICE
+                            value: web-saas-console
+                          - name: DD_ENV
+                            value: sit
+                          - name: DD_TRACE_PROPAGATION_STYLE
+                            value: datadog,tracecontext
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -174,6 +184,11 @@ spec:
           XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
           SUBSCRIPTION_GRACE_PERIOD: "72h"
           DUAL_BUCKET_PRO_GATE_ENABLED: "false"
+          DD_AGENT_HOST: datakit-service.observability-sit.svc
+          DD_TRACE_AGENT_PORT: "9529"
+          DD_SERVICE: web-saas-accounts
+          DD_ENV: sit
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
@@ -196,6 +211,11 @@ spec:
           ARREARS_SUSPEND_THRESHOLD: "72h"
           DUAL_BUCKET_QUOTA_ENFORCE: "false"
           IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
+          DD_AGENT_HOST: datakit-service.observability-sit.svc
+          DD_TRACE_AGENT_PORT: "9529"
+          DD_SERVICE: web-saas-billing
+          DD_ENV: sit
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
@@ -232,6 +252,11 @@ spec:
         env:
           KNOWLEDGE_REPO_PATH: /tmp/knowledge
           KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
+          DD_AGENT_HOST: datakit-service.observability-sit.svc
+          DD_TRACE_AGENT_PORT: "9529"
+          DD_SERVICE: web-saas-content
+          DD_ENV: sit
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         image: ghcr.io/ai-workspace-services/docs:daily-build-2026.11.18-r1@sha256:5577fbcbe7fe1ddb4dd0cfe90c4caaa0fd0c9299d69f49afbdc819ede577157e
         secretRefs:
         - web-saas-secrets

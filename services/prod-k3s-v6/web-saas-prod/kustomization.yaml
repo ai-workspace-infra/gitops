@@ -10,6 +10,7 @@ resources:
 - vault-secrets.yaml
 - database-vault-secrets.yaml
 - business-networkpolicy.yaml
+- flagger-metrics-service.yaml
 - canary-accounts.yaml
 - canary-billing.yaml
 - canary-console.yaml

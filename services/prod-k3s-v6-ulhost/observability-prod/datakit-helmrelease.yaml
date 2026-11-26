@@ -44,8 +44,24 @@ spec:
       dataway_secret_name: datakit-dataway-secret
       global_tags: host=prod-k3s-v6,cluster=prod-k3s-v6,environment=prod,env=prod
       log: info
-      default_enabled_inputs: dk,cpu,disk,diskio,mem,swap,system,hostobject,net,prom
+      default_enabled_inputs: dk,cpu,disk,diskio,mem,swap,system,hostobject,net,host_processes,prom,ddtrace
     dkconfig:
+      - name: host-processes.conf
+        path: /usr/local/datakit/conf.d/host/host_processes.conf
+        value: |-
+          [[inputs.host_processes]]
+            min_run_time = "10m"
+            open_metric = true
+            object_interval = "5m"
+            metric_interval = "60s"
+            enable_listen_ports = false
+            enable_open_files = false
+            only_container_processes = false
+      - name: ddtrace.conf
+        path: /usr/local/datakit/conf.d/ddtrace/ddtrace.conf
+        value: |-
+          [[inputs.ddtrace]]
+            endpoints = ["/v0.3/traces", "/v0.4/traces", "/v0.5/traces"]
       # 默认关闭高基数采集 (cadvisor / kubelet / kube-state-metrics / container / kubernetesprometheus)
       # 仅保留低基数核心指标且拉长抓取周期为 60s
       - name: postgresql-exporter.conf

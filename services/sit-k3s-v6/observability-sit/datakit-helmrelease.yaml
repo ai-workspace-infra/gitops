@@ -1,7 +1,7 @@
 # ==============================================================================
-# 观测云 DataKit 默认静默缩容 (按需开启):
-# - 默认 workload.kind: Deployment + replicas: 0，Pod 副本为 0
-# - 按需开启时可临时改为 replicas: 1 或 kind: DaemonSet
+# 观测云 DataKit 已激活 (replicas: 1):
+# - 当前 workload.kind: Deployment + replicas: 1，接收 DDTrace 与指标采集
+# - 如需静默缩容可调回 replicas: 0
 # ==============================================================================
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -28,7 +28,7 @@ spec:
       tag: "2.16.1@sha256:1cd545f7f14dc08935ec6557936b1e6422a3d7d9728b57d6e1d6b57ea1703fc6"
     workload:
       kind: Deployment
-      replicas: 0
+      replicas: 1
     datakit:
       cluster_name_k8s: sit-k3s-v6
       dataway_secret_create: false
@@ -37,8 +37,233 @@ spec:
       dataway_secret_name: datakit-dataway-secret
       global_tags: host=sit-k3s-v6,cluster=sit-k3s-v6,environment=sit,env=sit
       log: info
-      default_enabled_inputs: dk,cpu,disk,diskio,mem,swap,system,hostobject,net,prom
+      default_enabled_inputs: dk,cpu,disk,diskio,mem,swap,system,hostobject,net,host_processes,prom,ddtrace
     dkconfig:
+      - name: host-processes.conf
+        path: /usr/local/datakit/conf.d/host/host_processes.conf
+        value: |-
+          [[inputs.host_processes]]
+            min_run_time = "10m"
+            open_metric = true
+            object_interval = "5m"
+            metric_interval = "60s"
+            enable_listen_ports = false
+            enable_open_files = false
+            only_container_processes = false
+      - name: ddtrace.conf
+        path: /usr/local/datakit/conf.d/ddtrace/ddtrace.conf
+        value: |-
+          [[inputs.ddtrace]]
+            endpoints = ["/v0.3/traces", "/v0.4/traces", "/v0.5/traces"]
+      - name: progressive-release-probes.conf
+        path: /usr/local/datakit/conf.d/prom/progressive-release-probes.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-console.web-saas-sit.svc%2Fhealthz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "console"
+              route = "/healthz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-console.web-saas-sit.svc/healthz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-console.web-saas-sit.svc%2Flogin&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "console"
+              route = "/login"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-console.web-saas-sit.svc/login"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-console.web-saas-sit.svc%2Fpanel%2Fagent&module=release_login_redirect"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "console"
+              route = "/panel/agent"
+              probe_module = "release_login_redirect"
+              expected_status = "307"
+              instance = "http://web-saas-console.web-saas-sit.svc/panel/agent"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-accounts.web-saas-sit.svc%2Fhealthz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "accounts"
+              route = "/healthz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-accounts.web-saas-sit.svc/healthz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-accounts.web-saas-sit.svc%2Freadyz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "accounts"
+              route = "/readyz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-accounts.web-saas-sit.svc/readyz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-accounts.web-saas-sit.svc%2Fapi%2Fping&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "accounts"
+              route = "/api/ping"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-accounts.web-saas-sit.svc/api/ping"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-accounts.web-saas-sit.svc%2Fapi%2Fbilling%2Fplans&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "accounts"
+              route = "/api/billing/plans"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-accounts.web-saas-sit.svc/api/billing/plans"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-billing.web-saas-sit.svc%2Fhealthz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "billing"
+              route = "/healthz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-billing.web-saas-sit.svc/healthz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-billing.web-saas-sit.svc%2Freadyz&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "billing"
+              route = "/readyz"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-billing.web-saas-sit.svc/readyz"
+          [[inputs.prom]]
+            urls = ["http://observability-agent-blackbox.observability-sit.svc:9115/probe?target=http%3A%2F%2Fweb-saas-billing.web-saas-sit.svc%2Fapi%2Fping&module=release_http_ok"]
+            source = "progressive-release-probes"
+            interval = "30s"
+            measurement_name = "progressive_release_probes"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              job = "progressive-release-probes"
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "billing"
+              route = "/api/ping"
+              probe_module = "release_http_ok"
+              expected_status = "200"
+              instance = "http://web-saas-billing.web-saas-sit.svc/api/ping"
+      - name: flagger-metrics.conf
+        path: /usr/local/datakit/conf.d/prom/flagger-metrics.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://web-saas-flagger-metrics.web-saas-sit.svc:8080/metrics"]
+            source = "flagger"
+            interval = "30s"
+            measurement_name = "flagger"
+            keep_exist_metric_name = true
+            election = false
+            [inputs.prom.tags]
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              namespace = "web-saas-sit"
+              service = "flagger"
+              job = "flagger"
+              host = "sit-k3s-v6"
+      - name: traefik-canary.conf
+        path: /usr/local/datakit/conf.d/prom/traefik-canary.conf
+        value: |-
+          [[inputs.prom]]
+            urls = ["http://traefik-metrics.ingress-sit.svc:9100/metrics"]
+            source = "traefik"
+            interval = "30s"
+            measurement_name = "traefik"
+            keep_exist_metric_name = true
+            metric_name_filter = ["traefik_service_requests_total"]
+            election = false
+            [inputs.prom.tags]
+              cluster = "sit-k3s-v6"
+              environment = "sit"
+              env = "sit"
+              service = "traefik-ingress"
+              job = "traefik"
+              host = "sit-k3s-v6"
       # 默认关闭高基数采集 (cadvisor / kubelet / kube-state-metrics / container / kubernetesprometheus)
       # 仅保留低基数核心指标且拉长抓取周期为 60s
       - name: postgresql-exporter.conf
