@@ -160,7 +160,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-d451cf36eef3cd0d861a97da2e078a85af9824c1@sha256:c2904768e2f14c090eaafb2f0eb08b3f04411b8da75771465097545be825fd2e
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-b81b1a544750918614531da7b25ecfcdabfbc854@sha256:3a20e0813c42eedeab73afe18b72bd9a5a3bf3320ef09130c18a453d1e647537
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -173,7 +173,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-d451cf36eef3cd0d861a97da2e078a85af9824c1@sha256:c2904768e2f14c090eaafb2f0eb08b3f04411b8da75771465097545be825fd2e
+        image: ghcr.io/ai-workspace-services/accounts:sha-b81b1a544750918614531da7b25ecfcdabfbc854@sha256:3a20e0813c42eedeab73afe18b72bd9a5a3bf3320ef09130c18a453d1e647537
         probes:
           startupProbe:
             httpGet:
