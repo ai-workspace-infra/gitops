@@ -84,7 +84,7 @@ spec:
                           - name: FRONTEND_IMAGE
                             value: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
                           - name: DD_TRACE_ENABLED
-                            value: "false"
+                            value: "true"
                           - name: DD_AGENT_HOST
                             value: datakit-service.observability-sit.svc
                           - name: DD_TRACE_AGENT_PORT
@@ -192,7 +192,7 @@ spec:
           XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
           SUBSCRIPTION_GRACE_PERIOD: "72h"
           DUAL_BUCKET_PRO_GATE_ENABLED: "false"
-          DD_TRACE_ENABLED: "false"
+          DD_TRACE_ENABLED: "true"
           DD_AGENT_HOST: datakit-service.observability-sit.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-accounts
@@ -220,7 +220,7 @@ spec:
           ARREARS_SUSPEND_THRESHOLD: "72h"
           DUAL_BUCKET_QUOTA_ENFORCE: "false"
           IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
-          DD_TRACE_ENABLED: "false"
+          DD_TRACE_ENABLED: "true"
           DD_AGENT_HOST: datakit-service.observability-sit.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-billing
@@ -262,7 +262,7 @@ spec:
         env:
           KNOWLEDGE_REPO_PATH: /tmp/knowledge
           KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
-          DD_TRACE_ENABLED: "false"
+          DD_TRACE_ENABLED: "true"
           DD_AGENT_HOST: datakit-service.observability-sit.svc
           DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-content
