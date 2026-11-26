@@ -36,7 +36,7 @@ spec:
       tag: "2.16.1@sha256:1cd545f7f14dc08935ec6557936b1e6422a3d7d9728b57d6e1d6b57ea1703fc6"
     workload:
       kind: Deployment
-      replicas: 0
+      replicas: 1
     datakit:
       dataway_secret_create: false
       dataway_secret_enabled: true

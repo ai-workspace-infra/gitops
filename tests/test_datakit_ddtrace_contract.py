@@ -9,9 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 class TestDataKitDDTraceContract(unittest.TestCase):
     def test_datakit_releases_replicas_and_enable_ddtrace_and_throttled_host_processes(self):
         expected_replicas = [
-            ("services/prod-k3s-v6/observability-prod/datakit-helmrelease.yaml", 0),
+            ("services/prod-k3s-v6/observability-prod/datakit-helmrelease.yaml", 1),
             ("services/sit-k3s-v6/observability-sit/datakit-helmrelease.yaml", 0),
-            ("services/prod-k3s-v6-ulhost/observability-prod/datakit-helmrelease.yaml", 0),
+            ("services/prod-k3s-v6-ulhost/observability-prod/datakit-helmrelease.yaml", 1),
         ]
         for rel, replicas in expected_replicas:
             doc = yaml.safe_load((ROOT / rel).read_text())
