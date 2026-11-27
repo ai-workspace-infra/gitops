@@ -309,7 +309,6 @@ spec:
         port: 8080
         replicas: 1
         env:
-          PORT: "8080"
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: "5432"
           POSTGRES_USER: postgres
