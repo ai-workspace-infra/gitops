@@ -18,10 +18,6 @@ spec:
     service:
       name: fluxgate
       port: 8080
-      healthCheck:
-        path: /healthz
-        interval: 5s
-        timeout: 1s
     fallback:
       name: web-saas-accounts
       namespace: web-saas-prod
