@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-task-session-orchestrator-prod
+  description: Least-privilege Vault policy for ai-workspace-services/task-session-orchestrator Cloudflare Worker deployment on main.
+spec:
+  paths:
+  - path: kv/data/prod/serverless/cloudflare
+    capabilities:
+    - read
+  - path: kv/metadata/prod/serverless/cloudflare
+    capabilities:
+    - read

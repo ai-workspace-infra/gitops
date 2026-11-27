@@ -14,3 +14,4 @@ resources:
 - fluxgate-vault.yaml
 - fluxgate-oci-repository.yaml
 - fluxgate-helmrelease.yaml
+- fluxgate-noncore-routes.yaml

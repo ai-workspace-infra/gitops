@@ -1,0 +1,25 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultJWTAuthRole
+metadata:
+  name: github-actions-portal-public-config-prod
+  description: Protected prod GitHub Actions OIDC role for ai-workspace-services/portal-public-config Cloudflare Worker deploy on main.
+spec:
+  role_type: jwt
+  user_claim: sub
+  bound_audiences:
+  - vault
+  bound_claims_type: glob
+  token_no_default_policy: true
+  token_type: batch
+  token_ttl: 20m
+  token_max_ttl: 20m
+  token_explicit_max_ttl: 20m
+  bound_claims:
+    repository: ai-workspace-services/portal-public-config
+    ref:
+    - refs/heads/main
+    job_workflow_ref:
+    - ai-workspace-services/portal-public-config/.github/workflows/ci.yml@refs/heads/main
+  token_policies:
+  - github-actions-portal-public-config-prod
