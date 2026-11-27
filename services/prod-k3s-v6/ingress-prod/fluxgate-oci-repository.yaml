@@ -1,0 +1,13 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: fluxgate-chart
+  namespace: ingress-prod
+spec:
+  interval: 5m
+  url: oci://ghcr.io/ai-workspace-xstream/charts/fluxgate
+  ref:
+    tag: "0.3.0"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy

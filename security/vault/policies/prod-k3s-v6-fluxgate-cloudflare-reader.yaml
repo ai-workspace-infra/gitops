@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: prod-k3s-v6-fluxgate-cloudflare-reader
+  description: Least-privilege read-only access to Cloudflare DNS credentials (CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN) for Fluxgate in prod-k3s-v6 ingress-prod.
+spec:
+  paths:
+  - path: kv/data/prod/serverless/cloudflare
+    capabilities:
+    - read
+  - path: auth/token/lookup-self
+    capabilities:
+    - read
