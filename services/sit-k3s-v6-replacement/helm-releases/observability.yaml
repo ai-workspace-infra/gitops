@@ -12,6 +12,15 @@ spec:
     name: observability-stack-chart
   suspend: false
   values:
+    victoriaMetrics:
+      image:
+        repository: quay.io/victoriametrics/victoria-metrics
+    victoriaLogs:
+      image:
+        repository: quay.io/victoriametrics/victoria-logs
+    victoriaTraces:
+      image:
+        repository: quay.io/victoriametrics/victoria-traces
     grafana:
       enabled: false
     telemetry:
