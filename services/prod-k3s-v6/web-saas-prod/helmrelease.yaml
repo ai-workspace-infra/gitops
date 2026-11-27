@@ -70,6 +70,8 @@ spec:
                             value: prod
                           - name: RUNTIME_AUTH_URL
                             value: http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                          - name: RUNTIME_AGENT_SERVER_URL
+                            value: http://web-saas-xconnect-controller.web-saas-prod.svc.cluster.local:80
                           - name: RUNTIME_XCONNECT_ZERO_URL
                             value: http://web-saas-xconnect-controller.web-saas-prod.svc.cluster.local:80
                           - name: RUNTIME_DOCS_SERVICE_URL
@@ -157,7 +159,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-836b60a5b1c8c7e5c9d3980db5e02f6830464bfd@sha256:24d9b440bec089ab05d319cffa8f8297d7242495d533f09a5266a6e408029b1e
+        image: ghcr.io/ai-workspace-services/console:sha-9204e0ea27a112ceb7ceb1b05e6b883c8b214701@sha256:31e856b4a33da6734aa529c22e30b34113ed9a8bbed2ed13fa0a11f16af81c56
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
@@ -184,7 +186,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-b6bbb5e0bfbf327b634da8e16d953713339b947a@sha256:ea95bca3a9469d0d190808df61f295d0ed0665b951a58b996bbbc9c930e8eaa0
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-bde84028df2d57df5405c639244baa84e62ca26d@sha256:1ea7124176949312bb49a4725ec5c1421b10a9ca77d54339a8779e68a9b77ce
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -208,7 +210,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-b6bbb5e0bfbf327b634da8e16d953713339b947a@sha256:ea95bca3a9469d0d190808df61f295d0ed0665b951a58b996bbbc9c930e8eaa0
+        image: ghcr.io/ai-workspace-services/accounts:sha-bde84028df2d57df5405c639244baa84e62ca26d@sha256:1ea7124176949312bb49a4725ec5c1421b10a9ca77d54339a8779e68a9b77ce
         probes:
           startupProbe:
             httpGet:
@@ -310,7 +312,7 @@ spec:
       vpa:
         enabled: false
       workload:
-        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-78d3651918ad79006dcdb42b6b35c5ae177a929b@sha256:53cdedb02243b98fd6a4553b1a62e1402aa65744da766f266bedeaf36f5aafec
+        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-86405832efaa3d45663c0d10738897970b916bb6@sha256:a516dcdbc12e27345a7b0cd1dc555a274e5883c1d2438283fdd0f57542b6c296
         port: 8080
         replicas: 1
         env:
