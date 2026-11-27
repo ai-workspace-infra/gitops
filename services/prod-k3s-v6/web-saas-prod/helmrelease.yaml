@@ -184,13 +184,18 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-9e2cde1a043a8777852899c203d8e714173f0185@sha256:7864acbafc772a066f487bc92acf32aa01adc5222ebb174fda6290bc9b229438
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-039c940d85c04e4c3891e7c881fd0e078b3f0994@sha256:57c272ff396b121acaff68bac762dceccb10ff10724df5f01e7c885b592d2846
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
           DB_NAME: account
           XWORKMATE_SHARED_TENANT_DOMAIN: svc.plus
           SUBSCRIPTION_GRACE_PERIOD: "72h"
+          ACCOUNTS_ENABLE_LEGACY_AGENT_SERVER_ROUTES: "true"
+          ACCOUNTS_ENABLE_LEGACY_MARKETING_EMAIL_ROUTES: "true"
+          ACCOUNTS_ENABLE_MARKETING_EMAIL_WORKER: "true"
+          ACCOUNTS_AGENT_USERS_CACHE_TTL: "15s"
+          ACCOUNTS_MARKETING_EMAIL_POLL_INTERVAL: "60s"
           GOMEMLIMIT: "400MiB"
           DD_TRACE_ENABLED: "true"
           DD_AGENT_HOST: datakit-service.observability-prod.svc
@@ -203,7 +208,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-9e2cde1a043a8777852899c203d8e714173f0185@sha256:7864acbafc772a066f487bc92acf32aa01adc5222ebb174fda6290bc9b229438
+        image: ghcr.io/ai-workspace-services/accounts:sha-039c940d85c04e4c3891e7c881fd0e078b3f0994@sha256:57c272ff396b121acaff68bac762dceccb10ff10724df5f01e7c885b592d2846
         probes:
           startupProbe:
             httpGet:
