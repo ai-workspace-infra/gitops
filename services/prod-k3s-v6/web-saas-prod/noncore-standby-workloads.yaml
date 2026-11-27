@@ -26,7 +26,7 @@ spec:
       automountServiceAccountToken: false
       containers:
         - name: portal-public-config
-          image: ghcr.io/ai-workspace-services/portal-public-config:sha-84de992fcb5602dde6b1f0d1cf52448dca3a7342@sha256:1ee1bb1298383842f5849be4126632dae8f0f979b565aa1f9822e102aba0df80
+          image: ghcr.io/ai-workspace-services/portal-public-config:sha-0a555cbc60390fa54fab9e7e8cdb8b6947ceb6da@sha256:47345ca89671fe09f4a2cb81753fdeb4c0a069251bec7c9f011c8f2cd0ed8aff
           imagePullPolicy: IfNotPresent
           ports:
             - name: http

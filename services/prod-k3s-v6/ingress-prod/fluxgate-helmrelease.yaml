@@ -87,7 +87,7 @@ spec:
             }
 
             # 3) Non-core / edge services: CF Worker Free priority (weight 100) + Go cold-standby fallback (replicas: 0, weight 0)
-            @portal_public_config path /api/auth/homepage-video /api/internal/public-overview /api/internal/sandbox/guest
+            @portal_public_config path /api/internal/public-overview /api/internal/sandbox/guest
             handle @portal_public_config {
                 hybrid_proxy {
                     mode weighted_failover

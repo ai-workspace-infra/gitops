@@ -37,7 +37,6 @@ spec:
   routes:
     - match: >-
         Host(`accounts.svc.plus`) && (
-        Path(`/api/auth/homepage-video`) ||
         Path(`/api/internal/public-overview`) ||
         Path(`/api/internal/sandbox/guest`) ||
         PathPrefix(`/api/task-sessions`) ||
