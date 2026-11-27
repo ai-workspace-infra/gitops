@@ -103,6 +103,14 @@ spec:
                 reverse_proxy http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
             }
         }
+
+        # Catch-all health endpoint for kubelet probes & Traefik Service healthCheck (Pod IP Host header)
+        * {
+            @probe_health path /healthz
+            handle @probe_health {
+                respond "ok" 200
+            }
+        }
     # Pluggable Traefik extension: enhances accounts.svc.plus (leaving accounts-selfhost-prod-v6.svc.plus
     # direct to Go for gateway anti-deadlock) and falls back directly to web-saas-xconnect-controller:80
     # if Fluxgate is scaled down, uninstalled, or fails healthCheck/returns 502-504.
