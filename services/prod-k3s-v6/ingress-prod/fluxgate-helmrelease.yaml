@@ -86,21 +86,82 @@ spec:
                 }
             }
 
-            # 3) Non-core / edge services pre-wired in Fluxgate (currently pointing to accounts Go origin
-            # until their dedicated CF Workers + Go standby replicas=0 Deployments are rolled out)
+            # 3) Non-core / edge services: CF Worker Free priority (weight 100) + Go cold-standby fallback (replicas: 0, weight 0)
             @portal_public_config path /api/auth/homepage-video /api/internal/public-overview /api/internal/sandbox/guest
             handle @portal_public_config {
-                reverse_proxy http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                hybrid_proxy {
+                    mode weighted_failover
+                    retry_safe_methods GET HEAD OPTIONS
+
+                    upstream cf_worker https://portal-public-config-edge.manbuzhe2008.workers.dev {
+                        weight 100
+                        rewrite_host portal-public-config-edge.manbuzhe2008.workers.dev
+                        header_up X-Forwarded-By fluxgate-hybrid
+                        connect_timeout 1500ms
+                        read_timeout 3000ms
+                        daily_budget 85000
+                        fallback_on_status 429 501 502 503 504 522 524
+                    }
+
+                    upstream go_origin http://web-saas-portal-public-config.web-saas-prod.svc.cluster.local:80 {
+                        weight 0
+                        role fallback
+                        connect_timeout 1500ms
+                        read_timeout 5000ms
+                    }
+                }
             }
 
             @task_session_orchestrator path /api/task-sessions* /api/v1/namespaces* /api/v1/sessions* /api/internal/task-scheduler/*
             handle @task_session_orchestrator {
-                reverse_proxy http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                hybrid_proxy {
+                    mode weighted_failover
+                    sticky_key header(Authorization)
+                    retry_safe_methods GET HEAD OPTIONS
+
+                    upstream cf_worker https://task-session-orchestrator-edge.manbuzhe2008.workers.dev {
+                        weight 100
+                        rewrite_host task-session-orchestrator-edge.manbuzhe2008.workers.dev
+                        header_up X-Forwarded-By fluxgate-hybrid
+                        connect_timeout 1500ms
+                        read_timeout 5000ms
+                        daily_budget 85000
+                        fallback_on_status 429 501 502 503 504 522 524
+                    }
+
+                    upstream go_origin http://web-saas-task-session-orchestrator.web-saas-prod.svc.cluster.local:80 {
+                        weight 0
+                        role fallback
+                        connect_timeout 2000ms
+                        read_timeout 10000ms
+                    }
+                }
             }
 
             @xworkmate_profile_bridge path /api/auth/xworkmate/* /api/internal/bridge/credentials/introspect
             handle @xworkmate_profile_bridge {
-                reverse_proxy http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
+                hybrid_proxy {
+                    mode weighted_failover
+                    sticky_key header(Authorization)
+                    retry_safe_methods GET HEAD OPTIONS
+
+                    upstream cf_worker https://xworkmate-profile-bridge-edge.manbuzhe2008.workers.dev {
+                        weight 100
+                        rewrite_host xworkmate-profile-bridge-edge.manbuzhe2008.workers.dev
+                        header_up X-Forwarded-By fluxgate-hybrid
+                        connect_timeout 1500ms
+                        read_timeout 5000ms
+                        daily_budget 85000
+                        fallback_on_status 429 501 502 503 504 522 524
+                    }
+
+                    upstream go_origin http://web-saas-xworkmate-profile-bridge.web-saas-prod.svc.cluster.local:80 {
+                        weight 0
+                        role fallback
+                        connect_timeout 2000ms
+                        read_timeout 10000ms
+                    }
+                }
             }
         }
 

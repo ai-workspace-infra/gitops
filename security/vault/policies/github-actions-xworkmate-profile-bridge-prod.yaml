@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-xworkmate-profile-bridge-prod
+  description: Least-privilege Vault policy for ai-workspace-services/xworkmate-profile-bridge Cloudflare Worker deployment on main.
+spec:
+  paths:
+  - path: kv/data/prod/serverless/cloudflare
+    capabilities:
+    - read
+  - path: kv/metadata/prod/serverless/cloudflare
+    capabilities:
+    - read

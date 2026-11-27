@@ -1,0 +1,60 @@
+# Pluggable Traefik -> Fluxgate hybrid routing for non-core / edge services:
+# - portal-public-config
+# - task-session-orchestrator
+# - xworkmate-profile-bridge
+#
+# Core services (accounts IAM/auth/billing, console, content, vault, observability)
+# remain directly routed by traefik-ingress (prod-platform-routes).
+# If Fluxgate is ever absent/unhealthy, TraefikService failover falls back directly
+# to web-saas-accounts:80 so traefik-ingress continues operating independently.
+---
+apiVersion: traefik.io/v1alpha1
+kind: TraefikService
+metadata:
+  name: fluxgate-noncore-failover
+  namespace: ingress-prod
+spec:
+  failover:
+    service:
+      name: fluxgate
+      port: 8080
+      healthCheck:
+        path: /healthz
+        interval: 5s
+        timeout: 1s
+    fallback:
+      name: web-saas-accounts
+      namespace: web-saas-prod
+      port: 80
+    errors:
+      status:
+        - "502-504"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prod-noncore-edge-hybrid
+  namespace: ingress-prod
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: >-
+        Host(`accounts.svc.plus`) && (
+        Path(`/api/auth/homepage-video`) ||
+        Path(`/api/internal/public-overview`) ||
+        Path(`/api/internal/sandbox/guest`) ||
+        PathPrefix(`/api/task-sessions`) ||
+        PathPrefix(`/api/v1/namespaces`) ||
+        PathPrefix(`/api/v1/sessions`) ||
+        PathPrefix(`/api/internal/task-scheduler`) ||
+        PathPrefix(`/api/auth/xworkmate`) ||
+        Path(`/api/internal/bridge/credentials/introspect`)
+        )
+      kind: Rule
+      priority: 250
+      services:
+        - name: fluxgate-noncore-failover
+          kind: TraefikService
+  tls:
+    secretName: accounts-tls

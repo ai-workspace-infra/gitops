@@ -1,0 +1,251 @@
+# Cold-standby Go fallback workloads (replicas: 0 by default) for non-core edge services
+# whose primary traffic is served by Cloudflare Workers Free via Fluxgate hybrid routing.
+# Scale to replicas=1 on demand for emergency Go cutback without consuming idle K3s RAM.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-saas-portal-public-config
+  namespace: web-saas-prod
+  labels:
+    app.kubernetes.io/name: portal-public-config
+    app.kubernetes.io/part-of: web-saas-prod
+    delivery.svc.plus/standby-mode: cold-replicas-zero
+spec:
+  replicas: 0
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: portal-public-config
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: portal-public-config
+        app.kubernetes.io/part-of: web-saas-prod
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: portal-public-config
+          image: ghcr.io/ai-workspace-services/portal-public-config:sha-84de992fcb5602dde6b1f0d1cf52448dca3a7342@sha256:1ee1bb1298383842f5849be4126632dae8f0f979b565aa1f9822e102aba0df80
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+          envFrom:
+            - secretRef:
+                name: web-saas-secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 15m
+              memory: 24Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-saas-portal-public-config
+  namespace: web-saas-prod
+  labels:
+    app.kubernetes.io/name: portal-public-config
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: portal-public-config
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-saas-task-session-orchestrator
+  namespace: web-saas-prod
+  labels:
+    app.kubernetes.io/name: task-session-orchestrator
+    app.kubernetes.io/part-of: web-saas-prod
+    delivery.svc.plus/standby-mode: cold-replicas-zero
+spec:
+  replicas: 0
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: task-session-orchestrator
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: task-session-orchestrator
+        app.kubernetes.io/part-of: web-saas-prod
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: task-session-orchestrator
+          image: ghcr.io/ai-workspace-services/task-session-orchestrator:sha-b574bfdc6aadb542a020440acf1163124ee87eb7@sha256:555ded2da348031f1ec47b23fde48a7f76834a131476f4d401cc05ee5350e1f8
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: ACCOUNTS_JWKS_URL
+              value: "http://web-saas-accounts.web-saas-prod.svc.cluster.local:80/.well-known/jwks.json"
+            - name: DB_HOST
+              value: postgresql-postgresql.postgresql-prod.svc.cluster.local
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: account
+            - name: POSTGRES_USER
+              value: postgres
+          envFrom:
+            - secretRef:
+                name: accounts-db-runtime
+            - secretRef:
+                name: web-saas-secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 25m
+              memory: 48Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-saas-task-session-orchestrator
+  namespace: web-saas-prod
+  labels:
+    app.kubernetes.io/name: task-session-orchestrator
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: task-session-orchestrator
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-saas-xworkmate-profile-bridge
+  namespace: web-saas-prod
+  labels:
+    app.kubernetes.io/name: xworkmate-profile-bridge
+    app.kubernetes.io/part-of: web-saas-prod
+    delivery.svc.plus/standby-mode: cold-replicas-zero
+spec:
+  replicas: 0
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: xworkmate-profile-bridge
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: xworkmate-profile-bridge
+        app.kubernetes.io/part-of: web-saas-prod
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: xworkmate-profile-bridge
+          image: ghcr.io/ai-workspace-services/xworkmate-profile-bridge:sha-d017edeb93413600c0008fc403fcd29dd16900c0@sha256:ef7217ca074bbd63514668503094c8263063588c475952676736455c49dfcade
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: ACCOUNTS_JWKS_URL
+              value: "http://web-saas-accounts.web-saas-prod.svc.cluster.local:80/.well-known/jwks.json"
+            - name: XWORKMATE_VAULT_ADDR
+              value: "https://vault.svc.plus"
+            - name: DB_HOST
+              value: postgresql-postgresql.postgresql-prod.svc.cluster.local
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: account
+            - name: POSTGRES_USER
+              value: postgres
+          envFrom:
+            - secretRef:
+                name: accounts-db-runtime
+            - secretRef:
+                name: web-saas-secrets
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 25m
+              memory: 48Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-saas-xworkmate-profile-bridge
+  namespace: web-saas-prod
+  labels:
+    app.kubernetes.io/name: xworkmate-profile-bridge
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: xworkmate-profile-bridge
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
