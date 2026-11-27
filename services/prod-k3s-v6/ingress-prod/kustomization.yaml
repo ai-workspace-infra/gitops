@@ -11,3 +11,6 @@ resources:
 - traefik-metrics-service.yaml
 - traefik-routes.yaml
 - observability-ingest-route.yaml
+- fluxgate-vault.yaml
+- fluxgate-oci-repository.yaml
+- fluxgate-helmrelease.yaml

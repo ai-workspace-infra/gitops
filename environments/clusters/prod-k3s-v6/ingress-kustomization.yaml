@@ -12,6 +12,14 @@ spec:
       kind: HelmRelease
       name: traefik-ingress
       namespace: ingress-prod
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: fluxgate
+      namespace: ingress-prod
+    - apiVersion: external-secrets.io/v1
+      kind: ExternalSecret
+      name: fluxgate-cloudflare-kv
+      namespace: ingress-prod
     - apiVersion: external-secrets.io/v1
       kind: ExternalSecret
       name: console-tls

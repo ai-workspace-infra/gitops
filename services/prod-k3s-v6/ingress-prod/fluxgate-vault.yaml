@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluxgate-cloudflare-reader
+  namespace: ingress-prod
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: fluxgate-cloudflare-reader
+  namespace: ingress-prod
+rules:
+  - apiGroups:
+      - ''
+    resources:
+      - serviceaccounts/token
+    resourceNames:
+      - fluxgate-cloudflare-reader
+    verbs:
+      - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: fluxgate-cloudflare-reader
+  namespace: ingress-prod
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: fluxgate-cloudflare-reader
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: fluxgate-cloudflare-reader
+  namespace: ingress-prod
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-prod-k3s-prod-k3s-v6
+          role: prod-k3s-v6-fluxgate-cloudflare-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: fluxgate-cloudflare-reader
+            audiences:
+              - vault-prod-k3s-v6-fluxgate-cloudflare-reader
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: fluxgate-cloudflare-kv
+  namespace: ingress-prod
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: fluxgate-cloudflare-reader
+  target:
+    name: fluxgate-cloudflare-kv
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+    - secretKey: CLOUDFLARE_ACCOUNT_ID
+      remoteRef:
+        key: prod/serverless/cloudflare
+        property: CLOUDFLARE_ACCOUNT_ID
+    - secretKey: CLOUDFLARE_API_TOKEN
+      remoteRef:
+        key: prod/serverless/cloudflare
+        property: CLOUDFLARE_API_TOKEN
