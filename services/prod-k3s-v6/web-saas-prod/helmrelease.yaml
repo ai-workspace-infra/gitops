@@ -85,7 +85,7 @@ spec:
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-1cbc38d321a07b6f5ea9f6a0f52ac45e559a620c@sha256:2f6c811befbc5b862a0e93695202d9f68ba0a9eee8ccf2d7f3a593f21a6e7ee9
+                            value: ghcr.io/ai-workspace-services/console:sha-836b60a5b1c8c7e5c9d3980db5e02f6830464bfd@sha256:24d9b440bec089ab05d319cffa8f8297d7242495d533f09a5266a6e408029b1e
                           - name: DD_TRACE_ENABLED
                             value: "true"
                           - name: DD_AGENT_HOST
@@ -157,7 +157,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-1cbc38d321a07b6f5ea9f6a0f52ac45e559a620c@sha256:2f6c811befbc5b862a0e93695202d9f68ba0a9eee8ccf2d7f3a593f21a6e7ee9
+        image: ghcr.io/ai-workspace-services/console:sha-836b60a5b1c8c7e5c9d3980db5e02f6830464bfd@sha256:24d9b440bec089ab05d319cffa8f8297d7242495d533f09a5266a6e408029b1e
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
@@ -184,7 +184,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-7b5759bf8c3d98a2bde3fa432f29902f8875d3cd@sha256:472a16bc549cce859398e6cf210d030240e53cb8deec46c3f71fb30a78a60bca
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-9e2cde1a043a8777852899c203d8e714173f0185@sha256:7864acbafc772a066f487bc92acf32aa01adc5222ebb174fda6290bc9b229438
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -203,7 +203,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-7b5759bf8c3d98a2bde3fa432f29902f8875d3cd@sha256:472a16bc549cce859398e6cf210d030240e53cb8deec46c3f71fb30a78a60bca
+        image: ghcr.io/ai-workspace-services/accounts:sha-9e2cde1a043a8777852899c203d8e714173f0185@sha256:7864acbafc772a066f487bc92acf32aa01adc5222ebb174fda6290bc9b229438
         probes:
           startupProbe:
             httpGet:
