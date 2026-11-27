@@ -21,9 +21,24 @@ spec:
   interval: 5m
   releaseName: platform-mcp
   suspend: false
+  dependsOn:
+    - name: observability
+      namespace: observability-sit
   chartRef:
     kind: OCIRepository
     name: platform-mcp-chart
   values:
     sshMcpServer:
+      enabled: false
+    gateway:
+      ingress:
+        enabled: false
+    victoriametrics:
+      entrypoint: http://observability-observability-stack-victoria-metrics.observability-sit.svc:8428
+    victorialogs:
+      entrypoint: http://observability-observability-stack-victoria-logs.observability-sit.svc:9428
+    victoriatraces:
+      entrypoint: http://observability-observability-stack-victoria-traces.observability-sit.svc:10428
+    # Grafana MCP requires a distinct Viewer token, which this candidate does not provision.
+    grafanaMcpServer:
       enabled: false

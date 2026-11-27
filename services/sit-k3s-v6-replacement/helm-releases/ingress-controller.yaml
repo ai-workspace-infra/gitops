@@ -16,6 +16,51 @@ spec:
         namespace: ingress-sit
       version: 42.3.0
   suspend: false
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 2
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 2
+  values:
+    ingressClass:
+      enabled: false
+    ingressRoute:
+      dashboard:
+        enabled: false
+    service:
+      spec:
+        type: ClusterIP
+        externalIPs:
+          - "${SIT_REPLACEMENT_INGRESS_IP}"
+    ports:
+      web:
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+    providers:
+      kubernetesIngress:
+        enabled: false
+      kubernetesCRD:
+        enabled: true
+        allowCrossNamespace: true
+        labelSelector: platform.svc.plus/cluster=sit-k3s-v6-replacement
+        namespaces:
+          - ingress-sit
+          - web-saas-sit
+          - observability-sit
+          - platform-mcp-sit
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository

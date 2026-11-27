@@ -10,3 +10,4 @@ resources:
 - web-saas.yaml
 - platform-mcp.yaml
 - replacement-bootstrap.yaml
+- replacement-routes.yaml
