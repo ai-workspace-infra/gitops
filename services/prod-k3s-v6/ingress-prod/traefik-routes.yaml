@@ -27,7 +27,7 @@ spec:
       kind: Rule
       priority: 200
       services:
-        - name: xconnect-controller
+        - name: web-saas-xconnect-controller
           namespace: web-saas-prod
           port: 80
     # Accounts (Auth / Sessions / API)

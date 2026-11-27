@@ -7,7 +7,6 @@ resources:
 - console-nginx-configmap.yaml
 - download-channels-configmap.yaml
 - helmrelease.yaml
-- xconnect-controller.yaml
 - vault-secrets.yaml
 - database-vault-secrets.yaml
 - business-networkpolicy.yaml

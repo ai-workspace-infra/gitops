@@ -71,7 +71,7 @@ spec:
                           - name: RUNTIME_AUTH_URL
                             value: http://web-saas-accounts.web-saas-prod.svc.cluster.local:80
                           - name: RUNTIME_XCONNECT_ZERO_URL
-                            value: http://xconnect-controller.web-saas-prod.svc.cluster.local:80
+                            value: http://web-saas-xconnect-controller.web-saas-prod.svc.cluster.local:80
                           - name: RUNTIME_DOCS_SERVICE_URL
                             value: http://web-saas-content.web-saas-prod.svc.cluster.local:80
                           - name: RUNTIME_BILLING_SERVICE_URL
@@ -300,6 +300,61 @@ spec:
         resources:
           requests: {cpu: 100m, memory: 128Mi}
           limits: {cpu: 500m, memory: 256Mi}
+    xconnectController:
+      enabled: true
+      vpa:
+        enabled: false
+      workload:
+        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-4d1419a0fccb5473acb49e3037aa4e670ec48a54@sha256:538f6494d22f5628e551cc957af169f9b64f124618fb701e80bbc9e7ddebf2c8
+        port: 8080
+        replicas: 1
+        env:
+          PORT: "8080"
+          DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
+          DB_PORT: "5432"
+          POSTGRES_USER: postgres
+          DB_NAME: account
+          GOMEMLIMIT: "200MiB"
+          XCONNECT_SCHEMA_MANAGED: "true"
+          XCONNECT_OVERLAY_REQUIRE_SIGNING_KEY: "true"
+          XCONNECT_OVERLAY_PREVIOUS_SIGNING_KEY_ID: "zero-signing-current"
+          XCONNECT_OVERLAY_PREVIOUS_SIGNING_PUBLIC_KEY: "s5yiz7WTECJKgBSapXGM9WOdoud/76xZbmHGbdK4y7o="
+          XCONNECT_OVERLAY_PREVIOUS_SIGNING_NOT_AFTER: "2026-12-03T00:00:00Z"
+          ACCOUNTS_JWKS_URL: "http://web-saas-accounts.web-saas-prod.svc.cluster.local:80/.well-known/jwks.json"
+          DD_TRACE_ENABLED: "false"
+        secretRefs:
+          - accounts-db-runtime
+          - web-saas-secrets
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
+        probes:
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: primary
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 12
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: primary
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: primary
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
     edgeGateway:
       enabled: false
     stunnelClient:
