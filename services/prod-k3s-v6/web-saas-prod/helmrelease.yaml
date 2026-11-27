@@ -59,7 +59,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.26-ddtrace-on-r4"
+                      delivery.svc.plus/rollout-revision: "v2026.11.28-stripe-multi-entity"
                   spec:
                     containers:
                       - name: console
@@ -87,7 +87,7 @@ spec:
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-836b60a5b1c8c7e5c9d3980db5e02f6830464bfd@sha256:24d9b440bec089ab05d319cffa8f8297d7242495d533f09a5266a6e408029b1e
+                            value: ghcr.io/ai-workspace-services/console:sha-7c4d98179ad9c3ffdc427568775cd08df815b61e@sha256:00b59cc1073a18f35c6e7861b6c3aa978453b0b751070eba141775b87249d2b6
                           - name: DD_TRACE_ENABLED
                             value: "true"
                           - name: DD_AGENT_HOST
@@ -159,7 +159,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-9204e0ea27a112ceb7ceb1b05e6b883c8b214701@sha256:31e856b4a33da6734aa529c22e30b34113ed9a8bbed2ed13fa0a11f16af81c56
+        image: ghcr.io/ai-workspace-services/console:sha-7c4d98179ad9c3ffdc427568775cd08df815b61e@sha256:00b59cc1073a18f35c6e7861b6c3aa978453b0b751070eba141775b87249d2b6
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
@@ -186,7 +186,7 @@ spec:
         enabled: false
       workload:
         env:
-          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-bde84028df2d57df5405c639244baa84e62ca26d@sha256:1ea7124176949312bb49a4725ec5c1421b10a9ca77d54339a8779e68a9b77ce9
+          IMAGE: ghcr.io/ai-workspace-services/accounts:sha-ce28325c3bb034375165c11f24aad33f3946db89@sha256:acb83ec1c70d5088af04b0e47f977c98b6c19f61e4f25342eaef62d108891a3f9
           DB_HOST: postgresql-postgresql.postgresql-prod.svc.cluster.local
           DB_PORT: '5432'
           POSTGRES_USER: postgres
@@ -210,7 +210,7 @@ spec:
         - accounts-db-runtime
         - accounts-bootstrap
         - accounts-stripe
-        image: ghcr.io/ai-workspace-services/accounts:sha-bde84028df2d57df5405c639244baa84e62ca26d@sha256:1ea7124176949312bb49a4725ec5c1421b10a9ca77d54339a8779e68a9b77ce9
+        image: ghcr.io/ai-workspace-services/accounts:sha-ce28325c3bb034375165c11f24aad33f3946db89@sha256:acb83ec1c70d5088af04b0e47f977c98b6c19f61e4f25342eaef62d108891a3f9
         probes:
           startupProbe:
             httpGet:
