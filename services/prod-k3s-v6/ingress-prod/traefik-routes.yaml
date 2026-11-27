@@ -30,6 +30,14 @@ spec:
         - name: web-saas-xconnect-controller
           namespace: web-saas-prod
           port: 80
+    # XConnect Controller (Agent-Server, Sync & Internal Identity - Wave 1B Cutover)
+    - match: (Host(`accounts-selfhost-prod-v6.svc.plus`) || Host(`accounts.svc.plus`)) && (PathPrefix(`/api/agent-server/v1/status`) || PathPrefix(`/api/agent-server/v1/users`) || PathPrefix(`/api/agent-server/v1/nodes`) || PathPrefix(`/api/agent-server/v1/subscription`) || PathPrefix(`/api/agent-server/v1/regional-pools`) || Path(`/api/agent/nodes`) || PathPrefix(`/api/auth/sync/subscription`) || Path(`/api/auth/sync/config`) || PathPrefix(`/api/internal/nodes`) || PathPrefix(`/api/observability/internal/xconnect`))
+      kind: Rule
+      priority: 200
+      services:
+        - name: web-saas-xconnect-controller
+          namespace: web-saas-prod
+          port: 80
     # Accounts (Auth / Sessions / API)
     - match: Host(`accounts-selfhost-prod-v6.svc.plus`) || Host(`accounts.svc.plus`)
       kind: Rule
