@@ -305,7 +305,7 @@ spec:
       vpa:
         enabled: false
       workload:
-        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-4d1419a0fccb5473acb49e3037aa4e670ec48a54@sha256:538f6494d22f5628e551cc957af169f9b64f124618fb701e80bbc9e7ddebf2c8
+        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-3a1355eaee429fbaefa5c6475b32a7aea597cee2@sha256:ce79808f44301f4fb5f0af6f118e4aea0ffd7ef87271fbfddc23263466f9d7e6
         port: 8080
         replicas: 1
         env:
@@ -320,7 +320,17 @@ spec:
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_PUBLIC_KEY: "s5yiz7WTECJKgBSapXGM9WOdoud/76xZbmHGbdK4y7o="
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_NOT_AFTER: "2026-12-03T00:00:00Z"
           ACCOUNTS_JWKS_URL: "http://web-saas-accounts.web-saas-prod.svc.cluster.local:80/.well-known/jwks.json"
+          OTEL_SERVICE_NAME: web-saas-xconnect-controller
+          OTEL_ENVIRONMENT: prod
+          OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://datakit-service.observability-prod.svc:4317
+          OTEL_TRACES_SAMPLER_ARG: "1.0"
           DD_TRACE_ENABLED: "false"
+          DD_AGENT_HOST: datakit-service.observability-prod.svc
+          DD_TRACE_AGENT_PORT: "9529"
+          DD_SERVICE: web-saas-xconnect-controller
+          DD_ENV: prod
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
           - accounts-db-runtime
           - web-saas-secrets
