@@ -11,6 +11,32 @@ spec:
     kind: OCIRepository
     name: web-saas-fullstack-chart
   suspend: false
+  values:
+    global:
+      environment: sit
+      expectedNamespace: postgresql-sit
+    postgresql:
+      enabled: true
+      image: ghcr.io/ai-workspace-services/postgresql:daily-build-2026.11.18-r1@sha256:e2ebf33a90fc495c87c9ee3e9ff8d54110535ae6ac2c205f717fcfc220283129
+      database: account
+      podSecurityContext:
+        fsGroup: 999
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+      identityAccounts:
+        enabled: true
+        root: {username: postgres, existingSecret: postgresql-admin, secretKey: password}
+        operator: {username: operator, existingSecret: postgresql-operator, secretKey: password, tables: [], sequences: []}
+        auditor: {username: auditor, existingSecret: postgresql-auditor, secretKey: password, views: []}
+      storage:
+        className: local-path
+        size: 5Gi
+      metrics:
+        enabled: false
+      resources:
+        requests: {cpu: 100m, memory: 256Mi}
+        limits: {cpu: 300m, memory: 512Mi}
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository

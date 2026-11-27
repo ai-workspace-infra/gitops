@@ -4,3 +4,6 @@ resources:
   - namespaces.yaml
   - cluster-identities-kustomization.yaml
   - workload-identities.yaml
+  - ingress-tls.yaml
+  - database-and-web-secrets.yaml
+  - observability-mcp-secrets.yaml

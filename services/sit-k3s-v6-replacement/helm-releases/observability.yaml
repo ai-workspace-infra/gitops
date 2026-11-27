@@ -11,6 +11,19 @@ spec:
     kind: OCIRepository
     name: observability-stack-chart
   suspend: false
+  values:
+    grafana:
+      enabled: false
+    telemetry:
+      cluster: sit-k3s-v6-replacement
+      environment: sit
+    persistence:
+      enabled: true
+      size: 10Gi
+      storageClass: local-path
+    traefik:
+      ingressRoute:
+        enabled: false
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -27,6 +40,14 @@ spec:
   dependsOn:
   - name: observability
   suspend: false
+  values:
+    existingSecret: grafana-admin
+    adminPasswordKey: password
+    backendFullname: observability-observability-stack
+    persistence:
+      enabled: true
+      size: 2Gi
+      storageClass: local-path
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
