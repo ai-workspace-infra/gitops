@@ -310,7 +310,7 @@ spec:
       vpa:
         enabled: false
       workload:
-        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-3a1355eaee429fbaefa5c6475b32a7aea597cee2@sha256:ce79808f44301f4fb5f0af6f118e4aea0ffd7ef87271fbfddc23263466f9d7e6
+        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-78d3651918ad79006dcdb42b6b35c5ae177a929b@sha256:53cdedb02243b98fd6a4553b1a62e1402aa65744da766f266bedeaf36f5aafec
         port: 8080
         replicas: 1
         env:
@@ -325,6 +325,8 @@ spec:
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_PUBLIC_KEY: "s5yiz7WTECJKgBSapXGM9WOdoud/76xZbmHGbdK4y7o="
           XCONNECT_OVERLAY_PREVIOUS_SIGNING_NOT_AFTER: "2026-12-03T00:00:00Z"
           ACCOUNTS_JWKS_URL: "http://web-saas-accounts.web-saas-prod.svc.cluster.local:80/.well-known/jwks.json"
+          PUBLIC_URL: "https://accounts.svc.plus"
+          XCONNECT_AGENT_USERS_CACHE_TTL: "15s"
           OTEL_SERVICE_NAME: web-saas-xconnect-controller
           OTEL_ENVIRONMENT: prod
           OTEL_EXPORTER_OTLP_PROTOCOL: grpc
