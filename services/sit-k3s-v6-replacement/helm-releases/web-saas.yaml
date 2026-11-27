@@ -18,10 +18,10 @@ spec:
     global:
       environment: sit
       expectedNamespace: web-saas-sit
-    # Enable only after separate database identities, credentials, and schema
-    # initialization have been provisioned and verified on the replacement.
+    # Set SIT_REPLACEMENT_WEB_SAAS_ENABLED=true in the target Flux runtime
+    # ConfigMap after verifying both database identities and schema compatibility.
     accounts:
-      enabled: false
+      enabled: ${SIT_REPLACEMENT_WEB_SAAS_ENABLED:=false}
       workload:
         image: ghcr.io/ai-workspace-services/accounts:sha-cabf381fa6c6ada678fbd698b3bf7618c7638f7d@sha256:90bc16b4c5ed3d9529fee38d3c8753561bffa5c19de9c9297f967890cdfdd476
         env:
@@ -34,7 +34,7 @@ spec:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
     billing:
-      enabled: false
+      enabled: ${SIT_REPLACEMENT_WEB_SAAS_ENABLED:=false}
       workload:
         image: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
         env:
@@ -47,7 +47,7 @@ spec:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
     console:
-      enabled: false
+      enabled: ${SIT_REPLACEMENT_WEB_SAAS_ENABLED:=false}
       deploymentProfile: single-container
       singleContainer:
         image: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
