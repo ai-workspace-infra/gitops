@@ -1,0 +1,44 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: platform-mcp-chart
+  namespace: platform-mcp-sit
+spec:
+  interval: 10m
+  url: oci://ghcr.io/ai-workspace-infra/platform-mcp
+  ref:
+    digest: sha256:0d58064a655ffdf739cfb6af1b4f195274f12b0ce93c4f8021fdff0d29848e5f
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: platform-mcp
+  namespace: platform-mcp-sit
+spec:
+  interval: 5m
+  releaseName: platform-mcp
+  suspend: false
+  dependsOn:
+    - name: observability
+      namespace: observability-sit
+  chartRef:
+    kind: OCIRepository
+    name: platform-mcp-chart
+  values:
+    sshMcpServer:
+      enabled: false
+    gateway:
+      ingress:
+        enabled: false
+    victoriametrics:
+      entrypoint: http://observability-observability-stack-victoria-metrics.observability-sit.svc:8428
+    victorialogs:
+      entrypoint: http://observability-observability-stack-victoria-logs.observability-sit.svc:9428
+    victoriatraces:
+      entrypoint: http://observability-observability-stack-victoria-traces.observability-sit.svc:10428
+    # Grafana MCP requires a distinct Viewer token, which this candidate does not provision.
+    grafanaMcpServer:
+      enabled: false

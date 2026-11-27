@@ -11,3 +11,4 @@ resources:
   - download-channels-configmap.yaml
   - helmrelease.yaml
   - business-networkpolicy.yaml
+  - flagger-metrics-service.yaml

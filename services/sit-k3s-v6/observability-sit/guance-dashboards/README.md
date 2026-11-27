@@ -13,6 +13,9 @@
 | `postgres-unified-overview` | **PostgreSQL 统一监控概览** | [`postgres-unified-overview.json`](./postgres-unified-overview.json) | 14 个图表 (连接数、TPS、回滚率、Cache 命中率、DB 空间) | `environment`, `cluster`, `service`, `instance`, `datname` |
 | `StarsL_cn_K8S` | **K8S Dashboard CN 20240513 StarsL.cn** | [`starsl-k8s-dashboard.json`](./starsl-k8s-dashboard.json) | 33 个图表 (节点状态、CPU/内存利用率、Pod/容器配额与使用量、PVC、网络) | `cluster`, `environment`, `Node`, `NameSpace`, `Container`, `Pod` |
 | `fed94ifiv8h6oc` | **Caddy HTTP 与网关监控** | [`caddy-dashboard.json`](./caddy-dashboard.json) | 25 个图表 (重载状态、请求速率、响应时延分布、错误率、Upstream 健康) | `environment`, `cluster`, `service`, `instance`, `interval` |
+| `progressive-release-validation` | **渐进发布 API 验证 (CI Release)** | `playbooks/dashboards/guance-cloud/progressive-release-validation.json` | 21 个图表 (10 核心 API 探活门禁、Flagger 权重/状态/失败检查、Traefik 金丝雀流量、P95 与新鲜度) | `environment`, `cluster`, `namespace`, `interval` |
+
+> 注：渐进发布 API 与 Flagger 指标已采用**方案 A**，由 DataKit 通过独立 `[[inputs.prom]]`（`progressive-release-probes.conf` / `flagger-metrics.conf` / `traefik-canary.conf`）直接抓取，与 `vmagent` 解耦。
 
 ---
 

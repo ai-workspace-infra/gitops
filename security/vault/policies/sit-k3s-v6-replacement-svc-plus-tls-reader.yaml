@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-replacement-svc-plus-tls-reader
+  description: SIT candidate ingress reader for the existing svc.plus TLS certificate.
+spec:
+  paths:
+    - path: kv/data/CICD/domains/svc.plus
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]

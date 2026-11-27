@@ -1,0 +1,14 @@
+---
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: github-actions-xconnect-controller-prod
+  description: Least-privilege Vault policy for ai-workspace-services/xconnect-controller Cloudflare Worker deployment on main.
+spec:
+  paths:
+  - path: kv/data/prod/serverless/cloudflare
+    capabilities:
+    - read
+  - path: kv/metadata/prod/serverless/cloudflare
+    capabilities:
+    - read

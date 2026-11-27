@@ -1,0 +1,81 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: web-saas-sit
+  namespace: web-saas-sit
+spec:
+  interval: 5m
+  releaseName: web-saas
+  targetNamespace: web-saas-sit
+  chartRef:
+    kind: OCIRepository
+    name: web-saas-fullstack-chart
+  suspend: false
+  dependsOn:
+    - name: postgresql
+      namespace: postgresql-sit
+  values:
+    global:
+      environment: sit
+      expectedNamespace: web-saas-sit
+    # Enable only after separate database identities, credentials, and schema
+    # initialization have been provisioned and verified on the replacement.
+    accounts:
+      enabled: false
+      workload:
+        image: ghcr.io/ai-workspace-services/accounts:sha-cabf381fa6c6ada678fbd698b3bf7618c7638f7d@sha256:90bc16b4c5ed3d9529fee38d3c8753561bffa5c19de9c9297f967890cdfdd476
+        env:
+          DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
+          DB_PORT: '5432'
+          DB_NAME: account
+          ROOT_BOOTSTRAP_EMAIL: root@sit.invalid
+        secretRefs: [web-saas-secrets, accounts-db-runtime]
+        resources:
+          requests: {cpu: 25m, memory: 96Mi}
+          limits: {cpu: 100m, memory: 128Mi}
+    billing:
+      enabled: false
+      workload:
+        image: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
+        env:
+          DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
+          DB_PORT: '5432'
+          DB_NAME: account
+          BILLING_INGEST_MODE: push
+        secretRefs: [web-saas-secrets, billing-db-runtime]
+        resources:
+          requests: {cpu: 25m, memory: 96Mi}
+          limits: {cpu: 100m, memory: 128Mi}
+    console:
+      enabled: false
+      deploymentProfile: single-container
+      singleContainer:
+        image: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
+        env:
+          RUNTIME_AUTH_URL: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
+          RUNTIME_XCONNECT_ZERO_URL: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
+        resources:
+          requests: {cpu: 50m, memory: 128Mi}
+          limits: {cpu: 250m, memory: 256Mi}
+    content: {enabled: false}
+    postgresql: {enabled: false}
+    edgeGateway: {enabled: false}
+    caddy: {enabled: false}
+    stunnelClient: {enabled: false}
+    stunnelServer: {enabled: false}
+    flagger: {enabled: false}
+    traefik: {enabled: false}
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: web-saas-fullstack-chart
+  namespace: web-saas-sit
+spec:
+  interval: 10m
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+  ref:
+    digest: sha256:8f8db066583002eb8146b2103ab02cbbe1f2a5b786605d66542dc51ab60a010f
+  url: oci://ghcr.io/ai-workspace-infra/web-saas-fullstack

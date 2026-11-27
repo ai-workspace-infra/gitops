@@ -1,0 +1,105 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: onwalk-tls-reader
+  namespace: ingress-sit
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-sit-k3s-v6-replacement
+          role: onwalk-tls-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: onwalk-tls-reader
+            audiences: [vault-sit-k3s-v6-replacement-onwalk-tls-reader]
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: onwalk-tls
+  namespace: ingress-sit
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: SecretStore
+    name: onwalk-tls-reader
+  target:
+    name: onwalk-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: CICD/domains/onwalk.net
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: CICD/domains/onwalk.net
+        property: tls_key_pem_b64
+        decodingStrategy: Base64
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: svc-plus-tls-reader
+  namespace: ingress-sit
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-sit-k3s-v6-replacement
+          role: svc-plus-tls-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: svc-plus-tls-reader
+            audiences: [vault-sit-k3s-v6-replacement-svc-plus-tls-reader]
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: svc-plus-tls
+  namespace: ingress-sit
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: SecretStore
+    name: svc-plus-tls-reader
+  target:
+    name: svc-plus-tls
+    creationPolicy: Owner
+    deletionPolicy: Retain
+    template:
+      engineVersion: v2
+      type: kubernetes.io/tls
+      data:
+        tls.crt: "{{ .tls_fullchain }}"
+        tls.key: "{{ .tls_key }}"
+  data:
+    - secretKey: tls_fullchain
+      remoteRef:
+        key: CICD/domains/svc.plus
+        property: tls_fullchain_pem_b64
+        decodingStrategy: Base64
+    - secretKey: tls_key
+      remoteRef:
+        key: CICD/domains/svc.plus
+        property: tls_key_pem_b64
+        decodingStrategy: Base64

@@ -1,0 +1,39 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: datakit
+  namespace: observability-sit
+spec:
+  interval: 1h
+  url: https://pubrepo.guance.com/chartrepo/datakit
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: datakit
+  namespace: observability-sit
+spec:
+  interval: 10m
+  releaseName: datakit
+  targetNamespace: observability-sit
+  chart:
+    spec:
+      chart: datakit
+      version: 2.16.1
+      sourceRef:
+        kind: HelmRepository
+        name: datakit
+        namespace: observability-sit
+  suspend: false
+  values:
+    image:
+      repository: pubrepo.guance.com/datakit/datakit
+      tag: "2.16.1@sha256:1cd545f7f14dc08935ec6557936b1e6422a3d7d9728b57d6e1d6b57ea1703fc6"
+    workload:
+      kind: Deployment
+      replicas: 0
+    datakit:
+      cluster_name_k8s: sit-k3s-v6-replacement
+      dataway_secret_create: false
+      dataway_secret_enabled: false
+      global_tags: host=sit-k3s-v6-replacement,cluster=sit-k3s-v6-replacement,environment=sit,env=sit
