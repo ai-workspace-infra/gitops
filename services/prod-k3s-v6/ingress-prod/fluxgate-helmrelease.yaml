@@ -165,6 +165,39 @@ spec:
             }
         }
 
+        console.svc.plus {
+            # Phase 1 static offload: static marketing pages & root docs -> CF Pages (weight 100) + local web-saas-console Pod fallback (weight 0).
+            # /panel*, /login*, /api/*, /healthz, /_next/static/* stay direct on Traefik -> web-saas-console Pod.
+            @console_pages_static path / /about /about/ /company /company/ /contact /contact/ /prices /prices/ /privacy /privacy/ /terms /terms/ /support /support/ /xworkmate-suite /xworkmate-suite/ /robots.txt /favicon.ico
+            handle @console_pages_static {
+                hybrid_proxy {
+                    mode weighted_failover
+                    retry_safe_methods GET HEAD OPTIONS
+
+                    upstream cf_pages https://ai-workspace-portal-prod.pages.dev {
+                        weight 100
+                        rewrite_host ai-workspace-portal-prod.pages.dev
+                        header_up X-Forwarded-By fluxgate-hybrid
+                        connect_timeout 1500ms
+                        read_timeout 5000ms
+                        daily_budget 85000
+                        fallback_on_status 404 429 501 502 503 504 522 524
+                    }
+
+                    upstream console_pod http://web-saas-console.web-saas-prod.svc.cluster.local:80 {
+                        weight 0
+                        role fallback
+                        connect_timeout 1500ms
+                        read_timeout 10000ms
+                    }
+                }
+            }
+
+            handle {
+                reverse_proxy http://web-saas-console.web-saas-prod.svc.cluster.local:80
+            }
+        }
+
         # Catch-all health endpoint for kubelet probes & Traefik Service healthCheck (Pod IP Host header)
         * {
             @probe_health path /healthz

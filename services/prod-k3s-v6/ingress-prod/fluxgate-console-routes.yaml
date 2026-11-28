@@ -1,0 +1,54 @@
+# Pluggable Traefik -> Fluxgate Phase 1 static offload for console.svc.plus:
+# - Static marketing pages & /robots.txt, /favicon.ico -> Fluxgate (cf_pages weight 100) + web-saas-console Pod fallback (weight 0).
+# - Dynamic /panel*, /login*, /api/*, /healthz, /_next/static/*, console-selfhost-prod-v6.svc.plus, and xworktech.com
+#   remain directly routed by traefik-ingress -> web-saas-console.
+# - ClusterIP Service forbids spec.healthCheck in Traefik v3; native readinessProbe + failover errors handle fallback.
+---
+apiVersion: traefik.io/v1alpha1
+kind: TraefikService
+metadata:
+  name: fluxgate-console-failover
+  namespace: ingress-prod
+spec:
+  failover:
+    service:
+      name: fluxgate
+      port: 8080
+    fallback:
+      name: web-saas-console
+      namespace: web-saas-prod
+      port: 80
+    errors:
+      status:
+        - "502-504"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: prod-console-static-hybrid
+  namespace: ingress-prod
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: >-
+        Host(`console.svc.plus`) && (
+        Path(`/`) ||
+        Path(`/about`) || Path(`/about/`) ||
+        Path(`/company`) || Path(`/company/`) ||
+        Path(`/contact`) || Path(`/contact/`) ||
+        Path(`/prices`) || Path(`/prices/`) ||
+        Path(`/privacy`) || Path(`/privacy/`) ||
+        Path(`/terms`) || Path(`/terms/`) ||
+        Path(`/support`) || Path(`/support/`) ||
+        Path(`/xworkmate-suite`) || Path(`/xworkmate-suite/`) ||
+        Path(`/robots.txt`) ||
+        Path(`/favicon.ico`)
+        )
+      kind: Rule
+      priority: 250
+      services:
+        - name: fluxgate-console-failover
+          kind: TraefikService
+  tls:
+    secretName: console-tls
