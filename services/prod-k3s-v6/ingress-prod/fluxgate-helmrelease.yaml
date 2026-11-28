@@ -52,9 +52,9 @@ spec:
                 respond "ok" 200
             }
 
-            # 1) Anti-deadlock / SSE always stay pinned to in-cluster Go origin
-            @agent_sse path /api/agent-server/v1/users/events
-            handle @agent_sse {
+            # 1) Anti-deadlock SSE and stateful agent status/heartbeat ingest stay pinned to in-cluster Go origin
+            @agent_origin_only path /api/agent-server/v1/users/events /api/agent-server/v1/status /api/agent-server/v1/nodes/heartbeat /api/internal/nodes/heartbeat
+            handle @agent_origin_only {
                 reverse_proxy http://web-saas-xconnect-controller.web-saas-prod.svc.cluster.local:80
             }
 
