@@ -14,12 +14,14 @@ spec:
         - name: observability-grafana
           namespace: observability-sit
           port: 3000
+          nativeLB: true
     - kind: Rule
       match: Host(`mcp-sit.onwalk.net`)
       services:
         - name: infrastructure-mcp-server
           namespace: platform-mcp-sit
           port: 8080
+          nativeLB: true
   tls:
     secretName: onwalk-tls
 ---
@@ -39,5 +41,6 @@ spec:
         - name: infrastructure-mcp-server
           namespace: platform-mcp-sit
           port: 8080
+          nativeLB: true
   tls:
     secretName: svc-plus-tls
