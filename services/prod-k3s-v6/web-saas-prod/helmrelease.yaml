@@ -96,10 +96,16 @@ spec:
                             value: "true"
                           - name: TRACING_PROVIDER
                             value: "none"
+                          - name: DD_AGENT_HOST
+                            value: datakit-service.observability-prod.svc
+                          - name: DD_TRACE_AGENT_PORT
+                            value: "9529"
                           - name: DD_SERVICE
                             value: web-saas-console
                           - name: DD_ENV
                             value: prod
+                          - name: DD_TRACE_PROPAGATION_STYLE
+                            value: datadog,tracecontext
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -202,8 +208,11 @@ spec:
           DD_TRACE_ENABLED: "false"
           OTEL_SDK_DISABLED: "true"
           TRACING_PROVIDER: "none"
+          DD_AGENT_HOST: datakit-service.observability-prod.svc
+          DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-accounts
           DD_ENV: prod
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
@@ -253,8 +262,11 @@ spec:
           DD_TRACE_ENABLED: "false"
           OTEL_SDK_DISABLED: "true"
           TRACING_PROVIDER: "none"
+          DD_AGENT_HOST: datakit-service.observability-prod.svc
+          DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-billing
           DD_ENV: prod
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
@@ -296,8 +308,11 @@ spec:
           DD_TRACE_ENABLED: "false"
           OTEL_SDK_DISABLED: "true"
           TRACING_PROVIDER: "none"
+          DD_AGENT_HOST: datakit-service.observability-prod.svc
+          DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-content
           DD_ENV: prod
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         image: ghcr.io/ai-workspace-services/docs:sha-0ba1980d2d94de9e3c32b0fff818f8784e096f59@sha256:6e48124aa15242ab3e1690c7273b90af7d965231009289e0c08cafe722d56fed
         secretRefs:
         - web-saas-secrets
@@ -326,11 +341,19 @@ spec:
           ACCOUNTS_JWKS_URL: "http://web-saas-accounts.web-saas-prod.svc.cluster.local:80/.well-known/jwks.json"
           PUBLIC_URL: "https://accounts.svc.plus"
           XCONNECT_AGENT_USERS_CACHE_TTL: "15s"
+          OTEL_SERVICE_NAME: web-saas-xconnect-controller
+          OTEL_ENVIRONMENT: prod
+          OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://datakit-service.observability-prod.svc:4317
+          OTEL_TRACES_SAMPLER_ARG: "1.0"
           OTEL_SDK_DISABLED: "true"
           TRACING_PROVIDER: "none"
           DD_TRACE_ENABLED: "false"
+          DD_AGENT_HOST: datakit-service.observability-prod.svc
+          DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-xconnect-controller
           DD_ENV: prod
+          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
           - accounts-db-runtime
           - web-saas-secrets
