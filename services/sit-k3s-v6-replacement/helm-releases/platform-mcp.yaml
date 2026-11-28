@@ -34,6 +34,8 @@ spec:
     sshMcpServer:
       enabled: false
     gateway:
+      image:
+        tag: sha-22c10bb77bc74482a8711d2810c216d07af3882c@sha256:9d04035ae5855ee988a4e55227c0f2ab62aadda36c52983149c6422823736336
       ingress:
         enabled: false
     victoriametrics:
