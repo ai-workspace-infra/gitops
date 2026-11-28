@@ -16,3 +16,4 @@ resources:
 - canary-console.yaml
 - observability-query-auth.yaml
 - noncore-standby-workloads.yaml
+- cloudflared-pg-tunnel.yaml
