@@ -199,12 +199,11 @@ spec:
           ACCOUNTS_AGENT_USERS_CACHE_TTL: "15s"
           ACCOUNTS_MARKETING_EMAIL_POLL_INTERVAL: "60s"
           GOMEMLIMIT: "400MiB"
-          DD_TRACE_ENABLED: "true"
-          DD_AGENT_HOST: datakit-service.observability-prod.svc
-          DD_TRACE_AGENT_PORT: "9529"
+          DD_TRACE_ENABLED: "false"
+          OTEL_SDK_DISABLED: "true"
+          TRACING_PROVIDER: "none"
           DD_SERVICE: web-saas-accounts
           DD_ENV: prod
-          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
         - web-saas-secrets
         - accounts-db-runtime
@@ -251,12 +250,11 @@ spec:
           DEFAULT_REGION: jp
           ARREARS_SUSPEND_THRESHOLD: "72h"
           IMAGE: ghcr.io/ai-workspace-services/billing-service:sha-3f78d10f1d475976b8af047757307a62800dc13d@sha256:6bea9270368f46a15df1478725a659b3f2c46c1d307816ddaa6fddedee494334
-          DD_TRACE_ENABLED: "true"
-          DD_AGENT_HOST: datakit-service.observability-prod.svc
-          DD_TRACE_AGENT_PORT: "9529"
+          DD_TRACE_ENABLED: "false"
+          OTEL_SDK_DISABLED: "true"
+          TRACING_PROVIDER: "none"
           DD_SERVICE: web-saas-billing
           DD_ENV: prod
-          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
         - web-saas-secrets
         - billing-db-runtime
@@ -295,12 +293,11 @@ spec:
         env:
           KNOWLEDGE_REPO_PATH: /tmp/knowledge
           KNOWLEDGE_REPO_URL: https://github.com/ai-workspace-services/knowledge.git
-          DD_TRACE_ENABLED: "true"
-          DD_AGENT_HOST: datakit-service.observability-prod.svc
-          DD_TRACE_AGENT_PORT: "9529"
+          DD_TRACE_ENABLED: "false"
+          OTEL_SDK_DISABLED: "true"
+          TRACING_PROVIDER: "none"
           DD_SERVICE: web-saas-content
           DD_ENV: prod
-          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         image: ghcr.io/ai-workspace-services/docs:sha-0ba1980d2d94de9e3c32b0fff818f8784e096f59@sha256:6e48124aa15242ab3e1690c7273b90af7d965231009289e0c08cafe722d56fed
         secretRefs:
         - web-saas-secrets
@@ -329,17 +326,11 @@ spec:
           ACCOUNTS_JWKS_URL: "http://web-saas-accounts.web-saas-prod.svc.cluster.local:80/.well-known/jwks.json"
           PUBLIC_URL: "https://accounts.svc.plus"
           XCONNECT_AGENT_USERS_CACHE_TTL: "15s"
-          OTEL_SERVICE_NAME: web-saas-xconnect-controller
-          OTEL_ENVIRONMENT: prod
-          OTEL_EXPORTER_OTLP_PROTOCOL: grpc
-          OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://datakit-service.observability-prod.svc:4317
-          OTEL_TRACES_SAMPLER_ARG: "1.0"
+          OTEL_SDK_DISABLED: "true"
+          TRACING_PROVIDER: "none"
           DD_TRACE_ENABLED: "false"
-          DD_AGENT_HOST: datakit-service.observability-prod.svc
-          DD_TRACE_AGENT_PORT: "9529"
           DD_SERVICE: web-saas-xconnect-controller
           DD_ENV: prod
-          DD_TRACE_PROPAGATION_STYLE: datadog,tracecontext
         secretRefs:
           - accounts-db-runtime
           - web-saas-secrets
