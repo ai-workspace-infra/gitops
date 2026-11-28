@@ -58,7 +58,7 @@ spec:
                 reverse_proxy http://web-saas-xconnect-controller.web-saas-prod.svc.cluster.local:80
             }
 
-            # 2) XConnect dual-form hybrid steering (keep cf_worker weight 0 until Hyperdrive Tunnel + Phase H2 are live)
+            # 2) XConnect dual-form hybrid steering: CF Worker Free priority (weight 100, Hyperdrive) + Go warm standby (replicas: 1, weight 0)
             @xconnect_dual path /api/agent-server/v1/* /api/overlay/v1/* /api/auth/sync/*
             handle @xconnect_dual {
                 hybrid_proxy {
@@ -67,18 +67,18 @@ spec:
                     retry_safe_methods GET HEAD OPTIONS
 
                     upstream cf_worker https://xconnect-controller-edge.manbuzhe2008.workers.dev {
-                        weight 0
+                        weight 100
                         rewrite_host xconnect-controller-edge.manbuzhe2008.workers.dev
                         header_up X-Forwarded-By fluxgate-hybrid
-                        connect_timeout 800ms
-                        read_timeout 2000ms
+                        connect_timeout 1500ms
+                        read_timeout 5000ms
                         daily_budget 85000
                         fallback_on_status 429 501 502 503 504 522 524
                         fallback_on_header X-XConnect-Fallback=origin-go
                     }
 
                     upstream go_origin http://web-saas-xconnect-controller.web-saas-prod.svc.cluster.local:80 {
-                        weight 100
+                        weight 0
                         role fallback
                         connect_timeout 2000ms
                         read_timeout 15000ms
