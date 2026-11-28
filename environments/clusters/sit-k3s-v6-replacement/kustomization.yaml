@@ -8,5 +8,6 @@ resources:
   - database-and-web-secrets.yaml
   - web-saas-database-identities.yaml
   - web-saas-ingress-policy.yaml
+  - web-saas-postgresql-policy.yaml
   - observability-mcp-secrets.yaml
   - grafana-dashboards

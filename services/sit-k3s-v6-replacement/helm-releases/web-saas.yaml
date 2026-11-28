@@ -71,8 +71,18 @@ spec:
         runAsUser: 10001
         runAsGroup: 10001
         seccompProfile: {type: RuntimeDefault}
+        fsGroup: 10001
       deploymentProfile: single-container
+      volumes:
+        - {name: nginx-cache, emptyDir: {}}
+        - {name: nginx-run, emptyDir: {}}
+        - {name: nginx-logs, emptyDir: {}}
       singleContainer:
+        command: [/usr/bin/tini, --, /usr/bin/env, PORT=3000, /usr/local/bin/start-all-in-one]
+        volumeMounts:
+          - {name: nginx-cache, mountPath: /var/lib/nginx}
+          - {name: nginx-run, mountPath: /run}
+          - {name: nginx-logs, mountPath: /var/log/nginx}
         image: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
         env:
           RUNTIME_AUTH_URL: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
