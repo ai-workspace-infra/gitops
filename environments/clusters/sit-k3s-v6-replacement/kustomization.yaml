@@ -6,5 +6,7 @@ resources:
   - workload-identities.yaml
   - ingress-tls.yaml
   - database-and-web-secrets.yaml
+  - web-saas-database-identities.yaml
+  - web-saas-ingress-policy.yaml
   - observability-mcp-secrets.yaml
   - grafana-dashboards

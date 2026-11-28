@@ -22,6 +22,27 @@ spec:
           namespace: platform-mcp-sit
           port: 8080
           nativeLB: true
+    - kind: Rule
+      match: Host(`console-sit.onwalk.net`)
+      services:
+        - name: web-saas-console
+          namespace: web-saas-sit
+          port: 80
+          nativeLB: true
+    - kind: Rule
+      match: Host(`accounts-sit.onwalk.net`)
+      services:
+        - name: web-saas-accounts
+          namespace: web-saas-sit
+          port: 80
+          nativeLB: true
+    - kind: Rule
+      match: Host(`billing-sit.onwalk.net`)
+      services:
+        - name: web-saas-billing
+          namespace: web-saas-sit
+          port: 80
+          nativeLB: true
   tls:
     secretName: onwalk-tls
 ---

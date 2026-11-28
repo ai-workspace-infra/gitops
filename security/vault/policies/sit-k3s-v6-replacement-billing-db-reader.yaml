@@ -1,0 +1,11 @@
+apiVersion: security.gitops/v1alpha1
+kind: VaultACLPolicy
+metadata:
+  name: sit-k3s-v6-replacement-billing-db-reader
+  description: SIT candidate billing database credential reader.
+spec:
+  paths:
+    - path: kv/data/sit/services/k3s-v6-replacement/web-saas/billing-db
+      capabilities: [read]
+    - path: auth/token/lookup-self
+      capabilities: [read]
