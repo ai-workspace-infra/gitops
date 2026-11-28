@@ -28,6 +28,8 @@ spec:
     kind: OCIRepository
     name: platform-mcp-chart
   values:
+    networkPolicy:
+      allowedNamespaces: [ingress-sit]
     authProxy:
       image:
         repository: public.ecr.aws/docker/library/caddy
