@@ -7,7 +7,7 @@ spec:
   interval: 10m
   url: oci://ghcr.io/ai-workspace-infra/platform-mcp
   ref:
-    digest: sha256:fd847510176145ff6627c420129e49730327b3670d8f935a24291589e0dfc472
+    digest: sha256:e4f7538b25df05af2e798acddf7a764d12bb0c07033b5806269fc92c14298594
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
