@@ -36,7 +36,7 @@ spec:
     billing:
       enabled: ${SIT_REPLACEMENT_WEB_SAAS_ENABLED:=false}
       workload:
-        image: ghcr.io/ai-workspace-services/billing-service:sha-4803189fe5652df0ed8ac86f225f9b2ec9d9522b@sha256:03afc6a82edc754f353cc0e67e84b387c24340ea1af39429ea92640ff078a599
+        image: ghcr.io/ai-workspace-services/billing-service:sha-1edff47e4eb950748bcebae25af2d38ec07565c3@sha256:145c8ad9d44b0d92b0e7282c60049572c9617180b3a724c1cb55c02b892541ac
         env:
           DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
           DB_PORT: '5432'
