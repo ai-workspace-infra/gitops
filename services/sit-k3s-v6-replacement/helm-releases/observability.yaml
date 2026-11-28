@@ -12,6 +12,9 @@ spec:
     name: observability-stack-chart
   suspend: false
   values:
+    otelCollector:
+      image:
+        repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib
     victoriaMetrics:
       image:
         repository: quay.io/victoriametrics/victoria-metrics
