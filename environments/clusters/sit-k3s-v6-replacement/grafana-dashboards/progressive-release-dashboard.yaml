@@ -1,0 +1,132 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: progressive-release-dashboard
+data:
+  progressive-release-validation.json: |
+    {
+      "uid": "progressive-release-validation",
+      "title": "Progressive Release Validation",
+      "description": "Service \u00d7 API status matrix for progressive releases (PROD / SIT). Evaluates Blackbox endpoint health, response codes, latencies, freshness, and Flagger candidate traffic.",
+      "tags": [
+        "blackbox",
+        "flagger",
+        "release",
+        "saas"
+      ],
+      "schemaVersion": 39,
+      "version": 16,
+      "editable": true,
+      "timezone": "browser",
+      "refresh": "30s",
+      "time": {
+        "from": "now-15m",
+        "to": "now"
+      },
+      "templating": {
+        "list": [
+          {
+            "name": "DS_METRICS",
+            "label": "Metrics datasource",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": {
+              "selected": true,
+              "text": "VictoriaMetrics",
+              "value": "P4169E866C3094E38"
+            }
+          },
+          {
+            "name": "environment",
+            "label": "Environment",
+            "type": "custom",
+            "query": "prod,sit",
+            "current": {
+              "selected": true,
+              "text": "prod",
+              "value": "prod"
+            }
+          },
+          {
+            "name": "cluster",
+            "label": "Cluster",
+            "type": "custom",
+            "query": "prod-k3s-v6,sit-k3s-v6",
+            "includeAll": true,
+            "allValue": ".*",
+            "skipUrlSync": true,
+            "allowCustomValue": false,
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "title": "",
+          "type": "progressive-release-matrix-panel",
+          "gridPos": {
+            "h": 36,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_METRICS}"
+          },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "probe_success{job=\"progressive-release-probes\", cluster=~\"$cluster\", environment=~\"$environment\"}",
+              "legendFormat": "{{service}} - {{route}} - success",
+              "instant": true,
+              "format": "table"
+            },
+            {
+              "refId": "B",
+              "expr": "probe_http_status_code{job=\"progressive-release-probes\", cluster=~\"$cluster\", environment=~\"$environment\"}",
+              "legendFormat": "{{service}} - {{route}} - status_code",
+              "instant": true,
+              "format": "table"
+            },
+            {
+              "refId": "C",
+              "expr": "probe_duration_seconds{job=\"progressive-release-probes\", cluster=~\"$cluster\", environment=~\"$environment\"}",
+              "legendFormat": "{{service}} - {{route}} - duration",
+              "instant": true,
+              "format": "table"
+            },
+            {
+              "refId": "D",
+              "expr": "flagger_canary_status{cluster=~\"$cluster\", environment=~\"$environment\"}",
+              "legendFormat": "{{name}} - status",
+              "instant": true,
+              "format": "table"
+            },
+            {
+              "refId": "E",
+              "expr": "flagger_canary_weight{cluster=~\"$cluster\", environment=~\"$environment\"}",
+              "legendFormat": "{{workload}} - weight",
+              "instant": true,
+              "format": "table"
+            }
+          ],
+          "options": {
+            "mode": "all",
+            "useMockData": false,
+            "environment": "$environment",
+            "showKpis": true,
+            "showMatrix": true,
+            "showFlagger": true,
+            "showDetails": true,
+            "showFooter": true,
+            "showRoutesTable": true
+          }
+        }
+      ]
+    }

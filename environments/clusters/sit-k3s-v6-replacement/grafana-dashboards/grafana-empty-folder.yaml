@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-empty-folder
+  namespace: observability-sit
+data:
+  README.txt: 'Reserved source folder; no alert rules or notification channels are imported.
+
+    '

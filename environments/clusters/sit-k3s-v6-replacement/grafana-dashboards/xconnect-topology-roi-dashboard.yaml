@@ -1,0 +1,211 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: xconnect-topology-roi-dashboard
+data:
+  xconnect-topology-roi-dashboard.json: |
+    {
+      "uid": "xconnect-topology-dynamic-roi",
+      "title": "XConnect 边缘节点核心拓扑与 2C1G Lightsail 动态 ROI 面板",
+      "description": "Dynamic XConnect 5-Service Core Topology (xconnect-edge-agent, fluxgate, xconnect-proxy-xray, xconnect-gateway-xray, vector), k6 40VU vs 500VU (30m) + live Playbooks Actions k6 Pipeline linkage, Little's Law Knee & 939 MiB Memory Scaling, and P95 SLO + AWS Lightsail 2C1G ($7/$10/$12 Compute + Traffic Amortization) ROI Panel.",
+      "tags": [
+        "xconnect",
+        "fluxgate",
+        "xray",
+        "vector",
+        "k6",
+        "roi",
+        "lightsail",
+        "capacity"
+      ],
+      "schemaVersion": 39,
+      "version": 2,
+      "editable": true,
+      "timezone": "browser",
+      "refresh": "30s",
+      "time": {
+        "from": "now-30m",
+        "to": "now"
+      },
+      "templating": {
+        "list": [
+          {
+            "name": "DS_METRICS",
+            "label": "Metrics Datasource",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": {
+              "selected": true,
+              "text": "VictoriaMetrics",
+              "value": "P4169E866C3094E38"
+            }
+          },
+          {
+            "name": "environment",
+            "label": "Environment",
+            "type": "custom",
+            "query": "prod,sit,uat",
+            "current": {
+              "selected": true,
+              "text": "prod",
+              "value": "prod"
+            }
+          },
+          {
+            "name": "instance",
+            "label": "Target Edge Node",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_METRICS}"
+            },
+            "definition": "label_values(xray_up, instance)",
+            "query": "label_values(xray_up, instance)",
+            "refresh": 2,
+            "includeAll": false,
+            "current": {
+              "selected": true,
+              "text": "jp-xconnect-02.svc.plus",
+              "value": "jp-xconnect-02.svc.plus"
+            }
+          },
+          {
+            "name": "test_profile",
+            "label": "k6 Profile",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_METRICS}"
+            },
+            "definition": "label_values(k6_http_reqs_total, test_profile)",
+            "query": "label_values(k6_http_reqs_total, test_profile)",
+            "refresh": 2,
+            "includeAll": true,
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            }
+          },
+          {
+            "name": "testid",
+            "label": "k6 Test ID",
+            "type": "query",
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_METRICS}"
+            },
+            "definition": "label_values(k6_http_reqs_total{test_profile=~\"$test_profile\"}, testid)",
+            "query": "label_values(k6_http_reqs_total{test_profile=~\"$test_profile\"}, testid)",
+            "refresh": 2,
+            "includeAll": true,
+            "allValue": ".*",
+            "current": {
+              "selected": true,
+              "text": "All",
+              "value": "$__all"
+            }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1,
+          "title": "",
+          "type": "xconnect-topology-roi-panel",
+          "gridPos": {
+            "h": 42,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_METRICS}"
+          },
+          "targets": [
+            {
+              "refId": "K6_VUS_TS",
+              "expr": "max by (testid, test_profile, environment) (k6_vus{testid=~\"$testid\",test_profile=~\"$test_profile\"})",
+              "legendFormat": "k6 VUs ({{testid}})",
+              "instant": false,
+              "range": true
+            },
+            {
+              "refId": "K6_QPS_TS",
+              "expr": "sum by (testid, test_profile, environment) (rate(k6_http_reqs_total{testid=~\"$testid\",test_profile=~\"$test_profile\"}[1m]))",
+              "legendFormat": "k6 QPS ({{testid}})",
+              "instant": false,
+              "range": true
+            },
+            {
+              "refId": "K6_P95_TS",
+              "expr": "max by (testid, test_profile, environment) (k6_http_req_duration_p95{testid=~\"$testid\",test_profile=~\"$test_profile\"})",
+              "legendFormat": "k6 P95 ms ({{testid}})",
+              "instant": false,
+              "range": true
+            },
+            {
+              "refId": "K6_ERR_RATE",
+              "expr": "max(k6_custom_error_rate{testid=~\"$testid\",test_profile=~\"$test_profile\"})",
+              "legendFormat": "k6 Error Rate",
+              "instant": true
+            },
+            {
+              "refId": "FLUX_CONNS_TS",
+              "expr": "max by (instance) (fluxgate_active_connections{instance=~\"$instance.*\"})",
+              "legendFormat": "Fluxgate Conns ({{instance}})",
+              "instant": false,
+              "range": true
+            },
+            {
+              "refId": "FLUX_QPS_TS",
+              "expr": "sum by (instance) (rate(fluxgate_http_requests_total{instance=~\"$instance.*\"}[1m]))",
+              "legendFormat": "Fluxgate QPS ({{instance}})",
+              "instant": false,
+              "range": true
+            },
+            {
+              "refId": "MEM_TOTAL",
+              "expr": "max(node_memory_MemTotal_bytes{instance=~\"$instance.*\"})",
+              "legendFormat": "Node Total Memory",
+              "instant": true
+            },
+            {
+              "refId": "MEM_AVAIL",
+              "expr": "min(node_memory_MemAvailable_bytes{instance=~\"$instance.*\"})",
+              "legendFormat": "Node Available Memory",
+              "instant": true
+            },
+            {
+              "refId": "PROC_RSS",
+              "expr": "max by (groupname) (namedprocess_namegroup_memory_bytes{memtype=\"resident\",instance=~\"$instance.*\",groupname=~\"fluxgate|xray|xconnect-edge-agent|vector|systemd-journal.*\"})",
+              "legendFormat": "{{groupname}}",
+              "instant": true
+            },
+            {
+              "refId": "XRAY_UP",
+              "expr": "max(xray_up{instance=~\"$instance.*\"})",
+              "legendFormat": "xray_up",
+              "instant": true
+            }
+          ],
+          "options": {
+            "viewMode": "all",
+            "defaultLayer": "all",
+            "defaultTargetVu": 120,
+            "defaultUserMultiplier": 4,
+            "defaultTierPrice": 7,
+            "defaultGbPerUserMonth": 10,
+            "defaultTrafficBillingMode": "pooled",
+            "cleanTmpfs": true,
+            "vectorOptimized": true,
+            "followLiveVu": false,
+            "nodeHostname": "$instance",
+            "totalRamMib": 939,
+            "k6WorkflowUrl": "https://github.com/ai-workspace-infra/playbooks/actions/workflows/k6-proxy-performance.yml"
+          }
+        }
+      ]
+    }

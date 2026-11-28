@@ -55,6 +55,57 @@ spec:
   values:
     existingSecret: grafana-admin
     adminPasswordKey: password
+    bundleChecksum: ee2a6472c61550a6568ea2f78afc85c2b9f2c800a1b4de2518188d8fef9e0253
+    datasourcesConfigMap: sit-replacement-grafana-datasources
+    appsConfigMap: ''
+    plugins:
+    - victoriametrics-logs-datasource@0.33.1
+    - marcusolsson-treemap-panel@2.1.1
+    # Progressive Release Matrix panel (unsigned, built from artifacts main; checksum-verified
+    # by the chart's plugin installer). Release: artifacts progressive-release-matrix-panel-v1.0.6.
+    unsignedPlugins:
+    - progressive-release-matrix-panel
+    - xconnect-topology-roi-panel
+    pluginArchives:
+    - id: progressive-release-matrix-panel
+      version: 1.0.6
+      url: https://github.com/ai-workspace-infra/artifacts/releases/download/progressive-release-matrix-panel-v1.0.6/progressive-release-matrix-panel-1.0.6.zip
+      sha256: f2e5288c40429abf6160ba55723f47d8de647c6de853026b5907f6e438a6c0ef
+    - id: xconnect-topology-roi-panel
+      version: 1.1.1
+      url: https://github.com/ai-workspace-infra/artifacts/releases/download/xconnect-topology-roi-panel-v1.1.1/xconnect-topology-roi-panel-1.1.1.zip
+      sha256: 61553889f82f9e7b15eef55520dddc2991e6765afbaf9360827411dc8eee0c26
+    dashboardProviders:
+    - name: import-general
+      folder: ''
+      folderUid: ''
+      path: general
+      configMaps:
+      - progressive-release-dashboard
+      - xconnect-topology-roi-dashboard
+      - source-grafana-general-0
+      - starsl-k8s-dashboard
+      - caddy-dashboard
+      - postgres-unified-dashboard
+      - grafana-restored-postgres
+    - name: import-alerts
+      folder: Observability Alerts
+      folderUid: dfzrqnab9cpa8e
+      path: alerts
+      configMaps:
+      - grafana-empty-folder
+    - name: import-platform
+      folder: Platform
+      folderUid: bg27c6c3dih34a
+      path: platform
+      configMaps:
+      - grafana-restored-platform
+    - name: import-acceptance
+      folder: Controlled acceptance
+      folderUid: k3s-acceptance
+      path: acceptance
+      configMaps:
+      - grafana-empty-folder
     backendFullname: observability-observability-stack
     persistence:
       enabled: true

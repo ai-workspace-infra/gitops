@@ -1,0 +1,366 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-restored-postgres
+  namespace: observability-sit
+data:
+  wGgaPlciz.json: "{\n  \"annotations\": {\n    \"list\": [\n      {\n        \"builtIn\": 1,\n        \"datasource\"\
+    : {\n          \"type\": \"datasource\",\n          \"uid\": \"grafana\"\n        },\n        \"enable\": true,\n\
+    \        \"hide\": true,\n        \"iconColor\": \"rgba(0, 211, 255, 1)\",\n        \"name\": \"Annotations\
+    \ & Alerts\",\n        \"target\": {\n          \"limit\": 100,\n          \"matchAny\": false,\n          \"\
+    tags\": [],\n          \"type\": \"dashboard\"\n        },\n        \"type\": \"dashboard\"\n      }\n    ]\n\
+    \  },\n  \"description\": \"Performance metrics for Postgres\",\n  \"editable\": false,\n  \"fiscalYearStartMonth\"\
+    : 0,\n  \"gnetId\": 455,\n  \"graphTooltip\": 0,\n  \"links\": [],\n  \"liveNow\": false,\n  \"panels\": [\n\
+    \    {\n      \"collapse\": false,\n      \"collapsed\": false,\n      \"gridPos\": {\n        \"h\": 2,\n \
+    \       \"w\": 8,\n        \"x\": 0,\n        \"y\": 0\n      },\n      \"id\": 14,\n      \"panels\": [],\n\
+    \      \"showTitle\": true,\n      \"span\": 4,\n      \"title\": \"PostgreSQL overview\",\n      \"titleSize\"\
+    : \"h6\",\n      \"type\": \"row\"\n    },\n    {\n      \"datasource\": {\n        \"uid\": \"$datasource\"\
+    \n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n            \"fixedColor\"\
+    : \"rgb(31, 120, 193)\",\n            \"mode\": \"fixed\"\n          },\n          \"decimals\": 0,\n      \
+    \    \"mappings\": [\n            {\n              \"options\": {\n                \"match\": \"null\",\n  \
+    \              \"result\": {\n                  \"text\": \"N/A\"\n                }\n              },\n   \
+    \           \"type\": \"special\"\n            }\n          ],\n          \"thresholds\": {\n            \"\
+    mode\": \"absolute\",\n            \"steps\": [\n              {\n                \"color\": \"green\"\n   \
+    \           }\n            ]\n          },\n          \"unit\": \"none\"\n        },\n        \"overrides\"\
+    : []\n      },\n      \"gridPos\": {\n        \"h\": 7,\n        \"w\": 4,\n        \"x\": 0,\n        \"y\"\
+    : 0\n      },\n      \"id\": 11,\n      \"maxDataPoints\": 100,\n      \"options\": {\n        \"colorMode\"\
+    : \"none\",\n        \"graphMode\": \"area\",\n        \"justifyMode\": \"auto\",\n        \"orientation\":\
+    \ \"horizontal\",\n        \"reduceOptions\": {\n          \"calcs\": [\n            \"mean\"\n          ],\n\
+    \          \"fields\": \"\",\n          \"values\": false\n        },\n        \"textMode\": \"auto\"\n    \
+    \  },\n      \"pluginVersion\": \"9.4.3\",\n      \"targets\": [\n        {\n          \"datasource\": {\n \
+    \           \"uid\": \"$datasource\"\n          },\n          \"dsType\": \"prometheus\",\n          \"expr\"\
+    : \"sum(irate(pg_stat_database_xact_commit{datname=~\\\"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"\
+    }[$__rate_interval])) + sum(irate(pg_stat_database_xact_rollback{datname=~\\\"$db\\\",job=~\\\"$job\\\",instance=~\\\
+    \"$instance\\\"}[$__rate_interval]))\",\n          \"format\": \"time_series\",\n          \"groupBy\": [\n\
+    \            {\n              \"params\": [\n                \"$interval\"\n              ],\n             \
+    \ \"type\": \"time\"\n            },\n            {\n              \"params\": [\n                \"null\"\n\
+    \              ],\n              \"type\": \"fill\"\n            }\n          ],\n          \"intervalFactor\"\
+    : 2,\n          \"measurement\": \"postgresql\",\n          \"policy\": \"default\",\n          \"refId\": \"\
+    A\",\n          \"resultFormat\": \"time_series\",\n          \"select\": [\n            [\n              {\n\
+    \                \"params\": [\n                  \"xact_commit\"\n                ],\n                \"type\"\
+    : \"field\"\n              },\n              {\n                \"params\": [],\n                \"type\": \"\
+    mean\"\n              },\n              {\n                \"params\": [\n                  \"10s\"\n      \
+    \          ],\n                \"type\": \"non_negative_derivative\"\n              }\n            ]\n     \
+    \     ],\n          \"step\": 1800,\n          \"tags\": [\n            {\n              \"key\": \"instance\"\
+    ,\n              \"operator\": \"=~\",\n              \"value\": \"/^$instance$/\"\n            }\n        \
+    \  ]\n        }\n      ],\n      \"title\": \"QPS\",\n      \"type\": \"stat\"\n    },\n    {\n      \"datasource\"\
+    : {\n        \"uid\": \"$datasource\"\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n       \
+    \   \"color\": {\n            \"mode\": \"palette-classic\"\n          },\n          \"custom\": {\n       \
+    \     \"axisCenteredZero\": false,\n            \"axisColorMode\": \"text\",\n            \"axisLabel\": \"\"\
+    ,\n            \"axisPlacement\": \"auto\",\n            \"barAlignment\": 0,\n            \"drawStyle\": \"\
+    line\",\n            \"fillOpacity\": 10,\n            \"gradientMode\": \"none\",\n            \"hideFrom\"\
+    : {\n              \"legend\": false,\n              \"tooltip\": false,\n              \"viz\": false\n   \
+    \         },\n            \"lineInterpolation\": \"linear\",\n            \"lineWidth\": 1,\n            \"\
+    pointSize\": 5,\n            \"scaleDistribution\": {\n              \"type\": \"linear\"\n            },\n\
+    \            \"showPoints\": \"never\",\n            \"spanNulls\": true,\n            \"stacking\": {\n   \
+    \           \"group\": \"A\",\n              \"mode\": \"none\"\n            },\n            \"thresholdsStyle\"\
+    : {\n              \"mode\": \"off\"\n            }\n          },\n          \"mappings\": [],\n          \"\
+    thresholds\": {\n            \"mode\": \"absolute\",\n            \"steps\": [\n              {\n          \
+    \      \"color\": \"green\"\n              },\n              {\n                \"color\": \"red\",\n      \
+    \          \"value\": 80\n              }\n            ]\n          },\n          \"unit\": \"short\"\n    \
+    \    },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n        \"h\": 7,\n        \"w\": 20,\n\
+    \        \"x\": 4,\n        \"y\": 0\n      },\n      \"id\": 1,\n      \"options\": {\n        \"legend\":\
+    \ {\n          \"calcs\": [\n            \"mean\",\n            \"max\",\n            \"min\"\n          ],\n\
+    \          \"displayMode\": \"table\",\n          \"placement\": \"right\",\n          \"showLegend\": true\n\
+    \        },\n        \"tooltip\": {\n          \"mode\": \"multi\",\n          \"sort\": \"none\"\n        }\n\
+    \      },\n      \"pluginVersion\": \"9.4.3\",\n      \"targets\": [\n        {\n          \"alias\": \"fetched\"\
+    ,\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n          },\n          \"dsType\": \"\
+    prometheus\",\n          \"expr\": \"sum(irate(pg_stat_database_tup_fetched{datname=~\\\"$db\\\",job=~\\\"$job\\\
+    \",instance=~\\\"$instance\\\"}[$__rate_interval]))\",\n          \"format\": \"time_series\",\n          \"\
+    groupBy\": [\n            {\n              \"params\": [\n                \"$interval\"\n              ],\n\
+    \              \"type\": \"time\"\n            },\n            {\n              \"params\": [\n            \
+    \    \"null\"\n              ],\n              \"type\": \"fill\"\n            }\n          ],\n          \"\
+    intervalFactor\": 2,\n          \"legendFormat\": \"fetched\",\n          \"measurement\": \"postgresql\",\n\
+    \          \"policy\": \"default\",\n          \"refId\": \"A\",\n          \"resultFormat\": \"time_series\"\
+    ,\n          \"select\": [\n            [\n              {\n                \"params\": [\n                \
+    \  \"tup_fetched\"\n                ],\n                \"type\": \"field\"\n              },\n            \
+    \  {\n                \"params\": [],\n                \"type\": \"mean\"\n              },\n              {\n\
+    \                \"params\": [\n                  \"10s\"\n                ],\n                \"type\": \"\
+    non_negative_derivative\"\n              }\n            ]\n          ],\n          \"step\": 120,\n        \
+    \  \"tags\": [\n            {\n              \"key\": \"instance\",\n              \"operator\": \"=~\",\n \
+    \             \"value\": \"/^$instance$/\"\n            }\n          ]\n        },\n        {\n          \"\
+    alias\": \"fetched\",\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n          },\n   \
+    \       \"dsType\": \"prometheus\",\n          \"expr\": \"sum(irate(pg_stat_database_tup_returned{datname=~\\\
+    \"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))\",\n          \"format\": \"time_series\"\
+    ,\n          \"groupBy\": [\n            {\n              \"params\": [\n                \"$interval\"\n   \
+    \           ],\n              \"type\": \"time\"\n            },\n            {\n              \"params\": [\n\
+    \                \"null\"\n              ],\n              \"type\": \"fill\"\n            }\n          ],\n\
+    \          \"intervalFactor\": 2,\n          \"legendFormat\": \"returned\",\n          \"measurement\": \"\
+    postgresql\",\n          \"policy\": \"default\",\n          \"refId\": \"B\",\n          \"resultFormat\":\
+    \ \"time_series\",\n          \"select\": [\n            [\n              {\n                \"params\": [\n\
+    \                  \"tup_fetched\"\n                ],\n                \"type\": \"field\"\n              },\n\
+    \              {\n                \"params\": [],\n                \"type\": \"mean\"\n              },\n  \
+    \            {\n                \"params\": [\n                  \"10s\"\n                ],\n             \
+    \   \"type\": \"non_negative_derivative\"\n              }\n            ]\n          ],\n          \"step\"\
+    : 120,\n          \"tags\": [\n            {\n              \"key\": \"instance\",\n              \"operator\"\
+    : \"=~\",\n              \"value\": \"/^$instance$/\"\n            }\n          ]\n        },\n        {\n \
+    \         \"alias\": \"fetched\",\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n     \
+    \     },\n          \"dsType\": \"prometheus\",\n          \"expr\": \"sum(irate(pg_stat_database_tup_inserted{datname=~\\\
+    \"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))\",\n          \"format\": \"time_series\"\
+    ,\n          \"groupBy\": [\n            {\n              \"params\": [\n                \"$interval\"\n   \
+    \           ],\n              \"type\": \"time\"\n            },\n            {\n              \"params\": [\n\
+    \                \"null\"\n              ],\n              \"type\": \"fill\"\n            }\n          ],\n\
+    \          \"intervalFactor\": 2,\n          \"legendFormat\": \"inserted\",\n          \"measurement\": \"\
+    postgresql\",\n          \"policy\": \"default\",\n          \"refId\": \"C\",\n          \"resultFormat\":\
+    \ \"time_series\",\n          \"select\": [\n            [\n              {\n                \"params\": [\n\
+    \                  \"tup_fetched\"\n                ],\n                \"type\": \"field\"\n              },\n\
+    \              {\n                \"params\": [],\n                \"type\": \"mean\"\n              },\n  \
+    \            {\n                \"params\": [\n                  \"10s\"\n                ],\n             \
+    \   \"type\": \"non_negative_derivative\"\n              }\n            ]\n          ],\n          \"step\"\
+    : 120,\n          \"tags\": [\n            {\n              \"key\": \"instance\",\n              \"operator\"\
+    : \"=~\",\n              \"value\": \"/^$instance$/\"\n            }\n          ]\n        },\n        {\n \
+    \         \"alias\": \"fetched\",\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n     \
+    \     },\n          \"dsType\": \"prometheus\",\n          \"expr\": \"sum(irate(pg_stat_database_tup_updated{datname=~\\\
+    \"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))\",\n          \"format\": \"time_series\"\
+    ,\n          \"groupBy\": [\n            {\n              \"params\": [\n                \"$interval\"\n   \
+    \           ],\n              \"type\": \"time\"\n            },\n            {\n              \"params\": [\n\
+    \                \"null\"\n              ],\n              \"type\": \"fill\"\n            }\n          ],\n\
+    \          \"intervalFactor\": 2,\n          \"legendFormat\": \"updated\",\n          \"measurement\": \"postgresql\"\
+    ,\n          \"policy\": \"default\",\n          \"refId\": \"D\",\n          \"resultFormat\": \"time_series\"\
+    ,\n          \"select\": [\n            [\n              {\n                \"params\": [\n                \
+    \  \"tup_fetched\"\n                ],\n                \"type\": \"field\"\n              },\n            \
+    \  {\n                \"params\": [],\n                \"type\": \"mean\"\n              },\n              {\n\
+    \                \"params\": [\n                  \"10s\"\n                ],\n                \"type\": \"\
+    non_negative_derivative\"\n              }\n            ]\n          ],\n          \"step\": 120,\n        \
+    \  \"tags\": [\n            {\n              \"key\": \"instance\",\n              \"operator\": \"=~\",\n \
+    \             \"value\": \"/^$instance$/\"\n            }\n          ]\n        },\n        {\n          \"\
+    alias\": \"fetched\",\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n          },\n   \
+    \       \"dsType\": \"prometheus\",\n          \"expr\": \"sum(irate(pg_stat_database_tup_deleted{datname=~\\\
+    \"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval]))\",\n          \"format\": \"time_series\"\
+    ,\n          \"groupBy\": [\n            {\n              \"params\": [\n                \"$interval\"\n   \
+    \           ],\n              \"type\": \"time\"\n            },\n            {\n              \"params\": [\n\
+    \                \"null\"\n              ],\n              \"type\": \"fill\"\n            }\n          ],\n\
+    \          \"intervalFactor\": 2,\n          \"legendFormat\": \"deleted\",\n          \"measurement\": \"postgresql\"\
+    ,\n          \"policy\": \"default\",\n          \"refId\": \"E\",\n          \"resultFormat\": \"time_series\"\
+    ,\n          \"select\": [\n            [\n              {\n                \"params\": [\n                \
+    \  \"tup_fetched\"\n                ],\n                \"type\": \"field\"\n              },\n            \
+    \  {\n                \"params\": [],\n                \"type\": \"mean\"\n              },\n              {\n\
+    \                \"params\": [\n                  \"10s\"\n                ],\n                \"type\": \"\
+    non_negative_derivative\"\n              }\n            ]\n          ],\n          \"step\": 120,\n        \
+    \  \"tags\": [\n            {\n              \"key\": \"instance\",\n              \"operator\": \"=~\",\n \
+    \             \"value\": \"/^$instance$/\"\n            }\n          ]\n        }\n      ],\n      \"title\"\
+    : \"Rows\",\n      \"type\": \"timeseries\"\n    },\n    {\n      \"datasource\": {\n        \"uid\": \"$datasource\"\
+    \n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n            \"mode\"\
+    : \"palette-classic\"\n          },\n          \"custom\": {\n            \"axisCenteredZero\": false,\n   \
+    \         \"axisColorMode\": \"text\",\n            \"axisLabel\": \"\",\n            \"axisPlacement\": \"\
+    auto\",\n            \"barAlignment\": 0,\n            \"drawStyle\": \"line\",\n            \"fillOpacity\"\
+    : 10,\n            \"gradientMode\": \"none\",\n            \"hideFrom\": {\n              \"legend\": false,\n\
+    \              \"tooltip\": false,\n              \"viz\": false\n            },\n            \"lineInterpolation\"\
+    : \"linear\",\n            \"lineWidth\": 1,\n            \"pointSize\": 5,\n            \"scaleDistribution\"\
+    : {\n              \"type\": \"linear\"\n            },\n            \"showPoints\": \"never\",\n          \
+    \  \"spanNulls\": true,\n            \"stacking\": {\n              \"group\": \"A\",\n              \"mode\"\
+    : \"none\"\n            },\n            \"thresholdsStyle\": {\n              \"mode\": \"off\"\n          \
+    \  }\n          },\n          \"mappings\": [],\n          \"min\": 0,\n          \"thresholds\": {\n      \
+    \      \"mode\": \"absolute\",\n            \"steps\": [\n              {\n                \"color\": \"green\"\
+    \n              },\n              {\n                \"color\": \"red\",\n                \"value\": 80\n  \
+    \            }\n            ]\n          },\n          \"unit\": \"short\"\n        },\n        \"overrides\"\
+    : []\n      },\n      \"gridPos\": {\n        \"h\": 7,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\"\
+    : 7\n      },\n      \"id\": 2,\n      \"options\": {\n        \"legend\": {\n          \"calcs\": [\n     \
+    \       \"mean\",\n            \"max\",\n            \"min\"\n          ],\n          \"displayMode\": \"table\"\
+    ,\n          \"placement\": \"bottom\",\n          \"showLegend\": false\n        },\n        \"tooltip\": {\n\
+    \          \"mode\": \"multi\",\n          \"sort\": \"none\"\n        }\n      },\n      \"pluginVersion\"\
+    : \"9.4.3\",\n      \"targets\": [\n        {\n          \"alias\": \"Buffers Allocated\",\n          \"datasource\"\
+    : {\n            \"uid\": \"$datasource\"\n          },\n          \"dsType\": \"prometheus\",\n          \"\
+    expr\": \"irate(pg_stat_bgwriter_buffers_alloc_total{job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval])\"\
+    ,\n          \"format\": \"time_series\",\n          \"groupBy\": [\n            {\n              \"params\"\
+    : [\n                \"$interval\"\n              ],\n              \"type\": \"time\"\n            },\n   \
+    \         {\n              \"params\": [\n                \"null\"\n              ],\n              \"type\"\
+    : \"fill\"\n            }\n          ],\n          \"intervalFactor\": 2,\n          \"legendFormat\": \"buffers_alloc\"\
+    ,\n          \"measurement\": \"postgresql\",\n          \"policy\": \"default\",\n          \"refId\": \"A\"\
+    ,\n          \"resultFormat\": \"time_series\",\n          \"select\": [\n            [\n              {\n \
+    \               \"params\": [\n                  \"buffers_alloc\"\n                ],\n                \"type\"\
+    : \"field\"\n              },\n              {\n                \"params\": [],\n                \"type\": \"\
+    mean\"\n              },\n              {\n                \"params\": [],\n                \"type\": \"difference\"\
+    \n              }\n            ]\n          ],\n          \"step\": 240,\n          \"tags\": [\n          \
+    \  {\n              \"key\": \"instance\",\n              \"operator\": \"=~\",\n              \"value\": \"\
+    /^$instance$/\"\n            }\n          ]\n        },\n        {\n          \"alias\": \"Buffers Allocated\"\
+    ,\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n          },\n          \"dsType\": \"\
+    prometheus\",\n          \"expr\": \"irate(pg_stat_bgwriter_buffers_backend_fsync_total{job=~\\\"$job\\\",instance=~\\\
+    \"$instance\\\"}[$__rate_interval])\",\n          \"format\": \"time_series\",\n          \"groupBy\": [\n \
+    \           {\n              \"params\": [\n                \"$interval\"\n              ],\n              \"\
+    type\": \"time\"\n            },\n            {\n              \"params\": [\n                \"null\"\n   \
+    \           ],\n              \"type\": \"fill\"\n            }\n          ],\n          \"intervalFactor\"\
+    : 2,\n          \"legendFormat\": \"buffers_backend_fsync\",\n          \"measurement\": \"postgresql\",\n \
+    \         \"policy\": \"default\",\n          \"refId\": \"B\",\n          \"resultFormat\": \"time_series\"\
+    ,\n          \"select\": [\n            [\n              {\n                \"params\": [\n                \
+    \  \"buffers_alloc\"\n                ],\n                \"type\": \"field\"\n              },\n          \
+    \    {\n                \"params\": [],\n                \"type\": \"mean\"\n              },\n            \
+    \  {\n                \"params\": [],\n                \"type\": \"difference\"\n              }\n         \
+    \   ]\n          ],\n          \"step\": 240,\n          \"tags\": [\n            {\n              \"key\":\
+    \ \"instance\",\n              \"operator\": \"=~\",\n              \"value\": \"/^$instance$/\"\n         \
+    \   }\n          ]\n        },\n        {\n          \"alias\": \"Buffers Allocated\",\n          \"datasource\"\
+    : {\n            \"uid\": \"$datasource\"\n          },\n          \"dsType\": \"prometheus\",\n          \"\
+    expr\": \"irate(pg_stat_bgwriter_buffers_backend_total{job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval])\"\
+    ,\n          \"format\": \"time_series\",\n          \"groupBy\": [\n            {\n              \"params\"\
+    : [\n                \"$interval\"\n              ],\n              \"type\": \"time\"\n            },\n   \
+    \         {\n              \"params\": [\n                \"null\"\n              ],\n              \"type\"\
+    : \"fill\"\n            }\n          ],\n          \"intervalFactor\": 2,\n          \"legendFormat\": \"buffers_backend\"\
+    ,\n          \"measurement\": \"postgresql\",\n          \"policy\": \"default\",\n          \"refId\": \"C\"\
+    ,\n          \"resultFormat\": \"time_series\",\n          \"select\": [\n            [\n              {\n \
+    \               \"params\": [\n                  \"buffers_alloc\"\n                ],\n                \"type\"\
+    : \"field\"\n              },\n              {\n                \"params\": [],\n                \"type\": \"\
+    mean\"\n              },\n              {\n                \"params\": [],\n                \"type\": \"difference\"\
+    \n              }\n            ]\n          ],\n          \"step\": 240,\n          \"tags\": [\n          \
+    \  {\n              \"key\": \"instance\",\n              \"operator\": \"=~\",\n              \"value\": \"\
+    /^$instance$/\"\n            }\n          ]\n        },\n        {\n          \"alias\": \"Buffers Allocated\"\
+    ,\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n          },\n          \"dsType\": \"\
+    prometheus\",\n          \"expr\": \"irate(pg_stat_bgwriter_buffers_clean_total{job=~\\\"$job\\\",instance=~\\\
+    \"$instance\\\"}[$__rate_interval])\",\n          \"format\": \"time_series\",\n          \"groupBy\": [\n \
+    \           {\n              \"params\": [\n                \"$interval\"\n              ],\n              \"\
+    type\": \"time\"\n            },\n            {\n              \"params\": [\n                \"null\"\n   \
+    \           ],\n              \"type\": \"fill\"\n            }\n          ],\n          \"intervalFactor\"\
+    : 2,\n          \"legendFormat\": \"buffers_clean\",\n          \"measurement\": \"postgresql\",\n         \
+    \ \"policy\": \"default\",\n          \"refId\": \"D\",\n          \"resultFormat\": \"time_series\",\n    \
+    \      \"select\": [\n            [\n              {\n                \"params\": [\n                  \"buffers_alloc\"\
+    \n                ],\n                \"type\": \"field\"\n              },\n              {\n             \
+    \   \"params\": [],\n                \"type\": \"mean\"\n              },\n              {\n               \
+    \ \"params\": [],\n                \"type\": \"difference\"\n              }\n            ]\n          ],\n\
+    \          \"step\": 240,\n          \"tags\": [\n            {\n              \"key\": \"instance\",\n    \
+    \          \"operator\": \"=~\",\n              \"value\": \"/^$instance$/\"\n            }\n          ]\n \
+    \       },\n        {\n          \"alias\": \"Buffers Allocated\",\n          \"datasource\": {\n          \
+    \  \"uid\": \"$datasource\"\n          },\n          \"dsType\": \"prometheus\",\n          \"expr\": \"irate(pg_stat_bgwriter_buffers_checkpoint_total{job=~\\\
+    \"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval])\",\n          \"format\": \"time_series\",\n    \
+    \      \"groupBy\": [\n            {\n              \"params\": [\n                \"$interval\"\n         \
+    \     ],\n              \"type\": \"time\"\n            },\n            {\n              \"params\": [\n   \
+    \             \"null\"\n              ],\n              \"type\": \"fill\"\n            }\n          ],\n  \
+    \        \"intervalFactor\": 2,\n          \"legendFormat\": \"buffers_checkpoint\",\n          \"measurement\"\
+    : \"postgresql\",\n          \"policy\": \"default\",\n          \"refId\": \"E\",\n          \"resultFormat\"\
+    : \"time_series\",\n          \"select\": [\n            [\n              {\n                \"params\": [\n\
+    \                  \"buffers_alloc\"\n                ],\n                \"type\": \"field\"\n            \
+    \  },\n              {\n                \"params\": [],\n                \"type\": \"mean\"\n              },\n\
+    \              {\n                \"params\": [],\n                \"type\": \"difference\"\n              }\n\
+    \            ]\n          ],\n          \"step\": 240,\n          \"tags\": [\n            {\n             \
+    \ \"key\": \"instance\",\n              \"operator\": \"=~\",\n              \"value\": \"/^$instance$/\"\n\
+    \            }\n          ]\n        }\n      ],\n      \"title\": \"Buffers\",\n      \"type\": \"timeseries\"\
+    \n    },\n    {\n      \"datasource\": {\n        \"type\": \"prometheus\",\n        \"uid\": \"$datasource\"\
+    \n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n            \"mode\"\
+    : \"palette-classic\"\n          },\n          \"custom\": {\n            \"axisCenteredZero\": false,\n   \
+    \         \"axisColorMode\": \"text\",\n            \"axisLabel\": \"\",\n            \"axisPlacement\": \"\
+    auto\",\n            \"barAlignment\": 0,\n            \"drawStyle\": \"line\",\n            \"fillOpacity\"\
+    : 10,\n            \"gradientMode\": \"none\",\n            \"hideFrom\": {\n              \"legend\": false,\n\
+    \              \"tooltip\": false,\n              \"viz\": false\n            },\n            \"lineInterpolation\"\
+    : \"linear\",\n            \"lineWidth\": 2,\n            \"pointSize\": 5,\n            \"scaleDistribution\"\
+    : {\n              \"type\": \"linear\"\n            },\n            \"showPoints\": \"never\",\n          \
+    \  \"spanNulls\": true,\n            \"stacking\": {\n              \"group\": \"A\",\n              \"mode\"\
+    : \"none\"\n            },\n            \"thresholdsStyle\": {\n              \"mode\": \"off\"\n          \
+    \  }\n          },\n          \"mappings\": [],\n          \"min\": 0,\n          \"thresholds\": {\n      \
+    \      \"mode\": \"absolute\",\n            \"steps\": [\n              {\n                \"color\": \"green\"\
+    \n              },\n              {\n                \"color\": \"red\",\n                \"value\": 80\n  \
+    \            }\n            ]\n          },\n          \"unit\": \"short\"\n        },\n        \"overrides\"\
+    : [\n          {\n            \"matcher\": {\n              \"id\": \"byName\",\n              \"options\":\
+    \ \"deadlocks\"\n            },\n            \"properties\": [\n              {\n                \"id\": \"\
+    color\",\n                \"value\": {\n                  \"fixedColor\": \"light-red\",\n                 \
+    \ \"mode\": \"fixed\"\n                }\n              }\n            ]\n          }\n        ]\n      },\n\
+    \      \"gridPos\": {\n        \"h\": 7,\n        \"w\": 12,\n        \"x\": 12,\n        \"y\": 7\n      },\n\
+    \      \"id\": 3,\n      \"options\": {\n        \"legend\": {\n          \"calcs\": [],\n          \"displayMode\"\
+    : \"list\",\n          \"placement\": \"bottom\",\n          \"showLegend\": true\n        },\n        \"tooltip\"\
+    : {\n          \"mode\": \"multi\",\n          \"sort\": \"none\"\n        }\n      },\n      \"pluginVersion\"\
+    : \"9.4.3\",\n      \"targets\": [\n        {\n          \"alias\": \"conflicts\",\n          \"datasource\"\
+    : {\n            \"uid\": \"$datasource\"\n          },\n          \"dsType\": \"prometheus\",\n          \"\
+    expr\": \"sum(pg_stat_database_deadlocks{datname=~\\\"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"\
+    })\",\n          \"format\": \"time_series\",\n          \"groupBy\": [\n            {\n              \"params\"\
+    : [\n                \"$interval\"\n              ],\n              \"type\": \"time\"\n            },\n   \
+    \         {\n              \"params\": [\n                \"null\"\n              ],\n              \"type\"\
+    : \"fill\"\n            }\n          ],\n          \"intervalFactor\": 2,\n          \"legendFormat\": \"deadlocks\"\
+    ,\n          \"measurement\": \"postgresql\",\n          \"policy\": \"default\",\n          \"range\": true,\n\
+    \          \"refId\": \"A\",\n          \"resultFormat\": \"time_series\",\n          \"select\": [\n      \
+    \      [\n              {\n                \"params\": [\n                  \"conflicts\"\n                ],\n\
+    \                \"type\": \"field\"\n              },\n              {\n                \"params\": [],\n \
+    \               \"type\": \"mean\"\n              },\n              {\n                \"params\": [],\n   \
+    \             \"type\": \"difference\"\n              }\n            ]\n          ],\n          \"step\": 240,\n\
+    \          \"tags\": [\n            {\n              \"key\": \"instance\",\n              \"operator\": \"\
+    =~\",\n              \"value\": \"/^$instance$/\"\n            }\n          ]\n        },\n        {\n     \
+    \     \"alias\": \"deadlocks\",\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n       \
+    \   },\n          \"dsType\": \"prometheus\",\n          \"editorMode\": \"code\",\n          \"expr\": \"sum(pg_stat_database_conflicts{datname=~\\\
+    \"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"})\",\n          \"format\": \"time_series\",\n     \
+    \     \"groupBy\": [\n            {\n              \"params\": [\n                \"$interval\"\n          \
+    \    ],\n              \"type\": \"time\"\n            },\n            {\n              \"params\": [\n    \
+    \            \"null\"\n              ],\n              \"type\": \"fill\"\n            }\n          ],\n   \
+    \       \"intervalFactor\": 2,\n          \"legendFormat\": \"conflicts\",\n          \"measurement\": \"postgresql\"\
+    ,\n          \"policy\": \"default\",\n          \"range\": true,\n          \"refId\": \"B\",\n          \"\
+    resultFormat\": \"time_series\",\n          \"select\": [\n            [\n              {\n                \"\
+    params\": [\n                  \"deadlocks\"\n                ],\n                \"type\": \"field\"\n    \
+    \          },\n              {\n                \"params\": [],\n                \"type\": \"mean\"\n      \
+    \        },\n              {\n                \"params\": [],\n                \"type\": \"difference\"\n  \
+    \            }\n            ]\n          ],\n          \"step\": 240,\n          \"tags\": [\n            {\n\
+    \              \"key\": \"instance\",\n              \"operator\": \"=~\",\n              \"value\": \"/^$instance$/\"\
+    \n            }\n          ]\n        }\n      ],\n      \"title\": \"Conflicts/Deadlocks\",\n      \"type\"\
+    : \"timeseries\"\n    },\n    {\n      \"datasource\": {\n        \"uid\": \"$datasource\"\n      },\n     \
+    \ \"fieldConfig\": {\n        \"defaults\": {\n          \"color\": {\n            \"mode\": \"palette-classic\"\
+    \n          },\n          \"custom\": {\n            \"axisCenteredZero\": false,\n            \"axisColorMode\"\
+    : \"text\",\n            \"axisLabel\": \"\",\n            \"axisPlacement\": \"auto\",\n            \"barAlignment\"\
+    : 0,\n            \"drawStyle\": \"line\",\n            \"fillOpacity\": 10,\n            \"gradientMode\":\
+    \ \"none\",\n            \"hideFrom\": {\n              \"legend\": false,\n              \"tooltip\": false,\n\
+    \              \"viz\": false\n            },\n            \"lineInterpolation\": \"linear\",\n            \"\
+    lineWidth\": 2,\n            \"pointSize\": 5,\n            \"scaleDistribution\": {\n              \"type\"\
+    : \"linear\"\n            },\n            \"showPoints\": \"never\",\n            \"spanNulls\": true,\n   \
+    \         \"stacking\": {\n              \"group\": \"A\",\n              \"mode\": \"none\"\n            },\n\
+    \            \"thresholdsStyle\": {\n              \"mode\": \"off\"\n            }\n          },\n        \
+    \  \"mappings\": [],\n          \"max\": 100,\n          \"min\": 0,\n          \"thresholds\": {\n        \
+    \    \"mode\": \"absolute\",\n            \"steps\": [\n              {\n                \"color\": \"green\"\
+    \n              },\n              {\n                \"color\": \"red\",\n                \"value\": 80\n  \
+    \            }\n            ]\n          },\n          \"unit\": \"percent\"\n        },\n        \"overrides\"\
+    : []\n      },\n      \"gridPos\": {\n        \"h\": 7,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\"\
+    : 14\n      },\n      \"id\": 12,\n      \"options\": {\n        \"legend\": {\n          \"calcs\": [],\n \
+    \         \"displayMode\": \"list\",\n          \"placement\": \"bottom\",\n          \"showLegend\": true\n\
+    \        },\n        \"tooltip\": {\n          \"mode\": \"multi\",\n          \"sort\": \"none\"\n        }\n\
+    \      },\n      \"pluginVersion\": \"9.4.3\",\n      \"targets\": [\n        {\n          \"datasource\": {\n\
+    \            \"uid\": \"$datasource\"\n          },\n          \"expr\": \"round(sum by (datname) (rate(pg_stat_database_blks_hit{datname=~\\\
+    \"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval])) / (sum by (datname)(rate(pg_stat_database_blks_hit{datname=~\\\
+    \"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval])) + sum by (datname)(rate(pg_stat_database_blks_read{datname=~\\\
+    \"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"}[$__rate_interval])))*100,0.001)\",\n          \"format\"\
+    : \"time_series\",\n          \"legendFormat\": \"{{datname}} - cache hit rate\",\n          \"refId\": \"A\"\
+    ,\n          \"step\": 240\n        }\n      ],\n      \"title\": \"Cache hit ratio\",\n      \"type\": \"timeseries\"\
+    \n    },\n    {\n      \"datasource\": {\n        \"uid\": \"$datasource\"\n      },\n      \"fieldConfig\"\
+    : {\n        \"defaults\": {\n          \"color\": {\n            \"mode\": \"palette-classic\"\n          },\n\
+    \          \"custom\": {\n            \"axisCenteredZero\": false,\n            \"axisColorMode\": \"text\"\
+    ,\n            \"axisLabel\": \"\",\n            \"axisPlacement\": \"auto\",\n            \"barAlignment\"\
+    : 0,\n            \"drawStyle\": \"line\",\n            \"fillOpacity\": 10,\n            \"gradientMode\":\
+    \ \"none\",\n            \"hideFrom\": {\n              \"legend\": false,\n              \"tooltip\": false,\n\
+    \              \"viz\": false\n            },\n            \"lineInterpolation\": \"linear\",\n            \"\
+    lineWidth\": 2,\n            \"pointSize\": 5,\n            \"scaleDistribution\": {\n              \"type\"\
+    : \"linear\"\n            },\n            \"showPoints\": \"never\",\n            \"spanNulls\": true,\n   \
+    \         \"stacking\": {\n              \"group\": \"A\",\n              \"mode\": \"none\"\n            },\n\
+    \            \"thresholdsStyle\": {\n              \"mode\": \"off\"\n            }\n          },\n        \
+    \  \"mappings\": [],\n          \"thresholds\": {\n            \"mode\": \"absolute\",\n            \"steps\"\
+    : [\n              {\n                \"color\": \"green\"\n              },\n              {\n            \
+    \    \"color\": \"red\",\n                \"value\": 80\n              }\n            ]\n          },\n    \
+    \      \"unit\": \"short\"\n        },\n        \"overrides\": []\n      },\n      \"gridPos\": {\n        \"\
+    h\": 7,\n        \"w\": 12,\n        \"x\": 12,\n        \"y\": 14\n      },\n      \"id\": 13,\n      \"options\"\
+    : {\n        \"legend\": {\n          \"calcs\": [],\n          \"displayMode\": \"list\",\n          \"placement\"\
+    : \"bottom\",\n          \"showLegend\": true\n        },\n        \"tooltip\": {\n          \"mode\": \"multi\"\
+    ,\n          \"sort\": \"none\"\n        }\n      },\n      \"pluginVersion\": \"9.4.3\",\n      \"targets\"\
+    : [\n        {\n          \"datasource\": {\n            \"uid\": \"$datasource\"\n          },\n          \"\
+    expr\": \"pg_stat_database_numbackends{datname=~\\\"$db\\\",job=~\\\"$job\\\",instance=~\\\"$instance\\\"}\"\
+    ,\n          \"format\": \"time_series\",\n          \"intervalFactor\": 2,\n          \"legendFormat\": \"\
+    {{datname}} - {{__name__}}\",\n          \"refId\": \"A\",\n          \"step\": 240\n        }\n      ],\n \
+    \     \"title\": \"Number of active connections\",\n      \"type\": \"timeseries\"\n    }\n  ],\n  \"refresh\"\
+    : \"\",\n  \"revision\": 1,\n  \"schemaVersion\": 42,\n  \"tags\": [\n    \"postgres\"\n  ],\n  \"templating\"\
+    : {\n    \"list\": [\n      {\n        \"hide\": 0,\n        \"includeAll\": false,\n        \"label\": \"Data\
+    \ Source\",\n        \"multi\": false,\n        \"name\": \"datasource\",\n        \"options\": [],\n      \
+    \  \"query\": \"prometheus\",\n        \"refresh\": 1,\n        \"regex\": \"\",\n        \"skipUrlSync\": false,\n\
+    \        \"type\": \"datasource\"\n      },\n      {\n        \"allValue\": \".+\",\n        \"current\": {},\n\
+    \        \"datasource\": {\n          \"uid\": \"$datasource\"\n        },\n        \"definition\": \"label_values(pg_up,\
+    \ job)\",\n        \"hide\": 0,\n        \"includeAll\": true,\n        \"label\": \"Job\",\n        \"multi\"\
+    : true,\n        \"name\": \"job\",\n        \"options\": [],\n        \"query\": {\n          \"query\": \"\
+    label_values(pg_up, job)\",\n          \"refId\": \"StandardVariableQuery\"\n        },\n        \"refresh\"\
+    : 1,\n        \"regex\": \"\",\n        \"skipUrlSync\": false,\n        \"sort\": 0,\n        \"tagValuesQuery\"\
+    : \"\",\n        \"tagsQuery\": \"\",\n        \"type\": \"query\",\n        \"useTags\": false\n      },\n\
+    \      {\n        \"allValue\": \".+\",\n        \"current\": {},\n        \"datasource\": {\n          \"uid\"\
+    : \"$datasource\"\n        },\n        \"definition\": \"label_values(pg_up{job=~\\\"$job\\\"},instance)\",\n\
+    \        \"hide\": 0,\n        \"includeAll\": true,\n        \"label\": \"Instance\",\n        \"multi\": true,\n\
+    \        \"name\": \"instance\",\n        \"options\": [],\n        \"query\": {\n          \"query\": \"label_values(pg_up{job=~\\\
+    \"$job\\\"},instance)\",\n          \"refId\": \"StandardVariableQuery\"\n        },\n        \"refresh\": 1,\n\
+    \        \"regex\": \"\",\n        \"skipUrlSync\": false,\n        \"sort\": 0,\n        \"tagValuesQuery\"\
+    : \"\",\n        \"tagsQuery\": \"\",\n        \"type\": \"query\",\n        \"useTags\": false\n      },\n\
+    \      {\n        \"allValue\": \".+\",\n        \"datasource\": {\n          \"uid\": \"$datasource\"\n   \
+    \     },\n        \"definition\": \"label_values(pg_stat_database_tup_fetched{job=~\\\"$job\\\",instance=~\\\
+    \"$instance\\\",datname!~\\\"template.*|postgres\\\"},datname)\",\n        \"hide\": 0,\n        \"includeAll\"\
+    : true,\n        \"label\": \"Database\",\n        \"multi\": false,\n        \"name\": \"db\",\n        \"\
+    options\": [],\n        \"query\": {\n          \"query\": \"label_values(pg_stat_database_tup_fetched{job=~\\\
+    \"$job\\\",instance=~\\\"$instance\\\",datname!~\\\"template.*|postgres\\\"},datname)\",\n          \"refId\"\
+    : \"StandardVariableQuery\"\n        },\n        \"refresh\": 1,\n        \"regex\": \"\",\n        \"skipUrlSync\"\
+    : false,\n        \"sort\": 0,\n        \"tagValuesQuery\": \"\",\n        \"tagsQuery\": \"\",\n        \"\
+    type\": \"query\",\n        \"useTags\": false,\n        \"current\": {}\n      }\n    ]\n  },\n  \"time\":\
+    \ {\n    \"from\": \"now-1h\",\n    \"to\": \"now\"\n  },\n  \"timepicker\": {},\n  \"timezone\": \"\",\n  \"\
+    title\": \"Postgres Overview\",\n  \"uid\": \"wGgaPlciz\",\n  \"weekStart\": \"\"\n}\n"
