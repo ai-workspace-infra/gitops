@@ -73,6 +73,10 @@ spec:
         seccompProfile: {type: RuntimeDefault}
         fsGroup: 10001
       deploymentProfile: single-container
+      vpa:
+        controlledValues: RequestsOnly
+        minAllowed: {cpu: 100m, memory: 128Mi}
+        maxAllowed: {cpu: 500m, memory: 512Mi}
       volumes:
         - {name: nginx-cache, emptyDir: {}}
         - {name: nginx-run, emptyDir: {}}
@@ -85,11 +89,27 @@ spec:
           - {name: nginx-logs, mountPath: /var/log/nginx}
         image: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3
         env:
+          RUNTIME_ENV: sit
+          NEXT_PUBLIC_RUNTIME_ENVIRONMENT: sit
+          RUNTIME_API_BASE_URL: https://accounts-sit.onwalk.net
+          RUNTIME_DASHBOARD_URL: https://console-sit.onwalk.net
           RUNTIME_AUTH_URL: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
           RUNTIME_XCONNECT_ZERO_URL: http://web-saas-accounts.web-saas-sit.svc.cluster.local:80
+        probes:
+          startupProbe:
+            httpGet: {path: /api/ping, port: primary}
+            timeoutSeconds: 5
+            periodSeconds: 5
+            failureThreshold: 18
+          readinessProbe:
+            httpGet: {path: /api/ping, port: primary}
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet: {path: /api/ping, port: primary}
+            timeoutSeconds: 5
         resources:
-          requests: {cpu: 50m, memory: 128Mi}
-          limits: {cpu: 250m, memory: 256Mi}
+          requests: {cpu: 100m, memory: 128Mi}
+          limits: {cpu: 500m, memory: 512Mi}
     content: {enabled: false}
     postgresql: {enabled: false}
     edgeGateway: {enabled: false}
