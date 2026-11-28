@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: observability-sit
+resources:
+  - progressive-release-dashboard.yaml
+  - xconnect-topology-roi-dashboard.yaml
+  - source-grafana-general-0.yaml
+  - starsl-k8s-dashboard.yaml
+  - caddy-dashboard.yaml
+  - postgres-unified-dashboard.yaml
+  - grafana-restored-postgres.yaml
+  - grafana-empty-folder.yaml
+  - grafana-restored-platform.yaml
+  - datasources.yaml

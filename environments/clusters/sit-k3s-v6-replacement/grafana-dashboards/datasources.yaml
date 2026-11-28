@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sit-replacement-grafana-datasources
+  namespace: observability-sit
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: VictoriaMetrics
+        uid: P4169E866C3094E38
+        type: prometheus
+        access: proxy
+        url: http://observability-observability-stack-victoria-metrics:8428
+        isDefault: true
+      - name: VictoriaLogs
+        uid: PD775F2863313E6C7
+        type: victoriametrics-logs-datasource
+        access: proxy
+        url: http://observability-observability-stack-victoria-logs:9428
+      - name: VictoriaTraces
+        uid: P14D5514F5CCC0D1C
+        type: jaeger
+        access: proxy
+        url: http://observability-observability-stack-victoria-traces:10428/select/jaeger

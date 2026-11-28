@@ -28,6 +28,9 @@ spec:
     kind: OCIRepository
     name: platform-mcp-chart
   values:
+    authProxy:
+      image:
+        repository: public.ecr.aws/docker/library/caddy
     sshMcpServer:
       enabled: false
     gateway:

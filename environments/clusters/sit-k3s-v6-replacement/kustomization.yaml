@@ -7,3 +7,4 @@ resources:
   - ingress-tls.yaml
   - database-and-web-secrets.yaml
   - observability-mcp-secrets.yaml
+  - grafana-dashboards
