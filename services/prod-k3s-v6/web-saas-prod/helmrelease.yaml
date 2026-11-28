@@ -59,7 +59,7 @@ spec:
                 template:
                   metadata:
                     annotations:
-                      delivery.svc.plus/rollout-revision: "v2026.11.28-stripe-multi-entity"
+                      delivery.svc.plus/rollout-revision: "v2026.11.28-console-slim-no-telemetry"
                   spec:
                     containers:
                       - name: console
@@ -87,19 +87,19 @@ spec:
                           - name: OBSERVABILITY_AUTH_USERNAME
                             value: observability
                           - name: FRONTEND_IMAGE
-                            value: ghcr.io/ai-workspace-services/console:sha-7c4d98179ad9c3ffdc427568775cd08df815b61e@sha256:00b59cc1073a18f35c6e7861b6c3aa978453b0b751070eba141775b87249d2b6
+                            value: ghcr.io/ai-workspace-services/console:sha-09a6fec05d93fe53f133f028221f6fc29f1105b9@sha256:20d5b7d8b5d970ed588f38a207559332e741d33eede3223f20cd85f86ee52eeb
+                          - name: NEXT_TELEMETRY_DISABLED
+                            value: "1"
                           - name: DD_TRACE_ENABLED
+                            value: "false"
+                          - name: OTEL_SDK_DISABLED
                             value: "true"
-                          - name: DD_AGENT_HOST
-                            value: datakit-service.observability-prod.svc
-                          - name: DD_TRACE_AGENT_PORT
-                            value: "9529"
+                          - name: TRACING_PROVIDER
+                            value: "none"
                           - name: DD_SERVICE
                             value: web-saas-console
                           - name: DD_ENV
                             value: prod
-                          - name: DD_TRACE_PROPAGATION_STYLE
-                            value: datadog,tracecontext
                         securityContext:
                           capabilities:
                             add: [CHOWN, SETUID, SETGID]
@@ -159,7 +159,7 @@ spec:
         enabled: false
       deploymentProfile: single-container
       singleContainer:
-        image: ghcr.io/ai-workspace-services/console:sha-7c4d98179ad9c3ffdc427568775cd08df815b61e@sha256:00b59cc1073a18f35c6e7861b6c3aa978453b0b751070eba141775b87249d2b6
+        image: ghcr.io/ai-workspace-services/console:sha-09a6fec05d93fe53f133f028221f6fc29f1105b9@sha256:20d5b7d8b5d970ed588f38a207559332e741d33eede3223f20cd85f86ee52eeb
         resources:
           requests: {cpu: 50m, memory: 128Mi}
           limits: {cpu: 250m, memory: 256Mi}
