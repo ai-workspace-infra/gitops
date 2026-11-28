@@ -22,25 +22,43 @@ spec:
     # ConfigMap after verifying both database identities and schema compatibility.
     accounts:
       enabled: ${SIT_REPLACEMENT_WEB_SAAS_ENABLED:=false}
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
       workload:
         image: ghcr.io/ai-workspace-services/accounts:sha-cabf381fa6c6ada678fbd698b3bf7618c7638f7d@sha256:90bc16b4c5ed3d9529fee38d3c8753561bffa5c19de9c9297f967890cdfdd476
         env:
           DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
           DB_PORT: '5432'
           DB_NAME: account
+          DATABASE_RUNTIME_ROLE: primary
+          DATABASE_BACKGROUND_WRITERS: 'false'
+          CONFIG_PATH: /tmp/sit-account.yaml
           ROOT_BOOTSTRAP_EMAIL: root@sit.invalid
         secretRefs: [web-saas-secrets, accounts-db-runtime]
+        probes:
+          readinessProbe:
+            httpGet: {path: /readyz, port: primary}
         resources:
           requests: {cpu: 25m, memory: 96Mi}
           limits: {cpu: 100m, memory: 128Mi}
     billing:
       enabled: ${SIT_REPLACEMENT_WEB_SAAS_ENABLED:=false}
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
       workload:
         image: ghcr.io/ai-workspace-services/billing-service:sha-1edff47e4eb950748bcebae25af2d38ec07565c3@sha256:145c8ad9d44b0d92b0e7282c60049572c9617180b3a724c1cb55c02b892541ac
         env:
           DB_HOST: postgresql-postgresql.postgresql-sit.svc.cluster.local
           DB_PORT: '5432'
           DB_NAME: account
+          DATABASE_RUNTIME_ROLE: primary
+          DATABASE_BACKGROUND_WRITERS: 'false'
           BILLING_INGEST_MODE: push
         secretRefs: [web-saas-secrets, billing-db-runtime]
         resources:
@@ -48,6 +66,11 @@ spec:
           limits: {cpu: 100m, memory: 128Mi}
     console:
       enabled: ${SIT_REPLACEMENT_WEB_SAAS_ENABLED:=false}
+      podSecurityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile: {type: RuntimeDefault}
       deploymentProfile: single-container
       singleContainer:
         image: ghcr.io/ai-workspace-services/console:sha-f8690465795b66b767136bfafdd6f6c489521187@sha256:390ce1cb257f13cf2ca402cb4e7febbd0d706796578fd9f022a5dbbd94c940b3

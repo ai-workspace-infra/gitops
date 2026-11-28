@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: web-saas-traefik-ingress
+  namespace: web-saas-sit
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: web-saas
+    matchExpressions:
+      - key: websaas.io/workload
+        operator: In
+        values: [accounts, billing, console]
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-sit
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: traefik
+      ports:
+        - port: 8080
+          protocol: TCP

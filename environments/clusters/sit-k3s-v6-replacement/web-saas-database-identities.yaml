@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: accounts-db-reader
+  namespace: web-saas-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: accounts-db-reader
+  namespace: web-saas-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [accounts-db-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: accounts-db-reader
+  namespace: web-saas-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: accounts-db-reader
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: accounts-db-reader
+  namespace: web-saas-sit
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-sit-k3s-v6-replacement
+          role: accounts-db-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: accounts-db-reader
+            audiences: [vault-sit-k3s-v6-replacement-accounts-db-reader]
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: accounts-db-runtime
+  namespace: web-saas-sit
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: accounts-db-reader
+  target:
+    name: accounts-db-runtime
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+    - secretKey: DATABASE_URL
+      remoteRef:
+        key: sit/services/k3s-v6-replacement/web-saas/accounts-db
+        property: DATABASE_URL
+    - secretKey: DATABASE_IDENTITY_SHA256
+      remoteRef:
+        key: sit/services/k3s-v6-replacement/web-saas/accounts-db
+        property: DATABASE_IDENTITY_SHA256
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: billing-db-reader
+  namespace: web-saas-sit
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: billing-db-reader
+  namespace: web-saas-sit
+rules:
+  - apiGroups: [""]
+    resources: [serviceaccounts/token]
+    resourceNames: [billing-db-reader]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: billing-db-reader
+  namespace: web-saas-sit
+subjects:
+  - kind: ServiceAccount
+    name: external-secrets
+    namespace: external-secrets
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: billing-db-reader
+---
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: billing-db-reader
+  namespace: web-saas-sit
+spec:
+  provider:
+    vault:
+      server: https://vault.svc.plus
+      path: kv
+      version: v2
+      auth:
+        jwt:
+          path: jwt-sit-k3s-v6-replacement
+          role: billing-db-reader
+          kubernetesServiceAccountToken:
+            serviceAccountRef:
+              name: billing-db-reader
+            audiences: [vault-sit-k3s-v6-replacement-billing-db-reader]
+            expirationSeconds: 600
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: billing-db-runtime
+  namespace: web-saas-sit
+spec:
+  refreshInterval: 5m
+  secretStoreRef:
+    kind: SecretStore
+    name: billing-db-reader
+  target:
+    name: billing-db-runtime
+    creationPolicy: Owner
+    deletionPolicy: Retain
+  data:
+    - secretKey: DATABASE_URL
+      remoteRef:
+        key: sit/services/k3s-v6-replacement/web-saas/billing-db
+        property: DATABASE_URL
+    - secretKey: DATABASE_IDENTITY_SHA256
+      remoteRef:
+        key: sit/services/k3s-v6-replacement/web-saas/billing-db
+        property: DATABASE_IDENTITY_SHA256
