@@ -312,7 +312,7 @@ spec:
       vpa:
         enabled: false
       workload:
-        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-34d5b6f58dde293c7523e67f0f2165bde27ffe41@sha256:7f6ed8e785aa369e75e0622087fe357298292bcada8ff87506ee9c31728b75e1
+        image: ghcr.io/ai-workspace-services/xconnect-controller:sha-c43ef49ae620ab71f0e37bac6c3aeb0845590e6b@sha256:be5889830a6332674b9917f2f221de1a7aa4d2769a44e901db9e3e2280980c3e
         port: 8080
         replicas: 1
         env:
