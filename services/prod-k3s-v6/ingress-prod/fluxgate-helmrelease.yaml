@@ -73,7 +73,7 @@ spec:
                         connect_timeout 1500ms
                         read_timeout 5000ms
                         daily_budget 85000
-                        fallback_on_status 429 501 502 503 504 522 524
+                        fallback_on_status 429 500 501 502 503 504 522 524
                         fallback_on_header X-XConnect-Fallback=origin-go
                     }
 
